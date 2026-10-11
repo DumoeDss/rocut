@@ -1,0 +1,5 @@
+{
+	"extends": "./html-host.tsconfig.json",
+	"include": ["./hyperframes-audio-editor-host.ts", "./remotion-audio-pcm-diagnostic.ts"],
+	"exclude": []
+}

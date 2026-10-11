@@ -17,14 +17,16 @@ import {
 	fallServedIdentity,
 } from "./fixtures/mv-fall-evidence.mjs";
 import { saveTunnelDiagnosticArtifacts } from "./fixtures/mv-tunnel-native-diagnostic-artifacts.mjs";
+import { saveTunnelRaceArtifacts } from "./fixtures/mv-tunnel-race-artifacts.mjs";
 
 const arguments_ = process.argv.slice(2);
 assert.ok(
 	arguments_.length >= 1 &&
-		["--browser-only", "--frame4-grain-diagnostic"].includes(arguments_[0]),
+		["--browser-only", "--frame4-grain-diagnostic", "--oracle-repeat-diagnostic"].includes(arguments_[0]),
 	"Explicit browser-only gate or frame4 grain diagnostic required; export is separate",
 );
 const frame4GrainDiagnostic = arguments_[0] === "--frame4-grain-diagnostic";
+const oracleRepeatDiagnostic = arguments_[0] === "--oracle-repeat-diagnostic";
 const original = process.env.ROCUT_TEST_MV_REFERENCE,
 	isolated = process.env.ROCUT_TEST_WASM_DIRECTORY,
 	browserExecutable = process.env.ROCUT_TEST_BROWSER_EXECUTABLE,
@@ -83,12 +85,13 @@ for (const path of [
 	"script/fixtures/mv-tunnel-reference.ts",
 	"script/fixtures/mv-tunnel-post-reference.ts",
 	"script/fixtures/mv-tunnel-native-diagnostic-artifacts.mjs",
+	"script/fixtures/mv-tunnel-race-artifacts.mjs",
 ])
 	sources.set(path, (await tunnelFileIdentity(join(root, path))).sha256);
 console.log(
 	JSON.stringify({
 		artifact,
-		scope: frame4GrainDiagnostic
+		scope: oracleRepeatDiagnostic ? "Oracle-only repeats; no native/full-matrix acceptance" : frame4GrainDiagnostic
 			? "frame4 grain diagnosis only; no full matrix acceptance"
 			: "426 serial native visits, 26 repeats, 20 scene and six post negatives; no export/installed Electron/globalFX gate",
 	}),
@@ -118,12 +121,17 @@ try {
 	browser = await chromium.launch({
 		headless: true,
 		executablePath: browserExecutable,
-		args: ["--disable-gpu-rasterization"],
+		args: ["--disable-gpu-rasterization", ...(process.env.ROCUT_TEST_TUNNEL_SOFTWARE_CANVAS ? ["--disable-accelerated-2d-canvas"] : [])],
 	});
 	const page = await browser.newPage(),
 		errors = [],
 		externalRequests = [];
-	page.on("pageerror", (error) => errors.push(error.message));
+	page.on("pageerror", (error) => {
+		errors.push(error.message);
+		void page.evaluate((message) => {
+			globalThis.__tunnelBootstrapError = message;
+		}, error.message).catch(() => {});
+	});
 	await page.route("**/*", (route) => {
 		const url = new URL(route.request().url());
 		if (/^https?:$/.test(url.protocol) && url.origin !== origin) {
@@ -157,6 +165,10 @@ try {
 		diagPreRoll: process.env.ROCUT_TEST_TUNNEL_DIAG_PREROLL,
 		matrixCap: process.env.ROCUT_TEST_TUNNEL_MATRIX_CAP,
 		diagRepeatProbe: process.env.ROCUT_TEST_TUNNEL_REPEAT_PROBE,
+			raceDiagnostics: Boolean(process.env.ROCUT_TEST_TUNNEL_RACE_DIAGNOSTICS),
+			settleRealms: Boolean(process.env.ROCUT_TEST_TUNNEL_SETTLE_REALMS),
+			frameDelayMs: Number(process.env.ROCUT_TEST_TUNNEL_FRAME_DELAY_MS) || 0,
+			oracleRepeatCount: oracleRepeatDiagnostic ? Number(process.env.ROCUT_TEST_TUNNEL_ORACLE_REPEAT_COUNT) || 6 : undefined,
 		},
 	);
 	await page.goto(`${origin}/script/fixtures/mv-tunnel-native-browser.html`, {
@@ -184,11 +196,16 @@ try {
 	let result;
 	try {
 		await page.waitForFunction(
-			() => globalThis.__tunnelNativeResult,
+			() => globalThis.__tunnelNativeResult || globalThis.__tunnelBootstrapError,
 			undefined,
 			{ timeout: 900000 },
 		);
-		result = await page.evaluate(() => globalThis.__tunnelNativeResult);
+		result = await page.evaluate(() => globalThis.__tunnelNativeResult ?? {
+			passed: false,
+			bootstrapFailed: true,
+			error: globalThis.__tunnelBootstrapError,
+			progress: globalThis.__tunnelNativeProgress,
+		});
 	} catch (error) {
 		result = {
 			passed: false,
@@ -201,6 +218,10 @@ try {
 		clearInterval(timer);
 	}
 	let diagnosticFiles;
+	const raceFailure = await saveTunnelRaceArtifacts({ page, artifact });
+	const oracleRepeatArtifacts = oracleRepeatDiagnostic ? await saveTunnelRaceArtifacts({
+		page, artifact, globalKey: "__tunnelOracleRepeatDiagnostic", prefix: "oracle-repeat",
+	}) : undefined;
 	if (frame4GrainDiagnostic && result.diagnosticComplete)
 		diagnosticFiles = await saveTunnelDiagnosticArtifacts({
 			page,
@@ -214,6 +235,15 @@ try {
 	const report = {
 		artifact,
 		result,
+		raceFailure,
+		oracleRepeatArtifacts,
+		nativeTimings: await page.evaluate(() => globalThis.__tunnelRaceTimings),
+		experiment: {
+			raceDiagnostics: Boolean(process.env.ROCUT_TEST_TUNNEL_RACE_DIAGNOSTICS),
+			settleRealms: Boolean(process.env.ROCUT_TEST_TUNNEL_SETTLE_REALMS),
+			softwareCanvas: Boolean(process.env.ROCUT_TEST_TUNNEL_SOFTWARE_CANVAS),
+			frameDelayMs: Number(process.env.ROCUT_TEST_TUNNEL_FRAME_DELAY_MS) || 0,
+		},
 		errors,
 		externalRequests,
 		browser: browser.version(),
@@ -273,7 +303,7 @@ try {
 			artifact,
 			passed: result.passed,
 			diagnosticComplete: result.diagnosticComplete,
-			mode: frame4GrainDiagnostic ? "frame4-grain-diagnostic" : "browser-only",
+			mode: oracleRepeatDiagnostic ? "oracle-repeat-diagnostic" : frame4GrainDiagnostic ? "frame4-grain-diagnostic" : "browser-only",
 			observations: result.observations?.length,
 			error: result.error,
 			sourceIdentityStable: report.sourceIdentityStable,
@@ -282,7 +312,12 @@ try {
 	assert.deepEqual(errors, []);
 	assert.deepEqual(externalRequests, []);
 	assert.equal(report.sourceIdentityStable, true, report.identityError);
-	if (frame4GrainDiagnostic) {
+	if (oracleRepeatDiagnostic) {
+		assert.equal(result.diagnosticComplete, true, result.error);
+		assert.equal(result.fullMatrixTested, false);
+		assert.equal(result.passed, undefined, "Oracle diagnostic cannot claim parity acceptance");
+		assert.ok(oracleRepeatArtifacts?.files.length > 0);
+	} else if (frame4GrainDiagnostic) {
 		assert.equal(result.diagnosticComplete, true, result.error);
 		assert.equal(result.fullMatrixTested, false);
 		assert.equal(

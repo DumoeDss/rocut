@@ -8,6 +8,8 @@ import {
 	tunnelFrame4,
 } from "./mv-tunnel-native-diagnostic";
 import { verifyTunnelPixelMatrix } from "./mv-tunnel-pixel-suite";
+import { tunnelRaceFailureRecorder } from "./mv-tunnel-race-experiment";
+import { diagnoseTunnelOracleRepeats } from "./mv-tunnel-oracle-repeat-diagnostic";
 import { verifyTunnelTransportBoundary } from "./mv-tunnel-transport-browser";
 import type { TunnelReference } from "./mv-tunnel-reference";
 import type { TunnelPostReference } from "./mv-tunnel-post-reference";
@@ -20,6 +22,10 @@ declare global {
 		fonts: readonly { family: string; weight: number; file: string }[];
 		fontBytes: Readonly<Record<string, string>>;
 		frame4GrainDiagnostic?: boolean;
+		raceDiagnostics?: boolean;
+		settleRealms?: boolean;
+		frameDelayMs?: number;
+		oracleRepeatCount?: number;
 	};
 	var __tunnelNativeProgress: { current: string; visits: number };
 	var __tunnelNativeResult: unknown;
@@ -30,6 +36,7 @@ declare global {
 async function run() {
 	const input = globalThis.__tunnelNativeInput;
 	if (!input) throw Error("Private Tunnel native inputs missing");
+	if (input.raceDiagnostics) globalThis.__tunnelRaceTimings = [];
 	const transportBoundary = verifyTunnelTransportBoundary();
 	const buffers = new Map(
 		Object.entries(input.fontBytes).map(([file, encoded]) => [
@@ -42,24 +49,51 @@ async function run() {
 		if (!bytes) throw Error("Tunnel pinned font missing");
 		return { family: f.family, weight: f.weight, bytes };
 	});
-	const oracle = await createTunnelBrowserOracle({
+	const observations: Record<string, unknown>[] = [];
+	const createOracle = () => createTunnelBrowserOracle({
 		reference: input.reference,
 		postReference: input.postReference,
 		fonts,
+		onObservation: input.oracleRepeatCount ? observation => observations.push(observation) : undefined,
 	});
+	const originalOracle = await createOracle();
+	const persistentRealms = new Set(document.querySelectorAll("iframe"));
+	const realmSettles: { boundary: string; before: number; after: number; waitedMs: number; persistent: number }[] = [];
+	const settle = async (boundary: string) => {
+		if (!input.settleRealms) return;
+		const started = performance.now(), before = document.querySelectorAll("iframe").length;
+		while ([...document.querySelectorAll("iframe")].some(iframe => !persistentRealms.has(iframe))) {
+			if (performance.now() - started > 2000) throw Error("Tunnel experiment realm disposal did not settle");
+			await new Promise(resolve => setTimeout(resolve, 10));
+		}
+		realmSettles.push({ boundary, before, after: document.querySelectorAll("iframe").length,
+			waitedMs: performance.now() - started, persistent: persistentRealms.size });
+	};
+	const oracle = input.settleRealms ? { ...originalOracle, async render(request: Parameters<typeof originalOracle.render>[0]) {
+		await settle("oracle");
+		return originalOracle.render(request);
+	} } : originalOracle;
+	const wrapCapture = (native: Awaited<ReturnType<typeof createTunnelNativeCapture>>) => async (request: Parameters<typeof native>[0]) => {
+		if (input.settleRealms) await settle("native");
+		if (input.frameDelayMs) await new Promise(resolve => setTimeout(resolve, input.frameDelayMs));
+		return native(request);
+	};
 	try {
+		if (input.oracleRepeatCount) return await diagnoseTunnelOracleRepeats({
+			oracle, createOracle, count: input.oracleRepeatCount, observations,
+		});
 		if (input.frame4GrainDiagnostic) {
 			globalThis.__tunnelNativeProgress = {
 				current: "frame4-grain-diagnostic",
 				visits: 0,
 			};
 			let plan: unknown;
-			const captureNative = await createTunnelNativeDiagnosticCapture({
+			const captureNative = wrapCapture(await createTunnelNativeDiagnosticCapture({
 				fonts,
 				onPlan(p) {
 					plan = p;
 				},
-			});
+			}));
 			const preRoll = Number(globalThis.__tunnelDiagPreRoll ?? 0);
 			if (preRoll > 0) {
 				for (let k = 0; k < preRoll; k++) {
@@ -76,7 +110,8 @@ async function run() {
 				const probeFrame = tunnelFrame4();
 				const outputs = [];
 				for (let r = 0; r < 2; r++) {
-					const out = await captureNative({ frame: probeFrame, index: 4 });
+					const out = await captureNative({ frame: probeFrame,
+						index: Math.round((probeFrame.time - probeFrame.shotStart) * 60) });
 					outputs.push(out);
 				}
 				let firstDiff = -1;
@@ -104,6 +139,7 @@ async function run() {
 				diagnosticComplete: true,
 				mode: "frame4-grain-diagnostic",
 				fullMatrixTested: false,
+				realmSettles,
 				repeatProbe: globalThis.__tunnelRepeatProbe,
 				metadata: diagnostic.metadata,
 				proofs: {
@@ -121,12 +157,19 @@ async function run() {
 				transportBoundary,
 			};
 		}
-		const captureNative = await createTunnelNativeCapture(fonts);
+		let plan: unknown;
+		const native = input.raceDiagnostics
+			? await createTunnelNativeDiagnosticCapture({ fonts, onPlan(p) { plan = p; } })
+			: await createTunnelNativeCapture(fonts);
+		const captureNative = wrapCapture(native);
 		globalThis.__tunnelNativeProgress = { current: "starting", visits: 0 };
 		const result = await verifyTunnelPixelMatrix({
 			oracle,
 			captureNative,
 			cap: Number(globalThis.__tunnelMatrixCap) || undefined,
+			onFailure: input.raceDiagnostics ? tunnelRaceFailureRecorder({
+				oracle, captureNative, readPlan: () => plan,
+			}) : undefined,
 			onProgress(current) {
 				globalThis.__tunnelNativeProgress = {
 					current,
@@ -134,7 +177,7 @@ async function run() {
 				};
 			},
 		});
-		return { ...result, transportBoundary };
+		return { ...result, transportBoundary, realmSettles };
 	} finally {
 		oracle.dispose();
 	}
@@ -147,5 +190,6 @@ run()
 		globalThis.__tunnelNativeResult = {
 			passed: false,
 			error: String(error?.stack ?? error),
+			progress: globalThis.__tunnelNativeProgress,
 		};
 	});

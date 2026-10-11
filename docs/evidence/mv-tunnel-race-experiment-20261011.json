@@ -1,0 +1,1579 @@
+{
+  "status": "unresolved; no root cause or full-matrix acceptance established",
+  "gate": {
+    "maxChannelAtMost": 6,
+    "maeLessThan": 0.025,
+    "nativeRealmTimeoutMs": 5000
+  },
+  "startingRuns": [
+    {
+      "artifact": "C:/Users/Sayo/AppData/Local/Temp/rocut-tunnel-native-I1olMX",
+      "configuration": "original; no race instrumentation",
+      "failure": "Native MV frame timed out after 5000 ms",
+      "lastObservedProgress": "defaults-all-layers-complete-forward-seek-repeat/4/4",
+      "exactFailedVisit": "not retained",
+      "sourceIdentityStable": true
+    },
+    {
+      "artifact": "C:/Users/Sayo/AppData/Local/Temp/rocut-tunnel-native-RFswmC",
+      "configuration": "original with opt-in failure follow-up diagnostics",
+      "failure": "Native MV frame timed out after 5000 ms",
+      "exactFailedVisit": "defaults-all-layers-complete-forward-seek-repeat/9/9",
+      "visits": 10,
+      "sourceIdentityStable": true
+    }
+  ],
+  "loadSamples": [
+    {
+      "at": "2026-10-11T17:14:44.4015281+08:00",
+      "cpuLoadPercentage": 85,
+      "logicalProcessors": 16
+    },
+    {
+      "at": "2026-10-11T17:16:15.5888284+08:00",
+      "cpuLoadPercentage": 100,
+      "logicalProcessors": 16
+    },
+    {
+      "at": "2026-10-11T17:34:38.8353820+08:00",
+      "cpuLoadPercentage": 80,
+      "logicalProcessors": 16
+    },
+    {
+      "at": "2026-10-11T17:36:19.7738364+08:00",
+      "cpuLoadPercentage": 67,
+      "logicalProcessors": 16
+    },
+    {
+      "at": "2026-10-11T17:51:48.6677299+08:00",
+      "cpuLoadPercentage": 85,
+      "logicalProcessors": 16
+    },
+    {
+      "at": "2026-10-11T18:11:41.6515330+08:00",
+      "cpuLoadPercentage": 52,
+      "logicalProcessors": 16
+    }
+  ],
+  "interpretation": "Both starting runs overlapped the authoritative Rust compilation. Their timeouts are load-confounded and do not reproduce the historical pixel divergence. No original timeout or pixel threshold was widened.",
+  "authoritativeBinding": {
+    "root": "C:/Users/Sayo/AppData/Local/Temp/rocut-wasm-authority-20261011-GVDTX4",
+    "wasmSha256": "084cf7310df5bfdc1b8e4ce3f64bcff842e1b23b9fd0ca57c1c7dcffc0d1fc12",
+    "sourceManifestSha256": "d6cb235399f0090d037eb1c6d8c10241c8042d1d2b16913e56c6dc7a08e207c0",
+    "canonicalBrowserBinaryEqual": true,
+    "boundedTunnelWrapper": true,
+    "browserV2": {
+      "directory": "C:/Users/Sayo/AppData/Local/Temp/rocut-wasm-authority-20261011-GVDTX4/browser-pkg-v2-sntQBC",
+      "glueSha256": "cc62ca83fb09032be1bf5427a156f572587ef21cc6a6c185d4743ac4fe7ddb39",
+      "verificationSha256": "7da4b27a9c116908e71ab5745ca5af7df385f302b873bf0be60c8fc181fb4748",
+      "binaryUnchanged": true,
+      "mainThreadSmokeReceipt": "C:/Users/Sayo/AppData/Local/Temp/rocut-wasm-authority-20261011-GVDTX4/verify-jtSrL3/browser-main-thread-smoke.json"
+    }
+  },
+  "recordedAt": "2026-10-11T18:14:00+08:00",
+  "scope": "Tunnel browser-only native scene/dedicated original post experiment; no installed Electron, timeline global FX, complete movie or export acceptance",
+  "isolation": {
+    "worktree": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/.worktrees/rocut-acceptance-20261011-6fa23f6b/_others/rocut",
+    "branch": "acceptance/20261011-6fa23f6b",
+    "productionChanges": []
+  },
+  "instrumentation": {
+    "failurePolicy": "Judge the unchanged gate first. Retain the exact original failure bytes. Separately label two follow-up oracle/native renders. Record follow-up exceptions without replacing the original failure.",
+    "preflightPlans": "Plans observed by native capture's diagnostic hook come from its first preflight resolution, not a claim that the separate scene ticket and complete-frame admission shared that exact plan instance.",
+    "nativeTimingStages": [
+      "source-discovery",
+      "preflight-font-admission",
+      "scene-ticket-font-admission",
+      "scene-raster-and-bitmap-readback",
+      "complete-frame-admission-raster-and-bitmap-readback"
+    ],
+    "fontStatus": "Recorded document.fonts.status belongs to the host document, not an assertion that each private realm's fonts have settled.",
+    "singleVariableControls": [
+      "ROCUT_TEST_TUNNEL_SETTLE_REALMS=1: await prior native realms' actual removal before capture",
+      "ROCUT_TEST_TUNNEL_SOFTWARE_CANVAS=1: add only --disable-accelerated-2d-canvas to the original Chromium flags",
+      "ROCUT_TEST_TUNNEL_FRAME_DELAY_MS=<positive integer>: gap before native capture"
+    ],
+    "controlsExecuted": [
+      "Oracle softwareCanvas twelve-repeat diagnostic; no simultaneous settle/delay",
+      "Paired frame15 baseline versus independent settle-realms diagnostic; softwareCanvas/delay disabled"
+    ],
+    "bootstrapErrors": "Host pageerror now causes an explicit bootstrapFailed result and normal report/cleanup, preventing a silent 15-minute wait. It does not change realm timeout or raster admission.",
+    "oracleObservation": "Opt-in actual Canvas method/property trace plus returned measureText width, initial/final Canvas state and actual oracle realm FontFace status. Native methods called once with unchanged arguments. No extra draws, measurements or pixel readbacks. Observer timing may differ from uninstrumented oracle.",
+    "realmSettling": "Persistent baseline is the actual iframe object set after oracle creation. Opt-in waits for any additional realm's removal before native AND oracle calls; records before/after counts and wait. No production disposal changes."
+  },
+  "verification": {
+    "existingDiagnosticIdentityTests": {
+      "pass": 8,
+      "fail": 0,
+      "scope": "Original repository, before isolation"
+    },
+    "failureFollowupPreservationTest": {
+      "pass": 2,
+      "fail": 0,
+      "scope": "Isolated worktree; original byte retention and observer gradient compatibility"
+    },
+    "typescriptSyntax": "Four production-used Tunnel TS fixtures parse/transpile",
+    "mjsSyntax": "Probe and race artifact writer pass node --check",
+    "utf8": "Owned source/evidence strict UTF-8, BOM/replacement and scoped diff check rerun after final fixture edits",
+    "diffCheck": "Pass",
+    "eslint": "MJS targeted lint completed; four TS fixtures ignored by repository lint configuration (warnings), not counted as lint coverage. Initial earlier missing-plugin block is resolved.",
+    "relatedFixtureTests": {
+      "pass": 11,
+      "fail": 0,
+      "command": "bun test script/fixtures/mv-tunnel-race-experiment.test.ts script/fixtures/mv-tunnel-native-diagnostic.test.ts script/fixtures/mv-tunnel-native-diagnostic-artifacts.test.mjs script/fixtures/mv-tunnel-native-identities.test.mjs"
+    }
+  },
+  "pending": [
+    "Original-configuration full matrix remains failed at max10; no gate relaxation or full acceptance",
+    "Exact grain parity cause and historical structural oracle drift remain unlocated",
+    "No production renderer/Rust fix performed; no new heavy run after bounded diagnostics"
+  ],
+  "bootstrapFailure": {
+    "artifact": "C:/Users/Sayo/AppData/Local/Temp/rocut-tunnel-native-jM2PHb",
+    "matrixStarted": false,
+    "classification": "Authority browser-wrapper v1 synchronously compiles a 15MB module on Chromium's main thread; not Tunnel pixel nondeterminism",
+    "exception": "WebAssembly.Compile is disallowed on the main thread, if the buffer size is larger than 8MB.",
+    "terminatedByParentDirection": true,
+    "finalProbeReportProduced": false,
+    "smokeBrowserClosed": true,
+    "originalNodePid": 36112,
+    "oldWrapperRetained": true,
+    "controlRun": {
+      "artifact": "C:/Users/Sayo/AppData/Local/Temp/rocut-tunnel-native-tM2OmH",
+      "passed": false,
+      "bootstrapFailed": true,
+      "sourceIdentityStable": true,
+      "currentScope": "native-scene",
+      "verifiedSnapshotFiles": 971,
+      "currentMatchingSources": 697,
+      "servedWasmSha256": "084cf7310df5bfdc1b8e4ce3f64bcff842e1b23b9fd0ca57c1c7dcffc0d1fc12",
+      "servedBundleSha256": "a68134ed2e036c6c8a38b3fb950c22dc7803cc1de989860cb58d5dc7a58280cf",
+      "normalCleanup": true,
+      "matrixStarted": false
+    }
+  },
+  "authoritativeOriginalConfigurationRun": {
+    "artifact": "C:/Users/Sayo/AppData/Local/Temp/rocut-tunnel-native-4SUwmY",
+    "head": "86ddc448c4f86b63436dc7a2844d78c515335826",
+    "passed": false,
+    "sourceIdentityStable": true,
+    "failedKey": "defaults-all-layers-complete-forward-seek-repeat/15/15",
+    "scene": {
+      "max": 10,
+      "changed": 36,
+      "mae": 0.000008318865740740741
+    },
+    "post": {
+      "max": 1,
+      "changed": 73,
+      "mae": 0.000008801118827160494
+    },
+    "maximum": {
+      "x": 103,
+      "y": 748,
+      "channel": 2,
+      "native": 81,
+      "original": 71
+    },
+    "nativeRepeatSceneMax": [
+      0,
+      0
+    ],
+    "nativeRepeatPostMax": [
+      0,
+      0
+    ],
+    "oracleRepeatScene": [
+      {
+        "max": 1,
+        "changed": 4
+      },
+      {
+        "max": 40,
+        "changed": 8,
+        "maximum": {
+          "x": 655,
+          "y": 645,
+          "channel": 3,
+          "initial": 215,
+          "repeat": 255
+        }
+      }
+    ],
+    "oracleRepeatPost": [
+      {
+        "max": 0,
+        "changed": 0
+      },
+      {
+        "max": 3,
+        "changed": 42
+      }
+    ],
+    "preflightPlanHashes": [
+      "219b20d339a9eddf23efced4185bf54c43ac75f7dc56b80d9c93ef25af129451",
+      "219b20d339a9eddf23efced4185bf54c43ac75f7dc56b80d9c93ef25af129451",
+      "219b20d339a9eddf23efced4185bf54c43ac75f7dc56b80d9c93ef25af129451"
+    ],
+    "retainedRgbaFiles": 12,
+    "classification": "In this run native same-frame repeats are bit-exact while the independently repeated oracle changes, including structural alpha. This does not establish a native race or determine all historical runs' causes. The original max10 parity failure remains a failure at the unchanged <=6 gate."
+  },
+  "oracleRepeatDiagnostics": [
+    {
+      "artifact": "C:/Users/Sayo/AppData/Local/Temp/rocut-tunnel-native-hvfKn7",
+      "softwareCanvas": false,
+      "sourceIdentityStable": true,
+      "frame": {
+        "time": 12.5,
+        "shotStart": 12.25,
+        "duration": 6,
+        "beats": [
+          0,
+          0.5,
+          1,
+          1.5,
+          2,
+          2.5,
+          3,
+          3.5,
+          4,
+          4.5,
+          5,
+          5.5,
+          6,
+          6.5,
+          7,
+          7.5,
+          8,
+          8.5,
+          9,
+          9.5,
+          10,
+          10.5,
+          11,
+          11.5,
+          12,
+          12.5,
+          13,
+          13.5,
+          14,
+          14.5,
+          15,
+          15.5,
+          16,
+          16.5,
+          17,
+          17.5,
+          18,
+          18.5,
+          19,
+          19.5,
+          20,
+          20.5,
+          21,
+          21.5,
+          22,
+          22.5,
+          23,
+          23.5,
+          24,
+          24.5,
+          25,
+          25.5,
+          26,
+          26.5,
+          27,
+          27.5,
+          28,
+          28.5,
+          29,
+          29.5,
+          30
+        ],
+        "bpm": 120,
+        "downbeatIndex0": 1,
+        "args": {}
+      },
+      "commandCount": 8797,
+      "measureCount": 149,
+      "commandSha256": "1f0b454df420a449551f0675fab8b07fee6dc8d1d7b392eb28a7d593e84ce78a",
+      "allCommandsEqual": true,
+      "allMetricsEqual": true,
+      "allInitialStatesEqual": true,
+      "allFontStatesEqual": true,
+      "allFontsLoaded": true,
+      "records": [
+        {
+          "key": "continuous-0",
+          "scene": {
+            "max": 0,
+            "mae": 0,
+            "changed": 0,
+            "first": null,
+            "maximum": null,
+            "bbox": null
+          },
+          "post": {
+            "max": 0,
+            "mae": 0,
+            "changed": 0,
+            "first": null,
+            "maximum": null,
+            "bbox": null
+          },
+          "sceneSha256": "1959574b22e7db6ae9cd90b3e3a88dcf2980a8b389b271712c6e5c62ac183120",
+          "postSha256": "e22bb8951c98513298e51c8c6a82f3b71c7ed84798ecfe8e54ecedd5caab4b58"
+        },
+        {
+          "key": "continuous-1",
+          "scene": {
+            "max": 0,
+            "mae": 0,
+            "changed": 0,
+            "first": null,
+            "maximum": null,
+            "bbox": null
+          },
+          "post": {
+            "max": 0,
+            "mae": 0,
+            "changed": 0,
+            "first": null,
+            "maximum": null,
+            "bbox": null
+          },
+          "sceneSha256": "1959574b22e7db6ae9cd90b3e3a88dcf2980a8b389b271712c6e5c62ac183120",
+          "postSha256": "e22bb8951c98513298e51c8c6a82f3b71c7ed84798ecfe8e54ecedd5caab4b58"
+        },
+        {
+          "key": "continuous-2",
+          "scene": {
+            "max": 0,
+            "mae": 0,
+            "changed": 0,
+            "first": null,
+            "maximum": null,
+            "bbox": null
+          },
+          "post": {
+            "max": 0,
+            "mae": 0,
+            "changed": 0,
+            "first": null,
+            "maximum": null,
+            "bbox": null
+          },
+          "sceneSha256": "1959574b22e7db6ae9cd90b3e3a88dcf2980a8b389b271712c6e5c62ac183120",
+          "postSha256": "e22bb8951c98513298e51c8c6a82f3b71c7ed84798ecfe8e54ecedd5caab4b58"
+        },
+        {
+          "key": "continuous-3",
+          "scene": {
+            "max": 0,
+            "mae": 0,
+            "changed": 0,
+            "first": null,
+            "maximum": null,
+            "bbox": null
+          },
+          "post": {
+            "max": 0,
+            "mae": 0,
+            "changed": 0,
+            "first": null,
+            "maximum": null,
+            "bbox": null
+          },
+          "sceneSha256": "1959574b22e7db6ae9cd90b3e3a88dcf2980a8b389b271712c6e5c62ac183120",
+          "postSha256": "e22bb8951c98513298e51c8c6a82f3b71c7ed84798ecfe8e54ecedd5caab4b58"
+        },
+        {
+          "key": "continuous-4",
+          "scene": {
+            "max": 0,
+            "mae": 0,
+            "changed": 0,
+            "first": null,
+            "maximum": null,
+            "bbox": null
+          },
+          "post": {
+            "max": 0,
+            "mae": 0,
+            "changed": 0,
+            "first": null,
+            "maximum": null,
+            "bbox": null
+          },
+          "sceneSha256": "1959574b22e7db6ae9cd90b3e3a88dcf2980a8b389b271712c6e5c62ac183120",
+          "postSha256": "e22bb8951c98513298e51c8c6a82f3b71c7ed84798ecfe8e54ecedd5caab4b58"
+        },
+        {
+          "key": "continuous-5",
+          "scene": {
+            "max": 0,
+            "mae": 0,
+            "changed": 0,
+            "first": null,
+            "maximum": null,
+            "bbox": null
+          },
+          "post": {
+            "max": 0,
+            "mae": 0,
+            "changed": 0,
+            "first": null,
+            "maximum": null,
+            "bbox": null
+          },
+          "sceneSha256": "1959574b22e7db6ae9cd90b3e3a88dcf2980a8b389b271712c6e5c62ac183120",
+          "postSha256": "e22bb8951c98513298e51c8c6a82f3b71c7ed84798ecfe8e54ecedd5caab4b58"
+        },
+        {
+          "key": "fresh-realm-0",
+          "scene": {
+            "max": 1,
+            "mae": 0.000004099151234567901,
+            "changed": 34,
+            "first": {
+              "x": 1598,
+              "y": 2,
+              "channel": 1,
+              "a": 155,
+              "b": 156,
+              "delta": -1
+            },
+            "maximum": {
+              "x": 1598,
+              "y": 2,
+              "channel": 1,
+              "a": 155,
+              "b": 156,
+              "delta": -1
+            },
+            "bbox": {
+              "x0": 80,
+              "y0": 2,
+              "x1": 1910,
+              "y1": 561
+            }
+          },
+          "post": {
+            "max": 1,
+            "mae": 0.000003858024691358025,
+            "changed": 32,
+            "first": {
+              "x": 1496,
+              "y": 25,
+              "channel": 1,
+              "a": 73,
+              "b": 72,
+              "delta": 1
+            },
+            "maximum": {
+              "x": 1496,
+              "y": 25,
+              "channel": 1,
+              "a": 73,
+              "b": 72,
+              "delta": 1
+            },
+            "bbox": {
+              "x0": 66,
+              "y0": 25,
+              "x1": 1835,
+              "y1": 561
+            }
+          },
+          "sceneSha256": "7b435378a8a194df12b6800c8cdd4dc2346c0ec9c4dcf686f4ac97f119c29148",
+          "postSha256": "936306c6c6d0d794c29bbfcce8c566fb840a237531fd1055fca54ddeb346cdfe"
+        },
+        {
+          "key": "fresh-realm-1",
+          "scene": {
+            "max": 2,
+            "mae": 0.000012779706790123457,
+            "changed": 104,
+            "first": {
+              "x": 1558,
+              "y": 2,
+              "channel": 1,
+              "a": 110,
+              "b": 111,
+              "delta": -1
+            },
+            "maximum": {
+              "x": 1556,
+              "y": 38,
+              "channel": 1,
+              "a": 136,
+              "b": 134,
+              "delta": 2
+            },
+            "bbox": {
+              "x0": 80,
+              "y0": 2,
+              "x1": 1890,
+              "y1": 945
+            }
+          },
+          "post": {
+            "max": 1,
+            "mae": 0.00001121238425925926,
+            "changed": 93,
+            "first": {
+              "x": 1469,
+              "y": 1,
+              "channel": 0,
+              "a": 29,
+              "b": 30,
+              "delta": -1
+            },
+            "maximum": {
+              "x": 1469,
+              "y": 1,
+              "channel": 0,
+              "a": 29,
+              "b": 30,
+              "delta": -1
+            },
+            "bbox": {
+              "x0": 66,
+              "y0": 1,
+              "x1": 1904,
+              "y1": 950
+            }
+          },
+          "sceneSha256": "f4b4473e9ca650ff60655fa0be91d674abda5f1e9f6009c645bfaf45a33da164",
+          "postSha256": "0b039669c7071b780e0b0d0997e8544e2c9e77f04995db25b53af9498e7e5a83"
+        },
+        {
+          "key": "fresh-realm-2",
+          "scene": {
+            "max": 2,
+            "mae": 0.000013503086419753087,
+            "changed": 110,
+            "first": {
+              "x": 1631,
+              "y": 0,
+              "channel": 0,
+              "a": 25,
+              "b": 24,
+              "delta": 1
+            },
+            "maximum": {
+              "x": 1556,
+              "y": 38,
+              "channel": 1,
+              "a": 136,
+              "b": 134,
+              "delta": 2
+            },
+            "bbox": {
+              "x0": 23,
+              "y0": 0,
+              "x1": 1887,
+              "y1": 945
+            }
+          },
+          "post": {
+            "max": 1,
+            "mae": 0.000010971257716049384,
+            "changed": 91,
+            "first": {
+              "x": 1469,
+              "y": 1,
+              "channel": 0,
+              "a": 29,
+              "b": 30,
+              "delta": -1
+            },
+            "maximum": {
+              "x": 1469,
+              "y": 1,
+              "channel": 0,
+              "a": 29,
+              "b": 30,
+              "delta": -1
+            },
+            "bbox": {
+              "x0": 66,
+              "y0": 1,
+              "x1": 1904,
+              "y1": 950
+            }
+          },
+          "sceneSha256": "07658099a8377711e256e365babd2e2af91b165deffe67edfdb0ea7152414750",
+          "postSha256": "b6145e98efd5836e76ed8ce903da87b74a69c8028e0fde07b8fb936536272c05"
+        },
+        {
+          "key": "fresh-realm-3",
+          "scene": {
+            "max": 1,
+            "mae": 0.000005304783950617284,
+            "changed": 44,
+            "first": {
+              "x": 1603,
+              "y": 12,
+              "channel": 2,
+              "a": 153,
+              "b": 154,
+              "delta": -1
+            },
+            "maximum": {
+              "x": 1603,
+              "y": 12,
+              "channel": 2,
+              "a": 153,
+              "b": 154,
+              "delta": -1
+            },
+            "bbox": {
+              "x0": 19,
+              "y0": 12,
+              "x1": 1918,
+              "y1": 978
+            }
+          },
+          "post": {
+            "max": 1,
+            "mae": 0.0000037374614197530865,
+            "changed": 31,
+            "first": {
+              "x": 1469,
+              "y": 1,
+              "channel": 0,
+              "a": 29,
+              "b": 30,
+              "delta": -1
+            },
+            "maximum": {
+              "x": 1469,
+              "y": 1,
+              "channel": 0,
+              "a": 29,
+              "b": 30,
+              "delta": -1
+            },
+            "bbox": {
+              "x0": 60,
+              "y0": 1,
+              "x1": 1917,
+              "y1": 956
+            }
+          },
+          "sceneSha256": "8e53b7d137e1cee219d9cc97e0fdd6e7e2d4619e78bc42bedda18a3f6d361e3c",
+          "postSha256": "53c68426f8c193d5b1f78be652629d9c5e36fb1534ae14f56cb97ed4e127770c"
+        },
+        {
+          "key": "fresh-realm-4",
+          "scene": {
+            "max": 1,
+            "mae": 0.000006872106481481481,
+            "changed": 57,
+            "first": {
+              "x": 1603,
+              "y": 12,
+              "channel": 2,
+              "a": 153,
+              "b": 154,
+              "delta": -1
+            },
+            "maximum": {
+              "x": 1603,
+              "y": 12,
+              "channel": 2,
+              "a": 153,
+              "b": 154,
+              "delta": -1
+            },
+            "bbox": {
+              "x0": 19,
+              "y0": 12,
+              "x1": 1918,
+              "y1": 978
+            }
+          },
+          "post": {
+            "max": 1,
+            "mae": 0.000004822530864197531,
+            "changed": 40,
+            "first": {
+              "x": 1469,
+              "y": 1,
+              "channel": 0,
+              "a": 29,
+              "b": 30,
+              "delta": -1
+            },
+            "maximum": {
+              "x": 1469,
+              "y": 1,
+              "channel": 0,
+              "a": 29,
+              "b": 30,
+              "delta": -1
+            },
+            "bbox": {
+              "x0": 60,
+              "y0": 1,
+              "x1": 1917,
+              "y1": 956
+            }
+          },
+          "sceneSha256": "384b26ec9d05d6757599e6929e067c85ed76862f7770a5a1b6a0864005f4c580",
+          "postSha256": "0b0c528b39b4524ba81035e6e3b56e23eecba590338adaecc7169f87d62369a1"
+        },
+        {
+          "key": "fresh-realm-5",
+          "scene": {
+            "max": 2,
+            "mae": 0.000014829282407407407,
+            "changed": 121,
+            "first": {
+              "x": 1558,
+              "y": 2,
+              "channel": 1,
+              "a": 110,
+              "b": 111,
+              "delta": -1
+            },
+            "maximum": {
+              "x": 1556,
+              "y": 38,
+              "channel": 1,
+              "a": 136,
+              "b": 134,
+              "delta": 2
+            },
+            "bbox": {
+              "x0": 19,
+              "y0": 2,
+              "x1": 1918,
+              "y1": 978
+            }
+          },
+          "post": {
+            "max": 1,
+            "mae": 0.000011694637345679012,
+            "changed": 97,
+            "first": {
+              "x": 1469,
+              "y": 1,
+              "channel": 0,
+              "a": 29,
+              "b": 30,
+              "delta": -1
+            },
+            "maximum": {
+              "x": 1469,
+              "y": 1,
+              "channel": 0,
+              "a": 29,
+              "b": 30,
+              "delta": -1
+            },
+            "bbox": {
+              "x0": 60,
+              "y0": 1,
+              "x1": 1917,
+              "y1": 956
+            }
+          },
+          "sceneSha256": "877da232401f2f2b0a3ca110100143c24f0104bffb31ee9f7e27c549a2d12f47",
+          "postSha256": "df4a5dd547ebbd936b673f106ac5a05df5002c27295279b56863739c80f533ba"
+        }
+      ],
+      "fileCount": 24,
+      "fullMatrixTested": false
+    },
+    {
+      "artifact": "C:/Users/Sayo/AppData/Local/Temp/rocut-tunnel-native-W9ijW3",
+      "softwareCanvas": true,
+      "sourceIdentityStable": true,
+      "frame": {
+        "time": 12.5,
+        "shotStart": 12.25,
+        "duration": 6,
+        "beats": [
+          0,
+          0.5,
+          1,
+          1.5,
+          2,
+          2.5,
+          3,
+          3.5,
+          4,
+          4.5,
+          5,
+          5.5,
+          6,
+          6.5,
+          7,
+          7.5,
+          8,
+          8.5,
+          9,
+          9.5,
+          10,
+          10.5,
+          11,
+          11.5,
+          12,
+          12.5,
+          13,
+          13.5,
+          14,
+          14.5,
+          15,
+          15.5,
+          16,
+          16.5,
+          17,
+          17.5,
+          18,
+          18.5,
+          19,
+          19.5,
+          20,
+          20.5,
+          21,
+          21.5,
+          22,
+          22.5,
+          23,
+          23.5,
+          24,
+          24.5,
+          25,
+          25.5,
+          26,
+          26.5,
+          27,
+          27.5,
+          28,
+          28.5,
+          29,
+          29.5,
+          30
+        ],
+        "bpm": 120,
+        "downbeatIndex0": 1,
+        "args": {}
+      },
+      "commandCount": 8797,
+      "measureCount": 149,
+      "commandSha256": "1f0b454df420a449551f0675fab8b07fee6dc8d1d7b392eb28a7d593e84ce78a",
+      "allCommandsEqual": true,
+      "allMetricsEqual": true,
+      "allInitialStatesEqual": true,
+      "allFontStatesEqual": true,
+      "allFontsLoaded": true,
+      "records": [
+        {
+          "key": "continuous-0",
+          "scene": {
+            "max": 0,
+            "mae": 0,
+            "changed": 0,
+            "first": null,
+            "maximum": null,
+            "bbox": null
+          },
+          "post": {
+            "max": 0,
+            "mae": 0,
+            "changed": 0,
+            "first": null,
+            "maximum": null,
+            "bbox": null
+          },
+          "sceneSha256": "678680793bf7f1463e8de041687b6e0d787c28dd8e68d2505ef2c7bdc3b53709",
+          "postSha256": "2351448d5d61e42f62cb0b6ec13c210fdf60e36d9c5129b5517cd48f747106a5"
+        },
+        {
+          "key": "continuous-1",
+          "scene": {
+            "max": 0,
+            "mae": 0,
+            "changed": 0,
+            "first": null,
+            "maximum": null,
+            "bbox": null
+          },
+          "post": {
+            "max": 0,
+            "mae": 0,
+            "changed": 0,
+            "first": null,
+            "maximum": null,
+            "bbox": null
+          },
+          "sceneSha256": "678680793bf7f1463e8de041687b6e0d787c28dd8e68d2505ef2c7bdc3b53709",
+          "postSha256": "2351448d5d61e42f62cb0b6ec13c210fdf60e36d9c5129b5517cd48f747106a5"
+        },
+        {
+          "key": "continuous-2",
+          "scene": {
+            "max": 0,
+            "mae": 0,
+            "changed": 0,
+            "first": null,
+            "maximum": null,
+            "bbox": null
+          },
+          "post": {
+            "max": 0,
+            "mae": 0,
+            "changed": 0,
+            "first": null,
+            "maximum": null,
+            "bbox": null
+          },
+          "sceneSha256": "678680793bf7f1463e8de041687b6e0d787c28dd8e68d2505ef2c7bdc3b53709",
+          "postSha256": "2351448d5d61e42f62cb0b6ec13c210fdf60e36d9c5129b5517cd48f747106a5"
+        },
+        {
+          "key": "continuous-3",
+          "scene": {
+            "max": 0,
+            "mae": 0,
+            "changed": 0,
+            "first": null,
+            "maximum": null,
+            "bbox": null
+          },
+          "post": {
+            "max": 0,
+            "mae": 0,
+            "changed": 0,
+            "first": null,
+            "maximum": null,
+            "bbox": null
+          },
+          "sceneSha256": "678680793bf7f1463e8de041687b6e0d787c28dd8e68d2505ef2c7bdc3b53709",
+          "postSha256": "2351448d5d61e42f62cb0b6ec13c210fdf60e36d9c5129b5517cd48f747106a5"
+        },
+        {
+          "key": "continuous-4",
+          "scene": {
+            "max": 0,
+            "mae": 0,
+            "changed": 0,
+            "first": null,
+            "maximum": null,
+            "bbox": null
+          },
+          "post": {
+            "max": 0,
+            "mae": 0,
+            "changed": 0,
+            "first": null,
+            "maximum": null,
+            "bbox": null
+          },
+          "sceneSha256": "678680793bf7f1463e8de041687b6e0d787c28dd8e68d2505ef2c7bdc3b53709",
+          "postSha256": "2351448d5d61e42f62cb0b6ec13c210fdf60e36d9c5129b5517cd48f747106a5"
+        },
+        {
+          "key": "continuous-5",
+          "scene": {
+            "max": 0,
+            "mae": 0,
+            "changed": 0,
+            "first": null,
+            "maximum": null,
+            "bbox": null
+          },
+          "post": {
+            "max": 0,
+            "mae": 0,
+            "changed": 0,
+            "first": null,
+            "maximum": null,
+            "bbox": null
+          },
+          "sceneSha256": "678680793bf7f1463e8de041687b6e0d787c28dd8e68d2505ef2c7bdc3b53709",
+          "postSha256": "2351448d5d61e42f62cb0b6ec13c210fdf60e36d9c5129b5517cd48f747106a5"
+        },
+        {
+          "key": "fresh-realm-0",
+          "scene": {
+            "max": 0,
+            "mae": 0,
+            "changed": 0,
+            "first": null,
+            "maximum": null,
+            "bbox": null
+          },
+          "post": {
+            "max": 0,
+            "mae": 0,
+            "changed": 0,
+            "first": null,
+            "maximum": null,
+            "bbox": null
+          },
+          "sceneSha256": "678680793bf7f1463e8de041687b6e0d787c28dd8e68d2505ef2c7bdc3b53709",
+          "postSha256": "2351448d5d61e42f62cb0b6ec13c210fdf60e36d9c5129b5517cd48f747106a5"
+        },
+        {
+          "key": "fresh-realm-1",
+          "scene": {
+            "max": 0,
+            "mae": 0,
+            "changed": 0,
+            "first": null,
+            "maximum": null,
+            "bbox": null
+          },
+          "post": {
+            "max": 0,
+            "mae": 0,
+            "changed": 0,
+            "first": null,
+            "maximum": null,
+            "bbox": null
+          },
+          "sceneSha256": "678680793bf7f1463e8de041687b6e0d787c28dd8e68d2505ef2c7bdc3b53709",
+          "postSha256": "2351448d5d61e42f62cb0b6ec13c210fdf60e36d9c5129b5517cd48f747106a5"
+        },
+        {
+          "key": "fresh-realm-2",
+          "scene": {
+            "max": 0,
+            "mae": 0,
+            "changed": 0,
+            "first": null,
+            "maximum": null,
+            "bbox": null
+          },
+          "post": {
+            "max": 0,
+            "mae": 0,
+            "changed": 0,
+            "first": null,
+            "maximum": null,
+            "bbox": null
+          },
+          "sceneSha256": "678680793bf7f1463e8de041687b6e0d787c28dd8e68d2505ef2c7bdc3b53709",
+          "postSha256": "2351448d5d61e42f62cb0b6ec13c210fdf60e36d9c5129b5517cd48f747106a5"
+        },
+        {
+          "key": "fresh-realm-3",
+          "scene": {
+            "max": 0,
+            "mae": 0,
+            "changed": 0,
+            "first": null,
+            "maximum": null,
+            "bbox": null
+          },
+          "post": {
+            "max": 0,
+            "mae": 0,
+            "changed": 0,
+            "first": null,
+            "maximum": null,
+            "bbox": null
+          },
+          "sceneSha256": "678680793bf7f1463e8de041687b6e0d787c28dd8e68d2505ef2c7bdc3b53709",
+          "postSha256": "2351448d5d61e42f62cb0b6ec13c210fdf60e36d9c5129b5517cd48f747106a5"
+        },
+        {
+          "key": "fresh-realm-4",
+          "scene": {
+            "max": 0,
+            "mae": 0,
+            "changed": 0,
+            "first": null,
+            "maximum": null,
+            "bbox": null
+          },
+          "post": {
+            "max": 0,
+            "mae": 0,
+            "changed": 0,
+            "first": null,
+            "maximum": null,
+            "bbox": null
+          },
+          "sceneSha256": "678680793bf7f1463e8de041687b6e0d787c28dd8e68d2505ef2c7bdc3b53709",
+          "postSha256": "2351448d5d61e42f62cb0b6ec13c210fdf60e36d9c5129b5517cd48f747106a5"
+        },
+        {
+          "key": "fresh-realm-5",
+          "scene": {
+            "max": 0,
+            "mae": 0,
+            "changed": 0,
+            "first": null,
+            "maximum": null,
+            "bbox": null
+          },
+          "post": {
+            "max": 0,
+            "mae": 0,
+            "changed": 0,
+            "first": null,
+            "maximum": null,
+            "bbox": null
+          },
+          "sceneSha256": "678680793bf7f1463e8de041687b6e0d787c28dd8e68d2505ef2c7bdc3b53709",
+          "postSha256": "2351448d5d61e42f62cb0b6ec13c210fdf60e36d9c5129b5517cd48f747106a5"
+        }
+      ],
+      "fileCount": 24,
+      "fullMatrixTested": false
+    }
+  ],
+  "oracleRepeatDiagnosticInterpretation": {
+    "observations": "The baseline continuous realm is bit-exact over six renders. Fresh baseline realms differ by scene max1..2 and post max1 despite equal recorded command traces, Canvas initial state, actual measureText widths and loaded FontFace states. Adding only --disable-accelerated-2d-canvas makes all twelve oracle scene/post repeats bit-exact in this bounded trial.",
+    "limits": "This is an instrumented oracle-only experiment, not acceptance. Observation can affect timing. Object arguments record identities/types/dimensions, not underlying CanvasPattern/image pixels. Equal command traces and FontFace status therefore do not prove identical hidden browser cache/raster state, all font raster state, or all texture pixels. The structural max40 drift was not reproduced here. The flag intervention supports a browser Canvas/backend contribution but does not establish a specific Chromium defect or the cause of every historical run."
+  },
+  "pairedFixedFrameDiagnostics": [
+    {
+      "configuration": "baseline",
+      "artifact": "C:/Users/Sayo/AppData/Local/Temp/rocut-tunnel-native-uM3cZF",
+      "sourceIdentityStable": true,
+      "frame": {
+        "time": 12.5,
+        "shotStart": 12.25,
+        "duration": 6,
+        "beats": [
+          0,
+          0.5,
+          1,
+          1.5,
+          2,
+          2.5,
+          3,
+          3.5,
+          4,
+          4.5,
+          5,
+          5.5,
+          6,
+          6.5,
+          7,
+          7.5,
+          8,
+          8.5,
+          9,
+          9.5,
+          10,
+          10.5,
+          11,
+          11.5,
+          12,
+          12.5,
+          13,
+          13.5,
+          14,
+          14.5,
+          15,
+          15.5,
+          16,
+          16.5,
+          17,
+          17.5,
+          18,
+          18.5,
+          19,
+          19.5,
+          20,
+          20.5,
+          21,
+          21.5,
+          22,
+          22.5,
+          23,
+          23.5,
+          24,
+          24.5,
+          25,
+          25.5,
+          26,
+          26.5,
+          27,
+          27.5,
+          28,
+          28.5,
+          29,
+          29.5,
+          30
+        ],
+        "bpm": 120,
+        "downbeatIndex0": 1,
+        "args": {}
+      },
+      "index": 15,
+      "metadataCaveat": "Archived diagnostic songTicks was still hard-coded 1478000 (frame4). Actual render mapping used frame.time=12.5/index15, i.e. 1500000 ticks. Later fixture-only metadata fix derives songTicks from frame.time; artifacts remain untouched.",
+      "normal": {
+        "scene": {
+          "max": 10,
+          "mae": 0.000008801118827160494,
+          "changed": 40,
+          "first": {
+            "x": 1598,
+            "y": 2,
+            "channel": 1,
+            "a": 156,
+            "b": 155,
+            "delta": 1
+          },
+          "maximum": {
+            "x": 103,
+            "y": 748,
+            "channel": 2,
+            "a": 81,
+            "b": 71,
+            "delta": 10
+          },
+          "bbox": {
+            "x0": 80,
+            "y0": 2,
+            "x1": 1910,
+            "y1": 748
+          }
+        },
+        "post": {
+          "max": 1,
+          "mae": 0.000008801118827160494,
+          "changed": 73,
+          "first": {
+            "x": 1496,
+            "y": 25,
+            "channel": 1,
+            "a": 72,
+            "b": 73,
+            "delta": -1
+          },
+          "maximum": {
+            "x": 1496,
+            "y": 25,
+            "channel": 1,
+            "a": 72,
+            "b": 73,
+            "delta": -1
+          },
+          "bbox": {
+            "x0": 66,
+            "y0": 25,
+            "x1": 1835,
+            "y1": 753
+          }
+        }
+      },
+      "grainOmitted": {
+        "scene": {
+          "max": 0,
+          "mae": 0,
+          "changed": 0,
+          "first": null,
+          "maximum": null,
+          "bbox": null
+        },
+        "post": {
+          "max": 0,
+          "mae": 0,
+          "changed": 0,
+          "first": null,
+          "maximum": null,
+          "bbox": null
+        }
+      },
+      "nativeRepeatScene": {
+        "pixelsEqual": true,
+        "firstDiffIndex": -1,
+        "firstDiff": null
+      },
+      "realmSettles": [],
+      "nativeTimingRangeMs": [
+        8824.700000047684,
+        10060.399999976158
+      ],
+      "retainedRgbaFiles": 8,
+      "fullMatrixTested": false
+    },
+    {
+      "configuration": "settle-realms",
+      "artifact": "C:/Users/Sayo/AppData/Local/Temp/rocut-tunnel-native-zZ3XXz",
+      "sourceIdentityStable": true,
+      "frame": {
+        "time": 12.5,
+        "shotStart": 12.25,
+        "duration": 6,
+        "beats": [
+          0,
+          0.5,
+          1,
+          1.5,
+          2,
+          2.5,
+          3,
+          3.5,
+          4,
+          4.5,
+          5,
+          5.5,
+          6,
+          6.5,
+          7,
+          7.5,
+          8,
+          8.5,
+          9,
+          9.5,
+          10,
+          10.5,
+          11,
+          11.5,
+          12,
+          12.5,
+          13,
+          13.5,
+          14,
+          14.5,
+          15,
+          15.5,
+          16,
+          16.5,
+          17,
+          17.5,
+          18,
+          18.5,
+          19,
+          19.5,
+          20,
+          20.5,
+          21,
+          21.5,
+          22,
+          22.5,
+          23,
+          23.5,
+          24,
+          24.5,
+          25,
+          25.5,
+          26,
+          26.5,
+          27,
+          27.5,
+          28,
+          28.5,
+          29,
+          29.5,
+          30
+        ],
+        "bpm": 120,
+        "downbeatIndex0": 1,
+        "args": {}
+      },
+      "index": 15,
+      "metadataCaveat": "Archived diagnostic songTicks was still hard-coded 1478000 (frame4). Actual render mapping used frame.time=12.5/index15, i.e. 1500000 ticks. Later fixture-only metadata fix derives songTicks from frame.time; artifacts remain untouched.",
+      "normal": {
+        "scene": {
+          "max": 10,
+          "mae": 0.000008801118827160494,
+          "changed": 40,
+          "first": {
+            "x": 1598,
+            "y": 2,
+            "channel": 1,
+            "a": 156,
+            "b": 155,
+            "delta": 1
+          },
+          "maximum": {
+            "x": 103,
+            "y": 748,
+            "channel": 2,
+            "a": 81,
+            "b": 71,
+            "delta": 10
+          },
+          "bbox": {
+            "x0": 80,
+            "y0": 2,
+            "x1": 1910,
+            "y1": 748
+          }
+        },
+        "post": {
+          "max": 1,
+          "mae": 0.000008801118827160494,
+          "changed": 73,
+          "first": {
+            "x": 1496,
+            "y": 25,
+            "channel": 1,
+            "a": 72,
+            "b": 73,
+            "delta": -1
+          },
+          "maximum": {
+            "x": 1496,
+            "y": 25,
+            "channel": 1,
+            "a": 72,
+            "b": 73,
+            "delta": -1
+          },
+          "bbox": {
+            "x0": 66,
+            "y0": 25,
+            "x1": 1835,
+            "y1": 753
+          }
+        }
+      },
+      "grainOmitted": {
+        "scene": {
+          "max": 0,
+          "mae": 0,
+          "changed": 0,
+          "first": null,
+          "maximum": null,
+          "bbox": null
+        },
+        "post": {
+          "max": 0,
+          "mae": 0,
+          "changed": 0,
+          "first": null,
+          "maximum": null,
+          "bbox": null
+        }
+      },
+      "nativeRepeatScene": {
+        "pixelsEqual": true,
+        "firstDiffIndex": -1,
+        "firstDiff": null
+      },
+      "realmSettles": [
+        {
+          "boundary": "native",
+          "before": 1,
+          "after": 1,
+          "waitedMs": 0,
+          "persistent": 1
+        },
+        {
+          "boundary": "native",
+          "before": 2,
+          "after": 1,
+          "waitedMs": 10.5,
+          "persistent": 1
+        },
+        {
+          "boundary": "oracle",
+          "before": 2,
+          "after": 1,
+          "waitedMs": 10.200000047683716,
+          "persistent": 1
+        },
+        {
+          "boundary": "native",
+          "before": 1,
+          "after": 1,
+          "waitedMs": 0,
+          "persistent": 1
+        },
+        {
+          "boundary": "oracle",
+          "before": 2,
+          "after": 1,
+          "waitedMs": 10.200000047683716,
+          "persistent": 1
+        },
+        {
+          "boundary": "native",
+          "before": 1,
+          "after": 1,
+          "waitedMs": 0,
+          "persistent": 1
+        }
+      ],
+      "nativeTimingRangeMs": [
+        9020.200000047684,
+        10041.599999904633
+      ],
+      "retainedRgbaFiles": 8,
+      "fullMatrixTested": false
+    }
+  ],
+  "pairedInterpretation": "Both baseline and independently settled frame15 produce the same normal scene max10 at (103,748), native blue81/oracle71, with post max1. Native scene repeated twice is bit-exact. Grain omission makes scene AND post native/oracle bit-exact in both runs, localizing this fixed-frame parity contribution to grain without determining the exact cause. Settling waited about10ms for extra native realms to disappear, restoring the observed persistent oracle baseline of one iframe; it did not remove max10. The unchanged original <=6 acceptance gate still fails.",
+  "diagnosticCommands": {
+    "commonEnvironment": {
+      "ROCUT_TEST_MV_REFERENCE": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/_others/vocaloid-style-mv-pipeline",
+      "ROCUT_TEST_WASM_DIRECTORY": "C:/Users/Sayo/AppData/Local/Temp/rocut-wasm-authority-20261011-GVDTX4/browser-pkg-v2-sntQBC",
+      "ROCUT_TEST_RUST_SOURCE": "C:/Users/Sayo/AppData/Local/Temp/rocut-wasm-authority-20261011-GVDTX4/source",
+      "ROCUT_TEST_CURRENT_SOURCE_SCOPE": "native-scene",
+      "ROCUT_TEST_BROWSER_EXECUTABLE": "C:/Users/Sayo/AppData/Local/ms-playwright/chromium-1243/chrome-win64/chrome.exe",
+      "ROCUT_TEST_TUNNEL_RACE_DIAGNOSTICS": "1",
+      "ROCUT_TEST_TUNNEL_DIAG_INDEX": "15"
+    },
+    "oracleBaseline": {
+      "command": "node script/probe-mv-tunnel-native.mjs --oracle-repeat-diagnostic",
+      "environment": {
+        "ROCUT_TEST_TUNNEL_ORACLE_REPEAT_COUNT": "6"
+      },
+      "softwareCanvas": false,
+      "settleRealms": false,
+      "matrixCap": false,
+      "frameDelayMs": 0
+    },
+    "oracleSoftware": {
+      "command": "node script/probe-mv-tunnel-native.mjs --oracle-repeat-diagnostic",
+      "environment": {
+        "ROCUT_TEST_TUNNEL_ORACLE_REPEAT_COUNT": "6",
+        "ROCUT_TEST_TUNNEL_SOFTWARE_CANVAS": "1"
+      },
+      "settleRealms": false,
+      "matrixCap": false,
+      "frameDelayMs": 0
+    },
+    "pairedBaseline": {
+      "command": "node script/probe-mv-tunnel-native.mjs --frame4-grain-diagnostic",
+      "environment": {
+        "ROCUT_TEST_TUNNEL_REPEAT_PROBE": "1"
+      },
+      "softwareCanvas": false,
+      "settleRealms": false,
+      "matrixCap": false,
+      "frameDelayMs": 0
+    },
+    "pairedSettled": {
+      "command": "node script/probe-mv-tunnel-native.mjs --frame4-grain-diagnostic",
+      "environment": {
+        "ROCUT_TEST_TUNNEL_REPEAT_PROBE": "1",
+        "ROCUT_TEST_TUNNEL_SETTLE_REALMS": "1"
+      },
+      "softwareCanvas": false,
+      "matrixCap": false,
+      "frameDelayMs": 0
+    }
+  },
+  "diagnosticImplementationFailures": [
+    {
+      "artifact": "C:/Users/Sayo/AppData/Local/Temp/rocut-tunnel-native-xwHtJz",
+      "sourceIdentityStable": true,
+      "error": "Observer initially defined addColorStop as read-only, conflicting with existing controlledTunnelContext wrapper. Fixed observer property writable/configurable and added exactly-once delegation regression. No pixel conclusion."
+    },
+    {
+      "artifact": "C:/Users/Sayo/AppData/Local/Temp/rocut-tunnel-native-zDoGPF",
+      "sourceIdentityStable": true,
+      "error": "Existing diagnostic repeatProbe hard-coded native index4 while selected frame was15. Producer correctly rejected mapping. Fixed fixture-only index to derive from selected frame. No pixel conclusion."
+    }
+  ],
+  "browserWindow": {
+    "lastArtifact": "C:/Users/Sayo/AppData/Local/Temp/rocut-tunnel-native-zZ3XXz",
+    "probeExitCode": 0,
+    "normalFinallyCleanup": true,
+    "ownedProbePidsAlive": false,
+    "newHeavyRunsPaused": true
+  }
+}

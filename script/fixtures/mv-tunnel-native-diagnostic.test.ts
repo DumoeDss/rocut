@@ -42,7 +42,7 @@ test("difference reports first channel, maximum and inclusive pixel bbox", () =>
 		/dimensions/,
 	);
 });
-function captures({ originalReceipt = 1, nativeReceipt = 1 } = {}) {
+function captures({ originalReceipt = 1, nativeReceipt = 1, expectedIndex = 4 } = {}) {
 	const pixels = new Uint8ClampedArray(1920 * 1080 * 4);
 	let plan: unknown;
 	const requests: string[] = [];
@@ -54,7 +54,7 @@ function captures({ originalReceipt = 1, nativeReceipt = 1 } = {}) {
 			frame: ReturnType<typeof tunnelFrame4>;
 			control?: { applied: Record<string, number> };
 		}) {
-			assert.equal(frame.time, 12.316666666666666);
+			assert.equal(frame.time, 12.25 + expectedIndex / 60);
 			pixels.fill(0);
 			pixels[0] = control ? 3 : 1;
 			if (control) control.applied.grain = originalReceipt;
@@ -66,7 +66,7 @@ function captures({ originalReceipt = 1, nativeReceipt = 1 } = {}) {
 		const controlApplications: Record<string, number> = control
 			? { grain: nativeReceipt }
 			: {};
-		assert.equal(index, 4);
+		assert.equal(index, expectedIndex);
 		pixels.fill(0);
 		pixels[0] = control ? 4 : 2;
 		plan = {
@@ -137,4 +137,16 @@ test("missing either applied grain receipt fails closed", async () => {
 		diagnoseTunnelFrame4(captures({ nativeReceipt: 0 })),
 		/native grain omission receipt/,
 	);
+});
+
+test("fixed-frame diagnostic ticks follow the selected frame", async () => {
+	globalThis.__tunnelDiagIndex = 15;
+	try {
+		const result = await diagnoseTunnelFrame4(captures({ expectedIndex: 15 }));
+		assert.equal(result.metadata.index, 15);
+		assert.equal(result.metadata.frame.time, 12.5);
+		assert.equal(result.metadata.songTicks, 1500000);
+	} finally {
+		globalThis.__tunnelDiagIndex = undefined;
+	}
 });

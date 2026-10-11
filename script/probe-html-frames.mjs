@@ -315,6 +315,7 @@ try {
 		);
 		assertHtmlProbeWasmIdentity(wasmBinding, hostWasmIdentity);
 		result.wasmIdentity = wasmBinding.identity;
+		result.hostWasmIdentity = hostWasmIdentity;
 	}
 	if (result.error || errors.length || externalRequests.length)
 		throw Error(redact(JSON.stringify({ result, errors, externalRequests })));

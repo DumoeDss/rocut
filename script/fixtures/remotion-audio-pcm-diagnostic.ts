@@ -12,6 +12,7 @@ import { nativeAudioWav } from "./native-audio-fixture";
 import { createProgrammaticAudioService } from "../../apps/cli/src/programmatic/audio-service";
 import { renderHtmlPng } from "../../apps/cli/src/programmatic/html-rasterizer";
 import type { ProgrammaticFrameRequest } from "@opencut/editor-contracts";
+import { resolveProbeBrowserExecutable } from "./browser-probe-identity.mjs";
 
 const toolchainDirectory = process.argv[2];
 const ffmpeg = process.env.ROCUT_TEST_FFMPEG, ffprobe = process.env.ROCUT_TEST_FFPROBE;
@@ -19,6 +20,7 @@ if (!toolchainDirectory || !ffmpeg || !ffprobe) throw Error("Configure isolated 
 const parent = resolve(tmpdir()), root = await mkdtemp(join(parent, "rocut-remotion-pcm-"));
 const require = createRequire(new URL("../../apps/vite-example/package.json", import.meta.url));
 const { chromium } = await import(pathToFileURL(require.resolve("@playwright/test")).href);
+const executable = resolveProbeBrowserExecutable({ configured: process.env.ROCUT_PROBE_BROWSER_PATH, fallback: chromium.executablePath() });
 const sourceDirectory = join(root, "author"), storeOptions = { root: join(root, "target"), schemaVersion: 1 };
 let context = { store: new FileProjectStore(storeOptions), projectId: "audio-pcm-probe" };
 const a = nativeAudioWav({ sample: (i, c) => Math.sin(i * 441 * Math.PI * 2 / 48000) * (c ? -0.2 : 0.4) });
@@ -40,7 +42,7 @@ try {
   const mixed = await compile("mix"), looped = await compile("loop");
   const render = (source = mixed, firstFrame = 1, frameCount = 5, signal = AbortSignal.timeout(90000), sampleRate: 44100 | 48000 = 48000) =>
     renderRemotionAudioRange({ source, firstFrame, frameCount, sampleRate, decoder: { ffmpeg, ffprobe },
-      executable: chromium.executablePath(), resourceStore: context, signal });
+      executable, resourceStore: context, signal });
   // No browser executable may be consulted on these rejected ranges.
   for (const frameCount of [0, 60, 36001]) await assert.rejects(renderRemotionAudioRange({ source: mixed,
     firstFrame: 1, frameCount, sampleRate: 48000, decoder: { ffmpeg, ffprobe }, executable: "not-a-browser",
@@ -99,7 +101,7 @@ try {
       compositionId: "EditorAudio", width: 64, height: 64, frameRate: { numerator: 30, denominator: 1 }, durationFrames: 6, seed: 7,
       audio: { version: 1, mode: "native", volumeDb: -6 },
     }, toolchainDirectory, context, signal: AbortSignal.timeout(30000), enqueue: task => task() })).source;
-    audioService = createProgrammaticAudioService({ resourceStore: context, executable: chromium.executablePath(), connectionFile: "",
+    audioService = createProgrammaticAudioService({ resourceStore: context, executable, connectionFile: "",
       decoder: { ffmpeg, ffprobe } });
     server = createServer(async (request, response) => {
       if (request.url === "/api/pcm") { response.writeHead(200, { "content-type": "application/octet-stream" }).end(exportPcm); return; }
@@ -110,7 +112,7 @@ try {
         try {
           const chunks: Buffer[] = []; for await (const chunk of request) chunks.push(Buffer.from(chunk));
           const frameRequest = JSON.parse(Buffer.concat(chunks).toString("utf8")) as ProgrammaticFrameRequest;
-          const png = await renderHtmlPng({ request: frameRequest, resourceStore: context, executable: chromium.executablePath(),
+          const png = await renderHtmlPng({ request: frameRequest, resourceStore: context, executable,
             nativeVideoDecoder: { ffmpeg, ffprobe }, signal: controller.signal });
           response.writeHead(200, { "content-type": "image/png" }).end(png);
         } catch (error) { if (!response.destroyed) response.writeHead(422, { "content-type": "application/json" }).end(JSON.stringify({ error: String(error) })); }

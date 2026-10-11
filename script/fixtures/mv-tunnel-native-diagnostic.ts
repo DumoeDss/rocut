@@ -176,7 +176,7 @@ export async function diagnoseTunnelFrame4({
 	return {
 		metadata: {
 			frame,
-			songTicks: 1478000,
+			songTicks: Math.round(frame.time * 120000),
 			index: Math.round((frame.time - frame.shotStart) * 60),
 			width: WIDTH,
 			height: HEIGHT,

@@ -1,17 +1,14 @@
 import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { basename, dirname, join, resolve } from "node:path";
-import type { ProgrammaticSource } from "@opencut/editor-contracts";
+import type { compileProgrammaticProject } from "../programmatic/engines/compile-project";
 import { CURRENT_PROJECT_VERSION } from "@opencut/editor-classic/transactions";
 import { imageSequencePng } from "../../../../script/fixtures/image-sequence-png";
 import { FileProjectStore } from "../file-store";
 import { startHost } from "../host";
 import { TargetRegistry } from "../target-registry";
 
-export interface BuildResult {
-	source: ProgrammaticSource;
-	reusedDocument: boolean;
-}
+export type BuildResult = Awaited<ReturnType<typeof compileProgrammaticProject>>;
 
 export async function revisionFixture(
 	engine: "hyperframes" | "remotion",

@@ -1,0 +1,188 @@
+{
+  "version": 1,
+  "date": "2026-10-11",
+  "status": "prepared-cpu-gates-passed-browser-run-pending",
+  "browserLaunched": false,
+  "group": "C:/Users/Sayo/AppData/Local/Temp/rocut-hf-remotion-browser-20261011-fLCSmo",
+  "sourceFiles": [
+    {
+      "path": "script/probe-html-frames.mjs",
+      "byteLength": 12333,
+      "sha256": "ae773dfe7f027efa5f98e9fcc6b586059eaa376e58549a2affaac26e29fc5bc3"
+    },
+    {
+      "path": "script/fixtures/native-video-fixture.mjs",
+      "byteLength": 2533,
+      "sha256": "63fc2897830676a2c0c7d3fc4f25b31877b5fcad4b217cdc706f5dc9e5ec1f75"
+    },
+    {
+      "path": "script/native-audio-export-build.mjs",
+      "byteLength": 1541,
+      "sha256": "90a07ebe49c9d23374482bd1aca2dea92c03acc06b7b0d594d86c5a26d45b500"
+    },
+    {
+      "path": "script/probe-remotion-audio.mjs",
+      "byteLength": 11499,
+      "sha256": "07d3400ace06d75b0f99ad8d1237036b58f18ed2adf4dc6efc50f339292859b0"
+    },
+    {
+      "path": "script/probe-hyperframes-audio-editor.mjs",
+      "byteLength": 7338,
+      "sha256": "a13f39b62d531d2d233dcf5e6e8d4f72fb80f383e1bde50c1fea5893d61a40e5"
+    },
+    {
+      "path": "script/fixtures/hyperframes-audio-editor-host.ts",
+      "byteLength": 8082,
+      "sha256": "0f55b72a9f7255a1eff2dfc3c170734cb0da5575fd4f39567113bbb41e36f2cb"
+    },
+    {
+      "path": "script/fixtures/remotion-audio-pcm-diagnostic.ts",
+      "byteLength": 10249,
+      "sha256": "524281962e959d677c2937af34c0043c4f073eecf737c3189194c15eb3e341e0"
+    },
+    {
+      "path": "script/fixtures/browser-probe-identity.mjs",
+      "byteLength": 1716,
+      "sha256": "5350dfdbd471e27c401f2e48a50ed94523355970bfea14fca024dc285935a29f"
+    },
+    {
+      "path": "script/fixtures/browser-probe-identity.d.mts",
+      "byteLength": 362,
+      "sha256": "7363268bc57c3c2094f4316cd7f5e4e2d9edf396588a55a379b9d39bdf765074"
+    },
+    {
+      "path": "script/__tests__/browser-probe-identity.test.mjs",
+      "byteLength": 5618,
+      "sha256": "cb56b99812989a7ef579a5b60609cf90d833ffb9aab3f90b417b5aae6f900c7d"
+    },
+    {
+      "path": "script/probe-hf-remotion-browser-authority.mjs",
+      "byteLength": 9797,
+      "sha256": "c9db2ac0077bd81a2a59de1c1e577ef4ef4e842d17693838c602e1219b554654"
+    },
+    {
+      "path": "script/fixtures/hf-remotion-browser-plumbing.tsconfig.json",
+      "byteLength": 150,
+      "sha256": "4beb9701fe972bf008bd29e96179fee95e568ef19623bd1a0a70ec9af28236a4"
+    }
+  ],
+  "unitTests": {
+    "command": "node --test script/__tests__/browser-probe-identity.test.mjs",
+    "passed": 5,
+    "failed": 0,
+    "skipped": 0,
+    "scope": "No browser; generated plugin gate tested with a minimal WASM module, not real Rust browser acceptance"
+  },
+  "independentTypeCheck": {
+    "command": "node node_modules/typescript/bin/tsc --noEmit -p script/fixtures/hf-remotion-browser-plumbing.tsconfig.json",
+    "exitCode": 0
+  },
+  "strictNewJsLint": {
+    "exitCode": 0,
+    "files": [
+      "script/native-audio-export-build.mjs",
+      "script/fixtures/browser-probe-identity.mjs",
+      "script/__tests__/browser-probe-identity.test.mjs",
+      "script/probe-hf-remotion-browser-authority.mjs"
+    ]
+  },
+  "modifiedLegacyScriptLint": {
+    "exitCode": 1,
+    "currentErrors": 7,
+    "headErrors": 9,
+    "baseline": [
+      {
+        "path": "script/probe-html-frames.mjs",
+        "exitCode": 1,
+        "stdout": "\nE:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\.worktrees\\rocut-acceptance-20261011-6fa23f6b\\_others\\rocut\\script\\probe-html-frames.mjs\n  165:13  error  Empty block statement           no-empty\n  404:3   error  Unsafe usage of ThrowStatement  no-unsafe-finally\n\n✖ 2 problems (2 errors, 0 warnings)\n\n",
+        "stderr": ""
+      },
+      {
+        "path": "script/fixtures/native-video-fixture.mjs",
+        "exitCode": 1,
+        "stdout": "\nE:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\.worktrees\\rocut-acceptance-20261011-6fa23f6b\\_others\\rocut\\script\\fixtures\\native-video-fixture.mjs\n  39:48  error  'window' is not defined  no-undef\n\n✖ 1 problem (1 error, 0 warnings)\n\n",
+        "stderr": ""
+      },
+      {
+        "path": "script/probe-remotion-audio.mjs",
+        "exitCode": 1,
+        "stdout": "\nE:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\.worktrees\\rocut-acceptance-20261011-6fa23f6b\\_others\\rocut\\script\\probe-remotion-audio.mjs\n   37:125  error  Empty block statement           no-empty\n  138:22   error  Unsafe usage of ThrowStatement  no-unsafe-finally\n  139:114  error  Unsafe usage of ThrowStatement  no-unsafe-finally\n\n✖ 3 problems (3 errors, 0 warnings)\n\n",
+        "stderr": ""
+      },
+      {
+        "path": "script/probe-hyperframes-audio-editor.mjs",
+        "exitCode": 1,
+        "stdout": "\nE:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\.worktrees\\rocut-acceptance-20261011-6fa23f6b\\_others\\rocut\\script\\probe-hyperframes-audio-editor.mjs\n  36:125  error  Empty block statement           no-empty\n  74:22   error  Unsafe usage of ThrowStatement  no-unsafe-finally\n  75:117  error  Unsafe usage of ThrowStatement  no-unsafe-finally\n\n✖ 3 problems (3 errors, 0 warnings)\n\n",
+        "stderr": ""
+      }
+    ],
+    "diagnosis": "All seven remaining issues are in HEAD: browser global window, one empty catch, five finally throws. Two old empty catches were naturally removed by the new identity parser. No claim that whole modified-script lint passed; no cleanup expansion."
+  },
+  "bundles": [
+    {
+      "fixture": "native-audio-editor-browser",
+      "directory": "C:\\Users\\Sayo\\AppData\\Local\\Temp\\rocut-hf-remotion-browser-20261011-fLCSmo\\cpu-build-native-audio-editor-browser",
+      "browserLaunched": false,
+      "files": [
+        {
+          "path": "assets/export-vp9-quantizer-source-DIXx8Qbv.js",
+          "byteLength": 12213,
+          "sha256": "b282a028a0e2358cd9f85aaefbfab27494f0dc6d124832373fb1ff6a8b4dafe8"
+        },
+        {
+          "path": "assets/native-audio-editor-browser-CP8X29RV.js",
+          "byteLength": 3016496,
+          "sha256": "2b2975b5735bcc724324e0733a5add71cd9a8552be853624e94676a75090323e"
+        },
+        {
+          "path": "assets/opencut_wasm_bg-DlWboXef.wasm",
+          "byteLength": 15069546,
+          "sha256": "084cf7310df5bfdc1b8e4ce3f64bcff842e1b23b9fd0ca57c1c7dcffc0d1fc12"
+        },
+        {
+          "path": "script/fixtures/native-audio-editor-browser.html",
+          "byteLength": 226,
+          "sha256": "f0b6786d574155d87c29807abc35ef102dad8fc4990e34a96b17e16a199d9c79"
+        }
+      ]
+    },
+    {
+      "fixture": "hyperframes-audio-editor-browser",
+      "directory": "C:\\Users\\Sayo\\AppData\\Local\\Temp\\rocut-hf-remotion-browser-20261011-fLCSmo\\cpu-build-hyperframes-audio-editor-browser",
+      "browserLaunched": false,
+      "files": [
+        {
+          "path": "assets/export-vp9-quantizer-source-DFnaGmEC.js",
+          "byteLength": 12218,
+          "sha256": "9cc25164722885759bdf8d6524ddd4c9fca869a7e4014a283bac042876e446c7"
+        },
+        {
+          "path": "assets/hyperframes-audio-editor-browser-bZbNyBRC.js",
+          "byteLength": 2989404,
+          "sha256": "0a7a1ba5b3e3a22f030b020cc39fc95b092270252118673eb2e72765dcdfdcc5"
+        },
+        {
+          "path": "assets/opencut_wasm_bg-DlWboXef.wasm",
+          "byteLength": 15069546,
+          "sha256": "084cf7310df5bfdc1b8e4ce3f64bcff842e1b23b9fd0ca57c1c7dcffc0d1fc12"
+        },
+        {
+          "path": "script/fixtures/hyperframes-audio-editor-browser.html",
+          "byteLength": 265,
+          "sha256": "e051d3447623d3b6ed8e262b860bc11ff129944c13e8f675adc2802d870b788a"
+        }
+      ]
+    }
+  ],
+  "expectedWasmSha256": "084cf7310df5bfdc1b8e4ce3f64bcff842e1b23b9fd0ca57c1c7dcffc0d1fc12",
+  "expectedWrapperSha256": "cc62ca83fb09032be1bf5427a156f572587ef21cc6a6c185d4743ac4fe7ddb39",
+  "browserExecutable": "C:/Users/Sayo/AppData/Local/ms-playwright/chromium-1243/chrome-win64/chrome.exe",
+  "browserSha256": "9b07943f834485b43c9d54caea2951c78715f9f07070a80ab6658465ebd3e711",
+  "runCommand": "$env:ROCUT_BROWSER_WINDOW_AUTHORIZED = '1'; node script/probe-hf-remotion-browser-authority.mjs --run <prepared-group>",
+  "limits": [
+    "No browser started, actual browser/Host identity and behavior are pending scheduled execution",
+    "Four existing short-chain entries only; no installed Electron, full MV, or complete ecosystem/source.audio Electron acceptance",
+    "No production/Rust/renderer/shared dependency or common WASM helper changes",
+    "Previous archive revision source and receipt remain untouched in this task"
+  ]
+}

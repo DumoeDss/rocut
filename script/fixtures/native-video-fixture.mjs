@@ -1,6 +1,7 @@
 import { build } from "esbuild";
 import { createRequire } from "node:module";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { resolveProbeBrowserExecutable } from "./browser-probe-identity.mjs";
 
 const require = createRequire(new URL("../../apps/vite-example/package.json", import.meta.url));
 const playwright = await import(pathToFileURL(require.resolve("@playwright/test")).href);
@@ -30,7 +31,9 @@ window.fixtureReady = (async()=>{
 		},
 		bundle: true, write: false, platform: "browser", format: "iife", logLevel: "silent",
 	});
-	const browser = await chromium.launch({ headless: true });
+	const browser = await chromium.launch({ headless: true, executablePath: resolveProbeBrowserExecutable({
+		configured: process.env.ROCUT_PROBE_BROWSER_PATH, fallback: chromium.executablePath(),
+	}) });
 	try {
 		const page = await browser.newPage();
 		await page.route("http://localhost/rocut-video-fixture", route => route.fulfill({ contentType: "text/html", body: "<!doctype html><title>isolated diagnostic encoder</title>" }));

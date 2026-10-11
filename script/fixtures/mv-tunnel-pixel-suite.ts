@@ -195,11 +195,16 @@ export async function verifyTunnelPixelMatrix({
 	captureNative,
 	onProgress,
 	cap,
+	onFailure,
 }: {
 	oracle: Oracle;
 	captureNative: TunnelNativeCapture;
 	onProgress?: (key: string) => void;
 	cap?: number;
+	onFailure?: (request: {
+		key: string; frame: TunnelOracleFrame; index: number;
+		expected: OracleOutput; actual: TunnelNativeOutput; oldHashes?: unknown;
+	}) => Promise<void>;
 }) {
 	const observations: unknown[] = [],
 		provenance: unknown[] = [];
@@ -233,7 +238,8 @@ export async function verifyTunnelPixelMatrix({
 					a: actual.postPixels,
 					b: expected.postPixels,
 				});
-			if (!accepted(scene) || !accepted(post))
+			if (!accepted(scene) || !accepted(post)) {
+				await onFailure?.({ key, frame, index, expected, actual });
 				throw Error(
 					`Tunnel full-frame parity failed ${key}: ${JSON.stringify({
 						scene,
@@ -248,6 +254,7 @@ export async function verifyTunnelPixelMatrix({
 						}).samples,
 					})}`,
 				);
+			}
 			const hashes = {
 				native: await typeCardReferenceDigest(actual.pixels.slice().buffer),
 				original: await typeCardReferenceDigest(expected.pixels.slice().buffer),
@@ -260,8 +267,10 @@ export async function verifyTunnelPixelMatrix({
 			};
 			const old = prior.get(index);
 			if (old) {
-				if (JSON.stringify(old) !== JSON.stringify(hashes))
+				if (JSON.stringify(old) !== JSON.stringify(hashes)) {
+					await onFailure?.({ key, frame, index, expected, actual, oldHashes: old });
 					throw Error(`Tunnel repeated seek nondeterministic ${key}`);
+				}
 				repeats++;
 			} else prior.set(index, hashes);
 			observations.push({ key, scene, post, ...hashes });

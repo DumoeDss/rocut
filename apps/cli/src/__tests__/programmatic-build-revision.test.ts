@@ -16,6 +16,7 @@ import {
 	sourceDescription,
 } from "../programmatic/engines/build-source";
 import { parseBuildRevisionInput } from "../programmatic/engines/build-revision";
+import { readRemotionMetadataAdapter } from "../programmatic/remotion-metadata-archive";
 import {
 	revisionFixture,
 	type BuildResult,
@@ -214,14 +215,69 @@ for (const engine of ["hyperframes", "remotion"] as const) {
 						await context.store.saveAttachment(attachment);
 					}
 				}
-				const oldLockBytes = new TextEncoder().encode(
-					'{"different":"toolchain"}',
+				const archivedLock = JSON.parse(
+					new TextDecoder("utf-8", { fatal: true }).decode(
+						(
+							await loadProgrammaticResource({
+								...context,
+								resource: baseline.toolchainLock,
+							})
+						).body,
+					),
 				);
+				if (engine === "remotion") {
+					expect(initial.runtimeMetadata).toEqual({
+						status: "legacy-unpinned",
+						adapter: archivedLock.adapter,
+					});
+					// Isolate missing adapter identity from an otherwise valid lock.
+					const { adapter: _adapter, ...withoutAdapter } = archivedLock;
+					const missingAdapterBytes = new TextEncoder().encode(
+						JSON.stringify(withoutAdapter),
+					);
+					const missingAdapterLock = describeResource(
+						sourceDescription(baseline.toolchainLock.id),
+						missingAdapterBytes.byteLength,
+						resourceDigest(missingAdapterBytes.buffer),
+					);
+					await saveResourceBytes(context, {
+						resource: missingAdapterLock,
+						body: missingAdapterBytes.buffer,
+					});
+					await rejectUnchanged(
+						{
+							source: {
+								...initial.source,
+								build: { ...baseline, toolchainLock: missingAdapterLock },
+							},
+							changes: [],
+						},
+						"Remotion archive has no adapter identity",
+					);
+				} else expect(initial.runtimeMetadata).toBeUndefined();
+				// Preserve the real adapter so this control reaches lock comparison.
+				const oldLockBytes = new TextEncoder().encode(
+					JSON.stringify({
+						...archivedLock,
+						packages: archivedLock.packages.map(
+							(item: { version: string }, index: number) =>
+								index === 0 ? { ...item, version: "0.0.0" } : item,
+						),
+					}),
+				);
+				if (engine === "remotion")
+					expect(
+						readRemotionMetadataAdapter({
+							lock: oldLockBytes.buffer,
+							profile: "legacy-unpinned",
+						}),
+					).toEqual(archivedLock.adapter);
 				const oldLock = describeResource(
 					sourceDescription(baseline.toolchainLock.id),
 					oldLockBytes.byteLength,
 					resourceDigest(oldLockBytes.buffer),
 				);
+				expect(oldLock.sha256).not.toBe(baseline.toolchainLock.sha256);
 				await saveResourceBytes(context, {
 					resource: oldLock,
 					body: oldLockBytes.buffer,
@@ -271,6 +327,7 @@ for (const engine of ["hyperframes", "remotion"] as const) {
 					.find((response) => response.status === 200)!
 					.json();
 				expect(revised.reusedDocument).toBe(false);
+				expect(revised.runtimeMetadata).toEqual(initial.runtimeMetadata);
 				expect(revised.source.build?.inputProps).toEqual(baseline.inputProps);
 				expect(revised.source.resources?.[0].sha256).not.toBe(
 					initial.source.resources?.[0].sha256,
@@ -303,11 +360,11 @@ for (const engine of ["hyperframes", "remotion"] as const) {
 				expect(JSON.stringify(initial.source)).toBe(originalJson);
 				expect(await fixture.readRecord()).toBe(record);
 				expect(await success("rebuild", initial.source)).toEqual({
-					source: initial.source,
+					...initial,
 					reusedDocument: true,
 				});
 				expect(await success("rebuild", revised.source)).toEqual({
-					source: revised.source,
+					...revised,
 					reusedDocument: true,
 				});
 				if (engine === "remotion") {
@@ -317,6 +374,7 @@ for (const engine of ["hyperframes", "remotion"] as const) {
 						changes: [],
 						inputProps: props,
 					});
+					expect(propsOnly.runtimeMetadata).toEqual(initial.runtimeMetadata);
 					expect(propsOnly.source.build?.inputs).toEqual(
 						revised.source.build?.inputs,
 					);
