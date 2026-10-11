@@ -107,9 +107,9 @@ function mvEmberGrain(ctx, command, make) {
       ctx.fillStyle = mvEmberStyle(ctx,command.fillHistory.style);
     } finally { ctx.setTransform(matrix); }
   }
+  ctx.globalCompositeOperation = 'overlay'; ctx.globalAlpha = command.opacity;
   const pattern = ctx.createPattern(tile,'repeat');
   if (!pattern) throw Error('Ember grain pattern unavailable');
-  ctx.globalCompositeOperation = 'overlay'; ctx.globalAlpha = command.opacity;
   ctx.fillStyle = pattern; ctx.fillRect(...command.rect);
 }
 function mvEmberGrayPixels(ctx, command) {
