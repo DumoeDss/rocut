@@ -38,10 +38,11 @@ export function parseBuildRevisionInput(input: unknown): BuildRevisionInput {
 	if (!source.build) throw Error("Build revision requires an archived source");
 	if (
 		source.build.engine !== "hyperframes" &&
-		source.build.engine !== "remotion"
+		source.build.engine !== "remotion" &&
+		source.build.engine !== "three"
 	)
 		throw Error(
-			"Build revision currently supports only HyperFrames and Remotion archives",
+			"Build revision currently supports only HyperFrames, Remotion and Three archives",
 		);
 	const known = new Set(source.build.inputs.map((resource) => resource.id));
 	const seen = new Set<string>();

@@ -114,7 +114,7 @@ function SourceEditor({
 						readOnly={readOnly}
 						onEdit={(patch) => draft.edit(patch)}
 					/>
-					{source.build && source.build.engine !== "three" && (
+					{source.build && (
 						<ProgrammaticBuildEditor
 							source={source}
 							scope={{ projectId, sceneId, trackId, elementId }}

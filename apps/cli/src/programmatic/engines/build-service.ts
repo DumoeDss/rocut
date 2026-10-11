@@ -27,7 +27,7 @@ export function createProgrammaticBuildService(
 				executable: inspectionExecutable, connectionFile: inspectionConnection }),
 			compile: "programmatic/build/compile", rebuild: "programmatic/build/rebuild",
 			revise: "programmatic/build/revise", reviseScope: "existing-text-files-and-input-props",
-			reviseEngines: ["hyperframes", "remotion"],
+	reviseEngines: ["hyperframes", "remotion", "three"],
 			remotionInspection: { configured: !!inspection, inspect: "programmatic/build/inspect", compile: "programmatic/build/compile-inspected",
 				scope: "host-session-single-snapshot; no-project-mutation", metadataStability: "compile-inspected-runtime-geometry-and-props-pinned-v1; direct-compile-legacy-unpinned" },
 			mutation: "prepares-source; attach-via-editing-transaction", downloads: false,

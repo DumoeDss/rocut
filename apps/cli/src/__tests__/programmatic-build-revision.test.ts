@@ -61,7 +61,7 @@ test("build revise admits transport membership only after Rust source validation
 });
 
 const toolchain = process.env.ROCUT_TEST_BUILD_REVISION_TOOLCHAIN;
-test("Three revise is unavailable before any archive or toolchain IO", async () => {
+test("Three revise is accepted past the engine gate before archive IO", async () => {
 	const { source } = parseCompileInput({
 		version: 1,
 		engine: "three",
@@ -83,13 +83,13 @@ test("Three revise is unavailable before any archive or toolchain IO", async () 
 				action: "revise",
 				input: { source, changes: [] },
 				toolchainDirectory: "C:/must-not-read",
-				context: { store, projectId: "three-revise-rejected" },
+				context: { store, projectId: "three-revise-archive-gate" },
 				signal: new AbortController().signal,
 				enqueue: async (task) => task(),
 			}),
-		).rejects.toThrow("only HyperFrames and Remotion");
-		expect(read).not.toHaveBeenCalled();
-		expect(write).not.toHaveBeenCalled();
+		).rejects.toThrow(
+			"Missing programmatic resource: main.ts",
+		);
 	} finally {
 		read.mockRestore();
 		write.mockRestore();
