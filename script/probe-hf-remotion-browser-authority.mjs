@@ -3,7 +3,7 @@ import { strict as assert } from "node:assert";
 import { createHash } from "node:crypto";
 import { spawn, execFileSync } from "node:child_process";
 import { readFile, readdir, realpath, mkdtemp, mkdir, writeFile } from "node:fs/promises";
-import { dirname, join, relative, resolve } from "node:path";
+import { dirname, join, relative, resolve, isAbsolute } from "node:path";
 import { fileURLToPath } from "node:url";
 import { tmpdir } from "node:os";
 import { resolveRequiredProbeWasmBinding, resolveProbeBrowserExecutable } from "./fixtures/browser-probe-identity.mjs";
@@ -55,15 +55,33 @@ function sourcePaths() {
 	return [...new Set([...tracked, ...newSources])].sort();
 }
 async function snapshot() {
+	const sourceCommit = decode(execFileSync("git", ["rev-parse", "HEAD"], { cwd: root })).trim();
+	const fixtureSourcePath = await realpath(process.env.ROCUT_FIXTURE_SOURCE_MANIFEST ?? join(root, "fixture-source.json"));
+	const fixtureBytes = await readFile(fixtureSourcePath);
+	const manifest = parse(fixtureBytes);
+	assert.equal(manifest.schema, "fixture-source/v2");
+	assert.ok(Array.isArray(manifest.files) && manifest.files.length > 0, "Fixture source manifest cannot be empty");
+	const paths = manifest.files.map(({ path }) => {
+		assert.ok(typeof path === "string" && !isAbsolute(path) && !relative(root, resolve(root, path)).startsWith(".."), "Fixture source path escaped workspace");
+		return path;
+	});
+	const actualFixtureFiles = await identities(paths, root);
+	const drift = manifest.files.filter((file, index) => file.sha256 !== actualFixtureFiles.files[index].sha256).map(({ path }) => path);
 	return {
 		capturedAt: new Date().toISOString(),
+		sourceCommit,
+		fixtureSource: { path: fixtureSourcePath, byteLength: fixtureBytes.length, sha256: hash(fixtureBytes), schema: manifest.schema,
+			sourceCommit: manifest.sourceCommit, fileCount: manifest.files.length, actualFilesManifestSha256: actualFixtureFiles.manifestSha256,
+			drift, valid: manifest.sourceCommit === sourceCommit && drift.length === 0 },
 		source: await identities(sourcePaths(), root),
 		toolchain: await closure(toolchain), wasm: await closure(wasmDirectory),
 		browser: await closure(dirname(browserExecutable)),
 		executables: await identities([process.execPath, bun, browserExecutable, ffmpeg, ffprobe]),
 	};
 }
-const digest = (value) => Object.fromEntries(["source", "toolchain", "wasm", "browser", "executables"].map((key) => [key, value[key].manifestSha256]));
+const digest = (value) => ({ sourceCommit: value.sourceCommit, fixtureSourceSha256: value.fixtureSource.sha256,
+	fixtureSourceActualFilesSha256: value.fixtureSource.actualFilesManifestSha256,
+	...Object.fromEntries(["source", "toolchain", "wasm", "browser", "executables"].map((key) => [key, value[key].manifestSha256])) });
 const binding = resolveRequiredProbeWasmBinding({ directory: wasmDirectory, expectedWasmSha256 });
 assert.equal(binding.identity.files.find((file) => file.name === "opencut_wasm.js").sha256, "cc62ca83fb09032be1bf5427a156f572587ef21cc6a6c185d4743ac4fe7ddb39");
 const pinnedBrowser = resolveProbeBrowserExecutable({ configured: browserExecutable, fallback: "not-permitted" });
@@ -87,6 +105,10 @@ if (mode === "--prepare") {
 	for (const item of cases) {
 		const attempt = await mkdtemp(join(group, `${item.id}-attempt-`));
 		const artifacts = join(attempt, "artifacts"); await mkdir(artifacts);
+		const beforeCase = await snapshot();
+		await writeFile(join(attempt, "before.json"), JSON.stringify(beforeCase, null, 2) + "\n", { flag: "wx" });
+		const matchesGroupBefore = JSON.stringify(digest(before)) === JSON.stringify(digest(beforeCase));
+		const preSnapshotValid = before.fixtureSource.valid && beforeCase.fixtureSource.valid && matchesGroupBefore;
 		const env = { ...process.env, ROCUT_TEST_WASM_DIRECTORY: wasmDirectory, ROCUT_PROBE_WASM_SHA256: expectedWasmSha256,
 			ROCUT_PROBE_BROWSER_PATH: pinnedBrowser, ROCUT_HTML_BROWSER_PATH: pinnedBrowser, ROCUT_PROBE_ARTIFACTS: artifacts,
 			ROCUT_TEST_FFMPEG: ffmpeg, ROCUT_TEST_FFPROBE: ffprobe,
@@ -95,13 +117,13 @@ if (mode === "--prepare") {
 		let stdout = "", stderr = "";
 		const startedAt = new Date().toISOString();
 		console.log(JSON.stringify({ starting: item.id, attempt }));
-		const result = await new Promise((complete) => {
+		const result = preSnapshotValid ? await new Promise((complete) => {
 			const child = spawn(process.execPath, [item.entry, ...item.args], { cwd: root, env, windowsHide: true, stdio: ["ignore", "pipe", "pipe"] });
 			child.stdout.on("data", (bytes) => { stdout += bytes.toString("utf8"); process.stdout.write(bytes); });
 			child.stderr.on("data", (bytes) => { stderr += bytes.toString("utf8"); process.stderr.write(bytes); });
 			child.once("error", (error) => complete({ exitCode: null, signal: null, error: String(error) }));
 			child.once("close", (exitCode, signal) => complete({ exitCode, signal }));
-		});
+		}) : { exitCode: null, signal: null, error: "Pre-snapshot source/fixture identity drift; probe was not launched" };
 		let evidence, evidenceError;
 		try {
 			evidence = parse(await readFile(join(artifacts, "evidence.json")));
@@ -112,17 +134,21 @@ if (mode === "--prepare") {
 		} catch (error) { evidenceError = String(error); }
 		const afterCase = await snapshot();
 		await writeFile(join(attempt, "after.json"), JSON.stringify(afterCase, null, 2) + "\n", { flag: "wx" });
-		const identitiesUnchanged = JSON.stringify(digest(before)) === JSON.stringify(digest(afterCase));
-		const passed = result.exitCode === 0 && !evidenceError && identitiesUnchanged;
+		const identitiesUnchanged = JSON.stringify(digest(beforeCase)) === JSON.stringify(digest(afterCase));
+		const passed = preSnapshotValid && result.exitCode === 0 && !evidenceError && identitiesUnchanged && afterCase.fixtureSource.valid;
 		const recorded = { ...item, attempt, startedAt, finishedAt: new Date().toISOString(), ...result, passed, identitiesUnchanged,
+			sourceCommit: beforeCase.sourceCommit, fixtureSourceBefore: beforeCase.fixtureSource, fixtureSourceAfter: afterCase.fixtureSource,
+			preSnapshotPath: join(attempt, "before.json"), afterSnapshotPath: join(attempt, "after.json"), matchesGroupBefore, preSnapshotValid,
+			helperIdentity: beforeCase.source.files.find((file) => file.path === "script/probe-hf-remotion-browser-authority.mjs"),
 			explicitEnvironment: { ROCUT_TEST_WASM_DIRECTORY: wasmDirectory, ROCUT_PROBE_WASM_SHA256: expectedWasmSha256, ROCUT_PROBE_BROWSER_PATH: pinnedBrowser, ROCUT_PROBE_ARTIFACTS: artifacts, ROCUT_TEST_FFMPEG: ffmpeg, ROCUT_TEST_FFPROBE: ffprobe },
-			stdout, stderr, evidence, evidenceError, beforeHashes: digest(before), afterHashes: digest(afterCase) };
+			stdout, stderr, evidence, evidenceError, groupBeforeHashes: digest(before), beforeHashes: digest(beforeCase), afterHashes: digest(afterCase) };
 		await writeFile(join(attempt, "receipt.json"), JSON.stringify(recorded, null, 2) + "\n", { flag: "wx" });
 		results.push(recorded);
 		if (!passed) break;
 	}
 	const passed = results.length === cases.length && results.every((result) => result.passed);
-	const receipt = { version: 1, status: passed ? "passed" : "failed", group, workspace: root, plan, beforeHashes: digest(before), results,
+	const receipt = { version: 1, status: passed ? "passed" : "failed", group, workspace: root, plan,
+		sourceCommit: before.sourceCommit, fixtureSource: before.fixtureSource, groupBeforeSnapshotPath: join(group, "before.json"), beforeHashes: digest(before), results,
 		unexecutedCases: cases.slice(results.length).map(({ id }) => id), retries: 0, capped: false, skipped: false,
 		limitations: plan.limitations };
 	await writeFile(join(group, "receipt.json"), JSON.stringify(receipt, null, 2) + "\n", { flag: "wx" });

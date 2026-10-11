@@ -21,7 +21,7 @@ import {
 	resolve,
 	isAbsolute,
 } from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import { pinInkHostToolchain } from "./fixtures/ink-object-host-toolchain.mjs";
 import { assertGlassBrowserIdentity } from "./fixtures/glass-current-baseline-observer.mjs";
 
@@ -327,7 +327,7 @@ if (mode === "--prepare") {
 			"editor",
 			[
 				"--import",
-				browserObserver,
+				pathToFileURL(browserObserver).href,
 				"script/probe-glass-editor.mjs",
 				root,
 				config.chromium,
@@ -355,9 +355,9 @@ if (mode === "--prepare") {
 			"export",
 			[
 				"--import",
-				hostObserver,
+				pathToFileURL(hostObserver).href,
 				"--import",
-				browserObserver,
+				pathToFileURL(browserObserver).href,
 				"script/probe-glass-object-editor-export.mjs",
 				editor.artifacts,
 				config.browserPkg,
