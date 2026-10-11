@@ -6,6 +6,10 @@ import { renderHtmlPng } from "./html-rasterizer";
 import type { ProgrammaticResourceStore } from "./resources";
 import type { NativeVideoDecoder } from "./video-decoder";
 import { createProgrammaticFrameDeadline } from "./frame-service-deadline";
+import {
+	createFrameServiceAdmission,
+	FrameAdmissionBusyError,
+} from "./frame-service-admission";
 import { ELECTRON_NATIVE_VIDEO_PROTOCOL } from "./electron-native-video-server";
 
 /** Prefer the desktop's scoped connection; explicit Chromium is CLI fallback.
@@ -14,40 +18,69 @@ export function createProgrammaticFrameService(
 	executable = process.env.ROCUT_HTML_BROWSER_PATH,
 	connectionFile = process.env.ELFTIA_HTML_FRAME_CONNECTION_FILE,
 	resourceStore?: ProgrammaticResourceStore,
-	nativeVideoDecoder: NativeVideoDecoder | undefined = process.env.ROCUT_NATIVE_FFMPEG_PATH && process.env.ROCUT_NATIVE_FFPROBE_PATH
-		? { ffmpeg: process.env.ROCUT_NATIVE_FFMPEG_PATH, ffprobe: process.env.ROCUT_NATIVE_FFPROBE_PATH } : undefined,
+	nativeVideoDecoder: NativeVideoDecoder | undefined = process.env
+		.ROCUT_NATIVE_FFMPEG_PATH && process.env.ROCUT_NATIVE_FFPROBE_PATH
+		? {
+				ffmpeg: process.env.ROCUT_NATIVE_FFMPEG_PATH,
+				ffprobe: process.env.ROCUT_NATIVE_FFPROBE_PATH,
+			}
+		: undefined,
 ) {
-	const configured =
-		connectionFile ? isAbsolute(connectionFile) : (!!executable &&
-		isAbsolute(executable) &&
+	const configured = connectionFile
+		? isAbsolute(connectionFile)
+		: !!executable &&
+			isAbsolute(executable) &&
+			(() => {
+				try {
+					return statSync(executable).isFile();
+				} catch {
+					return false;
+				}
+			})();
+	const active = new Set<AbortController>();
+	const admission = createFrameServiceAdmission();
+	const electronNativeVideo =
+		!!connectionFile &&
 		(() => {
 			try {
-				return statSync(executable).isFile();
+				if (statSync(connectionFile).size > 4096) return false;
+				const value = JSON.parse(readFileSync(connectionFile, "utf8"));
+				return (
+					value.capabilities?.nativeVideoCapture?.version === 1 &&
+					value.capabilities.nativeVideoCapture.protocol ===
+						ELECTRON_NATIVE_VIDEO_PROTOCOL
+				);
 			} catch {
 				return false;
 			}
-		})());
-	const active = new Set<AbortController>();
-	const electronNativeVideo = !!connectionFile && (() => {
-		try {
-			if (statSync(connectionFile).size > 4096) return false;
-			const value = JSON.parse(readFileSync(connectionFile, "utf8"));
-			return value.capabilities?.nativeVideoCapture?.version === 1 &&
-				value.capabilities.nativeVideoCapture.protocol === ELECTRON_NATIVE_VIDEO_PROTOCOL;
-		} catch { return false; }
-	})();
-	const nativeConfigured = (!connectionFile || electronNativeVideo) && configured && !!nativeVideoDecoder && [nativeVideoDecoder.ffmpeg, nativeVideoDecoder.ffprobe].every(file => {
-		try { return isAbsolute(file) && statSync(file).isFile(); } catch { return false; }
-	});
+		})();
+	const nativeConfigured =
+		(!connectionFile || electronNativeVideo) &&
+		configured &&
+		!!nativeVideoDecoder &&
+		[nativeVideoDecoder.ffmpeg, nativeVideoDecoder.ffprobe].every((file) => {
+			try {
+				return isAbsolute(file) && statSync(file).isFile();
+			} catch {
+				return false;
+			}
+		});
 	const drains = new Set<Promise<void>>();
 	let disposed = false;
 	return {
 		configured,
 		nativeVideoCapability: {
-			version: 1, configured: nativeConfigured,
-			availability: nativeConfigured ? "configured-not-health-probed" : "unavailable",
-			backend: connectionFile ? "elftia-electron-native-video-callback" : "standalone-chromium-native-decoder",
-			electron: electronNativeVideo ? ELECTRON_NATIVE_VIDEO_PROTOCOL : "requires-media-request-transport",
+			version: 1,
+			configured: nativeConfigured,
+			availability: nativeConfigured
+				? "configured-not-health-probed"
+				: "unavailable",
+			backend: connectionFile
+				? "elftia-electron-native-video-callback"
+				: "standalone-chromium-native-decoder",
+			electron: electronNativeVideo
+				? ELECTRON_NATIVE_VIDEO_PROTOCOL
+				: "requires-media-request-transport",
 			hdr: "pq-hlg-hable-to-bt709-sdr; requires-zscale-tonemap",
 			hdrOutput: "unsupported-sdr-only",
 			colorMetadata: "explicit-supported-hdr-tags-required",
@@ -77,13 +110,6 @@ export function createProgrammaticFrameService(
 				);
 				return;
 			}
-			if (active.size >= 2) {
-				error(
-					429,
-					"HTML rasterizer busy; retry after the active frame finishes",
-				);
-				return;
-			}
 			const controller = new AbortController();
 			let drained!: () => void;
 			const drain = new Promise<void>((resolve) => {
@@ -101,8 +127,14 @@ export function createProgrammaticFrameService(
 			const abort = () => controller.abort();
 			request.once("aborted", abort);
 			response.once("close", abort);
-			const deadline = createProgrammaticFrameDeadline({ controller, startedAt });
+			const deadline = createProgrammaticFrameDeadline({
+				controller,
+				startedAt,
+			});
+			let release: (() => void) | undefined;
 			try {
+				release = await admission.acquire(controller.signal);
+				controller.signal.throwIfAborted();
 				let size = 0;
 				const chunks: Buffer[] = [];
 				for await (const chunk of request) {
@@ -137,7 +169,11 @@ export function createProgrammaticFrameService(
 					.end(png);
 			} catch (cause) {
 				error(
-					controller.signal.aborted ? 408 : 422,
+					controller.signal.aborted
+						? 408
+						: cause instanceof FrameAdmissionBusyError
+							? 429
+							: 422,
 					controller.signal.aborted
 						? "HTML frame cancelled or timed out"
 						: cause instanceof Error
@@ -146,6 +182,7 @@ export function createProgrammaticFrameService(
 				);
 			} finally {
 				deadline.dispose();
+				release?.();
 				active.delete(controller);
 				drains.delete(drain);
 				drained();
