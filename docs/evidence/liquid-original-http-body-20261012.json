@@ -1,0 +1,44 @@
+{
+	"schema": "rocut-focused-integration-evidence/v1",
+	"date": "2026-10-12",
+	"baseCommit": "67da63ac2b20800d18c6226a7a89cc1632e170b4",
+	"delivery": {
+		"directory": "C:/Users/Sayo/AppData/Local/Temp/liquid-cdp-original-body-v2-20261012-c035e9b3",
+		"manifestSha256": "42ceb4d6bdc811924fafc03f4b62990bd7f4a685e7e9b665c622df960981e0a2",
+		"reviewedPatchSha256": "f433f175c31a38b67c9dd25f741acee2ef748d6f0082a95022878f36b90b41f1"
+	},
+	"change": "Bind the original WASM request ID, wait for its loadingFinished event, and hash exactly one Network.getResponseBody result without Playwright body fallback or URL refetch. Drain after the original pixel/export checks and before context closure, preserving the first failure.",
+	"integratedFilesAfterScopedFormatting": [
+		{
+			"path": "script/fixtures/wasm-http-observation.mjs",
+			"sha256": "647df67c5bb0e05e8297a6b3774675e6c47582fb08beb34367f70761b2151715"
+		},
+		{
+			"path": "script/__tests__/wasm-http-observation.test.mjs",
+			"sha256": "509df2c11bd516f722ad2b0e4baa679b534d1c8a377c3957ebfe2b834cfff459"
+		},
+		{
+			"path": "script/probe-liquid-effects.mjs",
+			"sha256": "2c1d9b137991da1a102e9a840fadac054f77bb38be6b94512af61b43898ea28c"
+		}
+	],
+	"verification": {
+		"rootNodeTests": { "pass": 10, "fail": 0, "skip": 0 },
+		"focusedSyntaxLintFormatAndStrictUtf8": "pass",
+		"pinnedPlaywrightClosureEvent": "CDPSession2 channel close emits close; independently checked in pinned primary implementation",
+		"actualBrowserHttpProof": "not executed"
+	},
+	"limits": { "records": 8, "totalAndPerResourceBufferBytes": 15728640 },
+	"boundaries": {
+		"newSeekDrawFrameTimerOrAcceptanceWait": false,
+		"pixelOracleOrRenderingDeadlineChanged": false,
+		"originalAttemptFailurePreserved": true,
+		"installedPluginChanged": false,
+		"wholeRepositoryLintOrTypecheckClaimed": false
+	},
+	"limitations": [
+		"This establishes exact-request response semantics, not Liquid GPU acceptance.",
+		"Buffer eviction, incomplete transfers, malformed or unavailable bodies fail closed without refetch.",
+		"A started CDP command with no reply or closure still depends on existing outer supervision; no new helper timeout is introduced."
+	]
+}

@@ -12,7 +12,11 @@ import { dirname, isAbsolute, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 import { liquidDiagnosticWasmRoute } from "./liquid-diagnostic-wasm.mjs";
 import { resolveProductionProbeWasm } from "./production-probe-wasm.mjs";
-import { createHtmlProbeWasmPlugin, HTML_PRIVATE_WASM_ID } from "./html-probe-wasm-binding.mjs";
+import { observeProbeWasmHttp } from "./fixtures/wasm-http-observation.mjs";
+import {
+	createHtmlProbeWasmPlugin,
+	HTML_PRIVATE_WASM_ID,
+} from "./html-probe-wasm-binding.mjs";
 import {
 	chromium,
 	createServer,
@@ -137,7 +141,9 @@ const server = await createServer({
 	optimizeDeps: { entries: ["script/fixtures/liquid-browser-probe.ts"] },
 	resolve: {
 		alias: {
-			"opencut-wasm": readbackOverride ? join(activePkg, "opencut_wasm.js") : HTML_PRIVATE_WASM_ID,
+			"opencut-wasm": readbackOverride
+				? join(activePkg, "opencut_wasm.js")
+				: HTML_PRIVATE_WASM_ID,
 			mediabunny: join(root, "packages/editor-classic/node_modules/mediabunny"),
 		},
 	},
@@ -263,7 +269,7 @@ try {
 			externalRequests: [],
 		};
 		evidence.attempts.push(attempt);
-		let context;
+		let context, wasmHttp;
 		try {
 			// Chromium's WebGPU selector is independent of ANGLE's WebGL selector.
 			// Without this flag Windows defaults to D3D12, unavailable on this host.
@@ -312,6 +318,15 @@ try {
 			});
 			console.log(JSON.stringify({ phase: backend, artifacts }));
 			const address = server.httpServer.address();
+			const activeWasmBytes = await readFile(
+				join(activePkg, "opencut_wasm_bg.wasm"),
+			);
+			const wasmCdp = await page.context().newCDPSession(page);
+			wasmHttp = await observeProbeWasmHttp(wasmCdp, {
+				url: `http://127.0.0.1:${address.port}/@fs/${join(activePkg, "opencut_wasm_bg.wasm").replaceAll("\\", "/")}`,
+				sha256: evidence.wasmSha256,
+				byteLength: activeWasmBytes.length,
+			});
 			await page.goto(
 				`http://127.0.0.1:${address.port}/script/fixtures/liquid-browser-probe.html?backend=${backend}${readbackOverride ? "&readback=1" : ""}`,
 				{ waitUntil: "commit" },
@@ -352,7 +367,17 @@ try {
 			attempt.ok = false;
 			attempt.failure = String(error.stack ?? error);
 		} finally {
-			await context?.close();
+			try {
+				if (wasmHttp) {
+					attempt.wasmHttp = await wasmHttp.drain();
+					attempt.ok = attempt.ok && attempt.wasmHttp.ok;
+				}
+			} catch (error) {
+				attempt.ok = false;
+				attempt.failure ??= String(error.stack ?? error);
+			} finally {
+				await context?.close();
+			}
 		}
 		await writeFile(
 			join(directory, "evidence.json"),
