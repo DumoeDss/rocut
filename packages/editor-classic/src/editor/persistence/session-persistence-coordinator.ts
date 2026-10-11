@@ -10,6 +10,7 @@ import type {
 import { ProjectMutationArbiter } from "../transactions/opencut/arbiter";
 import { cloneOpaque, overlayOpaque } from "./opaque-value";
 import { decodeProject, encodeProject } from "./project-codec";
+import { collectProjectAnimationAdmissionIssues } from "../../animation/project-animation-admission";
 
 type MutationListener = (event: {
 	readonly kind: "project" | "attachment" | "library" | "remove" | "clear";
@@ -119,6 +120,32 @@ export class SessionPersistenceCoordinator {
 				}
 				const retained = cloneOpaque(record.data);
 				const decoded = decodeProject(record.data);
+				const admissionIssues = decoded.scenes.flatMap((scene) =>
+					collectProjectAnimationAdmissionIssues({
+						elements: scene.tracks.main.elements
+							.concat(
+								scene.tracks.overlay.flatMap((track) => track.elements),
+							)
+							.concat(
+								scene.tracks.audio.flatMap((track) => track.elements),
+							),
+					}),
+				);
+				if (admissionIssues.length > 0) {
+					// Persisted projects must stay loadable even when stored
+					// animation channels fail admission (legacy data, format
+					// drift, or an admission regression). Degrade to a
+					// diagnostic log instead of failing the whole load path,
+					// which would leave the editor without a preview UI.
+					console.warn(
+						`Project ${args.id} loaded with animation channels outside their declared bounds: ${admissionIssues
+							.map(
+								(issue) =>
+									`${issue.elementId}/${issue.propertyPath} (${issue.reason})`,
+							)
+							.join("; ")}`,
+					);
+				}
 				this.projectSnapshots.set(args.id, retained);
 				this.projectCache.set(args.id, cloneOpaque(decoded));
 				this.emitProjectRecord(record);

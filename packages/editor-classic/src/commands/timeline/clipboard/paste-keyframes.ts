@@ -3,6 +3,7 @@ import {
 	updateScalarKeyframeCurve,
 	upsertPathKeyframe,
 } from "../../../animation";
+import { admitAnimationsChannel } from "../../../animation/scalar-admission";
 import {
 	Command,
 	type EditorCommandContext,
@@ -82,6 +83,25 @@ function pasteKeyframesIntoElement({
 			...nextElement,
 			animations: patchedAnimations,
 		};
+		const spec =
+			target.numericRanges?.[
+				target.channelLayout.kind === "leaf"
+					? "value"
+					: Object.keys(target.numericRanges)[0]
+			];
+		const admission = admitAnimationsChannel({
+			animations: patchedAnimations,
+			propertyPath: item.propertyPath,
+			fallbackValue:
+				typeof item.value === "number"
+					? item.value
+					: Number(target.getBaseValue() ?? 0),
+			duration: nextElement.duration,
+			spec,
+		});
+		if (admission.kind === "rejected") {
+			throw new RangeError(admission.reason);
+		}
 	}
 
 	return nextElement;

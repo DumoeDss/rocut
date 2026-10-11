@@ -16,7 +16,6 @@
     "../../../packages/editor-classic/src/rendering/animation-values.ts",
     "../../../packages/editor-classic/src/services/renderer/resolve-visual-state.ts",
     "../../../packages/editor-classic/src/animation/scalar-admission.ts",
-    "../../../packages/editor-classic/src/commands/timeline/element/keyframes/upsert-keyframe.ts",
-    "../../../packages/editor-classic/src/commands/timeline/element/keyframes/upsert-effect-param-keyframe.ts"
+    "../../../packages/editor-classic/src/animation/scalar-batch-resolver.ts"
   ]
 }

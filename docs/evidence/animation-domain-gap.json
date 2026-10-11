@@ -11,7 +11,16 @@
     "sha256": "e0e944fb570fbef92244b70289b82bbdb214c763c93b636420a09c13dd39bc05",
     "scope": "Actual TS sampler modules executed with safe integer ticks and a mediaTime identity boundary stub",
     "constantBezier": {
-      "keys": [[0, 1], [120000, 1]],
+      "keys": [
+        [
+          0,
+          1
+        ],
+        [
+          120000,
+          1
+        ]
+      ],
       "firstObservedOvershootTick": 205,
       "value": 1.0000000000000002,
       "interiorIntegerTicksChecked": 119999,
@@ -23,7 +32,10 @@
     "sha256": "9a45b38dfde62c1ff25e12fec04039f16e37179e2756759656551e4b2f41220e",
     "wasmSha256": "02b001624eb49ed233ee7484624a8d98f63e8d720dfbbb9592c747915fe37b58",
     "calls": 4,
-    "effects": ["blaze", "clouds"],
+    "effects": [
+      "blaze",
+      "clouds"
+    ],
     "result": "Constant boundary Bezier admitted; actual sampled amount at tick 205 rejected by strict native resolver"
   },
   "sourceBackedDesignFindings": [
@@ -34,8 +46,8 @@
     "Mathematical extrema alone do not repair a mismatched floating-point runtime evaluator"
   ],
   "nextImplementation": {
-    "state": "runtime-batched-admission-pending",
-    "firstScope": "Explicit sampling and tri-state inspection are registered and tested through real private WASM; the editor-side scalar-animation transport exposes sampleScalarAnimationBatch and inspectScalarAnimationDomain; a differential CPU probe compares the production TS evaluator with the installed WASM batch core across 5 channels and 80 samples; ScalarBatchResolver now batches transform, opacity, and effect-param scalar channels into one core call per resolveVisualState, preserving linear/hold behavior and discrete fallbacks; scoped strict tsc, ESLint, and behavior tests are green, and 205/208 renderer/effect tests pass with only pre-existing jsdom environment failures; tri-state admission wiring at authoring boundaries remains pending",
+    "state": "admission-wired-across-authoring-and-load",
+    "firstScope": "Explicit sampling and tri-state inspection are registered and tested through real private WASM; the editor-side scalar-animation transport exposes sampleScalarAnimationBatch and inspectScalarAnimationDomain, with inspection routed through inspectScalarAnimationDomainsJson and budget sent at both request and item level for binary compatibility; a differential CPU probe compares the production TS evaluator with the installed WASM batch core across 5 channels and 80 samples; ScalarBatchResolver batches transform, opacity, and effect-param scalar channels into one core call per resolveVisualState; admitScalarChannel and admitAnimationsChannel map NumericSpec bounds to tri-state admission; all four authoring mutation paths now enforce it - element keyframe upsert, effect-param keyframe upsert, scalar curve handle editing, and clipboard keyframe paste - each rejecting bounded channels that provably leave their declared range while admitting unspecified-range and empty channels without a core round-trip; unresolved never collapses to admitted or rejected; scoped strict tsc, ESLint, and behavior tests are green, and 253/256 combined renderer/effect/command/persistence tests pass with only pre-existing jsdom environment failures; project loads now walk every scene track element through collectProjectAnimationAdmissionIssues and reject records whose bounded channels provably leave their declared range, with the element/path/reason listed in the error",
     "constraints": [
       "No effect-specific clamp or business epsilon",
       "Preserve current ordinary linear and hold behavior",
@@ -73,10 +85,16 @@
     "sha256": "d0bfd7c005dcc04af306ca373903271ba2d544cc10a682f48b0580c084fb352e",
     "numericContractTestsPerMode": 16,
     "boundaryContractTestsPerMode": 31,
-    "modes": ["debug", "optimized"],
+    "modes": [
+      "debug",
+      "optimized"
+    ],
     "warningsDenied": true,
     "sampleModelIntervalUnchanged": true,
-    "exports": ["sample_scalar_animation_batch_json", "inspect_scalar_animation_domains_json"],
+    "exports": [
+      "sample_scalar_animation_batch_json",
+      "inspect_scalar_animation_domains_json"
+    ],
     "semantics": "scalar-f64-v1; all four identical Bezier controls take an exact constant branch, unlike the legacy TS evaluator. Other operations retain their order; not a blanket legacy bit-parity claim",
     "budgetRegression": "Ordinary Smooth now proves safe with one node; a near-boundary Smooth remains unresolved at 4096. Multi-segment tests continue to enforce item and cumulative request exhaustion without changing budgets",
     "retainedFailures": [
@@ -98,9 +116,15 @@
     "sha256": "128db38a70655ea23298bd89e6ffaf3da34134088e810adf880df9dfd0747513",
     "independentTestsPerMode": 9,
     "reusedSerializerTestsPerMode": 2,
-    "modes": ["debug", "optimized"],
+    "modes": [
+      "debug",
+      "optimized"
+    ],
     "result": "No blocking defect reproduced; includes 1152 item-budget positions per mode and 65536-sample UTF-8 output",
-    "contractEdges": ["Integer token -0 is rejected; ordinary JSON.stringify emits 0", "JSON value depth counts root as zero, including empty containers"]
+    "contractEdges": [
+      "Integer token -0 is rejected; ordinary JSON.stringify emits 0",
+      "JSON value depth counts root as zero, including empty containers"
+    ]
   },
   "privateWasm": {
     "build": {
@@ -117,8 +141,16 @@
     "gates": {
       "path": "C:/tmps/animation-wasm-checks-1P4K7j/evidence.json",
       "sha256": "9f8d3270a42d112372905dc8cf723a9f973e10ac112b08c6d327fc8093384af0",
-      "passed": ["source", "paths", "init", "exact public JS and stable binary export delta"],
-      "addedOnly": ["inspectScalarAnimationDomainsJson", "sampleScalarAnimationBatchJson"]
+      "passed": [
+        "source",
+        "paths",
+        "init",
+        "exact public JS and stable binary export delta"
+      ],
+      "addedOnly": [
+        "inspectScalarAnimationDomainsJson",
+        "sampleScalarAnimationBatchJson"
+      ]
     },
     "roundtrip": {
       "path": "C:/tmps/animation-scalar-roundtrip-QLzpoK/handoff.json",
@@ -144,10 +176,21 @@
     "sha256": "2fab81c34e748030bc44c3ee5b1bb20e5a8c261fbeb31a7cc4daaaa6408f77ef",
     "change": "Direct unstaged candidate selection now includes duration changes as well as editing changes",
     "regression": "One Bun test containing nine isolated behavior checks; observed red before the patch, green afterward",
-    "checks": ["targeted ESLint", "strict syntactic/semantic diagnostics for both changed files", "UTF-8", "diff check"],
+    "checks": [
+      "targeted ESLint",
+      "strict syntactic/semantic diagnostics for both changed files",
+      "UTF-8",
+      "diff check"
+    ],
     "semantics": "Duration-only shrink/extension invoke the existing validation provider; missing provider and rejected inputs cannot create receipts. Unchanged clips remain unselected",
     "limitation": "Real adapter, editing policy and normal engine with observation doubles at WASM/catalog/summary boundaries; no Rust numerical-domain proof",
-    "otherContextRisksNotFixed": ["trimStart", "trackKind", "assetKind", "hasMotionText", "hasAdjustment"]
+    "otherContextRisksNotFixed": [
+      "trimStart",
+      "trackKind",
+      "assetKind",
+      "hasMotionText",
+      "hasAdjustment"
+    ]
   },
   "directAdapterContextFix": {
     "path": "C:/tmps/adapter-context-validation-sol-9DbVab/handoff.json",

@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { admitScalarChannel } from "../scalar-admission";
+import { admitAnimationsChannel, admitScalarChannel } from "../scalar-admission";
 import type { ScalarAnimationChannel } from "../types";
 
 const ramp: ScalarAnimationChannel = {
@@ -93,5 +93,46 @@ describe("admitScalarChannel", () => {
 			spec: { min: 0, max: 1 },
 		});
 		expect(result.kind).toBe("admitted");
+	});
+});
+
+describe("admitAnimationsChannel", () => {
+	test("reads channels from element animations by property path", () => {
+		const admitted = admitAnimationsChannel({
+			animations: { opacity: ramp },
+			propertyPath: "opacity",
+			fallbackValue: 0.5,
+			duration: 100000,
+			spec: { min: 0, max: 1 },
+		});
+		expect(admitted.kind).toBe("admitted");
+
+		const rejected = admitAnimationsChannel({
+			animations: {
+				"transform.rotate": {
+					keys: [
+						{ id: "a", time: 0, value: 0, segmentToNext: "linear", tangentMode: "flat" },
+						{ id: "b", time: 100000, value: 720, segmentToNext: "linear", tangentMode: "flat" },
+					],
+				},
+			},
+			propertyPath: "transform.rotate",
+			fallbackValue: 0,
+			duration: 100000,
+			spec: { min: -360, max: 360 },
+		});
+		expect(rejected.kind).toBe("rejected");
+	});
+
+	test("admits discrete and missing channels through the fallback", () => {
+		expect(
+			admitAnimationsChannel({
+				animations: { discrete: { keys: [{ id: "d", time: 0, value: "a" }] } },
+				propertyPath: "discrete",
+				fallbackValue: 0.5,
+				duration: 100000,
+				spec: { min: 0, max: 1 },
+			}).kind,
+		).toBe("admitted");
 	});
 });

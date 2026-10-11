@@ -1,4 +1,5 @@
 import { updateScalarKeyframeCurve } from "../../../../animation";
+import { admitAnimationsChannel } from "../../../../animation/scalar-admission";
 import {
 	Command,
 	type EditorCommandContext,
@@ -55,20 +56,35 @@ export class UpdateScalarKeyframeCurveCommand extends Command {
 			trackId: this.trackId,
 			elementId: this.elementId,
 			update: (element) => {
-				if (!resolveAnimationTarget({ element, path: this.propertyPath })) {
+				const target = resolveAnimationTarget({ element, path: this.propertyPath });
+				if (!target) {
 					return element;
 				}
 
-				return {
-					...element,
-					animations: updateScalarKeyframeCurve({
+				const animations = updateScalarKeyframeCurve({
 						animations: element.animations,
 						propertyPath: this.propertyPath,
 						componentKey: this.componentKey,
 						keyframeId: this.keyframeId,
 						patch: this.patch,
-					}),
-				};
+				});
+				const spec =
+					target.numericRanges?.[
+						target.channelLayout.kind === "leaf"
+							? "value"
+							: Object.keys(target.numericRanges)[0]
+					];
+				const admission = admitAnimationsChannel({
+					animations,
+					propertyPath: this.propertyPath,
+					fallbackValue: Number(target.getBaseValue() ?? 0),
+					duration: element.duration,
+					spec,
+				});
+				if (admission.kind === "rejected") {
+					throw new RangeError(admission.reason);
+				}
+				return { ...element, animations };
 			},
 		});
 

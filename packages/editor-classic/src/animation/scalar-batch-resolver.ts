@@ -5,7 +5,7 @@ import {
 	type ScalarAnimationSampleItem,
 } from "../wasm/scalar-animation";
 
-function isScalarChannelData(
+export function isScalarChannelData(
 	value: unknown,
 ): value is ScalarAnimationChannel {
 	if (typeof value !== "object" || value === null || !("keys" in value)) {
