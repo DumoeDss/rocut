@@ -3,7 +3,10 @@ import {
 	createTunnelNativeCapture,
 	createTunnelNativeDiagnosticCapture,
 } from "./mv-tunnel-native-capture";
-import { diagnoseTunnelFrame4 } from "./mv-tunnel-native-diagnostic";
+import {
+	diagnoseTunnelFrame4,
+	tunnelFrame4,
+} from "./mv-tunnel-native-diagnostic";
 import { verifyTunnelPixelMatrix } from "./mv-tunnel-pixel-suite";
 import { verifyTunnelTransportBoundary } from "./mv-tunnel-transport-browser";
 import type { TunnelReference } from "./mv-tunnel-reference";
@@ -57,6 +60,40 @@ async function run() {
 					plan = p;
 				},
 			});
+			const preRoll = Number(globalThis.__tunnelDiagPreRoll ?? 0);
+			if (preRoll > 0) {
+				for (let k = 0; k < preRoll; k++) {
+					await captureNative({
+						frame: { ...tunnelFrame4(), time: 12.25 + k / 60 },
+						index: k,
+					});
+					await oracle.render({
+						frame: { ...tunnelFrame4(), time: 12.25 + k / 60 },
+					});
+				}
+			}
+			if (Number(globalThis.__tunnelDiagRepeatProbe ?? 0) > 0) {
+				const probeFrame = tunnelFrame4();
+				const outputs = [];
+				for (let r = 0; r < 2; r++) {
+					const out = await captureNative({ frame: probeFrame, index: 4 });
+					outputs.push(out);
+				}
+				let firstDiff = -1;
+				for (let i = 0; i < outputs[0].pixels.length; i++)
+					if (outputs[0].pixels[i] !== outputs[1].pixels[i]) { firstDiff = i; break; }
+				globalThis.__tunnelRepeatProbe = {
+					pixelsEqual: firstDiff < 0,
+					firstDiffIndex: firstDiff,
+					firstDiff: firstDiff < 0 ? null : {
+						x: ((firstDiff / 4) | 0) % 1920,
+						y: ((firstDiff / 4) | 0) / 1920 | 0,
+						c: firstDiff % 4,
+						a: outputs[0].pixels[firstDiff],
+						b: outputs[1].pixels[firstDiff],
+					},
+				};
+			}
 			const diagnostic = await diagnoseTunnelFrame4({
 				oracle,
 				captureNative,
@@ -67,6 +104,7 @@ async function run() {
 				diagnosticComplete: true,
 				mode: "frame4-grain-diagnostic",
 				fullMatrixTested: false,
+				repeatProbe: globalThis.__tunnelRepeatProbe,
 				metadata: diagnostic.metadata,
 				proofs: {
 					production: diagnostic.production.proof,
@@ -88,6 +126,7 @@ async function run() {
 		const result = await verifyTunnelPixelMatrix({
 			oracle,
 			captureNative,
+			cap: Number(globalThis.__tunnelMatrixCap) || undefined,
 			onProgress(current) {
 				globalThis.__tunnelNativeProgress = {
 					current,

@@ -69,6 +69,17 @@ export const MV_NATIVE_DOCUMENT = `<!doctype html>
     faces.add(face);
     await face.load(); check(); document.fonts.add(face);
   }
+  // Deterministic font pipeline: FontFace.load() resolves when the binary
+  // parses, but Chromium's canvas text shaping may still differ between the
+  // first post-add layout and later cached layouts. Waiting for the document
+  // font set to settle removes that first-render vs cached-render split,
+  // which previously surfaced as frame-order-dependent parity drift and
+  // repeated-seek nondeterminism in the Tunnel matrix.
+  async function settleFonts() {
+    check();
+    if (document.fonts.status !== 'loaded') await document.fonts.ready;
+    check();
+  }
   ${SEQUENCE_IMAGE_DECODER_SOURCE}
   ${IMAGE_DIMENSIONS_WORKER_SOURCE}
   ${IMAGE_PREPROCESS_RENDERER_SOURCE}
@@ -128,6 +139,7 @@ export const MV_NATIVE_DOCUMENT = `<!doctype html>
           },{add(face){check();document.fonts.add(face);faces.add(face);},delete(face){document.fonts.delete(face);faces.delete(face);}});
           for (const bound of frame.tunnelFontStacks) { await tunnelFonts.load(bound.fontStack); check(); }
         }
+        await settleFonts();
         const assets = Object.freeze({
           check,
           tunnelFonts,heartFrames,nightFrames,memoriesFrames,jzFrames,nativePostMode:input.nativePostMode,

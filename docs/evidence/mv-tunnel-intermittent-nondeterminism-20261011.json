@@ -1,0 +1,75 @@
+{
+  "recordedAt": "2026-10-11T13:55:00+08:00",
+  "classification": "Intermittent timing-dependent native raster divergence, not a deterministic pixel bug",
+  "matrixObservations": [
+    {
+      "run": "full matrix, gate<=6",
+      "failedAt": "defaults-all-layers-complete-forward-seek-repeat/15/15",
+      "sceneMax": 10,
+      "changed": 36,
+      "mae": 0.0000083
+    },
+    {
+      "run": "full matrix, gate<=12 (diagnostic widening, later reverted)",
+      "failedAt": "defaults-all-layers-complete-forward-seek-repeat/18/18",
+      "sceneMax": 165,
+      "changed": 29,
+      "mae": 0.000107,
+      "note": "cluster at (621-623,654-655), alpha 90 vs 255 - a structural layer difference, far beyond any classified residue"
+    },
+    {
+      "run": "cap=19 run A",
+      "failedAt": "defaults-all-layers-complete-forward-seek-repeat/7/7",
+      "sceneMax": 15,
+      "changed": 64
+    },
+    {
+      "run": "cap=19 run B (identical code)",
+      "failedAt": "constant-speed-no-fade-three-word-selection/8/239 as 'Tunnel repeated seek nondeterministic'",
+      "note": "case-1 prefix passed; same-frame repeated render produced a different hash in a different case"
+    }
+  ],
+  "isolationExperiments": [
+    {
+      "experiment": "clean single-render diagnosis, index 15",
+      "artifact": "C:/Users/Sayo/AppData/Local/Temp/rocut-tunnel-native-vW9boQ",
+      "result": "scene max=10 at (103,748), changed=6; with grain omitted both sides bit-exact (max=0)"
+    },
+    {
+      "experiment": "clean single-render diagnosis, index 18",
+      "artifact": "C:/Users/Sayo/AppData/Local/Temp/rocut-tunnel-native-FG4q5f",
+      "result": "bit-exact (scene/post max=0, changed=0) despite the same frame failing with max=165 in the matrix run"
+    },
+    {
+      "experiment": "pre-roll 18 frames (native only) then diagnose index 18",
+      "artifact": "C:/Users/Sayo/AppData/Local/Temp/rocut-tunnel-native-lysBzU",
+      "result": "scene max=1, changed=13 - the matrix max=165 did not reproduce"
+    },
+    {
+      "experiment": "pre-roll 18 frames alternating oracle+native renders then diagnose index 18",
+      "artifact": "C:/Users/Sayo/AppData/Local/Temp/rocut-tunnel-native-1vtt2w",
+      "result": "scene max=1, changed=13 - still not reproduced"
+    },
+    {
+      "experiment": "back-to-back repeat probe, same frame rendered twice",
+      "result": "pixelsEqual=true (bit-exact)"
+    }
+  ],
+  "interpretation": "The full-matrix failures move between different visits (6, 7, 15, 18) and different cases across identical-code runs, with magnitudes 10-165, while every isolated reproduction attempt (single render, pre-rolled render, back-to-back repeat) is bit-exact or within the classified glyph-edge residue. The divergence is therefore an intermittent, timing/resource-pressure-dependent race in the native raster pipeline (per-frame iframe realm + font measurement loop + bitmap handoff), not a deterministic geometry or compositing error.",
+  "hypotheses": {
+    "excluded": [
+      "deterministic geometry divergence (grain-omitted renders are bit-exact)",
+      "simple repeat nondeterminism (back-to-back same-frame renders are bit-exact)",
+      "font settle race (adding document.fonts.ready wait did not change the failure distribution)",
+      "checkpoint drift (wasm identity 1b1906ee... verified identical across all runs)",
+      "uncommitted-workspace contamination (clean pin worktree at the pinned commit reproduces it)"
+    ],
+    "remaining": [
+      "iframe realm load/dispose timing under memory pressure (the 250ms dispose grace timer races the next realm's font decode)",
+      "createImageBitmap transfer vs canvas teardown ordering",
+      "font measurement sandbox float drift only under specific scheduling"
+    ]
+  },
+  "decision": "Gate stays at the evidence-backed classified-residue bound (max<=6, mae<0.025). The intermittent divergence is recorded as an independent defect for the consolidated acceptance phase; tooling added by this investigation (magnitude-sorted samples, parameterized diagnostic index, pre-roll, matrix cap, repeat probe) is retained for that phase.",
+  "scope": "not an installed Electron/full-movie/export acceptance claim"
+}

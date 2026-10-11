@@ -16,8 +16,9 @@ interface DifferencePoint {
 	delta: number;
 }
 export function tunnelFrame4(): TunnelOracleFrame {
+	const index = Number(globalThis.__tunnelDiagIndex ?? 4);
 	return {
-		time: 12.25 + 4 / 60,
+		time: 12.25 + index / 60,
 		shotStart: 12.25,
 		duration: 6,
 		beats: Array.from({ length: 61 }, (_, i) => i * 0.5),
@@ -129,7 +130,7 @@ export async function diagnoseTunnelFrame4({
 	const native = async (control?: string) => {
 		const output: TunnelNativeOutput = await captureNative({
 			frame,
-			index: 4,
+			index: Math.round((frame.time - frame.shotStart) * 60),
 			control,
 		});
 		const plan = readNativePlan();
@@ -176,7 +177,7 @@ export async function diagnoseTunnelFrame4({
 		metadata: {
 			frame,
 			songTicks: 1478000,
-			index: 4,
+			index: Math.round((frame.time - frame.shotStart) * 60),
 			width: WIDTH,
 			height: HEIGHT,
 			format: "rgba8",
