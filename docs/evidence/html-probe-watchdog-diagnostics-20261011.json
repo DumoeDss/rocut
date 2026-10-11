@@ -1,0 +1,79 @@
+{
+  "version": 1,
+  "createdAt": "2026-10-11 11:02:35 UTC",
+  "scope": "Passive HTML probe watchdog diagnostics, no production or acceptance-threshold changes",
+  "sourceCommitBeforeSave": "ad13d94eeca58041ffe3f82fa423cbf833c35aaf",
+  "sources": [
+    {
+      "path": "script/probe-html-frames.mjs",
+      "byteLength": 12964,
+      "sha256": "a474d0e3c03556d20adec3cff9567a3ba8541d4e39c1f77f887d0b7f0a862b4f"
+    },
+    {
+      "path": "script/fixtures/html-frame-browser-probe.ts",
+      "byteLength": 13303,
+      "sha256": "e109da4ddef5f7edd355c4bbb5444f8903fbc2bb38770e1d66023e3f1a927cfd"
+    },
+    {
+      "path": "script/fixtures/html-probe-failure.mjs",
+      "byteLength": 2539,
+      "sha256": "2889f76718edbae9f1a2623a88829b3008c032b94007cc72224a2766c0dccba1"
+    },
+    {
+      "path": "script/__tests__/html-probe-failure.test.mjs",
+      "byteLength": 3604,
+      "sha256": "aa0e00c8105aa17e744622fe57ff971ebc4c388b52df86fa38b390a8ff5cf6bf"
+    }
+  ],
+  "changes": [
+    "Record coarse browser phases without changing the test sequence.",
+    "Persist failure.json independently of success-only evidence.json.",
+    "Bound failure snapshot read to 2000 ms; preserve original failure, absent page, snapshot errors and source drift.",
+    "Redact URLs, limit phase history, omit arbitrary page result payloads and refuse receipt overwrite."
+  ],
+  "verification": {
+    "failureCpuTests": {
+      "pass": 2,
+      "fail": 0,
+      "skip": 0,
+      "command": "node --test script/__tests__/html-probe-failure.test.mjs"
+    },
+    "syntax": {
+      "nodeEntryAndHelper": true,
+      "browserTypeScriptParse": true
+    },
+    "strictNewHelperLint": {
+      "exitCode": 0,
+      "config": "script/acceptance-focused-js-eslint.config.mjs"
+    },
+    "formatNewHelpers": {
+      "exitCode": 0
+    },
+    "cliIntegratedTypecheck": {
+      "exitCode": 0,
+      "typescript": "5.9.3",
+      "command": "node apps/cli/node_modules/typescript/bin/tsc -p apps/cli/tsconfig.json --noEmit"
+    },
+    "encoding": {
+      "strictUtf8": true,
+      "noBom": true,
+      "noReplacement": true
+    },
+    "diffCheck": true
+  },
+  "lintBoundary": {
+    "existingHtmlProbeErrors": 2,
+    "baselineErrors": 2,
+    "unchangedRules": [
+      "no-empty",
+      "no-unsafe-finally"
+    ],
+    "fullLintGreenClaim": false
+  },
+  "retainedFailure": "docs/evidence/hf-remotion-browser-attempt1-20261011.json",
+  "originalResultWatchdogMs": 180000,
+  "originalThresholdsChanged": false,
+  "browserRun": false,
+  "workflowAcceptance": false,
+  "remaining": "Fresh pinned full run required to locate timeout and complete all four browser chains."
+}

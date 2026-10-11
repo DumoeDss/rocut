@@ -71,16 +71,23 @@ async function rejected(run: () => Promise<unknown>, match: RegExp) {
 
 export async function runHtmlFrameProbe() {
 	Reflect.set(globalThis, "__htmlProbeStarted", true);
+	const phase = (name: string) => {
+		Reflect.set(globalThis, "__htmlProbePhase", name);
+		console.log(`HTML probe: phase ${name}`);
+	};
 	console.log("HTML probe: starting real Tool Host requests");
 	const checks: string[] = [];
+	phase("native-engine-sources");
 	const nativeSource = await runHyperframesSourceProbe() ?? await runRemotionSourceProbe();
 	if (nativeSource) checks.push(`native ${nativeSource.build?.engine ?? "HyperFrames"} runtime, nested compositions, resources, alpha and random seek`);
 	if (Reflect.get(globalThis, "__nativeOnly")) {
 		if (!nativeSource) throw Error("Native-only probe requires an engine fixture");
 		return { passed: true, nativeOnly: true, checks };
 	}
+	phase("project-resources");
 	checks.push(await runResourceProbe());
 	console.log("HTML probe: project images/fonts passed in Worker and DOM");
+	phase("html-alpha-and-seek");
 	const catalog = await (await fetch("/api/editing/catalog")).json();
 	if (!catalog.programmatic.runtimes.includes("html-document"))
 		throw Error("Host did not advertise configured HTML rasterizer");
@@ -102,6 +109,7 @@ export async function runHtmlFrameProbe() {
 		"authenticated Tool Host → isolated HTML DOM → alpha PNG; repeat/reverse seek; no parent/storage/host bridge",
 	);
 	console.log("HTML probe: alpha and seek passed");
+	phase("css-and-inline-resources");
 	const css = `<style>body{margin:0}div{width:16px;height:64px;background:lime;animation:move 1s linear both}@keyframes move{from{transform:translateX(0)}to{transform:translateX(30px)}}</style><div></div>`;
 	for (const time of [60000, 0, 60000]) {
 		const bitmap = await png(time, css);
@@ -129,6 +137,7 @@ export async function runHtmlFrameProbe() {
 		}
 	}
 	checks.push("data image readiness and explicit HTML Canvas frame hook");
+	phase("isolation-and-validation");
 	for (const code of [
 		`<script>window.rocut={renderFrame:()=>fetch('http://127.0.0.1:1/private')}</script>`,
 		`<img src="https://example.invalid/blocked.png">`,
@@ -150,6 +159,7 @@ export async function runHtmlFrameProbe() {
 		"network/local media/unseeked Canvas/script errors reject; Rust rejects invalid size before launch",
 	);
 	console.log("HTML probe: isolation and validation passed");
+	phase("provider-cancellation-and-recovery");
 	const abort = new AbortController();
 	const pending = provider.renderPng({
 		request: request(0, `<script>while(true){}</script>`),
@@ -164,6 +174,7 @@ export async function runHtmlFrameProbe() {
 		"abort and watchdog stop runaway HTML; subsequent request recovers",
 	);
 	console.log("HTML probe: cancellation passed; running compositor/export");
+	phase("gpu-initialization");
 	await initializeGpu();
 	console.log("HTML probe: GPU initialized; starting native export checks");
 	const compositor = new WasmCompositor({
@@ -218,10 +229,12 @@ export async function runHtmlFrameProbe() {
 			isPreview,
 		});
 	try {
+		phase("native-engine-exports");
 		const nativeEncodedBytes = nativeSource ? await runNativeEngineExportProbe(nativeSource, params) : undefined;
 		const nativeVideoEncodedBytes = remotionVideoSource
 			? await runNativeEngineExportProbe(remotionVideoSource, params, { indices: [40, 42], startTime: 88000, frameTicks: 4000 })
 			: hyperframesVideoSource ? await runNativeEngineExportProbe(hyperframesVideoSource, { ...params, fps: hyperframesVideoSource.frameRate }, { indices: [16, 18], startTime: 26400, frameTicks: 1200 }) : undefined;
+		phase("gpu-alpha-preview-export");
 		const renderer = new CanvasRenderer(params);
 		const preview = await renderer.renderAndCapture({
 			node: scene(true),
@@ -236,6 +249,7 @@ export async function runHtmlFrameProbe() {
 		equal("preview/export graph parity", preview, exported);
 		if (preview.some((value, i) => Math.abs(value - [128, 0, 127, 255][i]) > 3))
 			throw Error(`GPU alpha: ${preview}`);
+		phase("html-webm-encode-decode");
 		const exporter = new SceneExporter({
 			...params,
 			format: "webm",
@@ -273,6 +287,7 @@ export async function runHtmlFrameProbe() {
 		checks.push(
 			"real Rocut GPU alpha composition, preview/export parity and WebM encode/decode with frame changes",
 		);
+		phase("export-cancellation-and-recovery");
 		const lane = tracks.overlay[0];
 		if (lane.type !== "graphic" || lane.elements[0].type !== "graphic")
 			throw Error("Wrong fixture lane");
@@ -317,6 +332,7 @@ export async function runHtmlFrameProbe() {
 		);
 		if (nativeEncodedBytes) checks.push(`native ${nativeSource?.build?.engine ?? "HyperFrames"} attachment through Rocut GPU preview/export parity and WebM decode across child visibility boundary`);
 		if (nativeVideoEncodedBytes) checks.push("native engine video exact decoded source frames through Rocut GPU preview/export and WebM encode/decode");
+		phase("completed");
 		return { passed: true, checks, encodedBytes: bytes.byteLength, nativeEncodedBytes, nativeVideoEncodedBytes };
 	} finally {
 		compositor.dispose();

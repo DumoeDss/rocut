@@ -45,6 +45,8 @@ const report = {
 	role: basename(receipt).includes("editor")
 		? "Node Playwright editor browser"
 		: "Node Playwright production-export compositor browser",
+	servedCollection:
+		"actual .wasm Response.clone() bytes in pre-application observer; not inspector cache or URL identity",
 	served: [],
 	loaded: [],
 	fontsServed: [],
@@ -68,22 +70,19 @@ chromium.launch = async (...args) => {
 			pages.add(page);
 			page.on("response", (response) => {
 				const path = new URL(response.url()).pathname;
-				if (
-					!/\.wasm$/.test(path) &&
-					!/\/(?:fonts|motion-text\/fonts)\//.test(path)
-				)
-					return;
+				// Fonts retain independent response-body collection. WASM uses the
+				// actual consumed Response clone, so large binary cache eviction is
+				// not silently ignored or reclassified as a success.
+				if (!/\/(?:fonts|motion-text\/fonts)\//.test(path)) return;
 				const job = (async () => {
 					const bytes = await response.body();
 					const item = {
-						path,
+						asset: path.split("/").at(-1),
 						status: response.status(),
 						bytes: bytes.length,
 						sha256: createHash("sha256").update(bytes).digest("hex"),
 					};
-					(/\.wasm$/.test(path) ? report.served : report.fontsServed).push(
-						item,
-					);
+					report.fontsServed.push(item);
 				})().catch((error) =>
 					report.errors.push(
 						String(error).replace(/https?:\/\/[^\s"'<>]+/g, "[private URL]"),
@@ -96,11 +95,11 @@ chromium.launch = async (...args) => {
 		const prepareContext = async (context) => {
 			if (contexts.has(context)) return;
 			contexts.add(context);
-			await context.exposeBinding("__rocutGlassWasmPin", ({ frame }, entry) => {
-				report.loaded.push({
-					...entry,
-					framePath: new URL(frame.url()).pathname,
-				});
+			await context.exposeBinding("__rocutGlassWasmPin", (_source, entry) => {
+				if (entry.kind === "served") report.served.push(entry);
+				else if (entry.kind === "loaded") report.loaded.push(entry);
+				else if (entry.kind === "error") report.errors.push(entry);
+				else report.errors.push({ message: "Unknown observer event kind" });
 			});
 			await context.addInitScript(installGlassWasmObserver);
 			context.on("page", preparePage);

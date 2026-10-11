@@ -1,0 +1,291 @@
+{
+  "version": 1,
+  "date": "2026-10-11",
+  "ok": true,
+  "scope": "Real Host glTF and SVG import/archive/restore, feature-profile compile, CPU feature animation API, save/reopen. No SVG DOM parsing/raster, GPU, browser or export.",
+  "browserTested": false,
+  "svgRuntimeTested": false,
+  "exportTested": false,
+  "mutationScope": "New independent untracked CPU files and run-owned .artifacts only; no tracked production/old receipts/shared dependencies/reference changes, no Git writes, no browser processes",
+  "toolchainPreparation": {
+    "path": ".artifacts/p1d-feature-toolchain/run-lCXGLZ/p1d-feature-toolchain-evidence.json",
+    "receiptSha256": "47c12559ef8d5ae8602cb59a80ee13e69f3c6b565c307615d0d85ed91e14b46d",
+    "ok": true,
+    "tar": {
+      "sha256": "06bd58a7cdd3f5d3c2b0529a4e5f2385113c90879c1a7d7d2c04e221d3bffcfe",
+      "integrity": "sha512-iGsWTQS6rboG7wfWgRTk2Xt/JNu3UkKkt+DY/aXCbfir000ZRb+2mwkyVOtsaQajcKuBEpqFtBzvt73cILxD0Q==",
+      "files": 135
+    },
+    "sourcePin": {
+      "archive": "C:\\tmps\\three-assets-production-20261011\\elftia-three-assets-0.1.1.tgz",
+      "sha256": "06bd58a7cdd3f5d3c2b0529a4e5f2385113c90879c1a7d7d2c04e221d3bffcfe",
+      "installedPackageExactlyMatchesTar": true,
+      "dependencyCopies": 1306,
+      "dependencyBytesExactlyMatchOrdinary": true,
+      "rootManifestAndLockSource": "file:./elftia-three-assets-0.1.1.tgz"
+    },
+    "before": {
+      "root": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\.artifacts\\three-toolchain\\run-3Hn5Nw",
+      "bytes": 35590142,
+      "fileCount": 1398,
+      "inventorySha256": "0f08c92f9650f52684e0c0e86389a23a7c6ae546309c39cb450b53d47d16a463"
+    },
+    "after": {
+      "root": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\.artifacts\\three-toolchain\\run-3Hn5Nw",
+      "bytes": 35590142,
+      "fileCount": 1398,
+      "inventorySha256": "0f08c92f9650f52684e0c0e86389a23a7c6ae546309c39cb450b53d47d16a463"
+    },
+    "installed": {
+      "root": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\.worktrees\\rocut-acceptance-20261011-6fa23f6b\\_others\\rocut\\.artifacts\\p1d-feature-toolchain\\run-lCXGLZ",
+      "bytes": 44563401,
+      "fileCount": 1445,
+      "inventorySha256": "3e663bfce719811c6a95583161b61d3c0b16bb69a3399a040a3c852ceb42251e"
+    }
+  },
+  "featureCpu": {
+    "path": ".artifacts/three-archive-revision/run-9awg6K/p1-d-feature-evidence.json",
+    "receiptSha256": "0ea1afc28ba3f63e0af2fec6d15326b57b123dd1934dc4b4fc5bf2cf62c95a25",
+    "ok": true,
+    "scope": "Real Host glTF and SVG import/archive/restore, feature-profile compile, CPU feature animation API, save/reopen. No SVG DOM parsing/raster, GPU, browser or export.",
+    "wasmRoot": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\.worktrees\\rocut-acceptance-20261011-6fa23f6b\\_others\\rocut\\rust\\wasm\\pkg",
+    "wasmSha256": "084cf7310df5bfdc1b8e4ce3f64bcff842e1b23b9fd0ca57c1c7dcffc0d1fc12",
+    "assets": {
+      "origin": "script/fixtures/three-assets.ts threeModel(): existing geometry, texture removed for CPU loader; appended bounded local LINEAR node-translation animation",
+      "gltfSha256": "b8eda572d81391c9e84102f0304a779db9ec801fe3be3eb708fb7c1019b2db51",
+      "binarySha256": "ae82075a78869cb2bc64ad3c3dd5d80c0e93c59a9e6d75ba1b557166cbab3dc9",
+      "svgOrigin": "script/fixtures/html-frame-browser-probe.ts: existing 64x64 lime rectangle",
+      "svgSha256": "115232401590f14e19510caa426eaf7747f2f5f5d0b0caaa20ee97a9f3bc210e"
+    },
+    "restored": {
+      "status": "complete",
+      "incomplete": false,
+      "directory": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\.worktrees\\rocut-acceptance-20261011-6fa23f6b\\_others\\rocut\\.artifacts\\three-archive-revision\\run-9awg6K\\feature-restored-model",
+      "sourceDirectory": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\.worktrees\\rocut-acceptance-20261011-6fa23f6b\\_others\\rocut\\.artifacts\\three-archive-revision\\run-9awg6K\\feature-restored-model\\source",
+      "entryFile": "scene.gltf",
+      "archivePath": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\.worktrees\\rocut-acceptance-20261011-6fa23f6b\\_others\\rocut\\.artifacts\\three-archive-revision\\run-9awg6K\\feature-restored-model\\metadata\\model-archive.json",
+      "receiptPath": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\.worktrees\\rocut-acceptance-20261011-6fa23f6b\\_others\\rocut\\.artifacts\\three-archive-revision\\run-9awg6K\\feature-restored-model\\metadata\\restore-receipt.json",
+      "sourceFileCount": 2,
+      "sourceByteLength": 2688,
+      "glbRebuilt": false,
+      "originalAuthorUnavailable": true,
+      "allAuthorBytesEqual": true
+    },
+    "animation": {
+      "actualLoader": "fixed Three GLTFLoader",
+      "actualFeatureAPI": "fixed package modelHandle/createModelAnimation",
+      "clonedInstanceAndAnimation": true,
+      "samples": [
+        {
+          "time": 0.75,
+          "sampledTime": 0.75,
+          "x": 0.375
+        },
+        {
+          "time": 0,
+          "sampledTime": 0,
+          "x": 0
+        },
+        {
+          "time": 0.25,
+          "sampledTime": 0.25,
+          "x": 0.125
+        },
+        {
+          "time": 0.75,
+          "sampledTime": 0.75,
+          "x": 0.375
+        },
+        {
+          "time": 1.5,
+          "sampledTime": 1,
+          "x": 0.5
+        },
+        {
+          "time": -0.5,
+          "sampledTime": 0,
+          "x": 0
+        }
+      ],
+      "sourceUnchanged": true,
+      "disposalCount": 1,
+      "noWebGL": true
+    },
+    "profile": {
+      "declared": "svg-animation-v1",
+      "hostCompileAccepted": true,
+      "svgRuntimeAccepted": false
+    },
+    "compiledDocument": {
+      "id": "_rocut/compiled.html",
+      "kind": "document",
+      "mimeType": "text/html",
+      "byteLength": 2147353,
+      "sha256": "d2312a06ed9cd9615b1c147f93525faf1fc11f6487e7417fb279db6db7a05d77",
+      "attachmentKey": "programmatic-sha256-d2312a06ed9cd9615b1c147f93525faf1fc11f6487e7417fb279db6db7a05d77"
+    },
+    "toolchainLock": {
+      "id": "_rocut/toolchain-lock.json",
+      "kind": "source",
+      "mimeType": "application/octet-stream",
+      "byteLength": 7714,
+      "sha256": "b38f8a202742afcb42de9e765e900ba94d64263869dd817e12d4bc9a0d784ae3",
+      "attachmentKey": "programmatic-source-sha256-b38f8a202742afcb42de9e765e900ba94d64263869dd817e12d4bc9a0d784ae3"
+    },
+    "toolchainBefore": {
+      "root": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/.worktrees/rocut-acceptance-20261011-6fa23f6b/_others/rocut/.artifacts/p1d-feature-toolchain/run-lCXGLZ",
+      "bytes": 45976692,
+      "fileCount": 1446,
+      "inventorySha256": "d48afa84a45d086e1a8276acd3f0ecf831149c2574c91949a8eecf465526f20b"
+    },
+    "toolchainAfter": {
+      "root": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/.worktrees/rocut-acceptance-20261011-6fa23f6b/_others/rocut/.artifacts/p1d-feature-toolchain/run-lCXGLZ",
+      "bytes": 45976692,
+      "fileCount": 1446,
+      "inventorySha256": "d48afa84a45d086e1a8276acd3f0ecf831149c2574c91949a8eecf465526f20b"
+    },
+    "negatives": [
+      {
+        "name": "missing-binary-closure",
+        "error": "Error: Host programmatic/resources/import: 422 {\"error\":\"Undeclared or missing glTF dependency: mesh.bin\"}",
+        "projectBytesUnchanged": true,
+        "snapshotUnchanged": true,
+        "attachmentLedgerUnchanged": true
+      },
+      {
+        "name": "missing-source-does-not-publish",
+        "status": 422,
+        "error": "{\"error\":\"ENOENT: no such file or directory, lstat 'E:\\\\AI\\\\ChatAI\\\\Agents\\\\VibeCodingProjects\\\\elftia\\\\.worktrees\\\\rocut-acceptance-20261011-6fa23f6b\\\\_others\\\\rocut\\\\.artifacts\\\\three-archive-revision\\\\run-9awg6K\\\\author\\\\missing.ts'\"}",
+        "projectBytesUnchanged": true,
+        "snapshotUnchanged": true,
+        "attachmentLedgerUnchanged": true,
+        "documentPublished": false
+      }
+    ],
+    "persistence": {
+      "projectBytesSha256": "5d1852a6a89b0f39594235eaa9c9fa091ed905f699b0907f9494f68711114fbf",
+      "snapshotExact": true,
+      "ledgerExact": true,
+      "resourcesExact": true,
+      "archivedBuildReusedAfterAuthorUnavailable": true,
+      "resources": [
+        {
+          "id": "feature-main.ts",
+          "kind": "source",
+          "mimeType": "application/octet-stream",
+          "byteLength": 731,
+          "sha256": "dc7b56174bcddf7d8df0f704555d8cd4c91da814c9617dfbf2983c8f1cf054ef",
+          "attachmentKey": "programmatic-source-sha256-dc7b56174bcddf7d8df0f704555d8cd4c91da814c9617dfbf2983c8f1cf054ef",
+          "actualSha256": "dc7b56174bcddf7d8df0f704555d8cd4c91da814c9617dfbf2983c8f1cf054ef"
+        },
+        {
+          "id": "_rocut/toolchain-lock.json",
+          "kind": "source",
+          "mimeType": "application/octet-stream",
+          "byteLength": 7714,
+          "sha256": "b38f8a202742afcb42de9e765e900ba94d64263869dd817e12d4bc9a0d784ae3",
+          "attachmentKey": "programmatic-source-sha256-b38f8a202742afcb42de9e765e900ba94d64263869dd817e12d4bc9a0d784ae3",
+          "actualSha256": "b38f8a202742afcb42de9e765e900ba94d64263869dd817e12d4bc9a0d784ae3"
+        },
+        {
+          "id": "_rocut/compiled.html",
+          "kind": "document",
+          "mimeType": "text/html",
+          "byteLength": 2147353,
+          "sha256": "d2312a06ed9cd9615b1c147f93525faf1fc11f6487e7417fb279db6db7a05d77",
+          "attachmentKey": "programmatic-sha256-d2312a06ed9cd9615b1c147f93525faf1fc11f6487e7417fb279db6db7a05d77",
+          "actualSha256": "d2312a06ed9cd9615b1c147f93525faf1fc11f6487e7417fb279db6db7a05d77"
+        },
+        {
+          "id": "assets/p1d.glb",
+          "kind": "model",
+          "mimeType": "model/gltf-binary",
+          "byteLength": 1516,
+          "sha256": "2bdee1e657b9db828e971b4c289cd7ffb2edf57bd1830f431a5f859fe5c3dd34",
+          "attachmentKey": "programmatic-sha256-2bdee1e657b9db828e971b4c289cd7ffb2edf57bd1830f431a5f859fe5c3dd34",
+          "actualSha256": "2bdee1e657b9db828e971b4c289cd7ffb2edf57bd1830f431a5f859fe5c3dd34"
+        },
+        {
+          "id": "assets/shape.svg",
+          "kind": "model",
+          "mimeType": "image/svg+xml",
+          "byteLength": 111,
+          "sha256": "115232401590f14e19510caa426eaf7747f2f5f5d0b0caaa20ee97a9f3bc210e",
+          "attachmentKey": "programmatic-sha256-115232401590f14e19510caa426eaf7747f2f5f5d0b0caaa20ee97a9f3bc210e",
+          "actualSha256": "115232401590f14e19510caa426eaf7747f2f5f5d0b0caaa20ee97a9f3bc210e"
+        }
+      ]
+    },
+    "plan": {
+      "frames": [
+        0,
+        23,
+        7,
+        23,
+        0
+      ],
+      "frameRate": 30,
+      "shortExportDurationFrames": 30,
+      "executed": false
+    }
+  },
+  "sourcePins": [
+    {
+      "path": "script/prepare-p1-d-feature-toolchain.mjs",
+      "sha256": "eeaec65f01e993892c449a8de35907689fbb0c3d2ea63542216ae33d5d0607e6"
+    },
+    {
+      "path": "script/prepare-p1-d-feature-toolchain.test.mjs",
+      "sha256": "00a82f1df2d36004686263f841f2a5b70220475e3d82c46df3fd02ca0bbe062e"
+    },
+    {
+      "path": "apps/cli/src/__tests__/p1-d-three-assets-feature-fixture.ts",
+      "sha256": "3fe377bee362cccdfb66de0c0044fe7c3439b22a66447721c917a9c2d1464cb5"
+    },
+    {
+      "path": "apps/cli/src/__tests__/p1-d-three-assets-feature.test.ts",
+      "sha256": "e548501b30bc24c759b79f22cbd5be654f6aa6c24bc98a9d702cb5fb763c6e21"
+    }
+  ],
+  "retainedPriorRuns": [
+    ".artifacts/p1d-feature-toolchain/run-w9TQWa/p1d-feature-toolchain-evidence.json",
+    ".artifacts/three-archive-revision/run-DnIKX5/p1-d-feature-evidence.json"
+  ],
+  "validation": {
+    "combinedCpu": {
+      "command": "bun test apps/cli/src/__tests__/p1-d-three-assets.test.ts apps/cli/src/__tests__/p1-d-three-assets-feature.test.ts",
+      "passed": 3,
+      "failed": 0,
+      "expectCalls": 11,
+      "ordinaryToolchain": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/_others/rocut/.artifacts/three-toolchain/run-3Hn5Nw",
+      "ordinaryArtifact": ".artifacts/three-archive-revision/run-2uS2sC/p1-d-evidence.json",
+      "featureToolchain": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/.worktrees/rocut-acceptance-20261011-6fa23f6b/_others/rocut/.artifacts/p1d-feature-toolchain/run-lCXGLZ"
+    },
+    "tarSafety": {
+      "command": "node --test script/prepare-p1-d-feature-toolchain.test.mjs",
+      "passed": 2,
+      "failed": 0,
+      "checks": [
+        "regular-only entries",
+        "path escapes",
+        "links",
+        "case duplicates",
+        "header checksum",
+        "zero trailer",
+        "truncation"
+      ]
+    },
+    "lint": {
+      "mjs": "passed",
+      "tsFixtures": "ESLint ignored both fixture/test files; not claimed as lint coverage"
+    },
+    "encoding": {
+      "strictUtf8": true,
+      "bom": false,
+      "replacementCharacters": false
+    },
+    "scopedDiffCheck": "passed"
+  },
+  "inventoryNotes": "Preparation installed inventory is captured before writing its own receipt (1445 files). Host before/after closure includes that immutable receipt (1446 files); each corresponding before/after pair is exact.",
+  "pending": "Parent-managed browser/GPU queue: SVG runtime parsing/render, randomized frames, Host frames/export. Frame/export plan is unexecuted."
+}

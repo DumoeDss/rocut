@@ -1,0 +1,126 @@
+{
+  "schema": "rocut-browser-failure-doc/v1",
+  "generatedAt": "2026-10-11T10:54:49.796Z",
+  "workspace": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/.worktrees/rocut-acceptance-20261011-6fa23f6b/_others/rocut",
+  "sourceCommit": "ad13d94eeca58041ffe3f82fa423cbf833c35aaf",
+  "status": "failed-first-entry-stopped",
+  "case": "hyperframes-basic",
+  "startedAt": "2026-10-11T10:46:36.736Z",
+  "finishedAt": "2026-10-11T10:50:18.753Z",
+  "command": {
+    "prepare": [
+      "node",
+      "script/probe-hf-remotion-browser-authority.mjs",
+      "--prepare"
+    ],
+    "run": [
+      "node",
+      "script/probe-hf-remotion-browser-authority.mjs",
+      "--run",
+      "C:/Users/Sayo/AppData/Local/Temp/rocut-hf-remotion-browser-20261011-sfhgNj"
+    ],
+    "runEnv": {
+      "ROCUT_BROWSER_WINDOW_AUTHORIZED": "1"
+    }
+  },
+  "firstActualError": {
+    "name": "TimeoutError",
+    "message": "page.waitForFunction: Timeout 180000ms exceeded.",
+    "source": "script/probe-html-frames.mjs:306",
+    "stage": "Whole browser behavioral result watchdog waiting for globalThis[resultKey] after the separate started watchdog",
+    "exitCode": 1
+  },
+  "lastObservedStage": "runHyperframesVideoProbe completed media admission, missing/corrupt input negatives and capture recovery; project resource probe completion log was not observed.",
+  "observedPassingSubchecks": [
+    "production API native HyperFrames nesting and random seek",
+    "media.html decoded-frame checks",
+    "media-tail.html decoded-frame checks",
+    "media-natural.html decoded-frame checks",
+    "media-trim-loop.html decoded-frame checks",
+    "media-ramp.html decoded-frame checks",
+    "media-source.html decoded-frame checks",
+    "media-resource.html decoded-frame checks",
+    "media admission, missing/corrupt inputs and capture recovery"
+  ],
+  "inference": "The next source path returns from runHyperframesSourceProbe and enters runResourceProbe. Logs do not establish whether that probe failed or the unchanged aggregate 180s budget was consumed; no resource logic defect is claimed.",
+  "acceptance": {
+    "passed": false,
+    "actualBytesFinalSuccess": false,
+    "hostIdentityStartupAdmission": "The existing entry validates supplied Host identity before accepting startup; final result/evidence was never written.",
+    "browserActualBytesFinalIdentity": "not available; result identity assertion occurs after the timed-out wait",
+    "evidenceJsonCreated": false,
+    "exportAcceptanceClaimed": false,
+    "electronTested": false
+  },
+  "identity": {
+    "preSnapshotValid": true,
+    "identitiesUnchanged": true,
+    "fixtureManifestSha256": "fc333f5b2bbb16ea60493e0961b783f55cd2ea98018836e0a00ee6acb4adf79a",
+    "fixtureFileCount": 6945,
+    "fixtureDrift": [],
+    "fixtureBeforeValid": true,
+    "fixtureAfterValid": true,
+    "wasmSha256": "084cf7310df5bfdc1b8e4ce3f64bcff842e1b23b9fd0ca57c1c7dcffc0d1fc12",
+    "toolchainClosureFileCount": 4097,
+    "toolchainClosureSha256": "957fc6398d085d8cb75a96a58e5e5ca90a24cf0de3cd955eb92418f93b682216"
+  },
+  "unexecutedCases": [
+    "remotion-basic",
+    "hyperframes-audio-editor",
+    "remotion-audio-editor"
+  ],
+  "retries": 0,
+  "capped": false,
+  "skipped": false,
+  "preserved": [
+    {
+      "path": "C:/Users/Sayo/AppData/Local/Temp/rocut-hf-remotion-browser-20261011-sfhgNj/plan.json",
+      "sha256": "d899e6c9140f9018cd563bb10f36bc0e51317acb8b00290d772312bdd3316e39"
+    },
+    {
+      "path": "C:/Users/Sayo/AppData/Local/Temp/rocut-hf-remotion-browser-20261011-sfhgNj/before.json",
+      "sha256": "f8b43f5448084e118a6c04c7315e6618307b988ce55a89e5bfdb0a70bac2ed98"
+    },
+    {
+      "path": "C:/Users/Sayo/AppData/Local/Temp/rocut-hf-remotion-browser-20261011-sfhgNj/receipt.json",
+      "sha256": "e5b5b2d995ea9346cfea4837212c623420305d0c74e34fb482033c95a5b3dfef"
+    },
+    {
+      "path": "C:/Users/Sayo/AppData/Local/Temp/rocut-hf-remotion-browser-20261011-sfhgNj/hyperframes-basic-attempt-bG22yk/before.json",
+      "sha256": "f6883eb7e8b9c94afff2b283e7faa75a0f368da389a7c34d44aef97ad9d6594c"
+    },
+    {
+      "path": "C:/Users/Sayo/AppData/Local/Temp/rocut-hf-remotion-browser-20261011-sfhgNj/hyperframes-basic-attempt-bG22yk/after.json",
+      "sha256": "faf6447d63fcf0908b3ae730a5dc966d16aa5c6eb2ee338f9d8c81be7800702b"
+    },
+    {
+      "path": "C:/Users/Sayo/AppData/Local/Temp/rocut-hf-remotion-browser-20261011-sfhgNj/hyperframes-basic-attempt-bG22yk/receipt.json",
+      "sha256": "045b20a4ab0b13296ed936f12dc52a02e831a6953d10eca1ea2cce67f039ba15"
+    }
+  ],
+  "cleanup": {
+    "windowReleased": true,
+    "checkedAt": "2026-10-11T10:54:49.7968821Z",
+    "ownedMarkerMatches": [],
+    "chromeProcessCount": 0,
+    "markers": [
+      "script/fixtures/html-frame-host.ts",
+      "rocut-html-frame-",
+      "rocut-hf-remotion-browser-20261011-sfhgNj"
+    ],
+    "otherSessionProcessesUntouched": true,
+    "entryFinallyObserved": "Normal finally path closes browser/server, sends stop to owned Host, awaits exit, checks profiles, and removes own private fixture; process returned original TimeoutError without cleanup override."
+  },
+  "writes": {
+    "trackedSources": false,
+    "trackedReceipts": false,
+    "head": false,
+    "fixtureManifest": false,
+    "oldPreparationAndFailureHistoryOverwritten": false
+  },
+  "limitations": [
+    "Only the first existing short-chain entry executed.",
+    "Passing subchecks are partial progress, not whole-entry acceptance.",
+    "No retry or timeout relaxation was performed."
+  ]
+}

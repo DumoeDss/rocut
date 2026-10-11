@@ -21,20 +21,94 @@ export function installGlassWasmObserver() {
 		).join(""),
 	});
 	const emit = (entry) => globalThis.__rocutGlassWasmPin(entry);
+	const errorRecord = async (operation, error) => {
+		await emit({
+			kind: "error",
+			operation,
+			message: String(error).replace(/https?:\/\/[^\s"'<>]+/g, "[private URL]"),
+		});
+	};
+	const identifyObserved = async (bytes, operation) => {
+		try {
+			return await identify(bytes);
+		} catch (error) {
+			await errorRecord(operation, error);
+		}
+	};
+	const wasmAsset = (response) => {
+		try {
+			const path = new URL(response.url).pathname;
+			if (/\.wasm$/.test(path)) return path.split("/").at(-1);
+		} catch {
+			/* An unlocated native Response is not a .wasm URL witness. */
+		}
+	};
+	const observeResponse = async (response, source) => {
+		try {
+			const identity = await identify(
+				new Uint8Array(await response.clone().arrayBuffer()),
+			);
+			await emit({
+				kind: "served",
+				operation: "Response.clone.arrayBuffer",
+				source,
+				transport: "actual-response-clone",
+				asset: wasmAsset(response),
+				status: response.status,
+				...identity,
+			});
+			return identity;
+		} catch (error) {
+			// Fail the independent receipt, but leave native fetch/init behavior
+			// untouched. Native rejections below are never turned into success.
+			await errorRecord("Response.clone.arrayBuffer", error);
+		}
+	};
+	const fetch = globalThis.fetch;
+	globalThis.fetch = async function (...args) {
+		let wasmRequest = false;
+		try {
+			const input = args[0]?.url ?? args[0];
+			wasmRequest = /\.wasm$/.test(
+				new URL(input, globalThis.location?.href).pathname,
+			);
+		} catch {
+			/* Other fetch input validation remains native. */
+		}
+		let response;
+		try {
+			response = await Reflect.apply(fetch, this, args);
+		} catch (error) {
+			if (wasmRequest) await errorRecord("fetch.wasm", error);
+			throw error;
+		}
+		if (wasmRequest && wasmAsset(response))
+			await observeResponse(response, "fetch-response-clone");
+		return response;
+	};
 	const compile = WebAssembly.compile;
 	WebAssembly.compile = async function (...args) {
 		const bytes = copy(args[0]);
 		const module = await Reflect.apply(compile, this, args);
-		if (bytes) modules.set(module, await identify(bytes));
+		if (bytes) {
+			const identity = await identifyObserved(
+				bytes,
+				"compile.BufferSource.sha256",
+			);
+			if (identity) modules.set(module, identity);
+		}
 		return module;
 	};
 	const instantiate = WebAssembly.instantiate;
 	WebAssembly.instantiate = async function (...args) {
 		const bytes = copy(args[0]);
 		const result = await Reflect.apply(instantiate, this, args);
-		const identity = bytes ? await identify(bytes) : modules.get(args[0]);
+		const identity = bytes
+			? await identifyObserved(bytes, "instantiate.BufferSource.sha256")
+			: modules.get(args[0]);
 		if (bytes && result.module) modules.set(result.module, identity);
 		await emit({
+			kind: "loaded",
 			operation: "instantiate",
 			success: true,
 			...(identity ?? { unknownModuleBytes: true }),
@@ -46,18 +120,27 @@ export function installGlassWasmObserver() {
 		if (!original) continue;
 		WebAssembly[name] = async function (...args) {
 			const response = await args[0];
-			const bytesPromise = response.clone().arrayBuffer();
+			// Persist served bytes before attempting compilation/instantiation: a
+			// failed native initializer must not erase the independent response pin.
+			const identity = wasmAsset(response)
+				? await observeResponse(response, `${name}-response-clone`)
+				: undefined;
 			const result = await Reflect.apply(original, this, [
 				response,
 				...args.slice(1),
 			]);
-			const identity = await identify(new Uint8Array(await bytesPromise));
-			modules.set(
-				name === "compileStreaming" ? result : result.module,
-				identity,
-			);
+			if (identity)
+				modules.set(
+					name === "compileStreaming" ? result : result.module,
+					identity,
+				);
 			if (name === "instantiateStreaming")
-				await emit({ operation: name, success: true, ...identity });
+				await emit({
+					kind: "loaded",
+					operation: name,
+					success: true,
+					...(identity ?? { unknownModuleBytes: true }),
+				});
 			return result;
 		};
 	}
@@ -79,14 +162,28 @@ export function assertGlassBrowserIdentity(
 		),
 		"Expected authority WASM was not observed in a served response body",
 	);
+	const linked = loaded.filter(
+		(entry) =>
+			entry.sha256 === expectedSha256 &&
+			entry.success === true &&
+			entry.bytes > 8 &&
+			served.some(
+				(response) =>
+					response.status === 200 &&
+					response.sha256 === entry.sha256 &&
+					response.bytes === entry.bytes,
+			),
+	);
 	assert(
-		loaded.some(
-			(entry) =>
-				entry.sha256 === expectedSha256 &&
-				entry.success === true &&
-				entry.bytes > 8,
-		),
+		linked.length > 0,
 		"Expected authority WASM was not successfully instantiated from observed bytes",
 	);
-	return { expectedSha256, servedAuthority: true, loadedAuthority: true };
+	return {
+		expectedSha256,
+		servedAuthority: true,
+		loadedAuthority: true,
+		linkedLoadedCount: linked.length,
+		linkage:
+			"Exact SHA256 and byteLength between actual response clone and successful instantiate bytes",
+	};
 }

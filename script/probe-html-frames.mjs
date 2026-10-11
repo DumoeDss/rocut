@@ -4,6 +4,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { mkdtemp, readdir, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
+import { saveHtmlProbeFailure } from "./fixtures/html-probe-failure.mjs";
 import {
 	resolveHtmlProbeWasmBinding,
 	assertHtmlProbeWasmIdentity,
@@ -69,6 +70,7 @@ const sourceInputs =
 		? snapshotHtmlProbeSources(root, [
 				"script/probe-html-frames.mjs",
 				"script/html-probe-wasm-binding.mjs",
+				"script/fixtures/html-probe-failure.mjs",
 				"script/fixtures/local-wasm-preload.mjs",
 				`script/fixtures/${fixture}`,
 				`script/fixtures/${fixture.replace(/\.html$/, ".ts")}`,
@@ -130,7 +132,8 @@ const host = spawn(
 	},
 );
 const exited = new Promise((resolve) => host.once("exit", resolve));
-let server, browser, hostWasmIdentity;
+let server, browser, page, hostWasmIdentity;
+const consolePhases = [];
 try {
 	const editorUrl = await new Promise((resolve, reject) => {
 		let text = "";
@@ -227,7 +230,7 @@ try {
 					]
 				: [],
 	});
-	const page = await browser.newPage();
+	page = await browser.newPage();
 	const redact = (value) =>
 		String(value).replaceAll(new URL(editorUrl).pathname, "/[session]/");
 	if (ditherThree)
@@ -283,8 +286,11 @@ try {
 	// Register before navigation so an early module error is never unhandled.
 	scriptFailure.catch(() => {});
 	page.on("console", (message) => {
-		if (message.text().startsWith("HTML probe:"))
-			console.log(redact(message.text()));
+		if (message.text().startsWith("HTML probe:")) {
+			const phase = redact(message.text());
+			consolePhases.push(phase);
+			console.log(phase);
+		}
 	});
 	await page.goto(
 		ditherThree
@@ -395,6 +401,19 @@ try {
 		});
 	}
 	console.log(JSON.stringify(result, null, 2));
+} catch (error) {
+	if (artifactDirectory) {
+		try {
+			await saveHtmlProbeFailure({
+				directory: artifactDirectory, error, page, resultKey,
+				browser: browser?.version(), hostWasmIdentity, root,
+				sourceInputs, consolePhases,
+			});
+		} catch (diagnosticError) {
+			console.error("Failed to persist HTML probe failure:", String(diagnosticError).replace(/https?:\/\/[^\s"'<>]+/g, "[private URL]"));
+		}
+	}
+	throw error;
 } finally {
 	await browser?.close();
 	await server?.close();
