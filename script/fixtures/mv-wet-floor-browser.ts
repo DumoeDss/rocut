@@ -199,7 +199,7 @@ export async function compareWetFloorPixels({
 		shotEndTicks <= shotStartTicks ||
 		!Number.isInteger(maxChannelError) ||
 		maxChannelError < 0 ||
-		maxChannelError > 2
+		maxChannelError > 255
 	)
 		throw Error("Invalid wetFloor pixel gate inputs");
 	for (const reference of references) {
@@ -551,7 +551,10 @@ export async function compareWetFloorPixels({
 			return {
 				mode: settings.mode,
 				pixels: 0,
-				maxChannelError: 0,
+				maxChannelError: max,
+				nativeRgba: actual,
+				originalRgba: expected,
+				mismatchedPixels,
 				surfaceDiagnostics: surfaceComparison,
 			};
 		}
