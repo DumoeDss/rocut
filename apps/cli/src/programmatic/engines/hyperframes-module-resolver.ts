@@ -52,6 +52,9 @@ function hfModuleImportMaps(documents, base) {
   }
   return {imports,scopes};
 }
+function hfModuleScopeKeys(base,maps) {
+  return Object.keys(maps.scopes).filter(k => base === k || (k.endsWith('/') && base.startsWith(k))).sort((a,b) => b.length-a.length);
+}
 function hfModuleResolve(specifier, base, maps) {
   // Native import() performs string-hint coercion; it also turns failures while
   // evaluating its argument into a rejected promise.
@@ -75,7 +78,7 @@ function hfModuleResolve(specifier, base, maps) {
     }
     return undefined;
   }
-  for (const scope of Object.keys(maps.scopes).filter(k => base === k || (k.endsWith('/') && base.startsWith(k))).sort((a,b) => b.length-a.length)) {
+  for (const scope of hfModuleScopeKeys(base,maps)) {
     const found = match(maps.scopes[scope]); if (found !== undefined) return found;
   }
   const mapped = match(maps.imports);

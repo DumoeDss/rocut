@@ -167,7 +167,8 @@ pub fn validate(resources: &[Resource]) -> Vec<Issue> {
             ("analysis", None) if r.mime_type == "application/json" => {}
             ("imageSequence", None) if r.mime_type == crate::image_sequence::MIME => {}
             ("video", None) if matches!(r.mime_type.as_str(), "video/mp4" | "video/webm") => {}
-            ("model", None) if r.mime_type == "model/gltf-binary" => {}
+            ("model", None)
+                if matches!(r.mime_type.as_str(), "model/gltf-binary" | "image/svg+xml") => {}
             ("environment", None)
                 if matches!(r.mime_type.as_str(), "image/vnd.radiance" | "image/x-exr") => {}
             ("image", None)

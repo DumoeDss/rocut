@@ -1,3 +1,5 @@
+import type { ProgrammaticResource } from "@opencut/editor-contracts";
+
 /** Optional host rasterizer. PNG preserves alpha; Rocut still owns encoding.
  * Providers must observe abort and release the isolated browser on every exit.
  */
@@ -24,6 +26,11 @@ export interface ProgrammaticFrameProvider<
 	/** Prepare a rebuilt archived source; applying it remains an editor transaction. */
 	reviseBuild?(args: {
 		request: unknown;
+		signal: AbortSignal;
+	}): Promise<unknown>;
+	/** Read-only GLB metadata. The Host owns attachments and fixed toolchain configuration. */
+	inspectAnimation?(args: {
+		resource: ProgrammaticResource;
 		signal: AbortSignal;
 	}): Promise<unknown>;
 }

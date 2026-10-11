@@ -36,6 +36,8 @@
  *   node script/pack-runtime.mjs [--out <dir>] [--manifest <path>]
  *                                [--skip-surface] [--skip-determinism]
  *                                [--skip-smoke] [--allow-dirty]
+ *                                [--wasm-package-dir <absolute directory>]
+ *                                [--surface-dir <absolute directory>]
  *
  * Runtime claim (PROVENANCE carries it verbatim): plain node runs the whole
  * surface, legacy-record migration included, with no experimental flag.
@@ -52,13 +54,14 @@ import {
 	writeFileSync,
 } from "node:fs";
 import { spawnSync } from "node:child_process";
-import { createRequire } from "node:module";
 import { basename, dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { build } from "esbuild";
+import { build, version as importedEsbuildVersion } from "esbuild";
 import { buildParticleSamplerAssets, particleSamplerDefine } from "./pack-particle-sampler.mjs";
 import { buildLiquidObjectAssets, liquidObjectDefine } from "./pack-liquid-object.mjs";
 import { buildParticleBrowserBundle } from "./build-particle-browser.mjs";
+import { assertRuntimeWasmPackageUnchanged, resolveRuntimeWasmPackage } from "./runtime-wasm-package-closure.mjs";
+import { assertDisjointPaths, assertRuntimeManifestOutsideInputs, verifySurfaceWasmPackage } from "./surface-wasm-package.mjs";
 
 const MODULE_DIR = dirname(fileURLToPath(import.meta.url));
 export const DEFAULT_REPO_ROOT = resolve(MODULE_DIR, "..");
@@ -77,20 +80,16 @@ const WASM_SYNC_SUBPATH = "opencut-wasm/sync";
 const SURFACE_DIST = "apps/vite-example/dist";
 
 /**
- * Resolve the declared `./sync` subpath through normal package resolution, so
- * the bundle links the same file an installed consumer would get rather than a
- * hardcoded path into `rust/wasm/pkg`. `check-wasm-source` already asserts the
- * resolved package is the self-built artifact, so resolution is the honest way
- * in and a literal path would bypass that gate.
+ * Resolve the canonical producer's declared `./sync` entry. The main bundle,
+ * fixed worker sidecars and shared binary must all use this same package,
+ * even when a previously installed node_modules copy is stale.
  */
-function resolveWasmSyncEntry(repoRoot) {
-	const require = createRequire(join(repoRoot, "package.json"));
+function resolveWasmPackage(repoRoot, wasmPackageDirectory) {
 	try {
-		return require.resolve(WASM_SYNC_SUBPATH);
+		return resolveRuntimeWasmPackage({ repoRoot, wasmPackageDirectory });
 	} catch (error) {
 		throw new Error(
-			`cannot resolve \`${WASM_SYNC_SUBPATH}\` from ${repoRoot} — run \`bun run build:wasm\` ` +
-				`then \`bun install\` (BOUNDARIES §17 declares this subpath): ${error.message}`,
+			`cannot resolve selected \`${WASM_SYNC_SUBPATH}\` from ${wasmPackageDirectory ?? repoRoot}: ${error.message}`,
 		);
 	}
 }
@@ -139,10 +138,7 @@ function gitStatus(repoRoot) {
 }
 
 function esbuildVersion() {
-	const pkg = JSON.parse(
-		readFileSync(join(DEFAULT_REPO_ROOT, "node_modules", "esbuild", "package.json"), "utf8"),
-	);
-	return pkg.version;
+	return importedEsbuildVersion;
 }
 
 function bunVersion(log) {
@@ -153,16 +149,11 @@ function bunVersion(log) {
 	return result.stdout.trim();
 }
 
-/** One esbuild pass into outDir; esbuild 0.27.3 rejects `.mjs` as an
- * outExtension value here, so the entry is renamed after the build — the
- * rename is part of the deterministic build step, not a post-hoc fix. */
-async function buildOnce({ repoRoot, outDir }) {
-	await buildParticleBrowserBundle({ check: true, repoRoot });
-	rmSync(outDir, { recursive: true, force: true });
-	mkdirSync(outDir, { recursive: true });
-	const wasmSyncEntry = resolveWasmSyncEntry(repoRoot);
-	const result = await build({
-		entryPoints: [join(repoRoot, ENTRY)],
+/** Shared production settings also used by checkout-external worker fixtures.
+ * This is a build-time seam, not an authored runtime path or module override. */
+export function runtimeBundleOptions({ repoRoot, outDir, wasmSyncEntry, entryPoint = join(repoRoot, ENTRY) }) {
+	return {
+		entryPoints: [entryPoint],
 		bundle: true,
 		platform: "node",
 		format: "esm",
@@ -174,13 +165,25 @@ async function buildOnce({ repoRoot, outDir }) {
 		// The bare specifier would take `default` — the bundler entry, whose ESM
 		// wasm import cannot resolve once bundled. Route it to the declared
 		// `./sync` entry instead; see the header note and BOUNDARIES §17.
-		alias: { [WASM_PACKAGE]: wasmSyncEntry },
+		alias: { [WASM_PACKAGE]: wasmSyncEntry, [WASM_SYNC_SUBPATH]: wasmSyncEntry },
 		define: { ...particleSamplerDefine, ...liquidObjectDefine },
 		external: ["*.wasm"], // no `.wasm` specifier survives the alias; kept as a guard
 		metafile: true,
 		logLevel: "silent",
 		sourcemap: false,
-	});
+	};
+}
+
+/** One esbuild pass into outDir; esbuild 0.27.3 rejects `.mjs` as an
+ * outExtension value here, so the entry is renamed after the build — the
+ * rename is part of the deterministic build step, not a post-hoc fix. */
+async function buildOnce({ repoRoot, outDir, wasmPackage }) {
+	assertRuntimeWasmPackageUnchanged(wasmPackage);
+	const { wasmSyncEntry } = wasmPackage;
+	await buildParticleBrowserBundle({ check: true, repoRoot });
+	rmSync(outDir, { recursive: true, force: true });
+	mkdirSync(outDir, { recursive: true });
+	const result = await build(runtimeBundleOptions({ repoRoot, outDir, wasmSyncEntry }));
 	// chunks import each other by name; nothing imports the entry, so the
 	// entry rename never breaks an intra-bundle reference
 	const entryOut = join(outDir, "rocut.js");
@@ -190,11 +193,13 @@ async function buildOnce({ repoRoot, outDir }) {
 	rmSync(entryOut);
 	await buildParticleSamplerAssets({ repoRoot, outDir, wasmSyncEntry });
 	await buildLiquidObjectAssets({ repoRoot, outDir, wasmSyncEntry });
+	assertRuntimeWasmPackageUnchanged(wasmPackage);
 	return { metafile: result.metafile };
 }
 
 /** Locate the chunk that references the wasm sibling; copy the wasm beside it. */
-function placeWasmSibling({ repoRoot, outDir }) {
+function placeWasmSibling({ outDir, wasmPackage }) {
+	assertRuntimeWasmPackageUnchanged(wasmPackage);
 	const referencers = [];
 	for (const name of readdirSync(outDir)) {
 		if (!name.endsWith(".mjs") && !name.endsWith(".js")) continue;
@@ -209,23 +214,27 @@ function placeWasmSibling({ repoRoot, outDir }) {
 				"output for an inlined loader or a rewritten asset path",
 		);
 	}
-	const source = join(repoRoot, WASM_SOURCE);
+	const source = wasmPackage.wasmBinary;
 	if (!existsSync(source)) {
 		throw new Error(`${WASM_SOURCE} is missing — run \`bun run build:wasm\` first`);
 	}
 	cpSync(source, join(outDir, WASM_NAME));
+	assertRuntimeWasmPackageUnchanged(wasmPackage);
 	const byteEqual = sha256File(source) === sha256File(join(outDir, WASM_NAME));
 	if (!byteEqual) throw new Error(`the copied ${WASM_NAME} is not byte-equal to ${WASM_SOURCE}`);
 	return { referencers, byteEqual, sha256: sha256File(source) };
 }
 
-function provenanceText({ head, dirty, esbuild, toolchain, files }) {
+function provenanceText({ head, dirty, esbuild, toolchain, files, wasmPackage }) {
 	return [
 		"# rocut runtime bundle — provenance",
 		"",
 		`- Source commit: ${head}${dirty ? " (DIRTY working tree — packed with --allow-dirty; not a release artifact)" : ""}`,
 		`- Bundler: esbuild ${esbuild} (bundle/platform=node/format=esm/target=es2022/splitting=true, \`opencut-wasm\` aliased to its \`./sync\` entry)`,
 		`- Toolchain: node ${toolchain.node}, bun ${toolchain.bun}, ${toolchain.platform}`,
+		`- WASM package (${wasmPackage.selection}): ${JSON.stringify(wasmPackage.wasmPackageDirectory)}`,
+		`- WASM package manifest SHA-256: ${wasmPackage.packageManifestSha256}`,
+		...wasmPackage.files.map(file => `- WASM source ${file.name}: ${file.sha256} (${file.bytes} bytes)`),
 		"- Runtime: **plain node (>= 20) is the documented runtime.** `opencut-wasm`",
 		"  resolves to the `./sync` entry BOUNDARIES §17 declares for runtimes that need",
 		"  explicit instantiation, so the binary is read from the sibling copy below and",
@@ -236,6 +245,7 @@ function provenanceText({ head, dirty, esbuild, toolchain, files }) {
 		"  same esbuild version on the same platform reproduces these per-file SHA-256",
 		"  digests (the determinism control in the evidence manifest exercises exactly",
 		"  this). No stronger cross-platform or cross-toolchain claim is made.",
+		"  Reproduction also requires the identical selected WASM package bytes recorded above.",
 		"",
 		"## Files",
 		"",
@@ -370,6 +380,12 @@ export async function packRuntime(args = {}) {
 	const runSmoke = args.smoke ?? true;
 	const allowDirty = args.allowDirty ?? false;
 	const log = logVia(args.log);
+	const wasmPackage = resolveWasmPackage(repoRoot, args.wasmPackageDirectory);
+	if (args.wasmPackageDirectory !== undefined) assertDisjointPaths(args.wasmPackageDirectory, outDir);
+	const surfaceDist = args.surfaceDirectory ?? join(repoRoot, SURFACE_DIST);
+	const surfaceWasm = args.surfaceDirectory === undefined ? undefined : verifySurfaceWasmPackage({
+		surfaceDirectory: args.surfaceDirectory, outDir, wasmPackage,
+	});
 
 	const dirty = gitStatus(repoRoot).trim() !== "";
 	if (dirty && !allowDirty) {
@@ -382,18 +398,20 @@ export async function packRuntime(args = {}) {
 		cwd: repoRoot,
 	}).trim();
 
-	await buildOnce({ repoRoot, outDir });
-	const wasm = placeWasmSibling({ repoRoot, outDir });
+	await buildOnce({ repoRoot, outDir, wasmPackage });
+	const wasm = placeWasmSibling({ outDir, wasmPackage });
 	const chunkCount = readdirSync(outDir).filter(
 		(name) => name.endsWith(".mjs") || name.endsWith(".js"),
 	).length - 1;
 	log(`bundle: rocut.mjs + ${chunkCount} chunk(s); ${WASM_NAME} sibling referenced by ${wasm.referencers.join(", ")}`);
 
 	// Surface: the prebuilt editor dist, vendored verbatim for the plugin tail.
-	const surface = { source: SURFACE_DIST, copied: false, skippedReason: null, fileCount: 0 };
-	const surfaceDist = join(repoRoot, SURFACE_DIST);
+	const surface = { source: args.surfaceDirectory ?? SURFACE_DIST, copied: false, skippedReason: null, fileCount: 0,
+		...(surfaceWasm ? { wasmPackage: surfaceWasm } : {}) };
 	if (existsSync(surfaceDist)) {
 		cpSync(surfaceDist, join(outDir, "surface"), { recursive: true });
+		if (surfaceWasm) verifySurfaceWasmPackage({ surfaceDirectory: join(outDir, "surface"),
+			outDir: surfaceDist, wasmPackage });
 		surface.copied = true;
 		surface.fileCount = walkFiles(join(outDir, "surface")).length;
 		log(`surface: copied ${surface.fileCount} file(s) from ${SURFACE_DIST}`);
@@ -421,7 +439,7 @@ export async function packRuntime(args = {}) {
 			sha256: sha256File(abs),
 			sizeBytes: statSync(abs).size,
 		}));
-	writeFileSync(join(outDir, "PROVENANCE.md"), provenanceText({ head, dirty, esbuild, toolchain, files: filesNow() }));
+	writeFileSync(join(outDir, "PROVENANCE.md"), provenanceText({ head, dirty, esbuild, toolchain, files: filesNow(), wasmPackage }));
 
 	const manifest = {
 		generatedAt: new Date().toISOString(),
@@ -431,8 +449,9 @@ export async function packRuntime(args = {}) {
 		esbuildVersion: esbuild,
 		toolchain,
 		outputDir: relative(repoRoot, outDir).replace(/\\/g, "/"),
+		wasmPackage,
 		wasmSibling: {
-			source: WASM_SOURCE,
+			source: wasmPackage.selection === "canonical" ? WASM_SOURCE : wasmPackage.wasmBinary,
 			name: WASM_NAME,
 			referencingChunks: wasm.referencers,
 			byteEqual: wasm.byteEqual,
@@ -447,8 +466,8 @@ export async function packRuntime(args = {}) {
 	if (determinism) {
 		const secondDir = join(outDir, ".determinism-second");
 		try {
-			await buildOnce({ repoRoot, outDir: secondDir });
-			placeWasmSibling({ repoRoot, outDir: secondDir });
+			await buildOnce({ repoRoot, outDir: secondDir, wasmPackage });
+			placeWasmSibling({ outDir: secondDir, wasmPackage });
 			// The determinism claim covers the BUILD OUTPUTS (entry, chunks, wasm
 			// sibling) — post-build artifacts (PROVENANCE, the vendored surface)
 			// are not esbuild products and are excluded on both sides.
@@ -505,7 +524,16 @@ async function main() {
 	console.log("pack-runtime: bundling the distributable runtime (design D7)");
 	let manifest;
 	try {
+		if (argv.includes("--wasm-package-dir") &&
+			(!arg("wasm-package-dir") || arg("wasm-package-dir").startsWith("--")))
+			throw new Error("--wasm-package-dir requires an explicit absolute path");
+		if (argv.includes("--surface-dir") && (!arg("surface-dir") || arg("surface-dir").startsWith("--")))
+			throw new Error("--surface-dir requires an explicit absolute path");
+		assertRuntimeManifestOutsideInputs({ manifestPath,
+			wasmPackageDirectory: arg("wasm-package-dir"), surfaceDirectory: arg("surface-dir") });
 		manifest = await packRuntime({
+			surfaceDirectory: arg("surface-dir"),
+			wasmPackageDirectory: arg("wasm-package-dir"),
 			outDir: arg("out") === undefined ? undefined : resolve(arg("out")),
 			skipSurface: argv.includes("--skip-surface"),
 			determinism: !argv.includes("--skip-determinism"),

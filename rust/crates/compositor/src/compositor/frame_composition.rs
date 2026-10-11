@@ -68,16 +68,13 @@ impl Compositor {
                         &scope.branch(index, 1),
                         prepared,
                     )?;
-                    self.blend_textures(
+                    self.compose_transition(
                         context,
                         encoder,
                         &from,
                         &to,
-                        BlendUniformBuffer {
-                            blend_mode: 17,
-                            progress: transition.progress,
-                            _padding: [0; 2],
-                        },
+                        transition.progress,
+                        transition.style.as_ref(),
                         frame.width,
                         frame.height,
                     )?
@@ -107,6 +104,7 @@ impl Compositor {
                     outgoing,
                     incoming,
                     progress,
+                    style,
                 } => {
                     if !progress.is_finite() || !(0.0..=1.0).contains(progress) {
                         return Err(CompositorError::InvalidTransitionProgress(*progress));
@@ -133,16 +131,13 @@ impl Compositor {
                         LayerListPosition::Incoming(index),
                         prepared,
                     )?;
-                    self.blend_textures(
+                    self.compose_transition(
                         context,
                         encoder,
                         &from,
                         &to,
-                        BlendUniformBuffer {
-                            blend_mode: 17,
-                            progress: *progress,
-                            _padding: [0; 2],
-                        },
+                        *progress,
+                        style.as_ref(),
                         frame.width,
                         frame.height,
                     )?
@@ -150,6 +145,55 @@ impl Compositor {
             };
         }
         Ok(scene)
+    }
+
+    fn compose_transition(
+        &mut self,
+        context: &GpuContext,
+        encoder: &mut wgpu::CommandEncoder,
+        from: &wgpu::Texture,
+        to: &wgpu::Texture,
+        progress: f32,
+        style: Option<&crate::NativeTransitionStyle>,
+        width: u32,
+        height: u32,
+    ) -> Result<wgpu::Texture, CompositorError> {
+        if let Some(style) = style {
+            if !style.valid() {
+                return Err(CompositorError::InvalidTransitionStyle);
+            }
+            // Both branches have already been consumed, even at exact endpoints.
+            if progress == 0.0 {
+                return Ok(from.clone());
+            }
+            if progress == 1.0 {
+                return Ok(to.clone());
+            }
+            let draws = super::peel_pipeline::geometry(style, progress, width, height)?;
+            let premultiplied =
+                self.texture_pool
+                    .acquire(context, width, height, "native-peel-premultiplied");
+            let output = self
+                .texture_pool
+                .acquire(context, width, height, "native-peel-straight");
+            self.peel
+                .render(context, encoder, from, to, &premultiplied, &output, &draws);
+            Ok(output)
+        } else {
+            self.blend_textures(
+                context,
+                encoder,
+                from,
+                to,
+                BlendUniformBuffer {
+                    blend_mode: 17,
+                    progress,
+                    _padding: [0; 2],
+                },
+                width,
+                height,
+            )
+        }
     }
 
     fn compose_layers(

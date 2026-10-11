@@ -11,10 +11,12 @@ import type { ProgrammaticResourceStore } from "./resources";
 import type { NativeVideoDecoder } from "./video-decoder";
 import { writeRemotionArtifactOutputs } from "./remotion-artifact-output";
 import { writeRemotionProducedOutputs } from "./remotion-produced-output";
+import { pinElectronAudioSessionConnection } from "./electron-audio-session";
 import * as wasm from "opencut-wasm";
+import { pinElectronAudioConnection } from "./electron-audio-transport";
 
-/** Auth/project scoping is supplied by the owning Host router. No Electron
- * fallback: its owner must implement the native analysis result transport.
+/** Auth/project scoping is supplied by the owning Host router. Electron uses
+ * its independent native observation grant; Rust still admits facts and PCM.
  */
 export function createProgrammaticAudioService({
 	resourceStore,
@@ -44,59 +46,111 @@ export function createProgrammaticAudioService({
 			return false;
 		}
 	};
-	const configured =
-		!connectionFile &&
-		exists(executable) &&
-		exists(decoder?.ffmpeg) &&
-		exists(decoder?.ffprobe);
-	const graphConfigured =
-		configured && !!toolchainDirectory && isAbsolute(toolchainDirectory);
+	const configuration = () => {
+		let electronConfigured = false;
+		let electronSessionConfigured = false;
+		if (connectionFile) {
+			try {
+				pinElectronAudioConnection(connectionFile);
+				electronConfigured = true;
+			} catch {
+				/* unavailable named grant */
+			}
+			try {
+				pinElectronAudioSessionConnection(connectionFile);
+				electronSessionConfigured = true;
+			} catch {
+				/* basic-only host */
+			}
+		}
+		const configured =
+			(connectionFile ? electronConfigured : exists(executable)) &&
+			exists(decoder?.ffmpeg) &&
+			exists(decoder?.ffprobe);
+		const advancedConfigured =
+			configured && (!connectionFile || electronSessionConfigured);
+		return {
+			configured,
+			electronSessionConfigured,
+			graphConfigured:
+				advancedConfigured &&
+				!!toolchainDirectory &&
+				isAbsolute(toolchainDirectory),
+			producedConfigured:
+				advancedConfigured && !!projectDir && isAbsolute(projectDir),
+		};
+	};
 	const sessionNonce = randomBytes(32).toString("hex");
 	const active = new Map<AbortController, Promise<void>>();
 	const slots = createNativeAudioSlots();
 	let disposed = false;
 	return {
-		capability: {
-			version: 1,
-			configured,
-			backend: "standalone-chromium-native-decoder",
-			availability: configured ? "configured-not-health-probed" : "unavailable",
-			engines: ["remotion", "hyperframes"],
-			format: "stereo-f32le",
-			sampleRates: [44100, 48000],
-			remotionProduced: {
-				configured: configured && !!projectDir && isAbsolute(projectDir),
-				endpoint: "programmatic/produced",
-				history: "persistent-native-root-canonical-from-zero",
-				outputs: ["native-mixed-wav-f32le", "text", "binary", "exact-frame-png"],
-				destination: "host-owned-project-exports/programmatic",
-				unsupported: ["active-css-animation-thumbnail"],
-			},
-			hyperframesGraph: {
-				profile: "hyperframes-graph-v1",
-				configured: graphConfigured,
-				availability: graphConfigured
+		get capability() {
+			const {
+				configured,
+				electronSessionConfigured,
+				graphConfigured,
+				producedConfigured,
+			} = configuration();
+			return {
+				version: 1,
+				configured,
+				backend: connectionFile
+					? "elftia-electron-native-decoder"
+					: "standalone-chromium-native-decoder",
+				availability: configured
 					? "configured-not-health-probed"
 					: "unavailable",
-				identity: "programmatic/audio/identity",
-				history: "canonical-from-zero",
-				fxAutomation: "native-parameters-and-preset-mix-v1",
-				timing: {
-					selection: "source.audio.timing",
-					default: "sample-aligned",
-					optionalModes: ["native-exporter"],
-					nativeExporter: "final-track-trim-and-ms-placement-v1",
+				engines: ["remotion", "hyperframes"],
+				format: "stereo-f32le",
+				sampleRates: [44100, 48000],
+				remotionProduced: {
+					configured: producedConfigured,
+					availability: producedConfigured
+						? "configured-not-health-probed"
+						: "unavailable",
+					endpoint: "programmatic/produced",
+					history: "persistent-native-root-canonical-from-zero",
+					outputs: [
+						"native-mixed-wav-f32le",
+						"text",
+						"binary",
+						"exact-frame-png",
+					],
+					destination: "host-owned-project-exports/programmatic",
+					unsupported: ["active-css-animation-thumbnail"],
 				},
-				requires: [
-					"archived-dsp-identity",
-					"normalized-volume-envelope-or-native-author-write-history",
-					"full-history-native-prepare-and-resolved-decoder-geometry",
-				],
-				unsupported: [
-					"webaudio-fractional-start-phase",
-				],
-			},
-			electron: "requires-native-audio-analysis-transport",
+				hyperframesGraph: {
+					profile: "hyperframes-graph-v1",
+					configured: graphConfigured,
+					availability: graphConfigured
+						? "configured-not-health-probed"
+						: "unavailable",
+					identity: "programmatic/audio/identity",
+					history: "canonical-from-zero",
+					fxAutomation: "native-parameters-and-preset-mix-v1",
+					timing: {
+						selection: "source.audio.timing",
+						default: "sample-aligned",
+						optionalModes: ["native-exporter"],
+						nativeExporter: "final-track-trim-and-ms-placement-v1",
+					},
+					requires: [
+						"archived-dsp-identity",
+						"normalized-volume-envelope-or-native-author-write-history",
+						"full-history-native-prepare-and-resolved-decoder-geometry",
+					],
+					unsupported: ["webaudio-fractional-start-phase"],
+				},
+				electron: connectionFile
+					? "html-frames-native-audio-v1"
+					: "requires-native-audio-analysis-transport",
+				electronSession: {
+					configured: !!connectionFile && electronSessionConfigured,
+					protocol: "html-frames-native-audio-session-v1",
+					profiles: ["source", "dsp"],
+				},
+			};
 		},
 		async dispose() {
 			disposed = true;
@@ -117,6 +171,16 @@ export function createProgrammaticAudioService({
 						})
 						.end(JSON.stringify({ error: message }));
 			};
+			if (!["render", "identity", "produced"].includes(action)) {
+				error(400, "Invalid native audio action");
+				return;
+			}
+			const {
+				configured,
+				electronSessionConfigured,
+				graphConfigured,
+				producedConfigured,
+			} = configuration();
 			if (!configured || disposed) {
 				error(
 					503,
@@ -124,8 +188,25 @@ export function createProgrammaticAudioService({
 				);
 				return;
 			}
-			if (action === "produced" && !projectDir) {
-				error(503, "Native produced outputs require a Host-owned project destination");
+			if (action === "produced" && (!projectDir || !isAbsolute(projectDir))) {
+				error(
+					503,
+					"Native produced outputs require a Host-owned project destination",
+				);
+				return;
+			}
+			if (connectionFile && action !== "render" && !electronSessionConfigured) {
+				error(
+					503,
+					"Electron advanced audio requires its persistent session grant",
+				);
+				return;
+			}
+			if (
+				(action === "identity" && !graphConfigured) ||
+				(action === "produced" && !producedConfigured)
+			) {
+				error(503, "Native advanced audio is unavailable on this host");
 				return;
 			}
 			const controller = new AbortController();
@@ -172,7 +253,8 @@ export function createProgrammaticAudioService({
 						),
 					),
 					resourceStore,
-					executable: executable!,
+					executable,
+					connectionFile,
 					decoder: decoder!,
 					toolchainDirectory,
 					graphConfigured,
@@ -193,27 +275,49 @@ export function createProgrammaticAudioService({
 				controller.signal.throwIfAborted();
 				const artifacts = "artifacts" in result ? result.artifacts : [];
 				if (artifacts.length && !projectDir)
-					throw Error("Native artifacts require a Host-owned project destination");
+					throw Error(
+						"Native artifacts require a Host-owned project destination",
+					);
 				if (outcome.kind === "produced") {
 					const output = await writeRemotionProducedOutputs({
-						projectDir: projectDir!, artifacts,
-						soundtrack: outcome.result, signal: controller.signal,
+						projectDir: projectDir!,
+						artifacts,
+						soundtrack: outcome.result,
+						signal: controller.signal,
 						encodeAudioWav: (packet) => {
-							const encode = (wasm as unknown as Record<string, unknown>)["encodeRemotionProducedAudioWav"];
+							const encode = (wasm as unknown as Record<string, unknown>)[
+								"encodeRemotionProducedAudioWav"
+							];
 							if (typeof encode !== "function")
-								throw Error("Remotion soundtrack output requires rebuilt WASM export encodeRemotionProducedAudioWav");
+								throw Error(
+									"Remotion soundtrack output requires rebuilt WASM export encodeRemotionProducedAudioWav",
+								);
 							return encode(packet) as Uint8Array;
 						},
 					});
 					controller.signal.throwIfAborted();
-					response.writeHead(200, { "content-type": "application/json", "cache-control": "no-store" }).end(JSON.stringify({
-						version: 1, output: output ?? null, hasAudio: result.hasAudio,
-						sampleRate: result.sampleRate, frames: result.frames,
-					}));
+					response
+						.writeHead(200, {
+							"content-type": "application/json",
+							"cache-control": "no-store",
+						})
+						.end(
+							JSON.stringify({
+								version: 1,
+								output: output ?? null,
+								hasAudio: result.hasAudio,
+								sampleRate: result.sampleRate,
+								frames: result.frames,
+							}),
+						);
 					return;
 				}
 				const output = projectDir
-					? await writeRemotionArtifactOutputs({ projectDir, artifacts, signal: controller.signal })
+					? await writeRemotionArtifactOutputs({
+							projectDir,
+							artifacts,
+							signal: controller.signal,
+						})
 					: undefined;
 				controller.signal.throwIfAborted();
 				response
@@ -233,7 +337,9 @@ export function createProgrammaticAudioService({
 						"x-rocut-frames": result.frames,
 						"x-rocut-sample-origin": result.sampleOrigin,
 						"x-rocut-has-audio": result.hasAudio ? "1" : "0",
-						...(output ? { "x-rocut-artifact-directory": output.directory } : {}),
+						...(output
+							? { "x-rocut-artifact-directory": output.directory }
+							: {}),
 					})
 					.end(result.pcm);
 			} catch (cause) {

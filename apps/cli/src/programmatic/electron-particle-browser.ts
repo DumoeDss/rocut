@@ -31,6 +31,17 @@ export const ELECTRON_PARTICLE_CHECK = `(() => { const check = window[${JSON.str
 export const ELECTRON_PARTICLE_CLEANUP = `(() => { const cleanup = window[${JSON.stringify(PARTICLE_PAGE_CLEANUP_NAME)}]; if (typeof cleanup !== 'function') throw Error('Particle page cleanup is unavailable'); return cleanup(); })()`;
 export const ELECTRON_PARTICLE_REPLY = `function(payload) { return globalThis.${PARTICLE_REPLY_NAME}(payload); }`;
 
+export interface ElectronScopedProfile {
+	maxRawBytes: number;
+	maxRetainedBytes: number;
+	kind: "liquid-request";
+	binding: "__rocutLiquidObjectRequest";
+	check: string;
+	cleanup: string;
+	reply: string;
+	correlate(payload: string, reply: boolean): { id: number; kind?: string };
+}
+
 /** A finite, backend-local adaptation of ParticleBrowser, never wire CDP. */
 export class ElectronParticleBrowser implements ParticleBrowser {
 	readonly failure: Promise<never>;
@@ -60,10 +71,17 @@ export class ElectronParticleBrowser implements ParticleBrowser {
 	private readonly timer: ReturnType<typeof setTimeout>;
 	constructor(
 		readonly transport: ElectronParticleSessionTransport,
-		readonly policy: ParticlePolicy,
+		readonly policy: Pick<
+			ParticlePolicy,
+			| "cleanupTimeoutMs"
+			| "maxRequestEnvelopeBytes"
+			| "maxResponseEnvelopeBytes"
+			| "maxRequestsPerFrame"
+		>,
 		readonly signal: AbortSignal,
 		private readonly width: number,
 		private readonly height: number,
+		private readonly profile?: ElectronScopedProfile,
 	) {
 		this.failure = new Promise<never>((_, reject) => {
 			this.rejectFailure = reject;
@@ -111,8 +129,8 @@ export class ElectronParticleBrowser implements ParticleBrowser {
 			this.expression !== undefined ||
 			typeof expression !== "string" ||
 			!expression ||
-			expression === ELECTRON_PARTICLE_CHECK ||
-			expression === ELECTRON_PARTICLE_CLEANUP
+			expression === (this.profile?.check ?? ELECTRON_PARTICLE_CHECK) ||
+			expression === (this.profile?.cleanup ?? ELECTRON_PARTICLE_CLEANUP)
 		)
 			throw this.fail(
 				particleTransportError("frame expression cannot be rebound"),
@@ -136,7 +154,8 @@ export class ElectronParticleBrowser implements ParticleBrowser {
 		this.retained += bytes;
 		if (
 			this.retained >
-			ELECTRON_PARTICLE_LIMITS.maxTransportRetainedParticlePayloadBytesPerSession
+			(this.profile?.maxRetainedBytes ??
+				ELECTRON_PARTICLE_LIMITS.maxTransportRetainedParticlePayloadBytesPerSession)
 		)
 			throw particleTransportError("retained transport payload limit exceeded");
 	}
@@ -152,6 +171,7 @@ export class ElectronParticleBrowser implements ParticleBrowser {
 					response,
 					this.sequence,
 					this.transport.sessionId,
+					this.profile,
 				);
 				if (!value) continue;
 				this.sequence = value.sequence; // ACK is independent of outstanding reply correlation.
@@ -183,11 +203,9 @@ export class ElectronParticleBrowser implements ParticleBrowser {
 							"request exceeds archived envelope policy",
 						);
 					this.charge(value.bytes);
-					const correlation = particleCorrelation(
-						payload,
-						this.identity,
-						false,
-					);
+					const correlation =
+						this.profile?.correlate(payload, false) ??
+						particleCorrelation(payload, this.identity, false);
 					if (correlation.kind === "sample") {
 						if (
 							this.seen.has(correlation.id) ||
@@ -197,6 +215,10 @@ export class ElectronParticleBrowser implements ParticleBrowser {
 								"replayed or excessive sample request",
 							);
 						this.seen.add(correlation.id);
+					}
+					if (this.profile || correlation.kind === "sample") {
+						if (this.outstanding.has(correlation.id))
+							throw particleTransportError("concurrent duplicate request");
 						this.outstanding.set(correlation.id, value.sequence);
 					}
 				}
@@ -234,7 +256,8 @@ export class ElectronParticleBrowser implements ParticleBrowser {
 			const cleanup =
 				method === "Runtime.removeBinding" ||
 				(method === "Runtime.evaluate" &&
-					params.expression === ELECTRON_PARTICLE_CLEANUP);
+					params.expression ===
+						(this.profile?.cleanup ?? ELECTRON_PARTICLE_CLEANUP));
 			if (!cleanup) this.check();
 			if (session !== this.transport.sessionId || this.closing)
 				throw particleTransportError("wrong adapter session");
@@ -254,7 +277,7 @@ export class ElectronParticleBrowser implements ParticleBrowser {
 				case "Runtime.addBinding":
 					exactObject(params, ["name", "executionContextId"]);
 					if (
-						params.name !== PARTICLE_BINDING_NAME ||
+						params.name !== (this.profile?.binding ?? PARTICLE_BINDING_NAME) ||
 						params.executionContextId !== this.context ||
 						this.context === undefined ||
 						!this.identity ||
@@ -269,7 +292,7 @@ export class ElectronParticleBrowser implements ParticleBrowser {
 				case "Runtime.removeBinding":
 					exactObject(params, ["name"]);
 					if (
-						params.name !== PARTICLE_BINDING_NAME ||
+						params.name !== (this.profile?.binding ?? PARTICLE_BINDING_NAME) ||
 						!this.bound ||
 						this.context === undefined
 					)
@@ -294,8 +317,10 @@ export class ElectronParticleBrowser implements ParticleBrowser {
 					)
 						throw particleTransportError("invalid evaluation parameters");
 					if (
-						params.expression === ELECTRON_PARTICLE_CLEANUP ||
-						params.expression === ELECTRON_PARTICLE_CHECK
+						params.expression ===
+							(this.profile?.cleanup ?? ELECTRON_PARTICLE_CLEANUP) ||
+						params.expression ===
+							(this.profile?.check ?? ELECTRON_PARTICLE_CHECK)
 					) {
 						if (!this.evaluated)
 							throw particleTransportError("page hook before evaluation");
@@ -325,7 +350,8 @@ export class ElectronParticleBrowser implements ParticleBrowser {
 					]);
 					if (
 						params.executionContextId !== this.context ||
-						params.functionDeclaration !== ELECTRON_PARTICLE_REPLY ||
+						params.functionDeclaration !==
+							(this.profile?.reply ?? ELECTRON_PARTICLE_REPLY) ||
 						params.returnByValue !== true ||
 						!Array.isArray(params.arguments) ||
 						params.arguments.length !== 1 ||
@@ -339,11 +365,9 @@ export class ElectronParticleBrowser implements ParticleBrowser {
 							this.policy.maxResponseEnvelopeBytes
 					)
 						throw particleTransportError("invalid reply payload");
-					const correlation = particleCorrelation(
-							argument.value,
-							this.identity,
-							true,
-						),
+					const correlation =
+							this.profile?.correlate(argument.value, true) ??
+							particleCorrelation(argument.value, this.identity, true),
 						sequence = this.outstanding.get(correlation.id);
 					if (sequence === undefined)
 						throw particleTransportError("unknown, duplicate or late reply");

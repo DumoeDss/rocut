@@ -40,6 +40,7 @@ fn transition(
         outgoing,
         incoming,
         progress,
+        style: None,
     }))
 }
 fn frame(items: Vec<FrameItemDescriptor>) -> FrameDescriptor {

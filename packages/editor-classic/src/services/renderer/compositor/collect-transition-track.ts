@@ -1,4 +1,5 @@
 import type { CanvasRenderer } from "../canvas-renderer";
+import { validateNativeTransitionStyle } from "../../../transitions/transition-style";
 import type { AnyBaseNode } from "../nodes/base-node";
 import type { TransitionTrackNode } from "../nodes/transition-track-node";
 import type { FrameItemDescriptor, TextureUploadDescriptor } from "./types";
@@ -29,6 +30,7 @@ export async function collectTransitionTrack({
 			});
 			continue;
 		}
+		if (item.style !== undefined) validateNativeTransitionStyle(item.style);
 		const branches = [];
 		for (const children of [item.outgoing, item.incoming]) {
 			const items: FrameItemDescriptor[] = [];
@@ -59,6 +61,7 @@ export async function collectTransitionTrack({
 			outgoing: branches[0],
 			incoming: branches[1],
 			progress: item.progress,
+			...(item.style === undefined ? {} : { style: item.style }),
 		});
 	}
 }

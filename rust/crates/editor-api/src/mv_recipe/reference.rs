@@ -1,6 +1,9 @@
 use super::model::Span;
 use serde::Deserialize;
 
+pub const MAX_TIME_POINTS: usize = 256;
+pub const MAX_SEQUENCE_ITEMS: usize = 64;
+
 /// Piecewise-linear map on integer source frames. Outside knots hold endpoints.
 /// Repeated sourceFrame values freeze; descending values rewind. No JS clocks.
 #[derive(Deserialize)]
@@ -20,7 +23,7 @@ pub struct SequenceItem {
 
 pub fn valid_map(map: &[TimePoint], frames: u32) -> bool {
     !map.is_empty()
-        && map.len() <= 256
+        && map.len() <= MAX_TIME_POINTS
         && map
             .iter()
             .all(|p| p.at_frame < frames && p.source_frame < frames)
@@ -46,7 +49,7 @@ pub fn sample(map: &[TimePoint], frame: u64) -> u64 {
 
 pub fn valid_sequence(items: &[SequenceItem], frames: u32) -> bool {
     !items.is_empty()
-        && items.len() <= 64
+        && items.len() <= MAX_SEQUENCE_ITEMS
         && items
             .iter()
             .all(|s| super::validate::span(&s.span, frames) && valid_map(&s.time_map, frames))

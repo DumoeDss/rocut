@@ -1,11 +1,12 @@
 import { isAbsolute } from "node:path";
-import { statSync } from "node:fs";
+import { statSync, readFileSync } from "node:fs";
 import type { IncomingMessage, ServerResponse } from "node:http";
 import type { ProgrammaticFrameRequest } from "@opencut/editor-contracts";
 import { renderHtmlPng } from "./html-rasterizer";
 import type { ProgrammaticResourceStore } from "./resources";
 import type { NativeVideoDecoder } from "./video-decoder";
 import { createProgrammaticFrameDeadline } from "./frame-service-deadline";
+import { ELECTRON_NATIVE_VIDEO_PROTOCOL } from "./electron-native-video-server";
 
 /** Prefer the desktop's scoped connection; explicit Chromium is CLI fallback.
  * A configured but broken Electron service never silently launches a browser. */
@@ -27,7 +28,15 @@ export function createProgrammaticFrameService(
 			}
 		})());
 	const active = new Set<AbortController>();
-	const nativeConfigured = !connectionFile && configured && !!nativeVideoDecoder && [nativeVideoDecoder.ffmpeg, nativeVideoDecoder.ffprobe].every(file => {
+	const electronNativeVideo = !!connectionFile && (() => {
+		try {
+			if (statSync(connectionFile).size > 4096) return false;
+			const value = JSON.parse(readFileSync(connectionFile, "utf8"));
+			return value.capabilities?.nativeVideoCapture?.version === 1 &&
+				value.capabilities.nativeVideoCapture.protocol === ELECTRON_NATIVE_VIDEO_PROTOCOL;
+		} catch { return false; }
+	})();
+	const nativeConfigured = (!connectionFile || electronNativeVideo) && configured && !!nativeVideoDecoder && [nativeVideoDecoder.ffmpeg, nativeVideoDecoder.ffprobe].every(file => {
 		try { return isAbsolute(file) && statSync(file).isFile(); } catch { return false; }
 	});
 	const drains = new Set<Promise<void>>();
@@ -37,8 +46,8 @@ export function createProgrammaticFrameService(
 		nativeVideoCapability: {
 			version: 1, configured: nativeConfigured,
 			availability: nativeConfigured ? "configured-not-health-probed" : "unavailable",
-			backend: "standalone-chromium-native-decoder",
-			electron: "requires-media-request-transport",
+			backend: connectionFile ? "elftia-electron-native-video-callback" : "standalone-chromium-native-decoder",
+			electron: electronNativeVideo ? ELECTRON_NATIVE_VIDEO_PROTOCOL : "requires-media-request-transport",
 			hdr: "pq-hlg-hable-to-bt709-sdr; requires-zscale-tonemap",
 			hdrOutput: "unsupported-sdr-only",
 			colorMetadata: "explicit-supported-hdr-tags-required",

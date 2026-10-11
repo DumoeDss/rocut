@@ -81,7 +81,7 @@ function wireKey(key: ScalarAnimationKey): Record<string, unknown> {
 	const value: Record<string, unknown> = {
 		time: key.time,
 		value: key.value,
-		segmentToNext: key.segmentToNext,
+		segmentToNext: key.segmentToNext ?? "linear",
 	};
 	if (key.leftHandle) {
 		value.leftHandle = { dt: key.leftHandle.dt, dv: key.leftHandle.dv };

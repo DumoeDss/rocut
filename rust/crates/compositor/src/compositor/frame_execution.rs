@@ -130,7 +130,7 @@ impl Compositor {
             canvas |= pass.shader == "canvas";
         });
         if !canvas {
-            return Ok(());
+            return super::canvas_graph_preflight::validate(&prepared.frame, &mut |id| self.textures.get(id).is_some());
         }
         let frame = &prepared.frame;
         effects::validate_canvas_device_capture(

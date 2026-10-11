@@ -1,6 +1,66 @@
 use super::{catalog::mv_recipe_catalog_json, generator_model::*, transition_model::Transition};
 use serde_json::{Value, json};
 
+#[test]
+fn scene_collection_authoring_schema_is_structural_and_has_no_defaults() {
+    let catalog: Value = serde_json::from_str(&mv_recipe_catalog_json()).unwrap();
+    let scenes = &catalog["sceneParameters"];
+    let layers = &scenes["layers"]["parameters"]["items"];
+    assert_eq!(layers["type"], "array");
+    assert_eq!(layers["minItems"], 1);
+    assert_eq!(layers["maxItems"], super::layers::MAX_ITEMS);
+    assert_eq!(layers["items"]["required"], json!(["input", "roles"]));
+    assert_eq!(layers["items"]["additionalProperties"], false);
+    assert_eq!(
+        layers["items"]["properties"]["roles"]["items"]["options"],
+        json!(["background", "subject", "graphics", "foreground"])
+    );
+    let sequence = &scenes["sequence"]["parameters"]["items"];
+    assert_eq!(sequence["maxItems"], super::reference::MAX_SEQUENCE_ITEMS);
+    assert_eq!(
+        sequence["items"]["required"],
+        json!(["input", "span", "timeMap"])
+    );
+    assert_eq!(sequence["items"]["additionalProperties"], false);
+    let properties = &sequence["items"]["properties"];
+    assert_eq!(
+        properties["span"]["required"],
+        json!(["startFrame", "durationFrames"])
+    );
+    assert_eq!(properties["span"]["additionalProperties"], false);
+    assert_eq!(properties["span"]["properties"]["durationFrames"]["min"], 1);
+    let map = &scenes["ref"]["parameters"]["timeMap"];
+    assert_eq!(map, &properties["timeMap"]);
+    assert_eq!(map["maxItems"], super::reference::MAX_TIME_POINTS);
+    assert_eq!(map["items"]["required"], json!(["atFrame", "sourceFrame"]));
+    assert_eq!(map["items"]["additionalProperties"], false);
+    for key in ["atFrame", "sourceFrame"] {
+        let field = &map["items"]["properties"][key];
+        assert_eq!(field["type"], "number");
+        assert_eq!(field["integer"], true);
+        assert_eq!(field["min"], 0);
+        assert_eq!(field["max"], u32::MAX);
+    }
+    fn no_defaults(value: &Value) {
+        match value {
+            Value::Object(fields) => {
+                assert!(!fields.contains_key("default"));
+                assert!(!fields.contains_key("suggested"));
+                for value in fields.values() {
+                    no_defaults(value);
+                }
+            }
+            Value::Array(items) => {
+                for item in items {
+                    no_defaults(item);
+                }
+            }
+            _ => {}
+        }
+    }
+    no_defaults(scenes);
+}
+
 fn suggested(parameters: &Value) -> Value {
     parameters
         .as_object()

@@ -1,6 +1,7 @@
 import type { ProgrammaticSource } from "@opencut/editor-contracts";
 import { isAbsolute } from "node:path";
 import { launchFrameBrowser } from "./chromium-process";
+import { openElectronAudioSession } from "./electron-audio-session";
 import {
 	loadHyperframesFxRuntime,
 	hyperframesFxDigest,
@@ -50,8 +51,8 @@ export function hyperframesGraphBrowserIdentity(
 	});
 }
 
-async function probeBrowser(executable: string, signal: AbortSignal) {
-	if (!isAbsolute(executable))
+async function probeBrowser(executable: string | undefined, signal: AbortSignal, connectionFile?: string) {
+	if (!connectionFile && (!executable || !isAbsolute(executable)))
 		throw Error(
 			"Graph browser identity requires a configured absolute executable path",
 		);
@@ -62,13 +63,18 @@ async function probeBrowser(executable: string, signal: AbortSignal) {
 		15000,
 	);
 	try {
-		const browser = await launchFrameBrowser(executable, lifetime);
+		if (connectionFile) {
+			const session = await openElectronAudioSession({ connectionFile, profile: "dsp", width: 64, height: 64, signal: lifetime });
+			try { lifetime.throwIfAborted(); return { browser: hyperframesGraphBrowserIdentity({ ...session.browser }), electronHostEpoch: session.epoch }; }
+			finally { await session.close(); }
+		}
+		const browser = await launchFrameBrowser(executable!, lifetime);
 		try {
 			const result = hyperframesGraphBrowserIdentity(
 				await browser.send("Browser.getVersion"),
 			);
 			lifetime.throwIfAborted();
-			return result;
+			return { browser: result, electronHostEpoch: undefined };
 		} finally {
 			await browser.close();
 		}
@@ -82,6 +88,7 @@ export function assertHyperframesGraphProvenance(
 	expected: HyperframesFxProvenance,
 ): void {
 	const keys = [
+		"electronHostEpoch",
 		"nativeVersion",
 		"runtimeSha256",
 		"moduleSha256",
@@ -112,6 +119,7 @@ export async function prepareHyperframesGraphIdentity({
 	resourceStore,
 	toolchainDirectory,
 	executable,
+	connectionFile,
 	decoder,
 	sessionNonce,
 	signal,
@@ -119,7 +127,8 @@ export async function prepareHyperframesGraphIdentity({
 	source: ProgrammaticSource;
 	resourceStore: ProgrammaticResourceStore;
 	toolchainDirectory: string;
-	executable: string;
+	executable?: string;
+	connectionFile?: string;
 	decoder: NativeVideoDecoder;
 	sessionNonce: string;
 	signal: AbortSignal;
@@ -154,8 +163,10 @@ export async function prepareHyperframesGraphIdentity({
 		selectedDecoder,
 		signal,
 	);
-	const browser = await probeBrowser(executable, signal);
+	const browserProbe = await probeBrowser(executable, signal, connectionFile);
+	const browser = browserProbe.browser;
 	const provenance: HyperframesFxProvenance = Object.freeze({
+		...(browserProbe.electronHostEpoch ? { electronHostEpoch: browserProbe.electronHostEpoch } : {}),
 		nativeVersion: compileIdentity.nativeVersion,
 		runtimeSha256: compileIdentity.runtimeSha256,
 		moduleSha256: compileIdentity.moduleSha256,
@@ -205,6 +216,11 @@ export async function prepareHyperframesGraphIdentity({
 			verificationSignal: AbortSignal = signal,
 		) {
 			assertHyperframesGraphProvenance(actualProvenance, provenance);
+			if (connectionFile) {
+				const current = await probeBrowser(undefined, AbortSignal.any([signal, verificationSignal]), connectionFile);
+				if (current.electronHostEpoch !== provenance.electronHostEpoch || JSON.stringify(current.browser) !== JSON.stringify(browser))
+					throw Error("HyperFrames Electron Host identity changed after render");
+			}
 			await verifyDecoder(verificationSignal);
 		},
 	});

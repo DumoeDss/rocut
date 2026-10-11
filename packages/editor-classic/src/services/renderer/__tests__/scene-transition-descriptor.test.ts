@@ -1,4 +1,5 @@
-import { expect, test } from "bun:test";
+import { expect, spyOn, test } from "bun:test";
+import * as transitionStyle from "../../../transitions/transition-style";
 import { buildFrameDescriptor } from "../compositor/frame-descriptor";
 import { ColorNode } from "../nodes/color-node";
 import { EffectLayerNode } from "../nodes/effect-layer-node";
@@ -45,6 +46,7 @@ test("scene transition transports whole branch trees and post without flattening
 	const item = frame.items[1];
 	if (item.type !== "sceneTransition") throw Error("Missing scene transition");
 	expect(item.progress).toBe(0.25);
+	expect(item).not.toHaveProperty("style");
 	expect(item.outgoing.opacity).toBe(0.5);
 	expect(item.outgoing.effectPassGroups).toEqual([[pass]]);
 	expect(item.outgoing.items.map((child) => child.type)).toEqual([
@@ -65,6 +67,115 @@ test("scene transition transports whole branch trees and post without flattening
 		"root:1:incoming:group:1:outgoing:group:0:color",
 		"root:1:incoming:group:1:incoming:group:0:color",
 	]);
+});
+
+test("Peel scene transition transports exact style without flattening isolated branch post", async () => {
+	const admission = spyOn(
+		transitionStyle,
+		"validateNativeTransitionStyle",
+	).mockImplementation((style) => style);
+	try {
+		const style = {
+			kind: "peel" as const,
+			direction: "left" as const,
+			curl: 0.61,
+			segments: 23,
+			shading: 0.32,
+			perspective: 0.17,
+		};
+		const node = new SceneTransitionNode({ progress: 0.37, style })
+			.add(group(0.4).add(color("red")))
+			.add(group(0.8).add(color("blue")));
+		const { frame, textures } = await buildFrameDescriptor({ node, renderer });
+		const item = frame.items[0];
+		if (item.type !== "sceneTransition")
+			throw Error("Missing Peel scene transition");
+		expect(item.style).toBe(style);
+		expect(item.progress).toBe(0.37);
+		expect(item.outgoing.opacity).toBe(0.4);
+		expect(item.incoming.opacity).toBe(0.8);
+		expect(item.outgoing.effectPassGroups).toEqual([[pass]]);
+		expect(item.outgoing.items).toHaveLength(1);
+		expect(item.incoming.items).toHaveLength(1);
+		expect(textures).toHaveLength(2);
+		expect(admission).toHaveBeenCalledWith(style);
+	} finally {
+		admission.mockRestore();
+	}
+});
+
+test("Peel scene collector fails closed before collecting branches when core admission fails", async () => {
+	const admission = spyOn(
+		transitionStyle,
+		"validateNativeTransitionStyle",
+	).mockImplementation(() => {
+		throw Error(transitionStyle.PEEL_UNAVAILABLE);
+	});
+	try {
+		const style = {
+			kind: "peel" as const,
+			direction: "right" as const,
+			curl: 0.5,
+			segments: 12,
+			shading: 0.4,
+			perspective: 0.2,
+		};
+		const node = new SceneTransitionNode({ progress: 0.5, style })
+			.add(group().add(color("red")))
+			.add(group().add(color("blue")));
+		await expect(buildFrameDescriptor({ node, renderer })).rejects.toThrow(
+			transitionStyle.PEEL_UNAVAILABLE,
+		);
+	} finally {
+		admission.mockRestore();
+	}
+});
+
+test("Bend scene transport preserves whole branch post and endpoints without canonical rewriting", async () => {
+	const style = {
+		kind: "bend" as const,
+		direction: "right" as const,
+		hinge: 0.42,
+		angle: 1.13,
+		perspective: 0.26,
+		shading: 0.37,
+	};
+	const admission = spyOn(
+		transitionStyle,
+		"validateNativeTransitionStyle",
+	).mockImplementation(() => ({ ...style, hinge: 0.45 }));
+	try {
+		for (const progress of [0, 0.37, 1]) {
+			const node = new SceneTransitionNode({ progress, style })
+				.add(group(0.4).add(color("red")))
+				.add(group(0.8).add(color("blue")));
+			const { frame, textures } = await buildFrameDescriptor({
+				node,
+				renderer,
+			});
+			const item = frame.items[0];
+			if (item.type !== "sceneTransition")
+				throw Error("Missing Bend scene transition");
+			expect(item.style).toBe(style);
+			expect(item.progress).toBe(progress);
+			expect(item.outgoing.opacity).toBe(0.4);
+			expect(item.incoming.opacity).toBe(0.8);
+			expect(item.outgoing.effectPassGroups).toEqual([[pass]]);
+			expect(item.incoming.effectPassGroups).toEqual([[pass]]);
+			expect(textures).toHaveLength(2);
+		}
+		admission.mockImplementation(() => {
+			throw Error("Bend unavailable");
+		});
+		const node = new SceneTransitionNode({ progress: 0.5, style })
+			.add(group())
+			.add(group());
+		await expect(buildFrameDescriptor({ node, renderer })).rejects.toThrow(
+			"Bend unavailable",
+		);
+	} finally {
+		admission.mockRestore();
+	}
 });
 
 test("endpoints and zero opacity do not prune inactive scene branches", async () => {

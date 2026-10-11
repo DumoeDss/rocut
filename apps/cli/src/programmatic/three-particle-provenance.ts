@@ -167,8 +167,9 @@ export function assertThreeParticleCompileIdentity(
 /** Reject stale browser adapters before starting a sampler or authored code. */
 export function assertCurrentThreeParticleAdapter(
 	archived: ThreeParticleCompileIdentity,
+	staticSvg = false,
 ): void {
-	if (archived.adapterSha256 !== getThreeParticleAdapterHash())
+	if (archived.adapterSha256 !== getThreeParticleAdapterHash(staticSvg))
 		throw recompile();
 }
 

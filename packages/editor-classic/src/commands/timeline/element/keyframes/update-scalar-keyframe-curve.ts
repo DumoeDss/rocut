@@ -1,5 +1,5 @@
 import { updateScalarKeyframeCurve } from "../../../../animation";
-import { admitAnimationsChannel } from "../../../../animation/scalar-admission";
+import { admitAnimationTargetChannels } from "../../../../animation/scalar-admission";
 import {
 	Command,
 	type EditorCommandContext,
@@ -56,34 +56,31 @@ export class UpdateScalarKeyframeCurveCommand extends Command {
 			trackId: this.trackId,
 			elementId: this.elementId,
 			update: (element) => {
-				const target = resolveAnimationTarget({ element, path: this.propertyPath });
+				const target = resolveAnimationTarget({
+					element,
+					path: this.propertyPath,
+				});
 				if (!target) {
 					return element;
 				}
 
 				const animations = updateScalarKeyframeCurve({
-						animations: element.animations,
-						propertyPath: this.propertyPath,
-						componentKey: this.componentKey,
-						keyframeId: this.keyframeId,
-						patch: this.patch,
+					animations: element.animations,
+					propertyPath: this.propertyPath,
+					componentKey: this.componentKey,
+					keyframeId: this.keyframeId,
+					patch: this.patch,
 				});
-				const spec =
-					target.numericRanges?.[
-						target.channelLayout.kind === "leaf"
-							? "value"
-							: Object.keys(target.numericRanges)[0]
-					];
-				const admission = admitAnimationsChannel({
+				const admissions = admitAnimationTargetChannels({
 					animations,
 					propertyPath: this.propertyPath,
-					fallbackValue: Number(target.getBaseValue() ?? 0),
+					componentKey: this.componentKey,
 					duration: element.duration,
-					spec,
+					target,
 				});
-				if (admission.kind === "rejected") {
-					throw new RangeError(admission.reason);
-				}
+				for (const admission of admissions)
+					if (admission.kind === "rejected")
+						throw new RangeError(admission.reason);
 				return { ...element, animations };
 			},
 		});

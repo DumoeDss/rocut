@@ -22,8 +22,8 @@ const maps = {
 	scopes: {},
 };
 const bodies = {
-	"scene/main.mjs": "data:text/javascript;base64,ZXhwb3J0e307",
-	"data.json": "data:application/json;base64,e30=",
+  [adapter.url("scene/main.mjs")]: "data:text/javascript;base64,ZXhwb3J0e307",
+  [adapter.url("data.json")]: "data:application/json;base64,e30=",
 };
 const assets = {
 	"assets/picture.png": "data:image/png;base64,eHl6",

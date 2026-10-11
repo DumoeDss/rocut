@@ -24,6 +24,30 @@ describe("surface media patch boundary", () => {
 				},
 				retime: { rate: 0.5, maintainPitch: true },
 			},
+			{
+				transitionIn: {
+					kind: "peel",
+					outgoingClipId: "left",
+					durationFrames: 30,
+					direction: "up",
+					curl: 0.17,
+					segments: 32,
+					shading: 0.6,
+					perspective: 0.5,
+				},
+			},
+			{
+				transitionIn: {
+					kind: "bend",
+					outgoingClipId: "left",
+					durationFrames: 30,
+					direction: "right",
+					hinge: 0.4,
+					angle: 1.2,
+					perspective: 0.5,
+					shading: 0.7,
+				},
+			},
 			{ transitionIn: null, retime: null, freezeFrame: null },
 		];
 		for (const patch of patches)
@@ -36,6 +60,8 @@ describe("surface media patch boundary", () => {
 			patches.map((patch) => ({ kind: "update-clip", clipId: "right", patch })),
 		);
 		expect(errors.map((error) => error.message)).toEqual([
+			"downstream sentinel",
+			"downstream sentinel",
 			"downstream sentinel",
 			"downstream sentinel",
 		]);

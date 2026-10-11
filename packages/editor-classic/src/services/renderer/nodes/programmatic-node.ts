@@ -17,7 +17,10 @@ import type {
 	RasterCanvasLease,
 	RenderRasterClient,
 } from "../render-residency-domain";
-import { RenderCancelledError } from "../compositor/render-request";
+import {
+	RenderCancelledError,
+	normalizeRenderCancellation,
+} from "../compositor/render-request";
 
 interface ProgrammaticNodeParams extends VisualNodeParams {
 	source: ProgrammaticSource;
@@ -176,6 +179,8 @@ export class ProgrammaticNode extends VisualNode<
 				} finally {
 					bitmap.close();
 				}
+			} catch (error) {
+				throw normalizeRenderCancellation({ error, signal });
 			} finally {
 				if (releaseResources && resourceWork) {
 					const release = releaseResources;

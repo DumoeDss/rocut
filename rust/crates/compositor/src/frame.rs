@@ -3,6 +3,7 @@ use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
 
 use crate::BlendMode;
+pub use editor_api::NativeTransitionStyle;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -32,6 +33,8 @@ pub enum FrameItemDescriptor {
         outgoing: Vec<LayerDescriptor>,
         incoming: Vec<LayerDescriptor>,
         progress: f32,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        style: Option<NativeTransitionStyle>,
     },
     SceneEffect {
         #[serde(rename = "effectPassGroups")]
@@ -55,6 +58,8 @@ pub struct SceneTransitionDescriptor {
     pub outgoing: IsolatedGroupDescriptor,
     pub incoming: IsolatedGroupDescriptor,
     pub progress: f32,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub style: Option<NativeTransitionStyle>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

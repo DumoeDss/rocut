@@ -7,6 +7,7 @@ import type { NativeVideoDecoder } from "./video-decoder";
 import {createRemotionArtifactSink,type RemotionAdmittedArtifact} from "./remotion-artifact-sink";
 import {prepareRemotionInlineSource,type RemotionInlineSource} from "./remotion-inline-prepare";
 import type {NativeAudioAnalysisConfig} from "./remotion-audio-bootstrap";
+import { pinElectronAudioSessionConnection } from "./electron-audio-session";
 
 function producedBinding(name:string):(...args:any[])=>any {
 	const binding=(wasm as unknown as Record<string,unknown>)[name];
@@ -19,9 +20,10 @@ function producedBinding(name:string):(...args:any[])=>any {
  * Whole-source produced history preserves one native root, then crops once.
  */
 export async function renderRemotionAudioRange({ source, firstFrame, frameCount, sampleRate,
-	executable, decoder, resourceStore, signal }: {
+	executable, connectionFile, decoder, resourceStore, signal, produced = false }: {
 	source: ProgrammaticSource; firstFrame: number; frameCount: number; sampleRate: 44100 | 48000;
-	executable: string; decoder: NativeVideoDecoder; resourceStore: ProgrammaticResourceStore; signal: AbortSignal;
+	executable?: string; connectionFile?: string; decoder: NativeVideoDecoder; resourceStore: ProgrammaticResourceStore; signal: AbortSignal;
+	produced?: boolean;
 }) {
 	signal.throwIfAborted();
 	if (source.runtime !== "html-document" || source.build?.engine !== "remotion")
@@ -35,10 +37,32 @@ export async function renderRemotionAudioRange({ source, firstFrame, frameCount,
 	const frames: NativeAudioFrame[] = [];
 	const timing = (index: number) => ({ source, clipStart: 0, clipDuration: source.durationFrames * plan.ticksPerFrame,
 		trimStart: 0, timelineTime: index * plan.ticksPerFrame });
+	let persistent = false;
+	if (connectionFile) {
+		if (produced) { pinElectronAudioSessionConnection(connectionFile); persistent = true; }
+		else { try { pinElectronAudioSessionConnection(connectionFile); persistent = true; } catch { /* Basic grant is validated by the analyzer. */ } }
+	}
+	if (connectionFile && !persistent) {
+		let observationBytes = 1024;
+		const sources = await withRemotionAudioAnalyzer({ connectionFile, decoder, resourceStore, signal, request: timing(firstFrame) }, async analyzer => {
+			for (let index = firstFrame; index < firstFrame + frameCount; index++) {
+				const analyzed = await analyzer.frame(timing(index));
+				if (analyzed.frameIndex !== index) throw Error("Remotion audio frame clock disagrees with the admitted range");
+				const frame = { frameIndex: index, assets: analyzed.assets };
+				observationBytes += Buffer.byteLength(JSON.stringify(frame)) + 1;
+				if (observationBytes > policy.maxObservationBytes) throw Error("Native audio observations exceed the Rust budget");
+				frames.push(frame);
+			}
+			return analyzer.sources;
+		});
+		const rendered = await renderNativeAudioObservations({ frames, sources, frameRate: source.frameRate, firstFrame, sampleRate, decoder, signal });
+		if (rendered.frames !== plan.outputFrames) throw Error("Native audio sample clock disagrees with the admitted range");
+		return { ...rendered, sampleRate, artifacts: [], firstFrame, frameCount, sampleOrigin: plan.sampleOrigin as number };
+	}
 	const scanResult=JSON.parse(producedBinding("resolveRemotionProducedFramesJson")(JSON.stringify({version:1,source})));
 	if(scanResult.error || !scanResult.plan)throw Error(scanResult.error??"Missing Remotion canonical produced scan");
 	const scan=scanResult.plan as NonNullable<NativeAudioAnalysisConfig["remotionProduced"]>;
-	const collected=await withRemotionAudioAnalyzer({executable,resourceStore,signal,decoder,request:timing(firstFrame)},async analyzer=>({
+	const collected=await withRemotionAudioAnalyzer({executable,connectionFile,resourceStore,signal,decoder,request:timing(firstFrame)},async analyzer=>({
 		...await analyzer.producedFrames(scan),sources:analyzer.sources,
 	}));
 	const sources=collected.sources,admittedSourceBytes=sources.reduce((sum,item)=>sum+item.body.length,0);

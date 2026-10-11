@@ -6,6 +6,7 @@ export function getMvRecipeCatalog() {
 		version: number;
 		availability: string;
 		generators: Record<string, unknown>;
+		sceneParameters?: Record<string, unknown>;
 		nativeOwnerScenes?: Record<string, unknown>;
 		referenceScenes?: Record<string, unknown>;
 		transitionParameters: Record<string, unknown>;

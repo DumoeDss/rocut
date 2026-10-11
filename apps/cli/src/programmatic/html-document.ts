@@ -146,19 +146,20 @@ export function htmlLiquidObjectCaptureExpression({
 	});
 }
 
-/** Internal analysis only; Electron's PNG-only contract is deliberately unchanged. */
+/** Internal facts-only analysis, optionally using the separately granted video seam. */
 export function htmlAudioAnalysisExpression(
 	code: string,
 	frame: unknown,
 	resources: readonly ResolvedProgrammaticResource[],
 	analysis: NativeAudioAnalysisConfig,
+	nativeVideoBridge = !!analysis.remotionProduced,
 ): string {
 	return htmlExpression({
 		code,
 		frame,
 		resources,
 		eagerImages: true,
-		nativeVideoBridge: !!analysis.remotionProduced,
+		nativeVideoBridge,
 		analysis,
 	});
 }

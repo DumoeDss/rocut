@@ -4,7 +4,7 @@ import {
 	type CommandResult,
 } from "../../../base-command";
 import { upsertPathKeyframe } from "../../../../animation";
-import { admitAnimationsChannel } from "../../../../animation/scalar-admission";
+import { admitAnimationTargetChannels } from "../../../../animation/scalar-admission";
 import { updateElementInSceneTracks } from "../../../../timeline";
 import type { SceneTracks } from "../../../../timeline";
 import { resolveAnimationTarget } from "../../../../timeline/animation-targets";
@@ -89,25 +89,17 @@ export class UpsertKeyframeCommand extends Command {
 					channelLayout: target.channelLayout,
 					coerceValue: target.coerceValue,
 				});
-				const spec =
-					target.numericRanges?.[
-						target.channelLayout.kind === "leaf"
-							? "value"
-							: Object.keys(target.numericRanges)[0]
-					];
-				const admission = admitAnimationsChannel({
+				const admissions = admitAnimationTargetChannels({
 					animations,
 					propertyPath: this.propertyPath,
-					fallbackValue:
-						typeof this.value === "number"
-							? this.value
-							: Number(target.getBaseValue() ?? 0),
+					leafFallbackValue:
+						typeof this.value === "number" ? this.value : undefined,
 					duration: element.duration,
-					spec,
+					target,
 				});
-				if (admission.kind === "rejected") {
-					throw new RangeError(admission.reason);
-				}
+				for (const admission of admissions)
+					if (admission.kind === "rejected")
+						throw new RangeError(admission.reason);
 				return { ...element, animations };
 			},
 		});

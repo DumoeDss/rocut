@@ -4,7 +4,7 @@ fn invalid(message: &'static str) -> CompositorError {
     CompositorError::InvalidGroup { message }
 }
 
-/// Canvas-only whole-graph metadata/availability admission. No GPU access or
+/// Canvas/native Peel whole-graph metadata/availability admission. No GPU access or
 /// resource-content identity proof; the caller must pin source revisions separately.
 pub(super) fn validate(
     frame: &FrameDescriptor,
@@ -45,6 +45,7 @@ pub(super) fn validate(
                     outgoing,
                     incoming,
                     progress,
+                    ..
                 } => {
                     if !progress.is_finite() || !(0.0..=1.0).contains(progress) {
                         return Err(CompositorError::InvalidTransitionProgress(*progress));
@@ -81,6 +82,7 @@ fn contains_canvas(frame: &FrameDescriptor) -> bool {
                     pending.push(&group.items);
                 }
                 FrameItemDescriptor::SceneTransition(transition) => {
+                    if transition.style.is_some() { return true; }
                     for group in [&transition.outgoing, &transition.incoming] {
                         if has(&group.effect_pass_groups) {
                             return true;
@@ -89,8 +91,9 @@ fn contains_canvas(frame: &FrameDescriptor) -> bool {
                     }
                 }
                 FrameItemDescriptor::Transition {
-                    outgoing, incoming, ..
+                    outgoing, incoming, style, ..
                 } => {
+                    if style.is_some() { return true; }
                     if outgoing
                         .iter()
                         .chain(incoming)

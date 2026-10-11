@@ -15,6 +15,7 @@ import {
 import {
 	snapshotParticleFrameConstraint,
 	validateParticleMotion,
+	validateParticleMotionControl,
 	type ParticleMotionOptions,
 } from "./particle-motion-contract";
 import type { ParticlePolicy } from "./particle-policy-types";
@@ -52,6 +53,8 @@ export function prepareParticleSurface(
 		throw Error("Invalid particle count or explicit underflow policy");
 	if (input.motion && Object.hasOwn(input.motion, "timeTicks"))
 		throw Error("Particle motion time belongs to the Rust mapped frame");
+	if (input.motion && Object.hasOwn(input.motion, "control"))
+		validateParticleMotionControl(input.motion.control);
 	if (
 		Object.hasOwn(input, "maxAllocationBytes") &&
 		(!Number.isSafeInteger(input.maxAllocationBytes) ||

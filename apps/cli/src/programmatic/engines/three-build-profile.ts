@@ -30,6 +30,7 @@ import { THREE_LIQUID_OBJECT_BROWSER_MODULE } from "../liquid-object-browser-mod
 import { THREE_FRAME_DRIVER } from "./three-driver";
 import { THREE_PARTICLE_FRAME_DRIVER } from "./three-particle-driver";
 import { THREE_LIQUID_OBJECT_FRAME_DRIVER } from "./three-liquid-object-driver";
+import { hasThreeSvgModel } from "./three-asset-features";
 
 interface ThreeBuildProfile {
 	readonly archive?: {
@@ -68,8 +69,16 @@ export async function prepareThreeBuildProfile(options: {
 			particle: parseThreeParticleArchive(source, lock.body),
 			liquid: parseThreeLiquidObjectArchive({ source, body: lock.body }),
 		};
-		if (archive.particle) assertCurrentThreeParticleAdapter(archive.particle);
-		if (archive.liquid) assertCurrentThreeLiquidObjectAdapter(archive.liquid);
+		if (archive.particle)
+			assertCurrentThreeParticleAdapter(
+				archive.particle,
+				hasThreeSvgModel(source.resources),
+			);
+		if (archive.liquid)
+			assertCurrentThreeLiquidObjectAdapter(
+				archive.liquid,
+				hasThreeSvgModel(source.resources),
+			);
 	}
 	const particleRuntime = hasThreeParticleCapability(source)
 		? await loadThreeParticleRuntime(signal, archive?.particle?.samplerIdentity)

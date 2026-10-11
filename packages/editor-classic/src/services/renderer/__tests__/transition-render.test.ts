@@ -1,11 +1,17 @@
-import { afterEach, beforeEach, expect, test } from "bun:test";
+import { afterEach, beforeEach, expect, spyOn, test } from "bun:test";
+import * as transitionStyle from "../../../transitions/transition-style";
 import { mediaTime } from "../../../wasm";
 import { registerDefaultEffects } from "../../../effects";
 import { registerDefaultMasks } from "../../../masks";
 import { buildFrameDescriptor } from "../compositor/frame-descriptor";
+import type { FrameDescriptor } from "../compositor/types";
 import { resolveRenderTree } from "../resolve";
 import { VideoNode } from "../nodes/video-node";
 import { TransitionTrackNode } from "../nodes/transition-track-node";
+import type {
+	BendTransitionStyle,
+	PeelTransitionStyle,
+} from "@opencut/editor-contracts";
 import {
 	fixture,
 	decoder,
@@ -16,10 +22,22 @@ import {
 } from "./transition-render-fixture";
 
 let restore: () => void;
+let admission: ReturnType<
+	typeof spyOn<typeof transitionStyle, "validateNativeTransitionStyle">
+>;
 beforeEach(() => {
 	restore = installCanvases();
+	// Transport contract only: real existing WASM still owns every source clock.
+	// New Rust style admission/pixels are verified by their native owner separately.
+	admission = spyOn(
+		transitionStyle,
+		"validateNativeTransitionStyle",
+	).mockImplementation((style) => style);
 });
-afterEach(() => restore());
+afterEach(() => {
+	admission.mockRestore();
+	restore();
+});
 async function render({ data = fixture(), time = 360_000 } = {}) {
 	const node = data.build();
 	const cache = decoder();
@@ -40,6 +58,7 @@ test("scene sampling emits one dissolve with Rust pre/post-roll clocks and stabl
 	const transition = result.frame.items[0];
 	if (transition.type !== "transition") throw new Error("Expected dissolve");
 	expect(transition.progress).toBe(0.5);
+	expect(transition).not.toHaveProperty("style");
 	expect(transition.outgoing).toHaveLength(1);
 	expect(transition.incoming).toHaveLength(1);
 	expect(transition.outgoing[0].opacity).toBe(0.7);
@@ -213,6 +232,21 @@ test("picture effects, masks and stroke layers remain inside their transition br
 	expect(item.outgoing[0].effectPassGroups[0].length).toBeGreaterThan(0);
 	expect(item.outgoing[1].mask).toBeNull();
 	expect(result.textures.length).toBeGreaterThan(2);
+	for (const authored of [peel, bend]) {
+		data.incoming.transitionIn = {
+			...authored,
+			outgoingClipId: "a",
+			durationFrames: 30,
+		};
+		const styled = await render({ data });
+		const styledItem = styled.frame.items[0];
+		if (styledItem.type !== "transition")
+			throw Error("Missing styled masked transition");
+		const { style, ...legacy } = styledItem;
+		expect(style).toEqual(authored);
+		expect(legacy).toEqual(item);
+		expect(styled.cache.times).toEqual(result.cache.times);
+	}
 });
 
 test("image transitions extend both pictures across the cut without requesting video", async () => {
@@ -256,4 +290,180 @@ test("source handle validation converts imported media duration seconds to ticks
 	await expect(render({ data })).rejects.toThrow("missing-outgoing-handle");
 	data.source.duration = 20;
 	expect((await render({ data })).frame.items[0].type).toBe("transition");
+});
+
+const peel: PeelTransitionStyle = {
+	kind: "peel",
+	direction: "up",
+	curl: 0.63,
+	segments: 19,
+	shading: 0.41,
+	perspective: 0.27,
+};
+const bend: BendTransitionStyle = {
+	kind: "bend",
+	direction: "down",
+	hinge: 0.43,
+	angle: 1.17,
+	perspective: 0.31,
+	shading: 0.46,
+};
+
+function peelFixture(options = {}) {
+	const data = fixture(options);
+	data.incoming.transitionIn = {
+		...peel,
+		outgoingClipId: "a",
+		durationFrames: 30,
+	};
+	return data;
+}
+function bendFixture(options = {}) {
+	const data = fixture(options);
+	data.incoming.transitionIn = {
+		...bend,
+		outgoingClipId: "a",
+		durationFrames: 30,
+	};
+	return data;
+}
+
+test("Bend retains exact author wire, native video samples and deterministic reverse/repeated seeks", async () => {
+	// Admission's canonical response must not silently rewrite the authored wire.
+	admission.mockImplementation(() => ({ ...bend, hinge: 0.44 }));
+	const data = bendFixture({ blur: true });
+	const result = await render({ data });
+	expect(result.cache.times).toEqual([4, 1]);
+	const track = result.node.children[0];
+	if (!(track instanceof TransitionTrackNode)) throw Error("Missing track");
+	expect(track.params.links[0]).toEqual({
+		outgoingClipId: "a",
+		incomingClipId: "b",
+		durationFrames: 30,
+	});
+	expect(track.params.styles?.get(0)).toEqual(bend);
+	const frames = new Map<number, FrameDescriptor>();
+	for (const time of [416_000, 300_000, 360_000, 300_000, 416_000]) {
+		await resolveRenderTree({
+			node: result.node,
+			renderer,
+			time,
+			frameRate,
+			videoCache: result.cache,
+		});
+		const { frame } = await buildFrameDescriptor({
+			node: result.node,
+			renderer,
+		});
+		const previous = frames.get(time);
+		if (previous) expect(frame).toEqual(previous);
+		frames.set(time, frame);
+		const item = frame.items[0];
+		if (item.type !== "transition") throw Error("Missing Bend transition");
+		expect(item.style).toEqual(bend);
+		expect(Object.keys(item.style ?? {}).sort()).toEqual(
+			Object.keys(bend).sort(),
+		);
+		expect(item.outgoing).toHaveLength(2);
+		expect(item.incoming).toHaveLength(2);
+	}
+	expect(admission).toHaveBeenCalledWith(bend);
+});
+
+test("Peel transports exact authored style while reusing native video clocks and branch effects", async () => {
+	const data = peelFixture({ blur: true });
+	const result = await render({ data });
+	const item = result.frame.items[0];
+	if (item.type !== "transition") throw Error("Missing Peel transition");
+	expect(item.style).toEqual(peel);
+	expect(admission).toHaveBeenCalledWith(peel);
+	expect(Object.keys(item.style ?? {}).sort()).toEqual(
+		Object.keys(peel).sort(),
+	);
+	expect(item.progress).toBe(0.5);
+	expect(result.cache.times).toEqual([4, 1]);
+	expect(item.outgoing).toHaveLength(2);
+	expect(item.incoming).toHaveLength(2);
+	expect(item.outgoing[0].effectPassGroups[0].length).toBeGreaterThan(0);
+	expect(item.outgoing[1].opacity).toBe(0.7);
+	const track = result.node.children[0];
+	if (!(track instanceof TransitionTrackNode)) throw Error("Missing track");
+	expect(track.params.links[0]).toEqual({
+		outgoingClipId: "a",
+		incomingClipId: "b",
+		durationFrames: 30,
+	});
+	expect(track.params.styles?.get(0)).toEqual(peel);
+	const frames = new Map<number, FrameDescriptor>();
+	for (const time of [416_000, 300_000, 360_000, 300_000, 416_000]) {
+		await resolveRenderTree({
+			node: result.node,
+			renderer,
+			time,
+			frameRate,
+			videoCache: result.cache,
+		});
+		const { frame } = await buildFrameDescriptor({
+			node: result.node,
+			renderer,
+		});
+		const previous = frames.get(time);
+		if (previous) expect(frame).toEqual(previous);
+		frames.set(time, frame);
+		const transition = frame.items[0];
+		if (transition.type !== "transition")
+			throw Error("Missing Peel transition");
+		expect(transition.style).toEqual(peel);
+	}
+});
+
+test("Peel and Bend collection propagate unavailable core instead of publishing a dissolve", async () => {
+	admission.mockImplementation(() => {
+		throw Error(transitionStyle.PEEL_UNAVAILABLE);
+	});
+	await expect(render({ data: peelFixture() })).rejects.toThrow(
+		transitionStyle.PEEL_UNAVAILABLE,
+	);
+	await expect(render({ data: bendFixture() })).rejects.toThrow(
+		transitionStyle.PEEL_UNAVAILABLE,
+	);
+});
+
+test("Peel and Bend image branches use native images with no video sampling and retain exact style", async () => {
+	const original = Object.getOwnPropertyDescriptor(globalThis, "Image");
+	class TestImage {
+		naturalWidth = 640;
+		naturalHeight = 360;
+		onload: (() => void) | null = null;
+		set src(_value: string) {
+			queueMicrotask(() => this.onload?.());
+		}
+	}
+	Object.defineProperty(globalThis, "Image", {
+		configurable: true,
+		value: TestImage,
+	});
+	try {
+		for (const authored of [peel, bend]) {
+			const data = authored.kind === "peel" ? peelFixture() : bendFixture();
+			data.source.type = "image";
+			data.source.url = "blob:peel-image";
+			data.tracks.main.elements = [
+				{ ...data.outgoing, type: "image" },
+				{ ...data.incoming, type: "image" },
+			];
+			for (const time of [300_000, 416_000, 300_000]) {
+				const result = await render({ data, time });
+				const item = result.frame.items[0];
+				if (item.type !== "transition")
+					throw Error("Missing Peel image transition");
+				expect(item.style).toEqual(authored);
+				expect(result.cache.times).toEqual([]);
+				expect(result.textures).toHaveLength(2);
+			}
+		}
+	} finally {
+		if (original) Object.defineProperty(globalThis, "Image", original);
+		else Reflect.deleteProperty(globalThis, "Image");
+	}
 });

@@ -195,6 +195,7 @@ fn scene_transition_consumes_each_branch_children_then_post_including_endpoints(
                 outgoing: branch.clone(),
                 incoming: branch.clone(),
                 progress,
+                style: None,
             },
         ))];
         let preparation = FramePreparation::new(descriptor).unwrap();
@@ -233,6 +234,7 @@ fn malformed_inactive_scene_branch_liquid_is_rejected_before_any_preparation() {
             outgoing: branch,
             incoming,
             progress: 0.0,
+            style: None,
         },
     ))];
     assert!(FramePreparation::new(descriptor).is_err());

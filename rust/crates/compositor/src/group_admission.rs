@@ -103,7 +103,9 @@ pub(crate) fn validate(frame: &FrameDescriptor) -> Result<(), CompositorError> {
     if !frame.items.iter().any(|item| {
         matches!(
             item,
-            FrameItemDescriptor::Group(_) | FrameItemDescriptor::SceneTransition(_)
+            FrameItemDescriptor::Group(_)
+                | FrameItemDescriptor::SceneTransition(_)
+                | FrameItemDescriptor::Transition { style: Some(_), .. }
         )
     }) {
         return Ok(());
@@ -141,6 +143,13 @@ pub(crate) fn validate(frame: &FrameDescriptor) -> Result<(), CompositorError> {
                 pending.push((group.items.iter(), child_depth));
             }
             FrameItemDescriptor::SceneTransition(transition) => {
+                if transition
+                    .style
+                    .as_ref()
+                    .is_some_and(|style| !style.valid())
+                {
+                    return Err(CompositorError::InvalidTransitionStyle);
+                }
                 if !transition.progress.is_finite() || !(0.0..=1.0).contains(&transition.progress) {
                     return Err(CompositorError::InvalidTransitionProgress(
                         transition.progress,
@@ -152,20 +161,35 @@ pub(crate) fn validate(frame: &FrameDescriptor) -> Result<(), CompositorError> {
                 let child_depth = *depth + 1;
                 budget.group(&transition.outgoing, child_depth, &mut groups)?;
                 budget.group(&transition.incoming, child_depth, &mut groups)?;
-                budget.targets(1)?;
+                budget.targets(if transition.style.is_some() { 2 } else { 1 })?;
+                if let Some(style) = &transition.style {
+                    budget.reserve(u64::from(style.work()) * 6 * 32)?;
+                }
                 pending.push((transition.incoming.items.iter(), child_depth));
                 pending.push((transition.outgoing.items.iter(), child_depth));
             }
             FrameItemDescriptor::Transition {
-                outgoing, incoming, ..
+                outgoing,
+                incoming,
+                progress,
+                style,
             } => {
+                if !progress.is_finite() || !(0.0..=1.0).contains(progress) {
+                    return Err(CompositorError::InvalidTransitionProgress(*progress));
+                }
+                if style.as_ref().is_some_and(|style| !style.valid()) {
+                    return Err(CompositorError::InvalidTransitionStyle);
+                }
                 items = items
                     .saturating_add(outgoing.len())
                     .saturating_add(incoming.len());
                 if items > MAX_GROUP_FRAME_ITEMS {
                     return Err(invalid("expanded frame item limit exceeded"));
                 }
-                budget.targets(1)?; // Crossfade after composing both pictures.
+                budget.targets(if style.is_some() { 2 } else { 1 })?;
+                if let Some(style) = style {
+                    budget.reserve(u64::from(style.work()) * 6 * 32)?;
+                }
                 for layer in outgoing.iter().chain(incoming) {
                     budget.layer(layer)?;
                 }

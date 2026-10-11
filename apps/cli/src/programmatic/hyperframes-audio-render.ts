@@ -9,9 +9,9 @@ import type { NativeVideoDecoder } from "./video-decoder";
  * video exporter. Uses the same absolute rational sample clock as Remotion.
  */
 export async function renderHyperframesAudioRange({ source, firstFrame, frameCount, sampleRate,
-	executable, decoder, resourceStore, signal }: {
+	executable, connectionFile, decoder, resourceStore, signal }: {
 	source: ProgrammaticSource; firstFrame: number; frameCount: number; sampleRate: 44100 | 48000;
-	executable: string; decoder: NativeVideoDecoder; resourceStore: ProgrammaticResourceStore; signal: AbortSignal;
+	executable?: string; connectionFile?: string; decoder: NativeVideoDecoder; resourceStore: ProgrammaticResourceStore; signal: AbortSignal;
 }) {
 	signal.throwIfAborted();
 	if (source.runtime !== "html-document" || source.build?.engine !== "hyperframes")
@@ -25,7 +25,7 @@ export async function renderHyperframesAudioRange({ source, firstFrame, frameCou
 	const timing = (index: number) => ({ source, clipStart: 0, clipDuration: source.durationFrames * plan.ticksPerFrame,
 		trimStart: 0, timelineTime: index * plan.ticksPerFrame });
 	let observationBytes = 1024;
-	const sources = await withHyperframesAudioAnalyzer({ executable, resourceStore, signal, request: timing(firstFrame) }, async analyzer => {
+	const sources = await withHyperframesAudioAnalyzer({ executable, connectionFile, resourceStore, signal, request: timing(firstFrame) }, async analyzer => {
 		for (let index = firstFrame; index < firstFrame + frameCount; index++) {
 			signal.throwIfAborted();
 			const analyzed = await analyzer.frame(timing(index));

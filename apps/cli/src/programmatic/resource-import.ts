@@ -1,5 +1,10 @@
 import { isAbsolute } from "node:path";
 import { IMAGE_SEQUENCE_RESOURCE_CAPABILITY } from "@opencut/editor-contracts";
+import { importGltfModel } from "./model-import";
+import {
+	modelInputCapability,
+	type ProgrammaticResourceValidationProbe,
+} from "./model-input-capability";
 import type { ProgrammaticResourceStore } from "./resources";
 import {
 	readResourceFile,
@@ -25,9 +30,35 @@ export const PROGRAMMATIC_RESOURCE_CAPABILITY = {
 	imageSequence: IMAGE_SEQUENCE_RESOURCE_CAPABILITY,
 	audioImport: "programmatic/resources/import-audio",
 	fontAxes: "static-opentype-v1",
+	buildSourceArchive: {
+		restore: "programmatic/resources/restore-build-source",
+		input: ["source", "outputDirectory"],
+		format: "rocut-build-source-restore-v1",
+		output: ["source/", "resources/", "metadata/build-source.json", "metadata/toolchain-lock.json", "metadata/restore-receipt.json"],
+		scope: "declared-build-inputs-and-source.resources-attachments; no-compile-import-or-project-mutation",
+		outputDirectory: "must-not-exist; existing-nonredirected-parent; incomplete-output-retained",
+	},
+	modelArchive: {
+		restore: "programmatic/resources/restore-model-source",
+		format: "gltf-2.0-author-archive",
+		input: ["sourceDirectory", "entryFile", "files"],
+		output: "model/gltf-binary",
+		externalImages: ["png", "jpeg", "webp", "ktx2"],
+	},
 	storage: "content-addressed-project-attachment",
 	mutation: "import-prepares-resource; attach-via-editing-transaction",
 } as const;
+
+/** Add live Rust descriptor admission without mutating the legacy export or
+ * asserting decoder, package, file contents, browser or GPU health. */
+export function getProgrammaticResourceCapability(
+	validate?: ProgrammaticResourceValidationProbe,
+) {
+	return {
+		...PROGRAMMATIC_RESOURCE_CAPABILITY,
+		modelInputs: modelInputCapability(validate),
+	};
+}
 
 export async function importProgrammaticResource({
 	input,
@@ -36,6 +67,8 @@ export async function importProgrammaticResource({
 	if (!input || typeof input !== "object" || Array.isArray(input))
 		throw Error("Expected resource import object");
 	const spec = input as Record<string, unknown>;
+	if ("sourceDirectory" in spec || "entryFile" in spec || "files" in spec)
+		return importGltfModel({ ...context, input });
 	if (spec.kind === "imageSequence")
 		throw Error(
 			`Image sequences require ${IMAGE_SEQUENCE_RESOURCE_CAPABILITY.import} (programmatic sequence-import) with a complete dependency closure`,

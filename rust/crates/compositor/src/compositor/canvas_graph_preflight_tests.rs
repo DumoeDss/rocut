@@ -64,7 +64,8 @@ fn late_inactive_texture_and_mask_reject() {
             &frame(vec![FrameItemDescriptor::Transition {
                 outgoing: vec![],
                 incoming: vec![l],
-                progress: 0.0
+                progress: 0.0,
+                style: None,
             }]),
             &mut |id| id == "source"
         )
@@ -79,7 +80,8 @@ fn bad_metadata_and_progress_reject() {
                 &frame(vec![FrameItemDescriptor::Transition {
                     outgoing: vec![],
                     incoming: vec![],
-                    progress: v
+                    progress: v,
+                    style: None,
                 }]),
                 &mut |_| true
             )
@@ -114,4 +116,39 @@ fn valid_and_noncanvas_legacy_policy() {
     f.items.remove(0);
     f.clear.color[0] = f32::NAN;
     validate(&f, &mut |_| panic!("ordinary frame must not lookup")).unwrap();
+}
+
+#[test]
+fn peel_without_canvas_admits_both_endpoint_branches_and_masks_before_gpu() {
+    let style: crate::NativeTransitionStyle = serde_json::from_value(serde_json::json!({
+        "kind":"peel", "direction":"left", "curl":0.17,"segments":32,"shading":0.6,"perspective":0.5
+    }))
+    .unwrap();
+    for progress in [0.0, 0.5, 1.0] {
+        let mut incoming = layer();
+        incoming.texture_id = "incoming".into();
+        incoming.mask = Some(LayerMaskDescriptor {
+            texture_id: "incoming-mask".into(),
+            feather: 0.0,
+            inverted: false,
+        });
+        let mut f = frame(vec![FrameItemDescriptor::Transition {
+            outgoing: vec![layer()],
+            incoming: vec![incoming],
+            progress,
+            style: Some(style.clone()),
+        }]);
+        f.items.remove(0); // No Canvas pass to trigger the historical preflight.
+        assert!(matches!(
+            validate(&f, &mut |id| id != "incoming-mask"),
+            Err(CompositorError::MissingTexture { .. })
+        ));
+        let mut seen = vec![];
+        validate(&f, &mut |id| {
+            seen.push(id.to_owned());
+            true
+        })
+        .unwrap();
+        assert_eq!(seen, ["source", "incoming", "incoming-mask"]);
+    }
 }

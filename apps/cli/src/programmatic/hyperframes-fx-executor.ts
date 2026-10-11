@@ -1,4 +1,6 @@
 import { launchFrameBrowser } from "./chromium-process";
+import { openElectronAudioSession } from "./electron-audio-session";
+import { createHyperframesElectronDspTarget } from "./hyperframes-electron-dsp";
 import { isAbsolute } from "node:path";
 import { HYPERFRAMES_FX_BOOTSTRAP } from "./hyperframes-fx-bootstrap";
 import { HYPERFRAMES_LOOP_SOURCE_BOOTSTRAP } from "./hyperframes-loop-source-bootstrap";
@@ -59,12 +61,14 @@ function checkedGeometry(stage: HyperframesFxStage, input: Uint8Array) {
 export async function withHyperframesFxExecutor<T>(
 	{
 		executable,
+		connectionFile,
 		runtime,
 		signal,
 		stageTimeoutMs = 30000,
 		expectedProvenance,
 	}: {
-		executable: string;
+		executable?: string;
+		connectionFile?: string;
 		runtime: HyperframesFxRuntime;
 		signal: AbortSignal;
 		stageTimeoutMs?: number;
@@ -74,7 +78,7 @@ export async function withHyperframesFxExecutor<T>(
 ): Promise<T> {
 	signal.throwIfAborted();
 	assertHyperframesFxRuntime(runtime);
-	if (!isAbsolute(executable))
+	if (!connectionFile && (!executable || !isAbsolute(executable)))
 		throw Error("Native FX browser path must be host-configured and absolute");
 	if (!Number.isSafeInteger(stageTimeoutMs) || stageTimeoutMs <= 0)
 		throw Error("Invalid native FX stage timeout");
@@ -85,7 +89,8 @@ export async function withHyperframesFxExecutor<T>(
 		() => fatal(Error("Native FX browser startup timed out")),
 		15000,
 	);
-	const browser = await launchFrameBrowser(executable, lifetime).catch(
+	const probe = connectionFile ? await openElectronAudioSession({ connectionFile, profile: "dsp", width: 64, height: 64, signal: lifetime }).catch(error => { clearTimeout(startup); throw error; }) : undefined;
+	const browser = connectionFile ? undefined : await launchFrameBrowser(executable!, lifetime).catch(
 		(error) => {
 			clearTimeout(startup);
 			throw error;
@@ -94,10 +99,11 @@ export async function withHyperframesFxExecutor<T>(
 	let busy = false,
 		disposed = false;
 	try {
-		const identity = await browser
-			.send("Browser.getVersion")
-			.finally(() => clearTimeout(startup));
+		const identity = probe ? probe.browser : await browser!.send("Browser.getVersion");
+		await probe?.close();
+		clearTimeout(startup);
 		const provenance: HyperframesFxProvenance = Object.freeze({
+			...(probe ? { electronHostEpoch: probe.epoch } : {}),
 			nativeVersion: runtime.nativeVersion,
 			runtimeSha256: runtime.sha256,
 			moduleSha256: runtime.moduleSha256,
@@ -144,10 +150,12 @@ export async function withHyperframesFxExecutor<T>(
 					stageTimeoutMs,
 				);
 				let target:
-					| Awaited<ReturnType<typeof createHyperframesFxTarget>>
+					| Pick<Awaited<ReturnType<typeof createHyperframesFxTarget>>, "evaluate" | "close">
 					| undefined;
 				try {
-					target = await createHyperframesFxTarget(browser, lifetime, fatal);
+					target = connectionFile
+						? await createHyperframesElectronDspTarget({ connectionFile, signal: lifetime, timeoutMs: stageTimeoutMs, expectedBrowser: provenance.browser, expectedHostEpoch: provenance.electronHostEpoch })
+						: await createHyperframesFxTarget(browser!, lifetime, fatal);
 					await target.evaluate(HYPERFRAMES_FX_BOOTSTRAP);
 					await target.evaluate(runtime.code);
 					await target.evaluate(
@@ -213,9 +221,13 @@ export async function withHyperframesFxExecutor<T>(
 						inputSha256,
 						outputSha256: hyperframesFxDigest(pcm),
 					};
+				} catch (error) {
+					fatal(error instanceof Error ? error : Error(String(error))); throw error;
 				} finally {
 					try {
 						await target?.close();
+					} catch (error) {
+						fatal(error instanceof Error ? error : Error(String(error))); throw error;
 					} finally {
 						clearTimeout(timer);
 						busy = false;
@@ -226,6 +238,7 @@ export async function withHyperframesFxExecutor<T>(
 	} finally {
 		disposed = true;
 		clearTimeout(startup);
-		await browser.close();
+		await probe?.close();
+		await browser?.close();
 	}
 }

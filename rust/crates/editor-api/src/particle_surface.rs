@@ -9,6 +9,9 @@
 use serde::{Deserialize, Serialize};
 use std::mem::size_of;
 
+mod control;
+#[cfg(test)]
+mod control_tests;
 mod motion;
 #[cfg(test)]
 mod motion_tests;
@@ -169,17 +172,33 @@ fn sample_surface_with_input_bytes(
     let motion = request
         .motion
         .as_ref()
-        .map(motion::PreparedMotion::new)
+        .map(|source| motion::PreparedMotion::new(source, request.count))
         .transpose()?;
-    check_budget_with_motion(
+    let control_bytes = request
+        .motion
+        .as_ref()
+        .and_then(|value| value.control.as_ref())
+        .map_or(0, |control| {
+            control
+                .knots
+                .capacity()
+                .saturating_mul(size_of::<control::ControlKnot>())
+        });
+    check_budget_with_motion_bytes(
         request.triangles.len(),
         request.triangles.capacity(),
         request.count,
         input_bytes,
-        motion.is_some(),
+        if motion.is_some() {
+            motion::MOTION_FIXED_WORKING_BYTES
+        } else {
+            0
+        },
+        control_bytes,
     )?;
     // At most T prepared records and N output records, with no per-triangle heap
-    // allocations. Runtime is O(T + N log T); all validation runs before sampling.
+    // allocations. Legacy runtime is O(T + N log T); optional control adds
+    // bounded N * steps * log(knots) replay. All admission precedes sampling.
     let mut prepared = Vec::new();
     prepared
         .try_reserve_exact(request.triangles.len())
@@ -384,6 +403,28 @@ fn check_budget_with_motion(
     input_bytes: usize,
     motion: bool,
 ) -> Result<(), SurfaceError> {
+    check_budget_with_motion_bytes(
+        triangles,
+        capacity,
+        count,
+        input_bytes,
+        if motion {
+            motion::MOTION_FIXED_WORKING_BYTES
+        } else {
+            0
+        },
+        0,
+    )
+}
+
+fn check_budget_with_motion_bytes(
+    triangles: usize,
+    capacity: usize,
+    count: u32,
+    input_bytes: usize,
+    motion_bytes: usize,
+    control_bytes: usize,
+) -> Result<(), SurfaceError> {
     check_json_bytes(input_bytes)?;
     if !(1..=MAX_SURFACE_TRIANGLES).contains(&triangles) {
         return Err(SurfaceError::new(
@@ -413,11 +454,9 @@ fn check_budget_with_motion(
         })
         .and_then(|bytes| bytes.checked_add(input_bytes))
         .and_then(|bytes| {
-            bytes.checked_add(if motion {
-                motion::MOTION_FIXED_WORKING_BYTES
-            } else {
-                0
-            })
+            bytes
+                .checked_add(motion_bytes)
+                .and_then(|bytes| bytes.checked_add(control_bytes))
         })
         .and_then(|bytes| bytes.checked_add(SURFACE_FIXED_OVERHEAD_BYTES));
     if required.is_none_or(|bytes| bytes > MAX_SURFACE_WORKING_BYTES) {

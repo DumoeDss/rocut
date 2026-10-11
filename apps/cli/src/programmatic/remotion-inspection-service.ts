@@ -14,7 +14,8 @@ export function createRemotionInspectionSession({
 	...options
 }: {
 	toolchainDirectory: string;
-	executable: string;
+	executable?: string;
+	connectionFile?: string;
 	context: Parameters<typeof compileProgrammaticProject>[0]["context"];
 	enqueue: Parameters<typeof compileProgrammaticProject>[0]["enqueue"];
 	inspect?: typeof inspectRemotionProject;

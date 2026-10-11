@@ -17,19 +17,27 @@ test("Liquid configuration discovery never asserts health or Electron support", 
 	expect(Object.isFrozen(value)).toBe(true);
 });
 
-test("missing toolchain/browser, relative executable or Electron excludes Liquid capture", () => {
+test("missing toolchain/backend or relative backend excludes Liquid capture", () => {
 	for (const options of [
 		{ toolchainConfigured: false, executable: "C:/fixtures/chrome.exe" },
 		{ toolchainConfigured: true },
 		{ toolchainConfigured: true, executable: "chrome.exe" },
-		{
-			toolchainConfigured: true,
-			executable: "C:/fixtures/chrome.exe",
-			connectionFile: "C:/fixtures/electron.json",
-		},
+		{ toolchainConfigured: true, connectionFile: "electron.json" },
 	])
 		expect(threeLiquidObjectCapability(options).capture).toBe("unavailable");
 	expect(
 		threeLiquidObjectCapability({ toolchainConfigured: false }).compile,
 	).toBe("unavailable");
+});
+
+test("Electron configuration exposes the adapter without asserting native health", () => {
+	expect(
+		threeLiquidObjectCapability({
+			toolchainConfigured: true,
+			connectionFile: "C:/fixtures/electron.json",
+		}),
+	).toMatchObject({
+		capture: "configured-not-health-probed",
+		electron: "configured-not-health-probed",
+	});
 });

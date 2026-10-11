@@ -5,7 +5,7 @@ import { join } from "node:path";
 import { startHost } from "../host";
 import { TargetRegistry } from "../target-registry";
 
-test("Host advertises standalone inspection as configured-not-health-probed and rejects unavailable/Electron routes honestly", async () => {
+test("Host advertises standalone inspection as configured-not-health-probed and rejects unavailable or ungranted Electron routes", async () => {
 	const root = await mkdtemp(join(tmpdir(), "rocut-inspection-capability-"));
 	try {
 		for (const mode of ["standalone", "electron", "unconfigured"] as const) {
@@ -41,7 +41,7 @@ test("Host advertises standalone inspection as configured-not-health-probed and 
 						);
 						expect(response.status).toBe(503);
 						expect(await response.text()).toContain(
-							"requires standalone browser and pinned toolchain",
+							"pinned toolchain",
 						);
 					}
 				expect(

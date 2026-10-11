@@ -13,7 +13,7 @@ pub(super) const MAX_TIME_TICKS: u64 = 9_007_199_254_740_991;
 pub(super) const MOTION_FIXED_WORKING_BYTES: usize = 4096;
 const MOTION_STREAM_DOMAIN: u64 = 0x6d6f_7469_6f6e_7631;
 
-#[derive(Clone, Copy, Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub(crate) struct SurfaceMotion {
     pub version: u8,
@@ -29,6 +29,12 @@ pub(crate) struct SurfaceMotion {
     pub size: f64,
     /// Normalized variation: size factor is in [1-v/2, 1+v/2), hence >= 0.5.
     pub size_variance: f64,
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        deserialize_with = "super::control::deserialize_optional"
+    )]
+    pub control: Option<super::control::SurfaceControl>,
 }
 
 pub(super) fn deserialize_optional<'de, D>(
@@ -41,10 +47,11 @@ where
     SurfaceMotion::deserialize(deserializer).map(Some)
 }
 
-pub(super) struct PreparedMotion {
-    source: SurfaceMotion,
+pub(super) struct PreparedMotion<'a> {
+    source: &'a SurfaceMotion,
     scatter_weight: f64,
     drift_cycles: f64,
+    control: Option<super::control::PreparedControl<'a>>,
 }
 
 fn bounded(value: f64, maximum: f64, positive: bool, field: &str) -> Result<(), SurfaceError> {
@@ -80,8 +87,8 @@ fn smoothstep(value: f64) -> f64 {
     value * value * (3.0 - 2.0 * value)
 }
 
-impl PreparedMotion {
-    pub(super) fn new(source: &SurfaceMotion) -> Result<Self, SurfaceError> {
+impl<'a> PreparedMotion<'a> {
+    pub(super) fn new(source: &'a SurfaceMotion, count: u32) -> Result<Self, SurfaceError> {
         if source.version != 1 {
             return Err(SurfaceError::numeric(
                 "motion.version",
@@ -141,9 +148,14 @@ impl PreparedMotion {
         // and trigonometry never receives an unbounded argument.
         let drift_cycles = ((time as f64 / TICKS_PER_SECOND) * source.drift_frequency).fract();
         Ok(Self {
-            source: *source,
+            source,
             scatter_weight,
             drift_cycles,
+            control: source
+                .control
+                .as_ref()
+                .map(|value| super::control::PreparedControl::new(value, time, count))
+                .transpose()?,
         })
     }
 
@@ -192,6 +204,20 @@ impl PreparedMotion {
                     format!("samples[{index}].motionPosition[{axis}]"),
                     "Motion position exceeded the finite numeric range",
                 ));
+            }
+        }
+        if let Some(control) = &self.control {
+            let offset = control.offset(position)?;
+            for axis in 0..3 {
+                if offset[axis] != 0.0 {
+                    moved[axis] += offset[axis];
+                }
+                if !moved[axis].is_finite() {
+                    return Err(SurfaceError::numeric(
+                        format!("samples[{index}].motionPosition[{axis}]"),
+                        "Control motion position exceeded finite range",
+                    ));
+                }
             }
         }
         Ok((moved, size))

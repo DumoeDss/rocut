@@ -1,4 +1,5 @@
 import type { TransitionClip, TransitionLink } from "opencut-wasm";
+import type { FrameTransitionStyle } from "./compositor/types";
 import { mediaTimeFromSeconds } from "../../wasm";
 import type { TimelineTrack } from "../../timeline";
 import type { MediaAsset } from "../../media/types";
@@ -28,16 +29,26 @@ export function groupTransitionTrack({
 }): AnyBaseNode[] {
 	const clips: TransitionClip[] = [];
 	const links: TransitionLink[] = [];
+	const styles = new Map<number, FrameTransitionStyle>();
 	const visibleClipIds = new Set<string>();
 	for (const element of track.elements) {
 		if (element.type !== "video" && element.type !== "image") continue;
 		if (!element.hidden) visibleClipIds.add(element.id);
-		if (element.transitionIn)
+		if (element.transitionIn) {
+			if (element.transitionIn.kind !== "cross-dissolve") {
+				const {
+					outgoingClipId: _outgoing,
+					durationFrames: _duration,
+					...style
+				} = element.transitionIn;
+				styles.set(links.length, style);
+			}
 			links.push({
 				outgoingClipId: element.transitionIn.outgoingClipId,
 				incomingClipId: element.id,
 				durationFrames: element.transitionIn.durationFrames,
 			});
+		}
 		const media = mediaMap.get(element.mediaId);
 		if (!media || media.type !== element.type) continue;
 		clips.push({
@@ -60,7 +71,12 @@ export function groupTransitionTrack({
 		});
 	}
 	if (!links.length) return children;
-	const node = new TransitionTrackNode({ clips, links, visibleClipIds });
+	const node = new TransitionTrackNode({
+		clips,
+		links,
+		visibleClipIds,
+		...(styles.size ? { styles } : {}),
+	});
 	for (const child of children) node.add(child);
 	return [node];
 }

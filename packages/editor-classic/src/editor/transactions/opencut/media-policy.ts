@@ -18,6 +18,10 @@ import {
 } from "opencut-wasm";
 import { projectOpenCutDraft } from "./projection";
 import type { OpenCutProjectDraft } from "./types";
+import {
+	transitionStyleOf,
+	validateNativeTransitionStyle,
+} from "../../../transitions/transition-style";
 
 /** Serialization boundary only: timing, handles and overlap decisions live in Rust. */
 export function evaluateDocumentTransitions({
@@ -32,12 +36,14 @@ export function evaluateDocumentTransitions({
 	const clips: TransitionClip[] = [];
 	const links: TransitionLink[] = [];
 	for (const clip of document.clips) {
-		if (clip.transitionIn)
+		if (clip.transitionIn) {
+			validateNativeTransitionStyle(transitionStyleOf(clip.transitionIn));
 			links.push({
 				outgoingClipId: clip.transitionIn.outgoingClipId,
 				incomingClipId: clip.id,
 				durationFrames: clip.transitionIn.durationFrames,
 			});
+		}
 		const asset = clip.assetId ? assets.get(clip.assetId) : undefined;
 		if (
 			tracks.get(clip.trackId)?.kind !== "video" ||

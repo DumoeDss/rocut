@@ -123,6 +123,7 @@ export class WasmCompositor {
 
 	ensureInitialized({ width, height }: { width: number; height: number }) {
 		this.assertOpen();
+		this.assertGpuIdle();
 		if (!this.canvas) {
 			const handle = createCompositor(width, height);
 			if (handle === 0) {
@@ -166,6 +167,8 @@ export class WasmCompositor {
 	}
 
 	syncTextures(textures: TextureUploadDescriptor[]) {
+		this.assertOpen();
+		this.assertGpuIdle();
 		const nextIds = new Set(textures.map((texture) => texture.id));
 		for (const previousId of this.cache.keys()) {
 			if (!nextIds.has(previousId)) {
@@ -185,6 +188,7 @@ export class WasmCompositor {
 
 	render(frame: FrameDescriptor) {
 		this.assertOpen();
+		this.assertGpuIdle();
 		renderFrameForHandle(this.requireHandle(), frame);
 		this.recordFrameProfile();
 	}
@@ -198,30 +202,35 @@ export class WasmCompositor {
 		}: { signal?: AbortSignal; assertCurrent?: () => void } = {},
 	): Promise<void> {
 		this.assertOpen();
+		this.assertGpuIdle();
 		assertRenderNotAborted(signal);
 		assertRenderFrameRequestApi(wasmRequestApi);
 		const handle = this.requireHandle();
 		const controller = new AbortController();
 		const abort = () => controller.abort();
 		signal?.addEventListener("abort", abort, { once: true });
-		const operation = renderFrameRequest({
-			// The old sync method remains available. This new path intentionally
-			// requires the separately built request API instead of silently falling
-			// back to an uninterruptible synchronous Liquid replay.
-			api: wasmRequestApi,
-			resources: this.resources,
-			handle,
-			frame,
-			signal: controller.signal,
-			assertCurrent,
+		// Reserve ownership before entering WASM: begin/advance can invoke Host
+		// callbacks synchronously, including close(). Its drain must already see
+		// the request and retain the handle until capture/replay cleanup settles.
+		let releaseRequest!: () => void;
+		const drained = new Promise<void>((resolve) => {
+			releaseRequest = resolve;
 		});
-		this.requests.set(controller, operation);
+		this.requests.set(controller, drained);
 		try {
-			await operation;
+			await renderFrameRequest({
+				api: wasmRequestApi,
+				resources: this.resources,
+				handle,
+				frame,
+				signal: controller.signal,
+				assertCurrent,
+			});
 			this.recordFrameProfile();
 		} finally {
 			signal?.removeEventListener("abort", abort);
 			this.requests.delete(controller);
+			releaseRequest();
 		}
 	}
 
@@ -369,6 +378,12 @@ export class WasmCompositor {
 
 	private assertOpen(): void {
 		if (this.disposed || this.closing) throw new RenderCancelledError();
+	}
+
+	private assertGpuIdle(): void {
+		// Async Canvas capture temporarily releases the native compositor borrow,
+		// but still owns its uploaded sources, dimensions and presentation target.
+		if (this.requests.size) throw new CompositorBusyError();
 	}
 
 	private requireHandle(): number {

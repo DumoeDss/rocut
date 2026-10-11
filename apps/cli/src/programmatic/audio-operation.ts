@@ -10,6 +10,8 @@ import { prepareHyperframesGraphIdentity } from "./hyperframes-graph-identity";
 import { renderRemotionAudioRange } from "./remotion-audio-render";
 import type { ProgrammaticResourceStore } from "./resources";
 import type { NativeVideoDecoder } from "./video-decoder";
+import { pinElectronAudioSessionConnection } from "./electron-audio-session";
+import { pinElectronAudioConnection } from "./electron-audio-transport";
 
 export class NativeAudioUnavailableError extends Error {}
 interface Input {
@@ -27,6 +29,7 @@ export async function performProgrammaticAudio({
 	input: untrusted,
 	resourceStore,
 	executable,
+	connectionFile,
 	decoder,
 	toolchainDirectory,
 	graphConfigured,
@@ -36,7 +39,8 @@ export async function performProgrammaticAudio({
 	action: "render" | "identity" | "produced";
 	input: unknown;
 	resourceStore: ProgrammaticResourceStore;
-	executable: string;
+	executable?: string;
+	connectionFile?: string;
 	decoder: NativeVideoDecoder;
 	toolchainDirectory?: string;
 	graphConfigured: boolean;
@@ -44,18 +48,38 @@ export async function performProgrammaticAudio({
 	signal: AbortSignal;
 }) {
 	signal.throwIfAborted();
+	if (!["render", "identity", "produced"].includes(action))
+		throw Error("Invalid native audio action");
+	if (connectionFile) {
+		try {
+			pinElectronAudioConnection(connectionFile);
+		} catch {
+			throw new NativeAudioUnavailableError(
+				"Electron native audio requires its named base grant",
+			);
+		}
+	}
+	if (connectionFile && action !== "render") {
+		try {
+			pinElectronAudioSessionConnection(connectionFile);
+		} catch {
+			throw new NativeAudioUnavailableError(
+				"Electron advanced audio requires its persistent session grant",
+			);
+		}
+	}
 	const keys =
 		action === "identity"
 			? ["source", "sampleRate"]
 			: action === "produced"
 				? ["source", "firstFrame", "frameCount", "sampleRate"]
-			: [
-					"source",
-					"firstFrame",
-					"frameCount",
-					"sampleRate",
-					"expectedIdentity",
-				];
+				: [
+						"source",
+						"firstFrame",
+						"frameCount",
+						"sampleRate",
+						"expectedIdentity",
+					];
 	if (
 		!untrusted ||
 		typeof untrusted !== "object" ||
@@ -64,14 +88,30 @@ export async function performProgrammaticAudio({
 	)
 		throw Error("Invalid native audio request");
 	const input = untrusted as Input;
+	if (
+		!input.source ||
+		input.source.runtime !== "html-document" ||
+		!["remotion", "hyperframes"].includes(input.source.build?.engine ?? "")
+	)
+		throw Error(
+			"Native audio requires a compiled Remotion or HyperFrames source",
+		);
 	if (action === "produced") {
+		if (input.source.build?.engine !== "remotion")
+			throw Error("Native produced outputs require a compiled Remotion source");
 		// The renderer admits the source/range and complete canonical scan in
 		// Rust before browser IO. Artifact-only sources need no audio declaration;
 		// observed audio still requires explicit native mode in that consumer.
 		return {
 			kind: "produced" as const,
 			result: await renderRemotionAudioRange({
-				...input, resourceStore, executable, decoder, signal,
+				...input,
+				resourceStore,
+				executable,
+				connectionFile,
+				decoder,
+				signal,
+				produced: true,
 			}),
 			identity: undefined,
 		};
@@ -84,6 +124,15 @@ export async function performProgrammaticAudio({
 	if (policy.error || !policy.plan)
 		throw Error(policy.error ?? "Native audio was not declared by this source");
 	const graph = policy.plan.profile === "hyperframes-graph-v1";
+	if (graph && connectionFile) {
+		try {
+			pinElectronAudioSessionConnection(connectionFile);
+		} catch {
+			throw new NativeAudioUnavailableError(
+				"Electron graph audio requires its persistent session grant",
+			);
+		}
+	}
 	if (!graph && (action === "identity" || input.expectedIdentity !== undefined))
 		throw Error(
 			"Runtime identity is only available for the HyperFrames graph profile",
@@ -119,6 +168,7 @@ export async function performProgrammaticAudio({
 				source: input.source,
 				resourceStore,
 				executable,
+				connectionFile,
 				decoder,
 				toolchainDirectory: toolchainDirectory!,
 				sessionNonce,
@@ -134,6 +184,7 @@ export async function performProgrammaticAudio({
 		sampleRate: input.sampleRate,
 		resourceStore,
 		executable,
+		connectionFile,
 		decoder,
 		signal,
 	};
@@ -145,6 +196,7 @@ export async function performProgrammaticAudio({
 		await prepared.verifyBeforeRender(signal);
 		const result = await renderHyperframesGraphAudioRange({
 			...options,
+			executable,
 			decoder: prepared.decoder,
 			toolchainDirectory: toolchainDirectory!,
 			runtime: prepared.runtime,

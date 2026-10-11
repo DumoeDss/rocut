@@ -71,13 +71,17 @@ export async function runAgentCli({
 					"audio-import",
 					"sequence-import",
 					"sequence-restore",
+					"model-restore",
+					"source-restore",
 					"produced",
+					"object-params",
+					"animation-inspect",
 				].includes(action) ||
 				!file ||
 				args.positional.length !== 2
 			)
 				throw Error(
-					"usage: rocut programmatic compile|rebuild|revise|inspect|compile-inspected|audio-import|sequence-import|sequence-restore|produced <spec.json>",
+					"usage: rocut programmatic compile|rebuild|revise|inspect|compile-inspected|audio-import|sequence-import|sequence-restore|model-restore|source-restore|produced|object-params|animation-inspect <spec.json>",
 				);
 			const input = JSON.parse(
 				new TextDecoder("utf-8", { fatal: true }).decode(
@@ -85,15 +89,21 @@ export async function runAgentCli({
 				),
 			);
 			const route =
-				action === "produced"
+				action === "animation-inspect" ? "programmatic/animation-inspect" : action === "object-params"
+					? "programmatic/object-params"
+					: action === "produced"
 					? "programmatic/produced"
 					: action === "audio-import"
-					? "programmatic/resources/import-audio"
-					: action === "sequence-import"
-						? "programmatic/resources/import-image-sequence"
-						: action === "sequence-restore"
-							? "programmatic/resources/restore-image-sequence-source"
-							: `programmatic/build/${action}`;
+						? "programmatic/resources/import-audio"
+						: action === "sequence-import"
+							? "programmatic/resources/import-image-sequence"
+							: action === "sequence-restore"
+								? "programmatic/resources/restore-image-sequence-source"
+								: action === "model-restore"
+									? "programmatic/resources/restore-model-source"
+									: action === "source-restore"
+										? "programmatic/resources/restore-build-source"
+										: `programmatic/build/${action}`;
 			const result = await request(resolved.secret, "POST", route, input);
 			if (
 				action === "revise" &&

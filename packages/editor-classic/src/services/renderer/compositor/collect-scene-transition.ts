@@ -1,4 +1,5 @@
 import type { CanvasRenderer } from "../canvas-renderer";
+import { validateNativeTransitionStyle } from "../../../transitions/transition-style";
 import type { AnyBaseNode } from "../nodes/base-node";
 import { IsolatedGroupNode } from "../nodes/isolated-group-node";
 import type { SceneTransitionNode } from "../nodes/scene-transition-node";
@@ -29,6 +30,8 @@ export async function collectSceneTransition({
 		node.children.some((child) => !(child instanceof IsolatedGroupNode))
 	)
 		throw Error("Scene transition requires two isolated group children");
+	if (node.params.style !== undefined)
+		validateNativeTransitionStyle(node.params.style);
 	const branches: FrameGroupDescriptor[] = [];
 	for (const [index, side] of ["outgoing", "incoming"].entries()) {
 		const items: FrameItemDescriptor[] = [];
@@ -48,5 +51,6 @@ export async function collectSceneTransition({
 		outgoing: branches[0],
 		incoming: branches[1],
 		progress: node.params.progress,
+		...(node.params.style === undefined ? {} : { style: node.params.style }),
 	});
 }

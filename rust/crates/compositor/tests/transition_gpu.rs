@@ -74,6 +74,7 @@ fn transition(
         outgoing,
         incoming,
         progress,
+        style: None,
     }
 }
 

@@ -115,10 +115,10 @@ interface BaseTimelineElement {
 	params: ParamValues;
 }
 
-type IncomingTransition = Omit<
-	NonNullable<Clip["transitionIn"]>,
-	"outgoingClipId"
-> & { outgoingClipId: string };
+type WithTimelineIds<T> = T extends unknown
+	? Omit<T, "outgoingClipId"> & { outgoingClipId: string }
+	: never;
+type IncomingTransition = WithTimelineIds<NonNullable<Clip["transitionIn"]>>;
 
 export interface VideoElement extends BaseTimelineElement {
 	type: "video";

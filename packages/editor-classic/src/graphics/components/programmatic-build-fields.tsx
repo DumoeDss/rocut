@@ -1,7 +1,19 @@
+import { useState } from "react";
+import type { ProgrammaticFrameProvider } from "@opencut/editor-ports/host";
 import { Button } from "../../components/ui/button";
+import { Input } from "../../components/ui/input";
 import { Textarea } from "../../components/ui/textarea";
 import type { BuildDraftSnapshot } from "./programmatic-build-draft";
+import { ProgrammaticParticleFields } from "./programmatic-particle-fields";
+import { ProgrammaticObjectAnimationFields } from "./programmatic-object-animation-fields";
+import { ProgrammaticObjectParameterFields } from "./programmatic-object-parameter-fields";
+import { ProgrammaticParticleInstanceFields } from "./programmatic-particle-instance-fields";
+import { ProgrammaticModelSceneFields } from "./programmatic-model-scene-fields";
 import { isAuthorTextFile } from "./programmatic-build-text";
+import {
+	isBuildEntryFile,
+	type AuthorFileOperation,
+} from "./programmatic-build-file-state";
 
 export function ProgrammaticBuildFields({
 	id,
@@ -14,6 +26,8 @@ export function ProgrammaticBuildFields({
 	onApply,
 	onDiscard,
 	onCancel,
+	onFiles,
+	onInspectAnimation,
 }: {
 	id: string;
 	state: BuildDraftSnapshot;
@@ -25,10 +39,13 @@ export function ProgrammaticBuildFields({
 	onApply: () => void;
 	onDiscard: () => void;
 	onCancel: () => void;
+	onFiles: (operation: AuthorFileOperation) => void;
+	onInspectAnimation?: ProgrammaticFrameProvider["inspectAnimation"];
 }) {
+	const [path, setPath] = useState("");
 	const build = state.baseline.build;
 	if (!build) return null;
-	const files = build.inputs.filter((item) => isAuthorTextFile(item.id));
+	const files = state.fileIds.filter(isAuthorTextFile).map((id) => ({ id }));
 	const selected = state.files[state.selectedId];
 	const busy = state.phase === "compiling" || state.phase === "saving";
 	return (
@@ -56,9 +73,70 @@ export function ProgrammaticBuildFields({
 				))}
 			</select>
 			<p className="text-muted-foreground text-xs">
-				{files.length} text files; {build.inputs.length - files.length} binary
+				{files.length} text files; {state.fileIds.length - files.length} binary
 				files retained in the archive.
 			</p>
+			<p className="text-muted-foreground text-xs">
+				Entry file: {state.entryFile}
+			</p>
+			<label htmlFor={`${id}-entry`}>Entry file</label>
+			<select
+				id={`${id}-entry`}
+				value={state.entryFile}
+				disabled={busy || state.conflict || !canCompile}
+				className="bg-background text-foreground border-input focus-visible:ring-ring h-8 min-w-0 rounded-md border px-2 text-xs focus-visible:ring-2"
+				onChange={(event) => onFiles({ op: "entry", id: event.target.value })}
+			>
+				{!isBuildEntryFile(state, state.entryFile) && (
+					<option value={state.entryFile}>{state.entryFile}</option>
+				)}
+				{files
+					.filter((file) => isBuildEntryFile(state, file.id))
+					.map((file) => (
+						<option key={file.id} value={file.id}>
+							{file.id}
+						</option>
+					))}
+			</select>
+			<label htmlFor={`${id}-path`}>New source path</label>
+			<Input
+				id={`${id}-path`}
+				value={path}
+				onChange={(event) => setPath(event.target.value)}
+				placeholder="src/scene.tsx"
+				disabled={busy || state.conflict || !canCompile}
+			/>
+			<div className="flex flex-wrap gap-2">
+				<Button
+					size="sm"
+					variant="outline"
+					disabled={busy || state.conflict || !canCompile || !path}
+					onClick={() => onFiles({ op: "add", id: path })}
+				>
+					Add file
+				</Button>
+				<Button
+					size="sm"
+					variant="outline"
+					disabled={busy || state.conflict || !canCompile || !path || !selected}
+					onClick={() => onFiles({ op: "rename", id: path })}
+				>
+					Rename file
+				</Button>
+				<Button
+					size="sm"
+					variant="outline"
+					disabled={
+						busy ||
+						state.conflict ||
+						!canCompile ||
+						state.selectedId === state.entryFile
+					}
+					onClick={() => onFiles({ op: "delete" })}
+				>
+					Delete file
+				</Button>
+			</div>
 			{selected && (
 				<>
 					<label htmlFor={`${id}-code`}>Author code</label>
@@ -76,6 +154,37 @@ export function ProgrammaticBuildFields({
 			)}
 			{build.engine !== "hyperframes" && (
 				<>
+					<ProgrammaticParticleFields
+						id={id}
+						state={state}
+						canCompile={canCompile}
+						onEdit={onEdit}
+					/>
+					<ProgrammaticObjectAnimationFields
+						id={id}
+						state={state}
+						canCompile={canCompile}
+						onEdit={onEdit}
+						onInspectAnimation={onInspectAnimation}
+					/>
+					<ProgrammaticObjectParameterFields
+						id={id}
+						state={state}
+						canCompile={canCompile}
+						onEdit={onEdit}
+					/>
+					<ProgrammaticModelSceneFields
+						id={id}
+						state={state}
+						canCompile={canCompile}
+						onEdit={onEdit}
+					/>
+					<ProgrammaticParticleInstanceFields
+						id={id}
+						state={state}
+						canCompile={canCompile}
+						onEdit={onEdit}
+					/>
 					<label htmlFor={`${id}-props`}>Input props (JSON)</label>
 					<Textarea
 						id={`${id}-props`}

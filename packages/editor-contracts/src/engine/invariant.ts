@@ -95,11 +95,31 @@ function isValidAdjustment(value: unknown): boolean {
 	);
 }
 
-function isValidTransitionIn(value: unknown): boolean {
+export function isValidTransitionIn(value: unknown): boolean {
 	return (
 		isRecord(value) &&
-		Reflect.ownKeys(value).length === 3 &&
-		value.kind === "cross-dissolve" &&
+		(value.kind === "cross-dissolve"
+			? Reflect.ownKeys(value).length === 3
+			: value.kind === "bend"
+				? Reflect.ownKeys(value).length === 8 &&
+					typeof value.direction === "string" &&
+					["left", "right", "up", "down"].includes(value.direction) &&
+					["hinge", "angle", "shading", "perspective"].every(
+						(key) =>
+							typeof value[key] === "number" && Number.isFinite(value[key]),
+					)
+				: value.kind === "peel" &&
+					Reflect.ownKeys(value).length === 8 &&
+					typeof value.direction === "string" &&
+					["left", "right", "up", "down"].includes(value.direction) &&
+					["curl", "shading", "perspective"].every(
+						(key) =>
+							typeof value[key] === "number" && Number.isFinite(value[key]),
+					) &&
+					typeof value.segments === "number" &&
+					Number.isInteger(value.segments) &&
+					value.segments >= 0 &&
+					value.segments <= 0xffff_ffff) &&
 		isNonEmptyString(value.outgoingClipId) &&
 		typeof value.durationFrames === "number" &&
 		Number.isInteger(value.durationFrames) &&

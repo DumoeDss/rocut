@@ -960,6 +960,7 @@ name = "compositor"
 version = "0.1.0"
 dependencies = [
  "bytemuck",
+ "editor-api",
  "effects",
  "gpu",
  "masks",

@@ -23,6 +23,9 @@ bun.lockb
 
 target/
 
+# Isolated local compilation diagnostics and ownership receipts.
+.diagnostics/
+
 .cargo-tools/
 
 rust-migration-notes.md

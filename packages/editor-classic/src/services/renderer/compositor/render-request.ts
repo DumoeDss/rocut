@@ -61,6 +61,23 @@ export function isRenderCancelledError(error: unknown): boolean {
 	);
 }
 
+/** Only the exact native abort reason proves this rejection belongs to this signal. */
+export function normalizeRenderCancellation({
+	error,
+	signal,
+}: {
+	error: unknown;
+	signal?: AbortSignal;
+}): unknown {
+	if (isRenderCancelledError(error)) return error;
+	return signal?.aborted &&
+		error === signal.reason &&
+		error instanceof DOMException &&
+		error.name === "AbortError"
+		? new RenderCancelledError()
+		: error;
+}
+
 export function assertRenderNotAborted(signal?: AbortSignal): void {
 	if (signal?.aborted) throw new RenderCancelledError();
 }

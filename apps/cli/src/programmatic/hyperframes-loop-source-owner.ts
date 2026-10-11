@@ -1,6 +1,7 @@
 import { isAbsolute } from "node:path";
 import { launchFrameBrowser } from "./chromium-process";
 import { createHyperframesFxTarget } from "./hyperframes-fx-target";
+import { createHyperframesElectronDspTarget } from "./hyperframes-electron-dsp";
 import { HYPERFRAMES_LOOP_SOURCE_BOOTSTRAP } from "./hyperframes-loop-source-bootstrap";
 import type { HyperframesRateSourceLoop } from "./hyperframes-rate-loop-source";
 import type { HyperframesFxProvenance } from "./hyperframes-fx-types";
@@ -15,18 +16,19 @@ export interface HyperframesLoopSourceOwner {
 /** Lazy private browser; each materialization has a fresh secure target. Error,
  * abort or timeout poisons the owner. Late browser/native decode completion
  * cannot publish PCM after disposal. No authored HTML/JavaScript enters it. */
-export function createHyperframesLoopSourceOwner({ executable, signal, timeoutMs = 300000, expectedBrowser }: {
-	executable: string; signal: AbortSignal; timeoutMs?: number;
+export function createHyperframesLoopSourceOwner({ executable, connectionFile, signal, timeoutMs = 300000, expectedBrowser, expectedHostEpoch }: {
+	executable?: string; connectionFile?: string; signal: AbortSignal; timeoutMs?: number;
 	expectedBrowser?: HyperframesFxProvenance["browser"];
+	expectedHostEpoch?: string;
 }): HyperframesLoopSourceOwner {
-	if (!isAbsolute(executable) || !Number.isSafeInteger(timeoutMs) || timeoutMs < 1)
+	if ((!connectionFile && (!executable || !isAbsolute(executable))) || !Number.isSafeInteger(timeoutMs) || timeoutMs < 1)
 		throw Error("Invalid HyperFrames native loop owner configuration");
 	const controller = new AbortController();
 	const lifetime = AbortSignal.any([signal, controller.signal]);
 	let browserPromise: ReturnType<typeof launchFrameBrowser> | undefined;
 	let disposed = false, busy = false;
 	const fatal = (error: Error) => controller.abort(error);
-	const browser = () => browserPromise ??= launchFrameBrowser(executable, lifetime).then(async value => {
+	const browser = () => browserPromise ??= launchFrameBrowser(executable!, lifetime).then(async value => {
 		if (disposed || lifetime.aborted) { await value.close(); lifetime.throwIfAborted(); throw Error("Native loop owner disposed"); }
 		const identity = await value.send("Browser.getVersion");
 		const actual = { product: String(identity.product), revision: String(identity.revision),
@@ -51,9 +53,11 @@ export function createHyperframesLoopSourceOwner({ executable, signal, timeoutMs
 			const abort = () => fatal(callSignal.reason instanceof Error ? callSignal.reason : Error("Native loop cancelled"));
 			callSignal.addEventListener("abort", abort, { once: true });
 			const timer = setTimeout(() => fatal(Error("Native HyperFrames loop source timed out")), timeoutMs);
-			let target: Awaited<ReturnType<typeof createHyperframesFxTarget>> | undefined;
+			let target: Pick<Awaited<ReturnType<typeof createHyperframesFxTarget>>, "evaluate" | "close"> | undefined;
 			try {
-				target = await createHyperframesFxTarget(await browser(), lifetime, fatal);
+				target = connectionFile
+					? await createHyperframesElectronDspTarget({ connectionFile, signal: lifetime, timeoutMs, expectedBrowser, expectedHostEpoch })
+					: await createHyperframesFxTarget(await browser(), lifetime, fatal);
 				callSignal.throwIfAborted();
 				await target.evaluate(HYPERFRAMES_LOOP_SOURCE_BOOTSTRAP);
 				await target.evaluate(`window.rocutNativeLoopSourceIO.configure(${JSON.stringify(clock)},${owned.length})`);
@@ -87,7 +91,9 @@ export function createHyperframesLoopSourceOwner({ executable, signal, timeoutMs
 				throw error;
 			} finally {
 				clearTimeout(timer); callSignal.removeEventListener("abort", abort);
-				try { await target?.close(); } finally { busy = false; }
+				try { await target?.close(); }
+				catch (error) { fatal(error instanceof Error ? error : Error(String(error))); throw error; }
+				finally { busy = false; }
 			}
 		},
 		async dispose() {

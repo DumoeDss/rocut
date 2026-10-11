@@ -13,6 +13,7 @@ import { copyFile, readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { startHost } from "./host";
+import { resolveHostStaticDirectory } from "./host-static-directory";
 import { runAgentCli } from "./agent-cli";
 import type { ExportJob } from "./host-export";
 import {
@@ -117,8 +118,12 @@ export const USAGE_LINES: readonly string[] = [
 	"  rocut programmatic inspect|compile-inspected <spec.json> [--target <id|auto>] [--project <dir>]",
 	"  rocut programmatic audio-import <spec.json> [--target <id|auto>] [--project <dir>]",
 	"  rocut programmatic sequence-import <spec.json> [--target <id|auto>] [--project <dir>]",
+	"  rocut programmatic model-restore <spec.json> [--target <id|auto>] [--project <dir>]",
+	"  rocut programmatic source-restore <spec.json> [--target <id|auto>] [--project <dir>]",
 	"  rocut programmatic sequence-restore <spec.json> [--target <id|auto>] [--project <dir>]",
 	"  rocut programmatic produced <spec.json> [--target <id|auto>] [--project <dir>]",
+	"  rocut programmatic object-params <spec.json> [--target <id|auto>] [--project <dir>]",
+	"  rocut programmatic animation-inspect <spec.json> [--target <id|auto>] [--project <dir>]",
 	"  rocut task list|start <spec.json>|get <id>|cancel <id> [--target <id|auto>] [--project <dir>]",
 	"  rocut scenes list|plan <spec.json> [--target <id|auto>] [--project <dir>]",
 	"  rocut motion-text catalog [--target <id|auto>] [--project <dir>]",
@@ -150,7 +155,10 @@ async function runCli(argv: readonly string[]): Promise<void> {
 					`host ${subcommand ?? "<verb>"} requires a project directory`,
 				);
 			}
-			const staticDir = flag(args, "static");
+			const staticDir = await resolveHostStaticDirectory({
+				explicit: flag(args, "static"),
+				entryUrl: import.meta.url,
+			});
 			const portFlag = flag(args, "port");
 			if (subcommand === "start") {
 				const host = await startHost({

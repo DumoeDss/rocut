@@ -23,6 +23,7 @@ import {
 	remotionInspectionExpression,
 } from "./remotion-inspection-driver";
 import { readRemotionMetadataAdapter } from "./remotion-metadata-archive";
+import { openElectronAudioSession, pinElectronAudioSessionConnection } from "./electron-audio-session";
 
 async function cleanupInspectionStaging({
 	staging,
@@ -43,15 +44,20 @@ export async function inspectRemotionProject({
 	input,
 	toolchainDirectory,
 	executable,
+	connectionFile,
 	signal,
 	prepared,
 }: {
 	input: unknown;
 	toolchainDirectory: string;
-	executable: string;
+	executable?: string;
+	connectionFile?: string;
 	signal: AbortSignal;
 	prepared?: RemotionInspectionSnapshot;
 }): Promise<RemotionInspectionSnapshot> {
+	signal.throwIfAborted();
+	if (connectionFile) pinElectronAudioSessionConnection(connectionFile);
+	else if (!executable) throw Error("Remotion inspection requires a browser backend");
 	const parsed = prepared
 		? { source: prepared.source, sourceDirectory: "", frameRates: undefined }
 		: parseRemotionInspection(input);
@@ -115,9 +121,15 @@ export async function inspectRemotionProject({
 		const code = new TextDecoder("utf-8", { fatal: true }).decode(
 			await readFile(outputFile),
 		);
-		const browser = await launchFrameBrowser(executable, signal);
-		let compositions: InspectedComposition[];
-		try {
+		const evaluate = async (): Promise<unknown> => {
+			if (connectionFile) {
+				const session = await openElectronAudioSession({ connectionFile, profile: "source",
+					width: source.width, height: source.height, signal });
+				try { return await session.evaluate(remotionInspectionExpression(code), { timeoutMs: 15000 }); }
+				finally { await session.close(); }
+			}
+			const browser = await launchFrameBrowser(executable!, signal);
+			try {
 			const target = await browser.send("Target.createTarget", {
 				url: "about:blank",
 			});
@@ -167,23 +179,19 @@ export async function inspectRemotionProject({
 				!!value && typeof value === "object" && !Array.isArray(value);
 			if (!isRecord(reply.result))
 				throw Error("Expected inspection browser result");
-			const inspected: unknown = JSON.parse(JSON.stringify(reply.result.value));
-			const isComposition = (value: unknown): value is InspectedComposition =>
-				isRecord(value) &&
-				typeof value.id === "string" &&
-				typeof value.width === "number" &&
-				typeof value.height === "number" &&
-				typeof value.fps === "number" &&
-				typeof value.durationFrames === "number" &&
-				isRecord(value.props);
-			if (!Array.isArray(inspected) || !inspected.every(isComposition))
-				throw Error("Expected inspected composition records");
-			compositions = inspected;
-			if (!Array.isArray(compositions) || !compositions.length)
-				throw Error("Expected inspected compositions");
-		} finally {
-			await browser.close();
-		}
+			return reply.result.value;
+			} finally { await browser.close(); }
+		};
+		const inspected: unknown = JSON.parse(JSON.stringify(await evaluate()));
+		const isRecord = (value: unknown): value is Record<string, unknown> =>
+			!!value && typeof value === "object" && !Array.isArray(value);
+		const isComposition = (value: unknown): value is InspectedComposition =>
+			isRecord(value) && typeof value.id === "string" && typeof value.width === "number"
+			&& typeof value.height === "number" && typeof value.fps === "number"
+			&& typeof value.durationFrames === "number" && isRecord(value.props);
+		if (!Array.isArray(inspected) || !inspected.every(isComposition)) throw Error("Expected inspected composition records");
+		const compositions = inspected;
+		if (!compositions.length) throw Error("Expected inspected compositions");
 		const snapshot = {
 			revision: "",
 			source,

@@ -6,6 +6,7 @@ import wasm from "vite-plugin-wasm";
 import topLevelAwait from "vite-plugin-top-level-await";
 import { editorAssets } from "./build/editor-assets";
 import { moduleGraph } from "./build/module-graph";
+import { resolveSurfaceWasmPackage, surfaceWasmPackagePlugin } from "../../script/surface-wasm-package.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(here, "../..");
@@ -16,10 +17,15 @@ const webPublic = resolve(repoRoot, "apps/web/public");
 // on every origin, including a bare root.
 const publicBase = process.env.OPENCUT_PUBLIC_BASE || "./";
 const outputDirectory = process.env.C4_VITE_OUT_DIR || "dist";
+const selectedWasmDirectory = process.env.ROCUT_SURFACE_WASM_PACKAGE_DIR;
+const selectedWasm = selectedWasmDirectory === undefined ? undefined : resolveSurfaceWasmPackage({
+	repoRoot, wasmPackageDirectory: selectedWasmDirectory, outDir: resolve(here, outputDirectory),
+});
 
 export default defineConfig({
 	base: publicBase,
 	plugins: [
+		...(selectedWasm ? [surfaceWasmPackagePlugin(selectedWasm)] : []),
 		react(),
 		// The published `opencut-wasm` is wasm-pack `--target bundler` output: its
 		// entry imports the `.wasm` module directly and calls `__wbindgen_start()`.
@@ -35,6 +41,7 @@ export default defineConfig({
 		moduleGraph({ repoRoot }),
 	],
 	resolve: {
+		alias: selectedWasm ? [{ find: /^opencut-wasm$/, replacement: selectedWasm.wasmBundlerEntry }] : [],
 		// Both this package and `apps/web` depend on React; two copies would break
 		// hooks at runtime.
 		dedupe: ["react", "react-dom"],

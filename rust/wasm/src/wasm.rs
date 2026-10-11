@@ -57,6 +57,11 @@ pub use compositor::*;
 pub use editor_api::*;
 
 #[bridge::export]
+pub fn native_transition_style_validate_json(input: String) -> Result<String, String> {
+    editor_api::native_transition_style_validate_json(&input)
+}
+
+#[bridge::export]
 pub fn resolve_glass_object_params_json(input: String) -> String {
     editor_api::resolve_glass_object_params_json(input)
 }

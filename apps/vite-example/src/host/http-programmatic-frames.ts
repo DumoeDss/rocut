@@ -2,11 +2,14 @@ import type { ProgrammaticFrameProvider } from "@opencut/editor-ports/host";
 import { isProgrammaticAudioIdentity } from "@opencut/editor-ports/host";
 import { programmaticAudioPolicyJson } from "opencut-wasm";
 import { reviseHttpProgrammaticBuild } from "./http-programmatic-builds";
+import { inspectHttpProgrammaticAnimation } from "./http-programmatic-animation";
 
 export function createHttpProgrammaticFrames({
 	base = "api",
 }: { base?: string } = {}): ProgrammaticFrameProvider {
 	return {
+		inspectAnimation: ({ resource, signal }) =>
+			inspectHttpProgrammaticAnimation({ base, resource, signal }),
 		reviseBuild: ({ request, signal }) =>
 			reviseHttpProgrammaticBuild({ base, request, signal }),
 		async getAudioIdentity({ request, signal }) {

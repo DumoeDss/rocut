@@ -9,6 +9,9 @@ import type {NativeAudioAnalysisConfig} from "./remotion-audio-bootstrap";
 import {attachRemotionProducedCaptureBroker} from "./remotion-produced-capture-broker";
 import {attachOffthreadBroker} from "./offthread-broker";
 import type {NativeVideoDecoder} from "./video-decoder";
+import { analyzeElectronAudio, pinElectronAudioConnection } from "./electron-audio-transport";
+import { createElectronNativeVideoServer } from "./electron-native-video-server";
+import { collectElectronRemotionProducedFrames } from "./electron-remotion-produced";
 
 interface AudioPolicy {
 	version: 1; maxSources: number; maxAssetsPerFrame: number; maxSourceBytes: number;maxObservationBytes:number;
@@ -47,7 +50,7 @@ export function admitNativeAudioSources(code: string, resources: readonly Resolv
 }
 
 interface AnalysisOptions {
-	executable: string; request: ProgrammaticFrameRequest;
+	executable?: string; connectionFile?: string; request: ProgrammaticFrameRequest;
 	resourceStore: ProgrammaticResourceStore; signal: AbortSignal;
 	decoder?:NativeVideoDecoder;
 }
@@ -61,11 +64,12 @@ export interface RemotionProducedFrame {frameIndex:number;assets:NativeAudioObse
 
 /** One private process per bounded job. Legacy frame() uses fresh targets;
  * producedFrames() preserves one root and native IDs through the canonical scan.
- * Electron's PNG-only service is neither changed nor silently bypassed.
+ * Electron basic frames use its named observation grant, never a process fallback.
  */
-export async function withRemotionAudioAnalyzer<T>({ executable, request, resourceStore, signal,decoder }: AnalysisOptions,
+export async function withRemotionAudioAnalyzer<T>({ executable, connectionFile, request, resourceStore, signal,decoder }: AnalysisOptions,
 	consume: (analyzer: AudioAnalyzer) => Promise<T>): Promise<T> {
 	signal.throwIfAborted();
+	if (connectionFile) pinElectronAudioConnection(connectionFile);
 	const source = JSON.parse(JSON.stringify(request.source)) as ProgrammaticFrameRequest["source"];
 	if (source.runtime !== "html-document" || source.build?.engine !== "remotion")
 		throw Error("Native audio analysis requires a compiled Remotion source");
@@ -89,6 +93,44 @@ export async function withRemotionAudioAnalyzer<T>({ executable, request, resour
 		return result.assets;
 	};
 	normalize(map(request).index, []);
+	if (connectionFile) {
+		// Admitted video bytes can be consumed by OffthreadVideo during audio
+		// inspection. Pure Audio sources retain only their independent audio grant.
+		const needsVideo = sources.some(item => item.mimeType.startsWith("video/"));
+		if (needsVideo && !decoder) throw Error("Electron native audio video sources require the native decoder");
+		if (needsVideo) pinElectronAudioConnection(connectionFile, true);
+		let busy = false;
+		return consume({ sources,
+			async producedFrames(scan) {
+				signal.throwIfAborted();
+				if (busy) throw Error("Native audio frames must be collected serially");
+				busy = true;
+				try {
+					return await collectElectronRemotionProducedFrames({ connectionFile, width: source.width, height: source.height,
+						durationFrames: source.durationFrames, code, resources, sources, limits, scan, decoder, normalize, signal });
+				} finally { busy = false; }
+			},
+			async frame(timing) {
+				signal.throwIfAborted();
+				if (busy) throw Error("Native audio frames must be collected serially");
+				busy = true;
+				let nativeFrames: Awaited<ReturnType<typeof createElectronNativeVideoServer>> | undefined;
+				try {
+					const mapped = map(timing);
+					if (needsVideo) nativeFrames = await createElectronNativeVideoServer({ decoder: decoder!, code, resources,
+						limits: mapped.videoLimits, signal });
+					const value = await analyzeElectronAudio({ connectionFile, width: source.width, height: source.height, signal,
+						...(nativeFrames ? { nativeVideo: nativeFrames.callback } : {}),
+						expression: htmlAudioAnalysisExpression(code, mapped, resources, {
+							limits, engine: "remotion", sources: sources.map(({ id, src }) => ({ id, src })),
+						}, !!nativeFrames) });
+					await nativeFrames?.check();
+					return { frameIndex: mapped.index, assets: normalize(mapped.index, value) };
+				} finally { try { await nativeFrames?.dispose(); } finally { busy = false; } }
+			}
+		});
+	}
+	if (!executable) throw Error("No native audio browser backend configured");
 	const controller = new AbortController();
 	const lifetime = AbortSignal.any([signal, controller.signal]);
 	const startTimer = setTimeout(() => controller.abort(), 15000);

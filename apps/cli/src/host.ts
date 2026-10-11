@@ -21,8 +21,13 @@ import { createServer } from "node:http";
 import { createProgrammaticFrameService } from "./programmatic/frame-service";
 import { createProgrammaticAudioService } from "./programmatic/audio-service";
 import type { NativeVideoDecoder } from "./programmatic/video-decoder";
-import { PROGRAMMATIC_RESOURCE_CAPABILITY } from "./programmatic/resource-import";
+import { getProgrammaticResourceCapability } from "./programmatic/resource-import";
 import { handleProgrammaticResourceRoute } from "./programmatic/resource-route";
+import { getProgrammaticObjectParamsCapability } from "./programmatic/object-params";
+import { getProgrammaticParticleMotionControlCapability } from "./programmatic/particle-motion-control-capability";
+import { handleProgrammaticObjectParamsRoute } from "./programmatic/object-params-route";
+import { handleProgrammaticAnimationInspect } from "./programmatic/animation-inspect-route";
+import { PROGRAMMATIC_ANIMATION_INSPECT_CAPABILITY } from "./programmatic/animation-inspect";
 import { createProgrammaticBuildService } from "./programmatic/engines/build-service";
 import { editingCatalog } from "@opencut/editor-classic/editing";
 import { planSceneEdit } from "./scene-editing";
@@ -357,6 +362,7 @@ export async function startHost(args: StartHostArgs): Promise<RunningHost> {
 			programmaticFrames,
 			programmaticAudio,
 			programmaticBuilds,
+			animationInspectToolchainDirectory: args.engineToolchainDirectory,
 			motionTextCores: args.motionTextCores,
 			motionTextJournal,
 		});
@@ -436,6 +442,7 @@ export function revisionEventWriter(args: {
 }
 
 interface HandleContext {
+	readonly animationInspectToolchainDirectory?: string;
 	readonly programmaticAudio: ReturnType<typeof createProgrammaticAudioService>;
 	readonly programmaticBuilds: ReturnType<typeof createProgrammaticBuildService>;
 	readonly token: string;
@@ -511,6 +518,14 @@ async function handleApi(
 		response.end(JSON.stringify(body));
 	};
 	try {
+		if (request.method === "POST" && route.length === 2 && route[0] === "programmatic" && route[1] === "animation-inspect") {
+			await handleProgrammaticAnimationInspect(await readJsonBody(request), response, { store: plane.baseStore, projectId: plane.projectId }, context.animationInspectToolchainDirectory);
+			return;
+		}
+		if (request.method === "POST" && route.length === 2 && route[0] === "programmatic" && route[1] === "object-params") {
+			await handleProgrammaticObjectParamsRoute(request, response);
+			return;
+		}
 		if (
 			request.method === "POST" && route.length === 3 && route[0] === "programmatic" && route[1] === "build"
 		) {
@@ -565,7 +580,11 @@ async function handleApi(
 				capabilities: await automation.capabilities(),
 				supportedOperations: await automation.supportedOperations(),
 				mediaImport: MEDIA_IMPORT_CAPABILITY,
-				programmaticResources: PROGRAMMATIC_RESOURCE_CAPABILITY,
+				programmaticResources: getProgrammaticResourceCapability(),
+				programmaticObjectParams: getProgrammaticObjectParamsCapability(),
+				programmaticAnimationInspect: PROGRAMMATIC_ANIMATION_INSPECT_CAPABILITY,
+				programmaticParticleMotionControl:
+					getProgrammaticParticleMotionControlCapability(),
 				programmaticBuilds: context.programmaticBuilds.capability,
 				programmaticNativeVideo: context.programmaticFrames.nativeVideoCapability,
 				programmaticNativeAudio: context.programmaticAudio.capability,

@@ -54,6 +54,8 @@ pub(crate) mod train;
 mod transition_bend;
 mod transition_model;
 mod transition_peel;
+mod native_transition;
+pub use native_transition::{NativeTransitionStyle, NativeTransitionDirection, Clip as NativeTransitionClip, DrawCommand as NativeTransitionDrawCommand, Input as NativeTransitionInput, Blend as NativeTransitionBlend, native_transition_style_validate_json};
 mod transition_shatter;
 mod transitions;
 mod tunnel;

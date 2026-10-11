@@ -1,5 +1,12 @@
 import type { BlendMode } from "../../../rendering";
+import type { NativeTransitionStyle } from "@opencut/editor-contracts";
 import type { EffectPass } from "../../../effects/types";
+
+/** Legacy cross-dissolve stays an absent wire style. */
+export type FrameTransitionStyle = Exclude<
+	NativeTransitionStyle,
+	{ kind: "cross-dissolve" }
+>;
 
 export type FrameDescriptor = {
 	width: number;
@@ -32,12 +39,14 @@ export type FrameItemDescriptor =
 	| ({ type: "group" } & FrameGroupDescriptor)
 	| {
 			type: "sceneTransition";
+			style?: FrameTransitionStyle;
 			outgoing: FrameGroupDescriptor;
 			incoming: FrameGroupDescriptor;
 			progress: number;
 	  }
 	| {
 			type: "transition";
+			style?: FrameTransitionStyle;
 			outgoing: Omit<FrameLayerDescriptor, "type">[];
 			incoming: Omit<FrameLayerDescriptor, "type">[];
 			progress: number;

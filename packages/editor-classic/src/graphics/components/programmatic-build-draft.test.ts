@@ -10,6 +10,10 @@ import {
 	ProgrammaticBuildDraft,
 } from "./programmatic-build-draft";
 import { loadAuthorText } from "./programmatic-build-text";
+import {
+	changeBuildFiles,
+	isBuildEntryFile,
+} from "./programmatic-build-file-state";
 
 async function fixture() {
 	const blobs = new Map<string, Blob>();
@@ -100,6 +104,258 @@ async function fixture() {
 	};
 	return { source, revised, provider, reads, requests, blobs };
 }
+
+test("entry selection submits only entryFile through the existing Apply transaction", async () => {
+	const f = await fixture();
+	const source = {
+		...f.source,
+		build: {
+			...f.source.build!,
+			inputs: [
+				...f.source.build!.inputs,
+				{ ...f.source.build!.inputs[0], id: "src/alternate.tsx" },
+			],
+		},
+	};
+	const draft = new ProgrammaticBuildDraft(source);
+	draft.changeFiles({ op: "entry", id: "src/alternate.tsx" });
+	expect(draft.getSnapshot().entryFile).toBe("src/alternate.tsx");
+	expect(draft.getSnapshot().selectedId).toBe("index.tsx");
+	expect(draft.getSnapshot().dirty).toBe(true);
+	expect(source.build.entryFile).toBe("index.tsx");
+	expect(f.reads).toEqual([]);
+	const replacement = {
+		...source,
+		seed: 8,
+		build: { ...source.build, entryFile: "src/alternate.tsx" },
+	};
+	let commits = 0;
+	await draft.apply({
+		provider: {
+			...f.provider,
+			reviseBuild: async ({ request }) => {
+				f.requests.push(request);
+				return { source: replacement };
+			},
+		},
+		commit: async (baseline, revised) => {
+			expect(baseline).toBe(source);
+			expect(revised).toBe(replacement);
+			commits++;
+		},
+	});
+	expect(f.requests).toEqual([
+		{ source, changes: [], entryFile: "src/alternate.tsx" },
+	]);
+	expect(commits).toBe(1);
+	expect(draft.getSnapshot().dirty).toBe(false);
+});
+
+test("entry eligibility follows declared portable engine sources, not arbitrary text or paths", async () => {
+	const f = await fixture();
+	for (const engine of ["hyperframes", "remotion", "three"] as const) {
+		const ids = [
+			"index.html",
+			"nested/page.htm",
+			"src/scene.ts",
+			"src/scene.tsx",
+			"module.mjs",
+			"module.cjs",
+			"scene.jsx",
+			"style.css",
+			"data.json",
+			"image.svg",
+			"texture.png",
+			"public/scene.ts",
+			"../bad.ts",
+			"_rocut/scene.ts",
+			"CON.ts",
+		];
+		const draft = new ProgrammaticBuildDraft({
+			...f.source,
+			build: {
+				...f.source.build!,
+				engine,
+				entryFile: engine === "hyperframes" ? "index.html" : "src/scene.ts",
+				inputs: ids.map((id) => ({ ...f.source.build!.inputs[0], id })),
+			},
+		});
+		const state = draft.getSnapshot();
+		for (const id of ids)
+			expect(isBuildEntryFile(state, id)).toBe(
+				engine === "hyperframes"
+					? ["index.html", "nested/page.htm"].includes(id)
+					: [
+							"src/scene.ts",
+							"src/scene.tsx",
+							"module.mjs",
+							"module.cjs",
+							"scene.jsx",
+							...(engine === "three" ? ["public/scene.ts"] : []),
+						].includes(id),
+			);
+		for (const id of [
+			"missing.ts",
+			"style.css",
+			"../bad.ts",
+			"_rocut/scene.ts",
+		])
+			expect(() => changeBuildFiles(state, { op: "entry", id })).toThrow(
+				"declared portable entry",
+			);
+	}
+});
+
+test("entry drafts restore clean state and obey conflict, compile and save protections", async () => {
+	const f = await fixture();
+	const source = {
+		...f.source,
+		build: {
+			...f.source.build!,
+			inputs: [
+				...f.source.build!.inputs,
+				{ ...f.source.build!.inputs[0], id: "other.ts" },
+			],
+		},
+	};
+	const draft = new ProgrammaticBuildDraft(source);
+	draft.changeFiles({ op: "entry", id: "other.ts" });
+	draft.changeFiles({ op: "entry", id: "index.tsx" });
+	expect(draft.getSnapshot().dirty).toBe(false);
+	draft.changeFiles({ op: "entry", id: "other.ts" });
+	const state = draft.getSnapshot();
+	for (const blocked of [
+		{ ...state, conflict: true },
+		{ ...state, phase: "compiling" as const },
+		{ ...state, phase: "saving" as const },
+	])
+		expect(changeBuildFiles(blocked, { op: "entry", id: "index.tsx" })).toBe(
+			blocked,
+		);
+	draft.refresh({ ...source, seed: 99 });
+	draft.changeFiles({ op: "entry", id: "index.tsx" });
+	expect(draft.getSnapshot().entryFile).toBe("other.ts");
+	draft.discard();
+	expect(draft.getSnapshot().entryFile).toBe("index.tsx");
+	expect(draft.getSnapshot().dirty).toBe(false);
+});
+
+test("incorrect entry receipts retain the unapplied draft without committing", async () => {
+	const f = await fixture();
+	const source = {
+		...f.source,
+		build: {
+			...f.source.build!,
+			inputs: [
+				...f.source.build!.inputs,
+				{ ...f.source.build!.inputs[0], id: "other.ts" },
+			],
+		},
+	};
+	const draft = new ProgrammaticBuildDraft(source);
+	draft.changeFiles({ op: "entry", id: "other.ts" });
+	let commits = 0;
+	await draft.apply({
+		provider: { ...f.provider, reviseBuild: async () => ({ source }) },
+		commit: async () => {
+			commits++;
+		},
+	});
+	expect(commits).toBe(0);
+	expect(draft.getSnapshot().error).toContain("entry file");
+	expect(draft.getSnapshot().dirty).toBe(true);
+	expect(draft.getSnapshot().entryFile).toBe("other.ts");
+	expect(source.build.entryFile).toBe("index.tsx");
+});
+
+test("multi-file drafts submit additions, deletions and renamed entry through the existing transaction", async () => {
+	const f = await fixture();
+	const draft = new ProgrammaticBuildDraft(f.source);
+	await draft.load(f.provider);
+	draft.changeFiles({ op: "rename", id: "src/main.tsx" });
+	expect(draft.getSnapshot().entryFile).toBe("src/main.tsx");
+	draft.changeFiles({ op: "add", id: "src/scene.tsx" });
+	draft.edit({ code: "export const scene = 1;" });
+	draft.select("empty.css");
+	draft.changeFiles({ op: "delete" });
+	const revisedFiles = {
+		...f.revised,
+		build: {
+			...f.revised.build!,
+			entryFile: "src/main.tsx",
+			inputs: ["src/main.tsx", "src/scene.tsx"].map((id) => ({
+				...f.source.build!.inputs[0],
+				id,
+			})),
+		},
+	};
+	const provider = {
+		...f.provider,
+		reviseBuild: async ({ request }: { request: unknown }) => {
+			f.requests.push(request);
+			return { source: revisedFiles };
+		},
+	};
+	let commits = 0;
+	await draft.apply({
+		provider,
+		commit: async () => {
+			commits++;
+		},
+	});
+	expect(f.requests).toEqual([
+		{
+			source: f.source,
+			entryFile: "src/main.tsx",
+			changes: [
+				{ op: "delete", id: "index.tsx" },
+				{ op: "delete", id: "empty.css" },
+				{ op: "add", id: "src/main.tsx", code: "\ufeffexport default 1;" },
+				{ op: "add", id: "src/scene.tsx", code: "export const scene = 1;" },
+			],
+		},
+	]);
+	expect(commits).toBe(1);
+	expect(draft.getSnapshot().dirty).toBe(false);
+});
+
+test("file operations retain draft protections and deleting a newly added file restores clean state", async () => {
+	const f = await fixture();
+	const draft = new ProgrammaticBuildDraft(f.source);
+	draft.changeFiles({ op: "delete" });
+	expect(draft.getSnapshot().error).toContain("entry file");
+	draft.changeFiles({ op: "add", id: "../unsafe.ts" });
+	expect(draft.getSnapshot().error).toContain("portable");
+	draft.changeFiles({ op: "add", id: "new.ts" });
+	expect(draft.getSnapshot().dirty).toBe(true);
+	draft.changeFiles({ op: "delete" });
+	expect(draft.getSnapshot().dirty).toBe(false);
+	draft.changeFiles({ op: "add", id: "new.ts" });
+	draft.refresh({ ...f.source, seed: 9 });
+	draft.changeFiles({ op: "add", id: "late.ts" });
+	expect(draft.getSnapshot().fileIds).not.toContain("late.ts");
+	draft.discard();
+	expect(draft.getSnapshot().fileIds).toEqual(
+		f.source.build!.inputs.map((item) => item.id),
+	);
+});
+
+test("a compiler that drops newly authored files cannot report a successful apply", async () => {
+	const f = await fixture();
+	const draft = new ProgrammaticBuildDraft(f.source);
+	draft.changeFiles({ op: "add", id: "new.ts" });
+	let commits = 0;
+	await draft.apply({
+		provider: f.provider,
+		commit: async () => {
+			commits++;
+		},
+	});
+	expect(commits).toBe(0);
+	expect(draft.getSnapshot().error).toContain("different author file set");
+	expect(draft.getSnapshot().dirty).toBe(true);
+	expect(draft.getSnapshot().fileIds).toContain("new.ts");
+});
 
 test("author file loading verifies actual bytes, retains BOM/empty files and only reads selected input", async () => {
 	const f = await fixture();

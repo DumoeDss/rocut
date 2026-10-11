@@ -57,6 +57,19 @@ test("optional editing names retain exact wire shape through apply and persisten
 	}
 });
 
+test("omitted effect name binds the final type when create-clip starts from a text donor", () => {
+	const placeholder = { ...donor(), type: "text" } as unknown as TimelineElement;
+	const editing: ClipEditing = { type: "effect", effectType: "bubble", params: {} };
+	const applied = applyEditingState({ element: placeholder, editing });
+	expect(projectEditingState(applied)).toEqual(editing);
+	const project = projectFixture();
+	project.scenes[0].tracks.main.elements = [applied as never];
+	const loaded = decodeProject(JSON.parse(JSON.stringify(encodeProject({ project, retained: {} }))));
+	expect(projectEditingState(loaded.scenes[0].tracks.main.elements[0])).toEqual(editing);
+	expect(Reflect.get(applied, EDITING_NAME_SHAPE_KEY)).toMatchObject({ elementType: "effect" });
+	expect(placeholder.type).toBe("text");
+});
+
 test("old names and invalid or stale markers never suppress real donor names", () => {
 	const original = donor();
 	Reflect.set(original, "unrelatedPrivate", { keepOpaque: true });

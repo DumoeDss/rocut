@@ -1,5 +1,10 @@
 import { useMemo, useRef, useState } from "react";
-import { revisionOf } from "@opencut/editor-contracts";
+import {
+	revisionOf,
+	type NativeTransitionStyle,
+	type PeelTransitionStyle,
+	type BendTransitionStyle,
+} from "@opencut/editor-contracts";
 import { useEditor, useEditorInstance } from "../editor/use-editor";
 import {
 	assetCatalogFromMedia,
@@ -8,6 +13,37 @@ import {
 import { UpdateElementsCommand } from "../commands/timeline/element/update-elements";
 import type { ImageElement, VideoElement } from "../timeline";
 import { inspectTransitionChoice } from "./transition-choice";
+import {
+	nativePeelDefaults,
+	nativeBendDefaults,
+	transitionStyleOf,
+} from "./transition-style";
+
+type BendDraft = { [K in Exclude<keyof BendTransitionStyle, "kind">]: string };
+function bendDraft(style?: BendTransitionStyle): BendDraft | undefined {
+	return (
+		style && {
+			direction: style.direction,
+			hinge: String(style.hinge),
+			angle: String(style.angle),
+			perspective: String(style.perspective),
+			shading: String(style.shading),
+		}
+	);
+}
+
+type PeelDraft = { [K in Exclude<keyof PeelTransitionStyle, "kind">]: string };
+function peelDraft(style?: PeelTransitionStyle): PeelDraft | undefined {
+	return (
+		style && {
+			direction: style.direction,
+			curl: String(style.curl),
+			segments: String(style.segments),
+			shading: String(style.shading),
+			perspective: String(style.perspective),
+		}
+	);
+}
 
 export function useTransitionProperties({
 	element,
@@ -45,6 +81,8 @@ export function useTransitionProperties({
 			(clip.type === "video" || clip.type === "image"),
 	);
 	const saved = element.transitionIn;
+	const peelCatalog = useMemo(() => nativePeelDefaults(), []);
+	const bendCatalog = useMemo(() => nativeBendDefaults(), []);
 	const defaultOutgoing =
 		saved?.outgoingClipId ??
 		candidates.find(
@@ -58,41 +96,103 @@ export function useTransitionProperties({
 		)?.id ??
 		candidates[0]?.id ??
 		"";
-	const sourceKey = JSON.stringify([
-		element.id,
-		saved?.outgoingClipId,
-		saved?.durationFrames,
-		defaultOutgoing,
-	]);
+	const sourceKey = JSON.stringify([element.id, saved, defaultOutgoing]);
 	const initialDraft = {
 		sourceKey,
 		outgoingId: defaultOutgoing,
 		frames: String(saved?.durationFrames ?? 30),
+		kind: saved?.kind ?? ("cross-dissolve" as NativeTransitionStyle["kind"]),
+		peel: peelDraft(saved?.kind === "peel" ? saved : peelCatalog.style),
+		bend: bendDraft(saved?.kind === "bend" ? saved : bendCatalog.style),
 	};
 	const [draft, setDraft] = useState(initialDraft);
 	// Adopt external history changes before rendering children; do not keep an old
 	// duration draft when undo returns to a previously visited saved relation.
 	if (draft.sourceKey !== sourceKey) setDraft(initialDraft);
-	const { outgoingId, frames } =
+	const { outgoingId, frames, kind, peel, bend } =
 		draft.sourceKey === sourceKey ? draft : initialDraft;
 	const setOutgoingId = (value: string) =>
-		setDraft({ sourceKey, frames, outgoingId: value });
+		setDraft({ sourceKey, frames, kind, peel, bend, outgoingId: value });
 	const setFrames = (value: string) =>
-		setDraft({ sourceKey, outgoingId, frames: value });
+		setDraft({ sourceKey, outgoingId, kind, peel, bend, frames: value });
+	const setKind = (value: NativeTransitionStyle["kind"]) => {
+		if (
+			busy.current ||
+			(value !== "cross-dissolve" && value !== "peel" && value !== "bend")
+		)
+			return;
+		setDraft({ sourceKey, outgoingId, frames, kind: value, peel, bend });
+	};
+	const setPeel = (key: keyof PeelDraft, value: string) => {
+		if (!busy.current && peel)
+			setDraft({
+				sourceKey,
+				outgoingId,
+				frames,
+				kind,
+				bend,
+				peel: { ...peel, [key]: value },
+			});
+	};
+	const setBend = (key: keyof BendDraft, value: string) => {
+		if (!busy.current && bend)
+			setDraft({
+				sourceKey,
+				outgoingId,
+				frames,
+				kind,
+				peel,
+				bend: { ...bend, [key]: value },
+			});
+	};
 	const [message, setMessage] = useState("");
 	const [isSaving, setSaving] = useState(false);
 	const busy = useRef(false);
 
 	const durationFrames = frames.trim() ? Number(frames) : NaN;
-	const validation = inspectTransitionChoice({
-		document,
-		incomingId: element.id,
-		outgoingId,
-		durationFrames,
-	});
+	const numeric = (value: string) => (value.trim() ? Number(value) : NaN);
+	const style: NativeTransitionStyle | undefined =
+		kind === "cross-dissolve"
+			? { kind }
+			: kind === "bend"
+				? bend
+					? {
+							kind,
+							direction: bend.direction as BendTransitionStyle["direction"],
+							hinge: numeric(bend.hinge),
+							angle: numeric(bend.angle),
+							perspective: numeric(bend.perspective),
+							shading: numeric(bend.shading),
+						}
+					: undefined
+				: peel
+					? {
+							kind,
+							direction: peel.direction as PeelTransitionStyle["direction"],
+							curl: numeric(peel.curl),
+							segments: numeric(peel.segments),
+							shading: numeric(peel.shading),
+							perspective: numeric(peel.perspective),
+						}
+					: undefined;
+	const validation = style
+		? inspectTransitionChoice({
+				document,
+				incomingId: element.id,
+				outgoingId,
+				durationFrames,
+				style,
+			})
+		: {
+				valid: false,
+				message:
+					(kind === "bend" ? bendCatalog.error : peelCatalog.error) ??
+					"Native style is unavailable.",
+			};
 	const unchanged =
 		saved?.outgoingClipId === outgoingId &&
-		saved.durationFrames === durationFrames;
+		saved.durationFrames === durationFrames &&
+		JSON.stringify(transitionStyleOf(saved)) === JSON.stringify(style);
 	const save = async (remove = false) => {
 		if (busy.current || (remove ? !saved : !validation.valid || unchanged))
 			return;
@@ -111,7 +211,7 @@ export function useTransitionProperties({
 								transitionIn: remove
 									? undefined
 									: {
-											kind: "cross-dissolve",
+											...style!,
 											outgoingClipId: outgoingId,
 											durationFrames,
 										},
@@ -141,6 +241,16 @@ export function useTransitionProperties({
 		outgoingId,
 		setOutgoingId,
 		frames,
+		kind,
+		setKind,
+		peel,
+		setPeel,
+		peelAvailable: !!peelCatalog.style,
+		peelError: peelCatalog.error,
+		bend,
+		setBend,
+		bendAvailable: !!bendCatalog.style,
+		bendError: bendCatalog.error,
 		setFrames,
 		validation,
 		unchanged,

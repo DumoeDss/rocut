@@ -3,6 +3,10 @@ import type { ProgrammaticFrameRequest } from "@opencut/editor-contracts";
 import { launchFrameBrowser } from "./chromium-process";
 import { resolveHtmlDocumentCode } from "./document-resource";
 import { collectHyperframesAudioSnapshot } from "./hyperframes-audio-analysis-frame";
+import { htmlAudioAnalysisExpression } from "./html-document";
+import { analyzeElectronAudio, pinElectronAudioConnection } from "./electron-audio-transport";
+import { openElectronAudioSession, pinElectronAudioSessionConnection } from "./electron-audio-session";
+import type { HyperframesFxProvenance } from "./hyperframes-fx-types";
 import type {
 	HyperframesNativeHistoryCapture,
 	HyperframesNativeHistoryResult,
@@ -19,7 +23,9 @@ import {
 } from "./resources";
 
 interface AnalysisOptions {
-	executable: string;
+	executable?: string;
+	connectionFile?: string;
+	expectedProvenance?: HyperframesFxProvenance;
 	request: ProgrammaticFrameRequest;
 	resourceStore: ProgrammaticResourceStore;
 	signal: AbortSignal;
@@ -103,11 +109,15 @@ export async function withHyperframesAudioGraphAnalyzer<T>(
  * The pinned runtime observer supplies facts; Rust admits them before PCM work.
  */
 async function withHyperframesAudioCollection<T>(
-	{ executable, request, resourceStore, signal }: AnalysisOptions,
+	{ executable, connectionFile, request, resourceStore, signal, expectedProvenance }: AnalysisOptions,
 	hyperframesGraph: boolean,
 	consume: (analyzer: RawAudioAnalyzer) => Promise<T>,
 ): Promise<T> {
 	signal.throwIfAborted();
+	if (connectionFile && !hyperframesGraph) {
+		pinElectronAudioConnection(connectionFile);
+	}
+	if (connectionFile && hyperframesGraph) pinElectronAudioSessionConnection(connectionFile);
 	const source = JSON.parse(
 		JSON.stringify(request.source),
 	) as ProgrammaticFrameRequest["source"];
@@ -178,12 +188,34 @@ async function withHyperframesAudioCollection<T>(
 	};
 	// Source-only Rust admission must precede browser startup in both modes.
 	normalize(map(request).index, []);
+	if (connectionFile && !hyperframesGraph) {
+		let busy = false;
+		return consume({ sources, normalize,
+			async history() { throw Error("Electron HyperFrames graph history is unavailable"); },
+			async seek() { throw Error("Electron HyperFrames graph seeks are unavailable"); },
+			async frame(timing) {
+				signal.throwIfAborted();
+				if (busy) throw Error("HyperFrames audio frames must be collected serially");
+				busy = true;
+				try {
+					const mapped = map(timing);
+					const value = await analyzeElectronAudio({ connectionFile, width: source.width, height: source.height, signal,
+						expression: htmlAudioAnalysisExpression(code, mapped, resources, {
+							engine: "hyperframes", limits, sources: browserSources,
+						}) });
+					return { frameIndex: mapped.index, value };
+				} finally { busy = false; }
+			}
+		});
+	}
+	if (!connectionFile && !executable) throw Error("No native audio browser backend configured");
 	const controller = new AbortController();
 	const lifetime = AbortSignal.any([signal, controller.signal]);
 	const startTimer = setTimeout(() => controller.abort(), 15000);
-	const browser = await launchFrameBrowser(executable, lifetime).finally(() =>
+	const browser = connectionFile ? undefined : await launchFrameBrowser(executable!, lifetime).finally(() =>
 		clearTimeout(startTimer),
 	);
+	if (connectionFile) clearTimeout(startTimer);
 	let busy = false;
 	const collect = async (
 		resolveFrame: () => ReturnType<typeof map>,
@@ -194,9 +226,21 @@ async function withHyperframesAudioCollection<T>(
 			throw Error("HyperFrames audio frames must be collected serially");
 		const mapped = resolveFrame();
 		busy = true;
-		const timer = setTimeout(() => controller.abort(), hyperframesNativeHistory ? 60000 : 15000);
+		const timeoutMs = hyperframesNativeHistory ? (connectionFile ? Math.min(1800000, 30000 + hyperframesNativeHistory.scan.frames.length * 8000) : 60000) : 15000;
+		const timer = setTimeout(() => controller.abort(), timeoutMs);
 		try {
-			const value = await collectHyperframesAudioSnapshot(browser, {
+			const analysis = { engine: "hyperframes" as const, hyperframesGraph,
+				...(hyperframesNativeHistory ? { hyperframesNativeHistory } : {}), limits, sources: browserSources };
+			let value: unknown;
+			if (connectionFile) {
+				const session = await openElectronAudioSession({ connectionFile, profile: "source", width: source.width, height: source.height, signal: lifetime });
+				try {
+					if (expectedProvenance && (session.epoch !== expectedProvenance.electronHostEpoch || JSON.stringify(session.browser) !== JSON.stringify(expectedProvenance.browser)))
+						throw Error("HyperFrames source observation Host identity changed");
+					value = await session.evaluate(htmlAudioAnalysisExpression(code, mapped, resources, analysis), { timeoutMs });
+				}
+				finally { await session.close(); }
+			} else value = await collectHyperframesAudioSnapshot(browser!, {
 				width: source.width,
 				height: source.height,
 				code,
@@ -248,7 +292,7 @@ async function withHyperframesAudioCollection<T>(
 			seek: (graph, seek) => collect(() => mapSeek(graph, seek)),
 		});
 	} finally {
-		await browser.close();
+		await browser?.close();
 	}
 }
 

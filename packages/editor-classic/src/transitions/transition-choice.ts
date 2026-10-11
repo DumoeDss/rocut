@@ -1,4 +1,5 @@
 import type { TransactionEngineDocument } from "@opencut/editor-contracts/engine";
+import type { NativeTransitionStyle } from "@opencut/editor-contracts";
 import type { TransitionGraphError, TransitionPlanError } from "opencut-wasm";
 import { evaluateDocumentTransitions } from "../editor/transactions/opencut/media-policy";
 
@@ -47,11 +48,13 @@ export function inspectTransitionChoice({
 	incomingId,
 	outgoingId,
 	durationFrames,
+	style = { kind: "cross-dissolve" },
 }: {
 	document: TransactionEngineDocument;
 	incomingId: string;
 	outgoingId: string;
 	durationFrames: number;
+	style?: NativeTransitionStyle;
 }): { valid: boolean; message: string } {
 	if (!outgoingId)
 		return {
@@ -81,7 +84,7 @@ export function inspectTransitionChoice({
 						? {
 								...clip,
 								transitionIn: {
-									kind: "cross-dissolve",
+									...style,
 									outgoingClipId: outgoing.id,
 									durationFrames,
 								},
@@ -97,11 +100,13 @@ export function inspectTransitionChoice({
 					message: explainTransitionError({ error: rejection.error }),
 				}
 			: { valid: true, message: "Clips stay in place. Audio is unchanged." };
-	} catch {
+	} catch (error) {
 		return {
 			valid: false,
 			message:
-				"Could not validate this transition. Check the project and source media.",
+				error instanceof Error && style.kind !== "cross-dissolve"
+					? error.message
+					: "Could not validate this transition. Check the project and source media.",
 		};
 	}
 }

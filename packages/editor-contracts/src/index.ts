@@ -212,6 +212,10 @@ export type {
 	Project,
 	Track,
 	Clip,
+	PeelTransitionStyle,
+	BendTransitionStyle,
+	NativeTransitionStyle,
+	IncomingClipTransition,
 	Asset,
 	Marker,
 } from "./domain";

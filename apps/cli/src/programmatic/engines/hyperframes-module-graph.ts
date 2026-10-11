@@ -66,21 +66,27 @@ async function prepareHyperframesModules(config, fs, sync, path, parseHTMLConten
     const file = path.resolve(config.project,id); noteRead(file);
     await fs.writeFile(file,doc.toString(),{encoding:'utf8'});
   }
-  return { finalize(doc) {
+  return { finalize(doc,classics = {literals:[],dynamic:false,runtimeName:'__rocutHyperframesClassicGraph',active:false}) {
     const scripts = moduleScripts(doc);
-    if (!hasModules && !scripts.length) return;
+    if (!hasModules && !scripts.length && !classics.active) return;
     const maps = hfModuleImportMaps([...doc.querySelectorAll('script[type="importmap"]')].map(el => JSON.parse(el.textContent || '{}')),hfModuleUrl(config.entryFile));
-    const records = new Map(), aliases = new Set(), pending = [], inline = [];
-    let expandDynamic = false, expandResources = false;
+    const records = new Map(), pending = [], inline = [], moduleVariants = Object.create(null);
+    const identityLimit = 1024;
+    let identityBytes = 0;
+    let expandDynamic = classics.dynamic, expandResources = false;
     function admit(url) {
       const id = hfModuleFile(url);
       if (!files.has(id)) throw Error('Compiler read an undeclared module source file: ' + id);
       if (!moduleMime(id)) throw Error('Unsupported declared module MIME: ' + id);
-      aliases.add(url);
-      if (!records.has(id)) { records.set(id,null); pending.push(id); }
-      return url;
+      const canonical = new URL(url).href;
+      if (!records.has(canonical)) {
+        if (records.size >= identityLimit) throw Error('Compiler module URL identity expansion exceeded its limit');
+        records.set(canonical,null); pending.push(canonical);
+      }
+      return canonical;
     }
     const resolve = (specifier,base) => admit(hfModuleResolve(specifier,base,maps));
+    const classicAliases = classics.literals.map(({alias,specifier,base}) => [alias,resolve(specifier,base)]);
     const resource = (specifier,base) => {
       const id = hfModuleFile(hfModuleAddress(specifier,base));
       if (!files.has(id)) throw Error('Compiler read an undeclared resource source file: ' + id);
@@ -100,27 +106,51 @@ async function prepareHyperframesModules(config, fs, sync, path, parseHTMLConten
         expandDynamic ||= result.dynamic; expandResources ||= result.resources; inline.push([script,result.code]);
       }
     }
-    let expanded = false;
-    while (pending.length || (expandDynamic && !expanded)) {
-      if (expandDynamic && !expanded) {
-        expanded = true;
-        // Non-literal import() can only choose an explicitly archived module.
-        // Include these as lazy graph members; parsing never executes them.
-        for (const id of [...files].filter(id => moduleMime(id)).sort()) admit(hfModuleUrl(id));
+    let expandedMaps = false;
+    while (pending.length || (expandDynamic && !expandedMaps)) {
+      if (expandDynamic && !expandedMaps) {
+        expandedMaps = true;
+        // Metadata/computed alias resolution can choose an import-map target
+        // without a literal import. Include every declared module target.
+        for (const entries of [maps.imports,...Object.values(maps.scopes)])
+          for (const address of Object.values(entries)) if (typeof address === 'string' && !new URL(address).pathname.endsWith('/')) {
+            const id = hfModuleFile(address);
+            if (files.has(id) && moduleMime(id)) admit(address);
+          }
+        // Query/hash identity is unbounded, but static dependency resolution
+        // has only finitely many scope classes for each declared physical file.
+        // Compile representative referrers; runtime selects the matching class
+        // while retaining the caller's exact URL in import.meta and module key.
+        for (const id of [...files].filter(id => moduleMime(id)).sort()) {
+          const base = hfModuleUrl(id);
+          admit(base);
+          let other = base+'?__rocut_scope_other__';
+          while (Object.hasOwn(maps.scopes,other)) other += '_';
+          admit(other);
+          for (const scope of Object.keys(maps.scopes))
+            if (!new URL(scope).pathname.endsWith('/') && hfModuleFile(scope) === id) admit(scope);
+        }
       }
-      const id = pending.shift(); if (id === undefined) continue;
+      const url = pending.shift(); if (url === undefined) continue;
+      const id = hfModuleFile(url);
       const mime = moduleMime(id), original = strictText(read(id));
       let code = original;
       if (mime === 'application/json') JSON.parse(original);
       else {
-        const result = hfModuleRewrite(original,hfModuleUrl(id),acorn,resolve,runtimeId,false,resource);
+        const result = hfModuleRewrite(original,url,acorn,resolve,runtimeId,false,resource);
         code = result.code; expandDynamic ||= result.dynamic; expandResources ||= result.resources;
       }
-      records.set(id,{code,mime,uri:'data:'+mime+';base64,'+Buffer.from(code,'utf8').toString('base64')});
+      const uri = 'data:'+mime+';base64,'+Buffer.from(code,'utf8').toString('base64');
+      identityBytes += Buffer.byteLength(uri);
+      if (identityBytes > 20000000) throw Error('Compiler module URL identity byte expansion exceeded its limit');
+      records.set(url,{physicalId:id,code,mime,uri});
+      const choices = moduleVariants[id] ??= Object.create(null);
+      choices[JSON.stringify(hfModuleScopeKeys(url,maps))] = uri;
     }
-    const dataUrl = url => records.get(hfModuleFile(url)).uri + '#rocut=' + encodeURIComponent(url);
+    const dataUrl = url => records.get(url).uri + '#rocut=' + encodeURIComponent(url);
     const imports = Object.create(null);
-    for (const url of [...aliases].sort()) imports[url] = dataUrl(url);
+    for (const url of [...records.keys()].sort()) imports[url] = dataUrl(url);
+    for (const [alias,url] of classicAliases) imports[alias] = dataUrl(url);
     const bodies = Object.fromEntries([...records].sort(([a],[b]) => a < b ? -1 : a > b ? 1 : 0).map(([id,record]) => [id,record.uri]));
     const assets = Object.create(null), resourceMimes = ${JSON.stringify(HYPERFRAMES_RESOURCE_MIMES)};
     if (expandResources) for (const id of [...files].filter(id => !moduleMime(id)).sort()) {
@@ -130,11 +160,14 @@ async function prepareHyperframesModules(config, fs, sync, path, parseHTMLConten
     // One fixed resolver supplies both deferred computed imports and metadata.
     // It returns only embedded data URLs or throws before a network request.
     const json = value => JSON.stringify(value).replace(/</g,'\\u003c');
-    const runtime = 'Object.defineProperty(globalThis,"__rocutHyperframesModuleGraph",{value:hfCreateModuleRuntime('+json(maps)+','+json(bodies)+','+json(assets)+')});';
+    const runtime = 'return hfCreateModuleRuntime('+json(maps)+','+json(bodies)+','+json(assets)+','+json(moduleVariants)+');';
     const bootstrap = doc.createElement('script');
     bootstrap.setAttribute('data-rocut-hyperframes-module-graph','1');
-    bootstrap.textContent = '(()=>{const URL=globalThis.URL;'+${JSON.stringify(HYPERFRAMES_MODULE_RESOLVER_SOURCE + HYPERFRAMES_MODULE_RUNTIME_SOURCE)}+'\n'+runtime+'})();';
-    const facade = 'const graph=globalThis.__rocutHyperframesModuleGraph; export const metaUrl=graph.metaUrl,resolveUrl=graph.resolveUrl,loadUrl=graph.loadUrl,resourceArguments=graph.resourceArguments,resourceConstructor=graph.resourceConstructor;';
+    // The bootstrap is a separate classic script: top-level this cannot be
+    // shadowed by authored globalThis/window/URL bindings. Capture intrinsics
+    // now so subsequent legal global lexical bindings cannot alter resolution.
+    bootstrap.textContent = 'const '+classics.runtimeName+'=(()=>{const {URL,Object,Array,Reflect,String,Error,TypeError,Proxy,JSON,Set,encodeURIComponent,decodeURIComponent}=this;const undefined=void 0;'+${JSON.stringify(HYPERFRAMES_MODULE_RESOLVER_SOURCE + HYPERFRAMES_MODULE_RUNTIME_SOURCE)}+'\n'+runtime+'})();this.Object.defineProperty(this,"__rocutHyperframesModuleGraph",{value:'+classics.runtimeName+'});';
+    const facade = 'const graph='+classics.runtimeName+'; export const metaUrl=graph.metaUrl,resolveUrl=graph.resolveUrl,loadUrl=graph.loadUrl,resourceArguments=graph.resourceArguments,resourceConstructor=graph.resourceConstructor;';
     imports[runtimeId] = 'data:text/javascript;base64,'+Buffer.from(facade,'utf8').toString('base64');
     for (const el of doc.querySelectorAll('script[type="importmap"]')) el.remove();
     const importMap = doc.createElement('script'); importMap.setAttribute('type','importmap');

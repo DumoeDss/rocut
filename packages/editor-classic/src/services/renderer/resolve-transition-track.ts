@@ -71,6 +71,9 @@ export async function resolveTransitionTrack({
 			incoming,
 			progress: sample.progress,
 			linkIndex: entry.linkIndex,
+			...(node.params.styles?.has(entry.linkIndex)
+				? { style: node.params.styles.get(entry.linkIndex) }
+				: {}),
 		};
 		pairs.set(link.outgoingClipId, pair);
 		pairs.set(link.incomingClipId, pair);

@@ -14,7 +14,13 @@ export function isScalarChannelData(
 	const keys = (value as { keys: unknown }).keys;
 	return (
 		Array.isArray(keys) &&
-		keys.some((key) => typeof key === "object" && key !== null && "segmentToNext" in key)
+		keys.some(
+			(key) =>
+				typeof key === "object" &&
+				key !== null &&
+				("segmentToNext" in key ||
+					("value" in key && typeof key.value === "number")),
+		)
 	);
 }
 
@@ -23,8 +29,8 @@ export function isScalarChannelData(
  *
  * Collects every scalar channel a resolve needs, performs a single
  * scalar-f64-v1 batch round-trip, and exposes per-path results. Discrete
- * channels and absent channels fall back to caller-provided values, so
- * ordinary linear and hold behavior stays on the existing path.
+ * channels and absent channels fall back to caller-provided values. Legacy
+ * numeric keys with an omitted segment use the boundary's linear default.
  */
 export class ScalarBatchResolver {
 	private readonly time: number;
@@ -97,7 +103,9 @@ export class ScalarBatchResolver {
 		for (const [index, item] of [...this.entries.values()].entries()) {
 			const row = values[index];
 			if (!row || row.length !== 1) {
-				throw new TypeError("Scalar batch sampling returned misaligned results.");
+				throw new TypeError(
+					"Scalar batch sampling returned misaligned results.",
+				);
 			}
 			results.set(item.id, row[0]);
 		}

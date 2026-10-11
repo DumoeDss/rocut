@@ -13,6 +13,7 @@ fn motion(time_ticks: u64) -> motion::SurfaceMotion {
         drift_frequency: 0.5,
         size: 2.0,
         size_variance: 1.0,
+        control: None,
     }
 }
 

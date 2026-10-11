@@ -69,8 +69,9 @@ export function parseThreeLiquidObjectArchive({
 
 export function assertCurrentThreeLiquidObjectAdapter(
 	archived: ThreeLiquidObjectCompileIdentity,
+	staticSvg = false,
 ) {
-	if (archived.adapterSha256 !== getThreeLiquidObjectAdapterHash())
+	if (archived.adapterSha256 !== getThreeLiquidObjectAdapterHash(staticSvg))
 		throw Error("Archived Three Liquid adapter changed; explicitly recompile");
 }
 

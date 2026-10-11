@@ -6,6 +6,7 @@ edition = "2024"
 [dependencies]
 bytemuck = { version = "1.25.0", features = ["derive"] }
 effects = { version = "0.1.0", path = "../effects" }
+editor-api = { version = "0.1.0", path = "../editor-api" }
 gpu = { version = "0.1.0", path = "../gpu" }
 masks = { version = "0.1.0", path = "../masks" }
 serde = { version = "1.0.228", features = ["derive"] }

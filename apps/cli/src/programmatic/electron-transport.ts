@@ -1,5 +1,7 @@
 import { open } from "node:fs/promises";
 import { isAbsolute } from "node:path";
+import type { ElectronNativeVideoCallback } from "./electron-native-video-server";
+import { ELECTRON_NATIVE_VIDEO_PROTOCOL } from "./electron-native-video-server";
 
 /** Backend-only transport. Re-read each frame, so a surviving daemon can use
  * a restarted Elftia. Never put the descriptor/token in catalog or errors. */
@@ -8,12 +10,16 @@ export async function captureElectronPng({
 	width,
 	height,
 	expression,
+	nativeVideo,
+	nativeAudio,
 	signal,
 }: {
 	connectionFile: string;
 	width: number;
 	height: number;
 	expression: string;
+	nativeVideo?: ElectronNativeVideoCallback;
+	nativeAudio?: true;
 	signal: AbortSignal;
 }): Promise<Buffer> {
 	signal.throwIfAborted();
@@ -26,7 +32,7 @@ export async function captureElectronPng({
 		try {
 			const stat = await file.stat();
 			if (!stat.isFile() || stat.size > 4096) throw Error();
-			value = JSON.parse(await file.readFile("utf8"));
+			value = JSON.parse(new TextDecoder("utf-8", { fatal: true }).decode(await file.readFile()));
 		} finally {
 			await file.close();
 		}
@@ -39,6 +45,12 @@ export async function captureElectronPng({
 			typeof value.token !== "string" || !/^[a-f0-9]{64}$/.test(value.token)
 		) throw Error();
 		token = value.token;
+		if (nativeVideo && (value.capabilities?.nativeVideoCapture?.version !== 1 ||
+			value.capabilities.nativeVideoCapture.protocol !== ELECTRON_NATIVE_VIDEO_PROTOCOL))
+			throw Error();
+		if (nativeAudio && (value.capabilities?.nativeAudioAnalysis?.version !== 1 ||
+			value.capabilities.nativeAudioAnalysis.protocol !== "html-frames-native-audio-v1"))
+			throw Error();
 	} catch {
 		throw Error("Elftia Electron capture unavailable; open Elftia with the tool plugin enabled");
 	}
@@ -48,7 +60,8 @@ export async function captureElectronPng({
 		response = await fetch(endpoint, {
 			method: "POST", redirect: "error", signal,
 			headers: { authorization: `Bearer ${token}`, "content-type": "application/json" },
-			body: JSON.stringify({ version: 1, width, height, expression }),
+			body: JSON.stringify({ version: 1, width, height, expression,
+				...(nativeVideo ? { nativeVideo } : {}), ...(nativeAudio ? { nativeAudio } : {}) }),
 		});
 	} catch {
 		throw Error(signal.aborted ? "Electron capture cancelled" : "Elftia Electron capture connection failed");

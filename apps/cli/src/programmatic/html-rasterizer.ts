@@ -3,6 +3,8 @@ import type { ProgrammaticFrameRequest } from "@opencut/editor-contracts";
 import { launchFrameBrowser } from "./chromium-process";
 import { htmlCaptureExpression } from "./html-document";
 import { captureElectronPng } from "./electron-transport";
+import { pinElectronAudioConnection } from "./electron-audio-transport";
+import { pinElectronAudioSessionConnection } from "./electron-audio-session";
 import { pinElectronParticleConnection } from "./electron-particle-transport";
 import { captureElectronParticlePng } from "./electron-particle-capture";
 import {
@@ -11,6 +13,7 @@ import {
 } from "./resources";
 import { resolveHtmlDocumentCode } from "./document-resource";
 import { attachOffthreadBroker } from "./offthread-broker";
+import { createElectronNativeVideoServer } from "./electron-native-video-server";
 import type { NativeVideoDecoder } from "./video-decoder";
 import { admitNativeAudioSources } from "./remotion-audio-analysis";
 import type { NativeAudioAnalysisConfig } from "./remotion-audio-bootstrap";
@@ -58,6 +61,27 @@ export async function renderHtmlPng({
 	resourceStore?: ProgrammaticResourceStore;
 	nativeVideoDecoder?: NativeVideoDecoder;
 }): Promise<Buffer> {
+	if (
+		request.source.audio &&
+		(hasThreeParticleCapability(request.source) ||
+			hasThreeLiquidObjectCapability(request.source))
+	)
+		throw Error(
+			"Three particle and liquid object capture do not support source audio",
+		);
+	if (request.source.audio && connectionFile) {
+		if (
+			!nativeVideoDecoder ||
+			(request.source.build?.engine !== "remotion" &&
+				request.source.build?.engine !== "hyperframes")
+		)
+			throw Error(
+				"Electron native source audio requires a supported Remotion or HyperFrames profile",
+			);
+		pinElectronAudioConnection(connectionFile);
+		if (request.source.audio.profile === "hyperframes-graph-v1")
+			pinElectronAudioSessionConnection(connectionFile);
+	}
 	const particleEnabled = hasThreeParticleCapability(request.source);
 	const electronParticles =
 		particleEnabled && connectionFile
@@ -111,8 +135,15 @@ export async function renderHtmlPng({
 		: undefined;
 	if (particleEnabled && !particleArchive)
 		throw Error("Three particle capture requires its archived identity");
-	if (particleArchive) assertCurrentThreeParticleAdapter(particleArchive);
-	if (source.audio && (!nativeVideoDecoder || connectionFile))
+	if (particleArchive)
+		assertCurrentThreeParticleAdapter(
+			particleArchive,
+			source.resources?.some(
+				(resource) =>
+					resource.kind === "model" && resource.mimeType === "image/svg+xml",
+			),
+		);
+	if (source.audio && !nativeVideoDecoder)
 		throw Error(
 			"Native source audio requires the configured soundtrack adapter on this backend",
 		);
@@ -146,21 +177,39 @@ export async function renderHtmlPng({
 			signal,
 		});
 	}
-	if (connectionFile)
-		return captureElectronPng({
-			connectionFile,
-			width: source.width,
-			height: source.height,
-			expression: htmlCaptureExpression(
-				code,
-				mapped.frame,
-				resources,
-				source.build?.engine !== "three",
-				false,
-				soundtrack,
-			),
-			signal,
-		});
+	if (connectionFile) {
+		const nativeFrames = nativeVideoDecoder
+			? await createElectronNativeVideoServer({
+					decoder: nativeVideoDecoder,
+					code,
+					resources,
+					limits: mapped.frame.videoLimits,
+					signal,
+				})
+			: undefined;
+		try {
+			const png = await captureElectronPng({
+				connectionFile,
+				...(soundtrack ? { nativeAudio: true as const } : {}),
+				width: source.width,
+				height: source.height,
+				expression: htmlCaptureExpression(
+					code,
+					mapped.frame,
+					resources,
+					source.build?.engine !== "three",
+					!!nativeFrames,
+					soundtrack,
+				),
+				signal,
+				...(nativeFrames ? { nativeVideo: nativeFrames.callback } : {}),
+			});
+			await nativeFrames?.check();
+			return png;
+		} finally {
+			await nativeFrames?.dispose();
+		}
+	}
 	if (!executable) throw Error("No HTML frame backend configured");
 	const browser = await launchFrameBrowser(executable, signal);
 	let nativeFrames:

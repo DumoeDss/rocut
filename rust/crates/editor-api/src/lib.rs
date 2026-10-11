@@ -33,6 +33,7 @@ pub use mv_audio::prepare_mv_audio_json;
 pub use mv_image_dimensions::inspect_programmatic_image_bytes;
 mod mv_recipe;
 pub use mv_recipe::mv_recipe_catalog_json;
+pub use mv_recipe::{NativeTransitionStyle, NativeTransitionDirection, NativeTransitionClip, NativeTransitionDrawCommand, NativeTransitionInput, NativeTransitionBlend, native_transition_style_validate_json};
 mod particle_surface;
 mod particle_surface_bridge;
 pub use particle_surface_bridge::sample_particle_surface_json;

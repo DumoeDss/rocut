@@ -19,6 +19,8 @@ mod memories_owner;
 mod night;
 #[path = "road_recipe_catalog.rs"]
 mod road;
+#[path = "scene-authoring-catalog.rs"]
+mod scene_authoring;
 #[path = "thread_catalog.rs"]
 mod thread;
 #[path = "tunnel_catalog.rs"]
@@ -176,6 +178,7 @@ pub fn mv_recipe_catalog_json() -> String {
             "melt":super::meta_reference::Melt::catalog_entry(),"panelsNative":super::meta_reference::Panels::catalog_entry(),
             "jz":super::jz::catalog_entry(),"layers":super::layers::catalog_entry()},
         "nativeOwnerScenes":native_owner_scenes,
+        "sceneParameters":scene_authoring::entries(),
         "transitionParameters":{
             "bend":super::transition_bend::catalog_entry(),
             "peel":{

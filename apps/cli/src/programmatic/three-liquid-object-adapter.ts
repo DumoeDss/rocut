@@ -4,11 +4,14 @@ import { REMOTION_COMPILER_CHILD } from "./engines/remotion-compiler-child";
 import { THREE_LIQUID_OBJECT_BROWSER_MODULE } from "./liquid-object-browser-module";
 import { LIQUID_OBJECT_CAPTURE_BOOTSTRAP } from "./liquid-object-page-capture";
 import { liquidIdentityDigest } from "./three-liquid-object-identity";
+import { nativeThreeSvgDriver } from "./engines/three-asset-features";
 
-export function getThreeLiquidObjectAdapterHash(): string {
+export function getThreeLiquidObjectAdapterHash(staticSvg = false): string {
 	return liquidIdentityDigest(
 		[
-			THREE_LIQUID_OBJECT_FRAME_DRIVER,
+			staticSvg
+				? nativeThreeSvgDriver(THREE_LIQUID_OBJECT_FRAME_DRIVER)
+				: THREE_LIQUID_OBJECT_FRAME_DRIVER,
 			THREE_LIQUID_OBJECT_COMPILER_MODULES,
 			REMOTION_COMPILER_CHILD,
 			THREE_LIQUID_OBJECT_BROWSER_MODULE,

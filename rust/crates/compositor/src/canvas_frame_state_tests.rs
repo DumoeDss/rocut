@@ -270,6 +270,7 @@ fn borrowed_cursor_identity_order_matches_nested_branch_visitor() {
             outgoing: branch.clone(),
             incoming: branch,
             progress: 0.0,
+            style: None,
         },
     ))];
     let mut prepared = crate::prepared_frame::FramePreparation::new(descriptor)

@@ -59,12 +59,14 @@ export function ProgrammaticBuildEditor({
 			state={state}
 			canLoad={!!provider?.loadResource}
 			canCompile={!!provider?.reviseBuild}
+			onInspectAnimation={provider?.inspectAnimation}
 			onSelect={(file) => draft.select(file)}
 			onEdit={(patch) => draft.edit(patch)}
 			onRetry={() => void draft.load(provider)}
 			onApply={() => void apply()}
 			onDiscard={() => draft.discard()}
 			onCancel={() => draft.cancel()}
+			onFiles={(operation) => draft.changeFiles(operation)}
 		/>
 	);
 }

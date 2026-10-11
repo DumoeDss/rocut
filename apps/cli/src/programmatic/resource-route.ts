@@ -2,6 +2,11 @@ import type { ServerResponse } from "node:http";
 import { importProgrammaticResource } from "./resource-import";
 import { importMvAudio } from "./audio-import";
 import { importImageSequence } from "./image-sequence-import";
+import { restoreBuildSource, BuildSourceRestoreIncompleteError } from "./build-source-restore";
+import {
+	restoreModelSource,
+	ModelRestoreIncompleteError,
+} from "./model-restore";
 import {
 	restoreImageSequenceSource,
 	ImageSequenceRestoreIncompleteError,
@@ -39,9 +44,11 @@ export async function handleProgrammaticResourceRoute({
 		action === "restore-image-sequence-source";
 	const onClose = () => {
 		if (!response.writableEnded)
-			cancellation.abort(Error(`Image sequence ${action} cancelled`));
+			cancellation.abort(Error(`Resource ${action} cancelled`));
 	};
-	if (sequenceOperation) response.once("close", onClose);
+	const modelRestore = action === "restore-model-source";
+	const buildSourceRestore = action === "restore-build-source";
+	if (sequenceOperation || modelRestore || buildSourceRestore) response.once("close", onClose);
 	try {
 		if (sequenceOperation) {
 			const operation =
@@ -52,6 +59,17 @@ export async function handleProgrammaticResourceRoute({
 				200,
 				await enqueue(async () =>
 					operation({
+						...resourceStore,
+						input,
+						signal: cancellation.signal,
+					}),
+				),
+			);
+		} else if (modelRestore || buildSourceRestore) {
+			json(
+				200,
+				await enqueue(async () =>
+					await (buildSourceRestore ? restoreBuildSource : restoreModelSource)({
 						...resourceStore,
 						input,
 						signal: cancellation.signal,
@@ -88,11 +106,18 @@ export async function handleProgrammaticResourceRoute({
 		json(422, {
 			error:
 				error instanceof Error ? error.message : "Programmatic resource failed",
-			...(error instanceof ImageSequenceRestoreIncompleteError
-				? { code: error.code, incomplete: true, directory: error.directory }
+			...(error instanceof ImageSequenceRestoreIncompleteError ||
+			error instanceof ModelRestoreIncompleteError ||
+			error instanceof BuildSourceRestoreIncompleteError
+				? {
+						code: error.code,
+						status: "incomplete",
+						incomplete: true,
+						directory: error.directory,
+					}
 				: {}),
 		});
 	} finally {
-		if (sequenceOperation) response.off("close", onClose);
+		if (sequenceOperation || modelRestore || buildSourceRestore) response.off("close", onClose);
 	}
 }

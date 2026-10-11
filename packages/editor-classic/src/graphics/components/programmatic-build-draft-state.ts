@@ -7,6 +7,8 @@ interface TextDraft {
 export interface BuildDraftSnapshot {
 	readonly baseline: ProgrammaticSource;
 	readonly selectedId: string;
+	readonly fileIds: readonly string[];
+	readonly entryFile: string;
 	readonly files: Readonly<Record<string, TextDraft>>;
 	readonly inputProps: string;
 	readonly dirty: boolean;
@@ -33,6 +35,8 @@ export function cleanBuildDraft({
 				? selectedId
 				: (source.build?.entryFile ?? ""),
 		files: {},
+		fileIds: source.build?.inputs.map((item) => item.id) ?? [],
+		entryFile: source.build?.entryFile ?? "",
 		inputProps: authorPropsText(source),
 		dirty: false,
 		conflict: false,
@@ -61,10 +65,19 @@ export function editBuildDraft({
 		files: nextFiles,
 		inputProps,
 		error: null,
-		dirty:
-			Object.values(nextFiles).some((file) => file.code !== file.original) ||
-			inputProps !== authorPropsText(state.baseline),
+		dirty: isBuildDraftDirty({ ...state, files: nextFiles, inputProps }),
 	};
+}
+
+export function isBuildDraftDirty(state: BuildDraftSnapshot): boolean {
+	const originalIds = state.baseline.build?.inputs.map((item) => item.id) ?? [];
+	return (
+		state.entryFile !== state.baseline.build?.entryFile ||
+		state.fileIds.length !== originalIds.length ||
+		state.fileIds.some((id) => !originalIds.includes(id)) ||
+		Object.values(state.files).some((file) => file.code !== file.original) ||
+		state.inputProps !== authorPropsText(state.baseline)
+	);
 }
 
 export function failedBuildDraft({

@@ -1,5 +1,17 @@
 import { ParticleProtocolError } from "./particle-protocol-error";
 
+export interface ParticleMotionControl {
+	mode: "spring" | "vortex";
+	startTicks: number;
+	durationTicks: number;
+	knots: { timeTicks: number; position: [number, number, number] }[];
+	restoringForce: number;
+	damping: number;
+	radius: number;
+	strength: number;
+	axis?: [number, number, number];
+}
+
 /** Times use the same 120,000 ticks/second as the Rust mapped source frame. */
 export interface ParticleMotion {
 	version: 1;
@@ -13,6 +25,7 @@ export interface ParticleMotion {
 	driftFrequency: number;
 	size: number;
 	sizeVariance: number;
+	control?: ParticleMotionControl;
 }
 
 /** Current time and the sampling seed are not author options. */
@@ -37,6 +50,81 @@ const floats = [
 	"sizeVariance",
 ] as const;
 
+/** Bounded wire shape only; schedule admission and dynamics remain Rust-owned. */
+export function validateParticleMotionControl(
+	value: unknown,
+): asserts value is ParticleMotionControl {
+	if (!value || typeof value !== "object" || Array.isArray(value))
+		throw new ParticleProtocolError("Invalid particle control object");
+	const control = value as Record<string, unknown>;
+	const keys = [
+		"mode",
+		"startTicks",
+		"durationTicks",
+		"knots",
+		"restoringForce",
+		"damping",
+		"radius",
+		"strength",
+	];
+	const allowed = control.mode === "vortex" ? [...keys, "axis"] : keys;
+	if (
+		!["spring", "vortex"].includes(control.mode as string) ||
+		keys.some((key) => !Object.hasOwn(control, key)) ||
+		Reflect.ownKeys(control).some(
+			(key) => typeof key !== "string" || !allowed.includes(key),
+		)
+	)
+		throw new ParticleProtocolError(
+			"Missing or unknown particle control field",
+		);
+	const tick = (entry: unknown) =>
+		Number.isSafeInteger(entry) && (entry as number) >= 0;
+	const vector = (entry: unknown) =>
+		Array.isArray(entry) &&
+		entry.length === 3 &&
+		[0, 1, 2].every(
+			(index) =>
+				typeof entry[index] === "number" && Number.isFinite(entry[index]),
+		);
+	if (!tick(control.startTicks) || !tick(control.durationTicks))
+		throw new ParticleProtocolError(
+			"Particle control times must be safe integer ticks",
+		);
+	for (const key of ["restoringForce", "damping", "radius", "strength"])
+		if (typeof control[key] !== "number" || !Number.isFinite(control[key]))
+			throw new ParticleProtocolError(
+				"Particle control parameters must be finite",
+			);
+	if (control.mode === "vortex" && !vector(control.axis))
+		throw new ParticleProtocolError(
+			"Particle vortex axis requires a finite vector",
+		);
+	if (
+		!Array.isArray(control.knots) ||
+		control.knots.length < 2 ||
+		control.knots.length > 128
+	)
+		throw new ParticleProtocolError(
+			"Particle control requires 2..128 bounded knots",
+		);
+	for (const knot of control.knots) {
+		if (
+			!knot ||
+			typeof knot !== "object" ||
+			Array.isArray(knot) ||
+			Reflect.ownKeys(knot).length !== 2 ||
+			!Object.hasOwn(knot, "timeTicks") ||
+			!Object.hasOwn(knot, "position") ||
+			!tick(knot.timeTicks) ||
+			!vector(knot.position)
+		)
+			throw new ParticleProtocolError(
+				"Particle control knot requires ticks and a finite position vector",
+			);
+	}
+}
+
 /** Wire shape only; motion ranges, curves and randomness are Rust-owned. */
 export function validateParticleMotion(
 	value: unknown,
@@ -48,7 +136,7 @@ export function validateParticleMotion(
 	if (
 		motion.version !== 1 ||
 		keys.some((key) => !Object.hasOwn(motion, key)) ||
-		Object.keys(motion).some((key) => !keys.includes(key))
+		Object.keys(motion).some((key) => !keys.includes(key) && key !== "control")
 	)
 		throw new ParticleProtocolError("Missing or unknown particle motion field");
 	for (const key of ticks)
@@ -61,6 +149,8 @@ export function validateParticleMotion(
 			throw new ParticleProtocolError(
 				"Particle motion parameters must be finite",
 			);
+	if (Object.hasOwn(motion, "control"))
+		validateParticleMotionControl(motion.control);
 }
 
 export function snapshotParticleFrameConstraint(

@@ -18,6 +18,7 @@ pub use frame::{
     CanvasClearDescriptor, CanvasTextureDescriptor, EffectPassDescriptor, FrameDescriptor,
     FrameItemDescriptor, IsolatedGroupDescriptor, LayerDescriptor, LayerMaskDescriptor,
     QuadTransformDescriptor, SceneTransitionDescriptor,
+    NativeTransitionStyle,
 };
 pub use group_admission::{
     MAX_GROUP_DEPTH, MAX_GROUP_EFFECT_PASSES, MAX_GROUP_FRAME_ITEMS, MAX_GROUP_TRANSPORT_BYTES,

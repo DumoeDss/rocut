@@ -20,6 +20,7 @@ mod composition_scope;
 mod frame_composition;
 mod frame_execution;
 mod group_composition;
+mod peel_pipeline;
 
 use crate::canvas_frame_state::{FrameTraversalCursor, FrameTraversalPass};
 use crate::effect_positions::{EffectPassPosition, PassLocation};
@@ -45,6 +46,7 @@ pub struct Compositor {
     blend_pipeline: wgpu::RenderPipeline,
     mask_uniform_bind_group_layout: wgpu::BindGroupLayout,
     mask_pipeline: wgpu::RenderPipeline,
+    peel: peel_pipeline::PeelPipeline,
 }
 
 #[derive(Debug, Error)]
@@ -53,6 +55,8 @@ pub enum CompositorError {
     MissingTexture { texture_id: String },
     #[error("Transition progress must be finite and between zero and one, got {0}")]
     InvalidTransitionProgress(f32),
+    #[error("Invalid or unsupported native transition style/geometry")]
+    InvalidTransitionStyle,
     #[error("Invalid isolated composition group: {message}")]
     InvalidGroup { message: &'static str },
     #[error("Failed to apply effects: {0}")]
@@ -297,6 +301,7 @@ impl Compositor {
             blend_pipeline,
             mask_uniform_bind_group_layout,
             mask_pipeline,
+            peel: peel_pipeline::PeelPipeline::new(context),
         }
     }
 

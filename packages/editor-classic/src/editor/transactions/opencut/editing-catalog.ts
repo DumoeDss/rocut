@@ -14,6 +14,7 @@ import {
 } from "../../../transcription/models";
 import { TRANSCRIPTION_LANGUAGES } from "../../../transcription/supported-languages";
 import { getMvRecipeCatalog } from "./mv-recipe-catalog";
+import { nativeTransitionCatalog } from "./native-transition-catalog";
 
 function describeParam(param: ParamDefinition) {
 	const description: Record<string, unknown> = {
@@ -56,6 +57,7 @@ export function editingCatalog({
 	return {
 		version: 1,
 		timebase: 120_000,
+		transitions: nativeTransitionCatalog(),
 		transcription: {
 			defaultModelId: DEFAULT_TRANSCRIPTION_MODEL,
 			models: TRANSCRIPTION_MODELS.map((model) => ({ ...model })),

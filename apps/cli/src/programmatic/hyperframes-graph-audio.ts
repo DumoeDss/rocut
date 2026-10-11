@@ -15,7 +15,8 @@ interface GraphAudioOptions {
 	firstFrame: number;
 	frameCount: number;
 	sampleRate: 44100 | 48000;
-	executable: string;
+	executable?: string;
+	connectionFile?: string;
 	toolchainDirectory: string;
 	decoder: NativeVideoDecoder;
 	resourceStore: ProgrammaticResourceStore;
@@ -43,6 +44,7 @@ export async function renderHyperframesGraphAudioRange(
 		frameCount,
 		sampleRate,
 		executable,
+		connectionFile,
 		resourceStore,
 		signal,
 	} = options;
@@ -82,7 +84,7 @@ export async function renderHyperframesGraphAudioRange(
 		timelineTime: 0,
 	};
 	const evidence = await withHyperframesAudioGraphAnalyzer(
-		{ executable, resourceStore, signal, request: timing },
+		{ executable, connectionFile, resourceStore, signal, request: timing, expectedProvenance: options.expectedProvenance },
 		async (analyzer) => {
 			const baseline = await analyzer.frame(timing);
 			if (baseline.frameIndex !== 0)
@@ -158,6 +160,7 @@ export async function renderHyperframesGraphAudioRange(
 	const rendered = await withHyperframesFxExecutor(
 		{
 			executable,
+			connectionFile,
 			runtime,
 			signal,
 			expectedProvenance: options.expectedProvenance,
@@ -165,8 +168,10 @@ export async function renderHyperframesGraphAudioRange(
 		async (executor) => {
 			const loopSourceOwner = createHyperframesLoopSourceOwner({
 				executable,
+				connectionFile,
 				signal,
 				expectedBrowser: executor.provenance.browser,
+				expectedHostEpoch: executor.provenance.electronHostEpoch,
 			});
 			try {
 				return await renderHyperframesGraphStages({

@@ -1,5 +1,6 @@
 import { HYPERFRAMES_AUDIO_GRAPH_PATCH } from "./hyperframes-audio-graph-patch";
 import { HYPERFRAMES_MODULE_GRAPH_SOURCE } from "./hyperframes-module-graph";
+import { HYPERFRAMES_CLASSIC_BOOTSTRAP_SOURCE } from "./hyperframes-classic-bootstrap";
 
 /** Static child entry, embedded by the CLI bundler. Authored JS is compiled as
  * browser code, never imported/executed in this Node/Bun process. */
@@ -23,13 +24,15 @@ export const HYPERFRAMES_COMPILER_CHILD = String.raw`
     if (!allowed.has(actual)) throw Error('Compiler read an undeclared source file');
   };
   ${HYPERFRAMES_MODULE_GRAPH_SOURCE}
+  ${HYPERFRAMES_CLASSIC_BOOTSTRAP_SOURCE}
+  const classics = await prepareHyperframesClassicImports(config,fs,sync,path,parseHTMLContent,noteRead,acorn);
   const modules = await prepareHyperframesModules(config,fs,sync,path,parseHTMLContent,noteRead,acorn);
   const html = await bundleToSingleHtml(config.project, {
     entryFile: config.entryFile, runtime: 'inline', inlineAssets: true,
     onRead: noteRead
   });
   const doc = parseHTMLContent(html);
-  modules.finalize(doc);
+  modules.finalize(doc,classics);
   if (config.nativeAudio) {
     // bundleToSingleHtml alone does not run the engine's render-identity pass.
     // Use the upstream pass after inlining so repeated clips/buses keep author

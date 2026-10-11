@@ -17,6 +17,7 @@ import {
 	fallServedIdentity,
 } from "./fixtures/mv-fall-evidence.mjs";
 import { saveTunnelDiagnosticArtifacts } from "./fixtures/mv-tunnel-native-diagnostic-artifacts.mjs";
+import { saveTunnelRaceArtifacts } from "./fixtures/mv-tunnel-race-artifacts.mjs";
 
 const arguments_ = process.argv.slice(2);
 assert.ok(
@@ -83,6 +84,7 @@ for (const path of [
 	"script/fixtures/mv-tunnel-reference.ts",
 	"script/fixtures/mv-tunnel-post-reference.ts",
 	"script/fixtures/mv-tunnel-native-diagnostic-artifacts.mjs",
+	"script/fixtures/mv-tunnel-race-artifacts.mjs",
 ])
 	sources.set(path, (await tunnelFileIdentity(join(root, path))).sha256);
 console.log(
@@ -118,7 +120,7 @@ try {
 	browser = await chromium.launch({
 		headless: true,
 		executablePath: browserExecutable,
-		args: ["--disable-gpu-rasterization"],
+		args: ["--disable-gpu-rasterization", ...(process.env.ROCUT_TEST_TUNNEL_SOFTWARE_CANVAS ? ["--disable-accelerated-2d-canvas"] : [])],
 	});
 	const page = await browser.newPage(),
 		errors = [],
@@ -157,6 +159,9 @@ try {
 		diagPreRoll: process.env.ROCUT_TEST_TUNNEL_DIAG_PREROLL,
 		matrixCap: process.env.ROCUT_TEST_TUNNEL_MATRIX_CAP,
 		diagRepeatProbe: process.env.ROCUT_TEST_TUNNEL_REPEAT_PROBE,
+			raceDiagnostics: Boolean(process.env.ROCUT_TEST_TUNNEL_RACE_DIAGNOSTICS),
+			settleRealms: Boolean(process.env.ROCUT_TEST_TUNNEL_SETTLE_REALMS),
+			frameDelayMs: Number(process.env.ROCUT_TEST_TUNNEL_FRAME_DELAY_MS) || 0,
 		},
 	);
 	await page.goto(`${origin}/script/fixtures/mv-tunnel-native-browser.html`, {
@@ -201,6 +206,7 @@ try {
 		clearInterval(timer);
 	}
 	let diagnosticFiles;
+	const raceFailure = await saveTunnelRaceArtifacts({ page, artifact });
 	if (frame4GrainDiagnostic && result.diagnosticComplete)
 		diagnosticFiles = await saveTunnelDiagnosticArtifacts({
 			page,
@@ -214,6 +220,13 @@ try {
 	const report = {
 		artifact,
 		result,
+		raceFailure,
+		experiment: {
+			raceDiagnostics: Boolean(process.env.ROCUT_TEST_TUNNEL_RACE_DIAGNOSTICS),
+			settleRealms: Boolean(process.env.ROCUT_TEST_TUNNEL_SETTLE_REALMS),
+			softwareCanvas: Boolean(process.env.ROCUT_TEST_TUNNEL_SOFTWARE_CANVAS),
+			frameDelayMs: Number(process.env.ROCUT_TEST_TUNNEL_FRAME_DELAY_MS) || 0,
+		},
 		errors,
 		externalRequests,
 		browser: browser.version(),

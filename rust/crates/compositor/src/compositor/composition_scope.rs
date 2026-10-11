@@ -152,6 +152,7 @@ mod tests {
                 outgoing: vec![layer(), layer()],
                 incoming: vec![layer()],
                 progress: 0.0,
+                style: None,
             }
         }
         fn branch(items: Vec<FrameItemDescriptor>) -> FrameItemDescriptor {
@@ -159,6 +160,7 @@ mod tests {
                 outgoing: group(items),
                 incoming: group(vec![legacy()]),
                 progress: 1.0,
+                style: None,
             }))
         }
         fn emit(

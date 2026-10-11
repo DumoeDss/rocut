@@ -74,13 +74,6 @@ export function applyEditingState({
 	// Preserve optional wire shape without changing the native display name.
 	// Explicit names, including the empty string, remove any previous omission.
 	Reflect.deleteProperty(next, EDITING_NAME_SHAPE_KEY);
-	if (!Object.hasOwn(editing, "name")) {
-		Reflect.set(
-			next,
-			EDITING_NAME_SHAPE_KEY,
-			editingNameOmissionMarker({ element }),
-		);
-	}
 	for (const field of [
 		"animations",
 		"effects",
@@ -99,5 +92,11 @@ export function applyEditingState({
 	// This cast bridges readonly contract arrays and the native mutable model;
 	// the independent clone is owned solely by the candidate transaction.
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- Rust validates the discriminant and nested schema before this readonly/native bridge.
-	return { ...next, ...cloneOpaque(editing) } as unknown as TimelineElement;
+	const result = { ...next, ...cloneOpaque(editing) } as unknown as TimelineElement;
+	// create-clip can start from a text placeholder. Bind the omission to the
+	// final editing type, otherwise its valid marker becomes stale immediately.
+	if (!Object.hasOwn(editing, "name")) {
+		Reflect.set(result, EDITING_NAME_SHAPE_KEY, editingNameOmissionMarker({ element: result }));
+	}
+	return result;
 }

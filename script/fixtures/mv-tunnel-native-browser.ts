@@ -8,6 +8,7 @@ import {
 	tunnelFrame4,
 } from "./mv-tunnel-native-diagnostic";
 import { verifyTunnelPixelMatrix } from "./mv-tunnel-pixel-suite";
+import { tunnelRaceFailureRecorder } from "./mv-tunnel-race-experiment";
 import { verifyTunnelTransportBoundary } from "./mv-tunnel-transport-browser";
 import type { TunnelReference } from "./mv-tunnel-reference";
 import type { TunnelPostReference } from "./mv-tunnel-post-reference";
@@ -20,6 +21,9 @@ declare global {
 		fonts: readonly { family: string; weight: number; file: string }[];
 		fontBytes: Readonly<Record<string, string>>;
 		frame4GrainDiagnostic?: boolean;
+		raceDiagnostics?: boolean;
+		settleRealms?: boolean;
+		frameDelayMs?: number;
 	};
 	var __tunnelNativeProgress: { current: string; visits: number };
 	var __tunnelNativeResult: unknown;
@@ -121,12 +125,29 @@ async function run() {
 				transportBoundary,
 			};
 		}
-		const captureNative = await createTunnelNativeCapture(fonts);
+		let plan: unknown;
+		const native = input.raceDiagnostics
+			? await createTunnelNativeDiagnosticCapture({ fonts, onPlan(p) { plan = p; } })
+			: await createTunnelNativeCapture(fonts);
+		const captureNative: typeof native = async (request) => {
+			if (input.settleRealms) {
+				const deadline = performance.now() + 2000;
+				while (document.querySelectorAll("iframe").length > 1) {
+					if (performance.now() > deadline) throw Error("Tunnel experiment realm disposal did not settle");
+					await new Promise(resolve => setTimeout(resolve, 10));
+				}
+			}
+			if (input.frameDelayMs) await new Promise(resolve => setTimeout(resolve, input.frameDelayMs));
+			return native(request);
+		};
 		globalThis.__tunnelNativeProgress = { current: "starting", visits: 0 };
 		const result = await verifyTunnelPixelMatrix({
 			oracle,
 			captureNative,
 			cap: Number(globalThis.__tunnelMatrixCap) || undefined,
+			onFailure: input.raceDiagnostics ? tunnelRaceFailureRecorder({
+				oracle, captureNative, readPlan: () => plan,
+			}) : undefined,
 			onProgress(current) {
 				globalThis.__tunnelNativeProgress = {
 					current,
@@ -147,5 +168,6 @@ run()
 		globalThis.__tunnelNativeResult = {
 			passed: false,
 			error: String(error?.stack ?? error),
+			progress: globalThis.__tunnelNativeProgress,
 		};
 	});

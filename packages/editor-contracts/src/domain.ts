@@ -226,6 +226,32 @@ export interface Track {
  * flattened to a single interface. `assetId` is optional because not every clip
  * kind references a media asset (e.g., text or generated elements).
  */
+/** Transport shape only; native Rust owns Peel parameter legality and rendering. */
+export interface PeelTransitionStyle {
+	readonly kind: "peel";
+	readonly direction: "left" | "right" | "up" | "down";
+	readonly curl: number;
+	readonly segments: number;
+	readonly shading: number;
+	readonly perspective: number;
+}
+export interface BendTransitionStyle {
+	readonly kind: "bend";
+	readonly direction: "left" | "right" | "up" | "down";
+	readonly hinge: number;
+	readonly angle: number;
+	readonly perspective: number;
+	readonly shading: number;
+}
+export type NativeTransitionStyle =
+	| { readonly kind: "cross-dissolve" }
+	| PeelTransitionStyle
+	| BendTransitionStyle;
+export type IncomingClipTransition = NativeTransitionStyle & {
+	readonly outgoingClipId: ClipId;
+	readonly durationFrames: number;
+};
+
 export interface Clip {
 	readonly id: ClipId;
 	readonly trackId: TrackId;
@@ -237,11 +263,7 @@ export interface Clip {
 	/** Audio-only view of a video asset; omission retains the asset’s native kind. */
 	readonly sourceComponent?: "audio";
 	/** Incoming picture transition; media handles and adjacency are provider-validated. */
-	readonly transitionIn?: {
-		readonly kind: "cross-dissolve";
-		readonly outgoingClipId: ClipId;
-		readonly durationFrames: number;
-	};
+	readonly transitionIn?: IncomingClipTransition;
 	/** Source playback configuration; absence means the original playback rate. */
 	readonly retime?: {
 		readonly rate: number;

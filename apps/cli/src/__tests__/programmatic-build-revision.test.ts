@@ -1,6 +1,6 @@
 import { expect, spyOn, test } from "bun:test";
 import { InMemoryProjectStore } from "@opencut/editor-ports/in-memory";
-import { rename } from "node:fs/promises";
+import { mkdtemp, rename } from "node:fs/promises";
 import { join } from "node:path";
 import {
 	describeResource,
@@ -16,6 +16,7 @@ import {
 	sourceDescription,
 } from "../programmatic/engines/build-source";
 import { parseBuildRevisionInput } from "../programmatic/engines/build-revision";
+import { runThreeRevisionLoop } from "../../../../script/fixtures/three-build-revision-loop";
 import {
 	revisionFixture,
 	type BuildResult,
@@ -61,6 +62,11 @@ test("build revise admits transport membership only after Rust source validation
 });
 
 const toolchain = process.env.ROCUT_TEST_BUILD_REVISION_TOOLCHAIN;
+const threeToolchain = process.env.ROCUT_TEST_THREE_REVISION_TOOLCHAIN;
+test.skipIf(!threeToolchain)("Three real multi-file revision and archive-only rebuild loop", async () => {
+	const root = await mkdtemp("C:/tmps/rocut-three-revision-test-");
+	await runThreeRevisionLoop({ root, toolchain: threeToolchain! });
+}, 60000);
 test("Three revise is accepted past the engine gate before archive IO", async () => {
 	const { source } = parseCompileInput({
 		version: 1,
@@ -114,7 +120,7 @@ for (const engine of ["hyperframes", "remotion"] as const) {
 				).json();
 				expect(capability.programmaticBuilds).toMatchObject({
 					revise: "programmatic/build/revise",
-					reviseScope: "existing-text-files-and-input-props",
+					reviseScope: "text-file-add-delete-rename-replace-entry-and-input-props",
 				});
 				expect(
 					(

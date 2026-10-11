@@ -5,6 +5,7 @@ import {
 } from "../../../base-command";
 import {
 	buildEffectParamPath,
+	buildGraphicParamPath,
 	upsertPathKeyframe,
 } from "../../../../animation";
 import { admitAnimationsChannel } from "../../../../animation/scalar-admission";
@@ -12,7 +13,11 @@ import { updateElementInSceneTracks } from "../../../../timeline";
 import { isVisualElement } from "../../../../timeline/element-utils";
 import { resolveAnimationTarget } from "../../../../timeline/animation-targets";
 import type { AnimationInterpolation } from "../../../../animation/types";
-import type { SceneTracks } from "../../../../timeline";
+import type {
+	EffectElement,
+	SceneTracks,
+	VisualElement,
+} from "../../../../timeline";
 import {
 	type MediaTime,
 	maxMediaTime,
@@ -70,16 +75,23 @@ export class UpsertEffectParamKeyframeCommand extends Command {
 			tracks: this.savedState,
 			trackId: this.trackId,
 			elementId: this.elementId,
-			elementPredicate: isVisualElement,
+			elementPredicate: (element): element is VisualElement | EffectElement =>
+				isVisualElement(element) || element.type === "effect",
 			update: (element) => {
+				if (element.type === "effect" && this.effectId !== element.id) {
+					return element;
+				}
 				const boundedTime = maxMediaTime({
 					a: ZERO_MEDIA_TIME,
 					b: minMediaTime({ a: this.time, b: element.duration }),
 				});
-				const propertyPath = buildEffectParamPath({
-					effectId: this.effectId,
-					paramKey: this.paramKey,
-				});
+				const propertyPath =
+					element.type === "effect"
+						? buildGraphicParamPath({ paramKey: this.paramKey })
+						: buildEffectParamPath({
+								effectId: this.effectId,
+								paramKey: this.paramKey,
+							});
 				const target = resolveAnimationTarget({
 					element,
 					path: propertyPath,

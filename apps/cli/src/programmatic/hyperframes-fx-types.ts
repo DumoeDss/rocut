@@ -11,6 +11,8 @@ export interface HyperframesFxStage {
 }
 
 export interface HyperframesFxProvenance {
+	/** Nonsecret Electron Host lifetime identity; omitted for standalone. */
+	electronHostEpoch?: string;
 	nativeVersion: "0.8.139";
 	runtimeSha256: string;
 	moduleSha256: string;
