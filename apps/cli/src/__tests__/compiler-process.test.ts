@@ -1,4 +1,5 @@
 import { expect, test } from "bun:test";
+import { spawn } from "node:child_process";
 import { access, mkdtemp, readFile, rm, rmdir } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
@@ -105,3 +106,35 @@ test("pre-aborted compilation never starts a compiler", async () => {
 		runCompilerChild({}, controller.signal, "throw Error('must not run');"),
 	).rejects.toThrow("already cancelled");
 });
+
+const electronPath = process.env.ROCUT_TEST_ELECTRON_PATH;
+test.skipIf(!electronPath)("real Electron Node parent preserves child mode and complete UTF8 stdin without secret env", async () => {
+	const directory = await mkdtemp(join(tmpdir(), "rocut-compiler-electron-test-"));
+	const entry = join(directory, "parent.mjs"), output = join(directory, "result.json");
+	try {
+		const built = await Bun.build({
+			entrypoints: [join(import.meta.dir, "compiler-electron-worker.ts")],
+			outdir: directory,
+			naming: "parent.mjs",
+			target: "node",
+		});
+		expect(built.success).toBe(true);
+		const env: Record<string, string> = {};
+		for (const key of ["PATH", "Path", "SystemRoot", "WINDIR", "TEMP", "TMP"])
+			if (process.env[key] !== undefined) env[key] = process.env[key]!;
+		env.ELECTRON_RUN_AS_NODE = "1";
+		env.ROCUT_COMPILER_TEST_SECRET = "must-not-propagate";
+		const child = spawn(electronPath!, [entry, output], { windowsHide: true, stdio: ["ignore", "pipe", "pipe"], env });
+		let logs = "";
+		child.stdout.on("data", chunk => { logs = (logs + chunk).slice(-2000); });
+		child.stderr.on("data", chunk => { logs = (logs + chunk).slice(-2000); });
+		const timer = setTimeout(() => child.kill(), 15000);
+		const code = await new Promise<number | null>((resolve, reject) => { child.once("error", reject); child.once("close", resolve); }).finally(() => clearTimeout(timer));
+		expect({ code, logs }).toEqual({ code: 0, logs: "" });
+		expect(JSON.parse(await readFile(output, "utf8"))).toEqual({ label: "\u8d44\u6e90\u56fe", payloadLength: 70000, electron: true, nodeMode: "1", secretInherited: false });
+	} finally {
+		await rm(output, { force: true });
+		await rm(entry, { force: true });
+		await rmdir(directory);
+	}
+}, 20000);

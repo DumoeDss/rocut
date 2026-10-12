@@ -4,8 +4,6 @@ export function sourceReadOnlyReason(
 	source: ProgrammaticSource,
 ): string | null {
 	if (source.build) {
-		if (source.build.engine === "three")
-			return "This compiled Three source uses the Agent programmatic/build/compile or programmatic/build/rebuild workflow. Archived author editing in this panel is available for HyperFrames and Remotion.";
 		return "The generated HTML is read-only. Edit its archived author files below, then recompile to update this clip.";
 	}
 	if (source.recipe) {

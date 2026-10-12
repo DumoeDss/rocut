@@ -153,10 +153,8 @@ test("successful apply makes one clean baseline, while compiled/document sources
 					toolchainLock: resource,
 				},
 			}),
-		).toContain(
-			engine === "three"
-				? "programmatic/build/compile"
-				: "archived author files",
+		).toBe(
+			"The generated HTML is read-only. Edit its archived author files below, then recompile to update this clip.",
 		);
 	}
 });

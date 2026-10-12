@@ -42,6 +42,7 @@ import {
 import { REMOTION_METADATA_LIFETIME_SOURCE } from "../remotion-metadata-lifetime";
 import { loadThreeAssetCodecClosure } from "./three-codec-closure";
 import { loadThreeAssetFeatureClosure } from "./three-asset-features";
+import { readCompilerConsumerProfile } from "./compiler-consumer-profile";
 
 export async function loadEngineToolchain({
 	directory,
@@ -168,7 +169,7 @@ export async function loadEngineToolchain({
 	)
 		throw Error("Three toolchain must contain exactly one Three.js runtime");
 	// Portable provenance, without registry URLs, credentials, scripts or local paths.
-	const packages = Object.entries(lockedPackages)
+	const sourcePackages = Object.entries(lockedPackages)
 		.filter(([path]) => path !== "")
 		.sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0))
 		.map(([path, value]) => {
@@ -188,6 +189,13 @@ export async function loadEngineToolchain({
 				);
 			return { path, version: value.version, integrity: value.integrity };
 		});
+	const consumerProfile = await readCompilerConsumerProfile({
+		root,
+		lockBytes,
+		packages: sourcePackages,
+		signal,
+	});
+	const packages = consumerProfile?.retainedPackages ?? sourcePackages;
 	// A dependency-only lock cannot reproduce a scene after the Host's adapter changes.
 	const threeProfile =
 		engine === "three"
@@ -253,6 +261,7 @@ export async function loadEngineToolchain({
 		JSON.stringify({
 			version: 1,
 			packages,
+			...(consumerProfile ? { consumerProfile } : {}),
 			...(adapter ? { adapter } : {}),
 			...(audioGraph ? { audioGraph } : {}),
 			...(threeProfile?.threeParticle

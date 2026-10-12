@@ -83,7 +83,14 @@ function hfModuleResolve(specifier, base, maps) {
   }
   const mapped = match(maps.imports);
   if (mapped !== undefined) return mapped;
-  if (!relative) throw Error('Undeclared bare module dependency: ' + value);
+  if (!relative) {
+    // These compiler-external services were never project import fallbacks.
+    // Keep declared local import maps working; make the profile boundary clear.
+    const omitted = ['@chenglou/pretext','@hyperframes/studio-server','@img/colour','@img/sharp-win32-x64','argparse','bpm-detective','detect-libc','hono','semver','sharp','wawoff2'];
+    if (omitted.some(name => value === name || value.startsWith(name + '/')))
+      throw Error('unsupportedcompiler-profile-import: ' + value + '; Undeclared bare module dependency: ' + value + '; outside rocut-three-engine-compiler-v1');
+    throw Error('Undeclared bare module dependency: ' + value);
+  }
   return key;
 }
 `;

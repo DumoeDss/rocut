@@ -2,11 +2,11 @@ import { isAbsolute } from "node:path";
 import type { IncomingMessage, ServerResponse } from "node:http";
 import type { ProgrammaticResourceStore } from "../resources";
 import { compileProgrammaticProject } from "./compile-project";
-import { ENGINE_VERSIONS } from "./engine-versions";
 import { createRemotionInspectionSession } from "../remotion-inspection-service";
 import { threeLiquidObjectCapability } from "./three-liquid-object-capability";
 import { threeModelCapability } from "./three-model-capability";
 import { pinElectronAudioSessionConnection, ELECTRON_AUDIO_SESSION_PROTOCOL } from "../electron-audio-session";
+import { resolveEngineToolchain } from "./toolchain-resolver";
 
 export function createProgrammaticBuildService(
 	context: ProgrammaticResourceStore,
@@ -14,7 +14,10 @@ export function createProgrammaticBuildService(
 	toolchainDirectory = process.env.ROCUT_ENGINE_TOOLCHAIN_DIR,
 	inspectionBrowser?: { executable?: string; connectionFile?: string },
 ) {
-	const configured = !!toolchainDirectory && isAbsolute(toolchainDirectory);
+	const toolchain = resolveEngineToolchain({ explicit: toolchainDirectory });
+	const configured = toolchain.configured;
+	toolchainDirectory = toolchain.directory;
+	const ready = (engine: string) => toolchain.probes.find(p => p.engine === engine)?.ready === true;
 	const active = new Map<AbortController, Promise<void>>();
 	let disposed = false;
 	const inspectionExecutable =
@@ -27,7 +30,7 @@ export function createProgrammaticBuildService(
 		try { pinElectronAudioSessionConnection(inspectionConnection); electronInspection = true; } catch { /* No standalone fallback for an Electron selection. */ }
 	}
 	const inspection =
-		configured &&
+		ready("remotion") &&
 		(inspectionConnection ? electronInspection : inspectionExecutable && isAbsolute(inspectionExecutable))
 			? createRemotionInspectionSession({
 					context,
@@ -41,15 +44,16 @@ export function createProgrammaticBuildService(
 		capability: {
 			version: 1,
 			configured,
-			engines: configured
-				? Object.entries(ENGINE_VERSIONS).map(([engine, version]) => ({
-						engine,
-						version,
-					}))
-				: [],
+			engines: toolchain.probes.filter(p => p.ready).map(({ engine, version }) => ({ engine, version })),
+			toolchain: {
+				source: toolchain.source,
+				boundary: "dependency-metadata-and-compiler-files; not-compile-browser-or-GPU-health",
+				diagnostics: toolchain.diagnostics,
+				engines: toolchain.probes.map(({ engine, ready, diagnostics, requiredPackages }) => ({ engine, available: ready, diagnostics, requiredPackages })),
+			},
 			availability: configured ? "configured-not-health-probed" : "unavailable",
 			threeLiquidObject: threeLiquidObjectCapability({
-				toolchainConfigured: configured,
+				toolchainConfigured: ready("three"),
 				executable: inspectionExecutable,
 				connectionFile: inspectionConnection,
 			}),
@@ -110,13 +114,15 @@ export function createProgrammaticBuildService(
 				json(503, {
 					error:
 						"Remotion inspection requires a standalone browser or Electron native audio session grant, and a pinned toolchain",
+					diagnostics: toolchain.probes.find(p => p.engine === "remotion")?.diagnostics,
 				});
 				return;
 			}
 			if (!configured || disposed) {
 				json(503, {
 					error:
-						"Engine compiler unavailable; configure a pinned local ROCUT_ENGINE_TOOLCHAIN_DIR",
+						"Engine compiler unavailable; install the bundled pinned toolchain or configure a pinned local ROCUT_ENGINE_TOOLCHAIN_DIR",
+					diagnostics: toolchain.probes,
 				});
 				return;
 			}
@@ -160,6 +166,13 @@ export function createProgrammaticBuildService(
 						Buffer.concat(chunks),
 					),
 				);
+				const engine = action === "inspect" || action === "compile-inspected"
+					? "remotion" : action === "compile" ? input?.engine : action === "revise" ? input?.source?.build?.engine : input?.build?.engine;
+				const probe = toolchain.probes.find(p => p.engine === engine);
+				if (probe && !probe.ready) {
+					json(503, { error: `Engine compiler unavailable for ${engine}; required pinned dependencies are missing or invalid`, engine, diagnostics: probe.diagnostics });
+					return;
+				}
 				const result =
 					action === "inspect" || action === "compile-inspected"
 						? await inspection!.perform({

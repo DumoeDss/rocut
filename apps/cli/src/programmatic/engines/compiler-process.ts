@@ -26,6 +26,10 @@ export async function runCompilerChild(
 				process.env[key] === undefined ? [] : [[key, process.env[key]!]],
 			),
 		);
+		// A Host-owned daemon may itself be Electron in Node mode. The fixed
+		// compiler is also a Node child, not a new Electron application. Keep that
+		// explicit runtime mode without inheriting the daemon's application secrets.
+		if (process.versions.electron) env.ELECTRON_RUN_AS_NODE = "1";
 		await new Promise<void>((resolve, reject) => {
 			const child = spawn(process.execPath, [entry], {
 				windowsHide: true,

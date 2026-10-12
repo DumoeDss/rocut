@@ -1,13 +1,27 @@
 import { expect, test } from "bun:test";
-import { mkdtemp, rm } from "node:fs/promises";
+import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { startHost } from "../host";
 import { TargetRegistry } from "../target-registry";
+import { REMOTION_TOOLCHAIN } from "../programmatic/engines/engine-versions";
 
 test("Host advertises standalone inspection as configured-not-health-probed and rejects unavailable or ungranted Electron routes", async () => {
 	const root = await mkdtemp(join(tmpdir(), "rocut-inspection-capability-"));
 	try {
+		// Dependency readiness is now checked separately from browser/compiler
+		// health. These metadata-only fixtures do not claim executable health.
+		const toolchain = join(root, "not-health-probed-toolchain");
+		const packages: Record<string, object> = {};
+		for (const [name, version] of Object.entries(REMOTION_TOOLCHAIN)) {
+			const directory = join(toolchain, "node_modules", name);
+			await mkdir(directory, { recursive: true });
+			await writeFile(join(directory, "package.json"), JSON.stringify({ name, version }));
+			packages[`node_modules/${name}`] = { version, integrity: "sha512-YQ==" };
+		}
+		await mkdir(join(toolchain, "node_modules/esbuild/lib"));
+		await writeFile(join(toolchain, "node_modules/esbuild/lib/main.js"), "// metadata-only fixture");
+		await writeFile(join(toolchain, "package-lock.json"), JSON.stringify({ packages }));
 		for (const mode of ["standalone", "electron", "unconfigured"] as const) {
 			const host = await startHost({
 				projectRoot: join(root, mode),
@@ -15,7 +29,7 @@ test("Host advertises standalone inspection as configured-not-health-probed and 
 				engineToolchainDirectory:
 					mode === "unconfigured"
 						? ""
-						: join(root, "not-health-probed-toolchain"),
+						: toolchain,
 				htmlBrowserExecutable: join(root, "not-health-probed-browser.exe"),
 				htmlFrameConnectionFile:
 					mode === "electron" ? join(root, "electron-connection.json") : "",
