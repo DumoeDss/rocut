@@ -11,6 +11,32 @@ const readConfig = `const fs=require('node:fs/promises');
 const config=JSON.parse(input);`;
 const finish = `})().catch(error=>{console.error(error.message);process.exit(1);});`;
 
+test("compiler preserves only the exact Electron Node-mode flag", async () => {
+	const originalFlag = process.env.ELECTRON_RUN_AS_NODE;
+	const originalPrivate = process.env.ROCUT_COMPILER_PRIVATE_TEST;
+	process.env.ROCUT_COMPILER_PRIVATE_TEST = "must-not-inherit";
+	try {
+		for (const flag of [undefined, "0", "true", "1"]) {
+			if (flag === undefined) delete process.env.ELECTRON_RUN_AS_NODE;
+			else process.env.ELECTRON_RUN_AS_NODE = flag;
+			await runCompilerChild(
+				{ expected: flag === "1" ? "1" : null },
+				AbortSignal.timeout(5000),
+				`${readConfig}
+if((process.env.ELECTRON_RUN_AS_NODE??null)!==config.expected)throw Error('Node-mode flag changed');
+if(process.env.ROCUT_COMPILER_PRIVATE_TEST!==undefined)throw Error('private environment inherited');
+${finish}`,
+			);
+		}
+	} finally {
+		if (originalFlag === undefined) delete process.env.ELECTRON_RUN_AS_NODE;
+		else process.env.ELECTRON_RUN_AS_NODE = originalFlag;
+		if (originalPrivate === undefined)
+			delete process.env.ROCUT_COMPILER_PRIVATE_TEST;
+		else process.env.ROCUT_COMPILER_PRIVATE_TEST = originalPrivate;
+	}
+});
+
 test("large fixed compiler starts without command-line transport and cleans its private entry", async () => {
 	const directory = await mkdtemp(join(tmpdir(), "rocut-compiler-test-"));
 	const output = join(directory, "result.json");

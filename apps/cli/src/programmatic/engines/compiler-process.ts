@@ -26,6 +26,11 @@ export async function runCompilerChild(
 				process.env[key] === undefined ? [] : [[key, process.env[key]!]],
 			),
 		);
+		// The plugin daemon may run Electron's executable in Node mode. Its
+		// compiler must keep that mode without inheriting other host variables.
+		if (process.env.ELECTRON_RUN_AS_NODE === "1") {
+			env.ELECTRON_RUN_AS_NODE = "1";
+		}
 		await new Promise<void>((resolve, reject) => {
 			const child = spawn(process.execPath, [entry], {
 				windowsHide: true,
