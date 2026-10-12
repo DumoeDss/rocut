@@ -303,7 +303,7 @@ fn default_420_webm_very_high_uses_the_native_quantizer_plan() {
 }
 
 #[test]
-fn default_quantizer_plan_is_limited_to_420_webm_very_high_vp9() {
+fn default_quantizer_plan_is_limited_to_webm_very_high_vp9() {
     let mut r = request("vp9", "very_high", 192, 128);
     r["format"] = json!("webm");
     // AVC keeps the bitrate response.
@@ -323,16 +323,74 @@ fn default_quantizer_plan_is_limited_to_420_webm_very_high_vp9() {
     let mut mp4 = r.clone();
     mp4["format"] = json!("mp4");
     assert_eq!(resolve(&mp4), json!({"bitrate":369000}));
-    // Explicit 4:4:4 keeps the full-codec-string response.
+    // 4:4:4 now uses the same default quantizer policy.
     let mut chroma = request("vp9", "very_high", 192, 128);
     chroma["format"] = json!("webm");
     chroma["videoChroma"] = json!("444");
     assert!(resolve(&chroma)["fullCodecString"].is_string());
-    assert!(resolve(&chroma)["kind"].is_null());
+    assert_eq!(resolve(&chroma)["kind"], "vp9Quantizer");
+    assert_eq!(resolve(&chroma)["quantizer"], 8);
+    assert_eq!(resolve(&chroma)["default"], true);
     // Absent format (non-WebM callers) keeps the bitrate response.
     let mut absent = request("vp9", "very_high", 192, 128);
     absent.as_object_mut().unwrap().remove("format");
     assert_eq!(resolve(&absent), json!({"bitrate":369000}));
+}
+
+#[test]
+fn default_444_glass_webm_very_high_selects_q8_and_preserves_explicit_priority() {
+    let mut r = request("vp9", "very_high", 192, 128);
+    r["frameRate"]["numerator"] = json!(12);
+    r["format"] = json!("webm");
+    r["videoChroma"] = json!("444");
+    let plan = resolve(&r);
+    assert_eq!(plan["default"], true);
+    assert_eq!(plan["kind"], "vp9Quantizer");
+    assert_eq!(plan["quantizer"], 8);
+    assert_eq!(plan["bitrate"], 148000);
+    assert_eq!(plan["keyFrameIntervalFrames"], 24);
+    assert_eq!(plan["nativeConfig"]["bitrateMode"], "quantizer");
+    assert_eq!(
+        plan["nativeConfig"]["codec"],
+        "vp09.01.10.08.03.01.13.01.01"
+    );
+    for quantizer in [0, 8, 32, 63] {
+        r["videoQuantizer"] = json!(quantizer);
+        let explicit = resolve(&r);
+        assert_eq!(explicit["quantizer"], quantizer);
+        assert!(explicit["default"].is_null());
+    }
+}
+
+#[test]
+fn default_444_q8_does_not_change_compatibility_or_lower_presets() {
+    let mut r = request("vp9", "very_high", 192, 128);
+    r["videoChroma"] = json!("444");
+    let legacy = resolve(&r);
+    assert_eq!(
+        legacy,
+        json!({"bitrate":369000,"fullCodecString":"vp09.01.11.08.03.01.13.01.01"})
+    );
+    r["format"] = json!("mp4");
+    assert_eq!(resolve(&r), legacy);
+    r["format"] = json!("webm");
+    for quality in ["low", "medium", "high"] {
+        r["quality"] = json!(quality);
+        let formal = resolve(&r);
+        r.as_object_mut().unwrap().remove("format");
+        assert_eq!(resolve(&r), formal);
+        assert!(formal["kind"].is_null());
+        r["format"] = json!("webm");
+    }
+    r["quality"] = json!("very_high");
+    r["codec"] = json!("avc");
+    assert_eq!(
+        resolve(&r),
+        json!({"error":"4:4:4 export requires the VP9 codec"})
+    );
+    r["codec"] = json!("vp9");
+    r["width"] = json!(16833);
+    assert!(resolve(&r)["error"].is_string());
 }
 
 #[test]

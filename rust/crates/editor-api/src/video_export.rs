@@ -6,11 +6,14 @@ use time::FrameRate;
 mod quantizer;
 mod vp9;
 
-/// Default 4:2:0 WebM very-high exports encode through the native quantizer
+/// Default VP9 WebM very-high exports in both chroma modes use the native quantizer
 /// path with this value. Measured in the flame-wrap 4:2:0 comparison: the
 /// average-bitrate default starved detail frames (226 kbps actual against a
 /// 295 kbps target, one active-region error 6.35 over the limit 6), while q8
-/// passed every reference frame under the unchanged thresholds.
+/// passed every reference frame under the unchanged thresholds. Glass 4:4:4
+/// frame2 also matched its reference exactly before encoding but failed after
+/// average-bitrate encoding. Selecting q8 is policy, not proof of pixel quality;
+/// each production export still needs its unchanged decoded-frame acceptance.
 const DEFAULT_VERY_HIGH_QUANTIZER: u8 = 8;
 
 #[derive(Deserialize)]
@@ -132,19 +135,20 @@ fn resolve(request: Request) -> Result<serde_json::Value, &'static str> {
         return quantizer::plan(&request, quantizer, bitrate(&request)?);
     }
     let bitrate = bitrate(&request)?;
-    if matches!(request.video_chroma, VideoChroma::Yuv444) {
-        let codec =
-            vp9::full_codec_string(request.width, request.height, request.frame_rate, bitrate)?;
-        Ok(json!({"bitrate":bitrate,"fullCodecString":codec}))
-    } else if matches!(request.codec, Codec::Vp9)
+    if matches!(request.codec, Codec::Vp9)
         && matches!(request.format, Some(Format::Webm))
         && matches!(request.quality, Quality::VeryHigh)
     {
-        // Only the default 4:2:0 WebM very-high preset changes encoder path;
-        // every other combination keeps its prior bitrate response exactly.
+        // Both default chroma modes use the same quality policy. Explicit
+        // quantizers above remain authoritative; callers without WebM format
+        // and all other presets retain their prior response exactly.
         let mut plan = quantizer::plan(&request, DEFAULT_VERY_HIGH_QUANTIZER, bitrate)?;
         plan["default"] = json!(true);
         Ok(plan)
+    } else if matches!(request.video_chroma, VideoChroma::Yuv444) {
+        let codec =
+            vp9::full_codec_string(request.width, request.height, request.frame_rate, bitrate)?;
+        Ok(json!({"bitrate":bitrate,"fullCodecString":codec}))
     } else {
         Ok(json!({"bitrate":bitrate}))
     }
