@@ -1,0 +1,62 @@
+{
+	"id": "frost-optical-runtime-v2",
+	"recordedAt": "2026-10-12",
+	"status": "passed-matching-webgl-optical-fixture",
+	"overallGoalComplete": false,
+	"referencePolicy": "docs/evidence/frost-optical-fixture-v2.json",
+	"runner": "script/probe-frost-reference.mjs",
+	"auditCommand": "node script/audit-frost-reference.mjs <capture-directory> --check",
+	"matchingPackages": {
+		"receipt": "C:/tmps/frost-optical-wasm-v2-20261012/receipt-final.json",
+		"sourceInputCount": 982,
+		"defaultOrigin": "Exact reuse of the existing matching normal package",
+		"diagnosticBuild": "One offline locked build with browser-readback-tests",
+		"defaultWasmSha256": "91cb239afd1efd81fa36a700bea6436e3707532a8f3111b175d22ee61dfbca86",
+		"diagnosticWasmSha256": "e8e3b91468de77370a574edbabd20295634543dd5e54c2116b563bc3672180bd"
+	},
+	"runtimeCapture": {
+		"receipt": "C:/tmps/frost-reference-gpu-v2-20261012-attempt-02/capture-receipt.json",
+		"deliveredWasmBoundary": "Actual fetch response bytes are SHA-256 hashed before the same bytes are compiled and bound to the unmodified generated bindings",
+		"activeCasesPerPackage": 8,
+		"nonGpuResolverBypassesPerPackage": 2,
+		"backend": "webgl",
+		"rawFormat": "rgba8unorm",
+		"canonicalFormat": "rgba8unorm",
+		"softwareRenderer": "SwiftShader requested by launch flags; independent adapter vendor was not captured",
+		"seekCasesPerPackage": 6,
+		"rejectionRecovery": ["truncated-rgba", "empty-passes", "unknown-shader"],
+		"ownedBrowsersAndServersClosed": true,
+		"gpuDisposedAndQueryFreed": true
+	},
+	"independentArtifactAudit": {
+		"receipt": "C:/tmps/frost-reference-gpu-v2-20261012-attempt-02/audit-receipt.json",
+		"receiptSha256": "f17ccc2ad4278c4dee613622f4f0349c22a7bb9d918c81f9bf86281179ef88f3",
+		"scalarMetricsPassed": 57,
+		"hardChecksPassed": 132,
+		"rawNativeMaxRgbError": 1,
+		"rawNativeMaxMeanRgbError": 0.0005425347222222222,
+		"canonicalNativeMaxRgbError": 1,
+		"canonicalNativeMaxMeanRgbError": 0.0006510416666666666,
+		"defaultPresentationMaxRgbError": 1,
+		"defaultPresentationMaxMeanRgbError": 0.04261514501633976,
+		"allAlphaErrors": 0,
+		"originalNumericGatesUnchanged": true,
+		"canonicalPairByteIdentical": true,
+		"fullMeltPositivePixelsExact": 459,
+		"transparentHolesRgbaZero": 109
+	},
+	"executionLineage": {
+		"executedSnapshotDirectory": "C:/tmps/frost-reference-gpu-v2-20261012-attempt-02/executed-runner-source",
+		"runnerSha256": "e0f28db7c6e4b501d11c67f7b2bdea11c84a963374f07d5fb5cc2a70ea2ac468",
+		"browserSha256": "c104ab85a4bc2d1cded1ec1b799ee25a85576f549c1823a3613fa7f767a685a3",
+		"currentRunnerAndBrowser": "Formatted after completed capture; executed bytes remain separately pinned. The capture receipt was not rewritten."
+	},
+	"retainedFailure": "C:/tmps/frost-reference-gpu-v2-20261012-attempt-01/aborted-by-network-observer.json",
+	"notClaimed": [
+		"Restoration of the missing historical external fixture bytes",
+		"All editor or encoded-video time windows",
+		"Hardware or WebGPU backend",
+		"Device-loss, OOM or actual map-failure fault injection",
+		"Installed Elftia, release or complete P7 ledger"
+	]
+}
