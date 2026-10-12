@@ -13,14 +13,17 @@ import { createLiquidWasmProbeIO } from "./fixtures/liquid-object-wasm-developme
 import { checkCapabilities } from "./fixtures/liquid-object-wasm-capability-gates.mjs";
 
 const workspace = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const verifyRoot = process.argv[2] === "--verify-root" ? process.argv[3] : undefined;
-assert(process.argv.length === (verifyRoot ? 4 : 2), "Usage: acceptance-wasm-baseline.mjs [--verify-root <this helper's owned private root>]");
+// Reusing an authority root always derives into a fresh directory. The legacy
+// verify spelling must not rewrite a historical browser artifact or its receipt.
+const deriveOnly = ["--verify-root", "--derive-root"].includes(process.argv[2]);
+const verifyRoot = ["--verify-root", "--derive-root"].includes(process.argv[2]) ? process.argv[3] : undefined;
+assert(process.argv.length === (verifyRoot ? 4 : 2), "Usage: acceptance-wasm-baseline.mjs [--verify-root|--derive-root <this helper's owned private root>]");
 if (verifyRoot) {
 	assert(isAbsolute(verifyRoot) && dirname(resolve(verifyRoot)) === resolve(tmpdir()) && basename(verifyRoot).startsWith("rocut-wasm-authority-20261011-"));
 	assert.equal(await realpath(verifyRoot), resolve(verifyRoot), "No redirected verification root");
 }
 const root = verifyRoot ? resolve(verifyRoot) : await mkdtemp(join(tmpdir(), "rocut-wasm-authority-20261011-"));
-const source = join(root, "source"), pkg = join(root, "pkg"), browserPkg = join(root, "browser-pkg"), target = join(root, "target");
+const source = join(root, "source"), pkg = join(root, "pkg"), browserPkg = deriveOnly ? await mkdtemp(join(root, "browser-pkg-v2-")) : join(root, "browser-pkg"), target = join(root, "target");
 const hash = (bytes) => createHash("sha256").update(bytes).digest("hex");
 const verificationLogs = verifyRoot ? await mkdtemp(join(root, "verify-")) : root;
 const { files, manifest, run, free } = createLiquidWasmProbeIO({ root: verificationLogs });
@@ -34,7 +37,11 @@ if (verifyRoot) {
 	const previous = JSON.parse(await readFile(join(root, "evidence.json"), "utf8"));
 	assert.equal(previous.directoryOwnership?.owner, "wasm_authority 20261011");
 	assert.equal(previous.root, root); assert.equal(previous.build?.code, 0);
-	Object.assign(report, previous, { ok: false, verificationStarted: new Date().toISOString(), verificationLogs });
+	Object.assign(report, previous, { ok: false, verificationStarted: new Date().toISOString(), verificationLogs, browserPkg });
+	if (deriveOnly) {
+		report.derivativeOwnership = { directory: browserPkg, purpose: "Immutable async browser derivative v2; same authority binary, no Rust recompilation", owner: "wasm_authority 20261011", retention: "Retain alongside v1 failure receipts; no automatic removal or overwrite" };
+		report.previousBrowserPackage = await manifest(join(root, "browser-pkg"));
+	}
 	report.priorPackageInventory = { workspace: previous.inventoryWorkspace ?? workspace, before: previous.packagesBefore, after: previous.packagesAfter, drift: previous.sharedPackageDrift };
 	report.packagesBefore = await packageInventory();
 	delete report.failure;
@@ -102,6 +109,7 @@ try {
 	report.paths = await run(process.execPath, [join(workspace, "script/check-wasm-paths.mjs"), "--file", join(pkg, "opencut_wasm_bg.wasm")], workspace, env, "paths.log");
 	const binary = await readFile(join(pkg, "opencut_wasm_bg.wasm"));
 	const text = binary.toString("latin1");
+	// eslint-disable-next-line no-control-regex -- Preserve the binary path gate's control delimiters.
 	report.pathAntiVacuity = { cargo: (text.match(/\/cargo[\\/][^\x00-\x1f"]{0,120}/g) ?? []).length, opencut: (text.match(/\/opencut[\\/][^\x00-\x1f"]{0,120}/g) ?? []).length, relative: (text.match(/\/(?:wasm|crates)[\\/][A-Za-z0-9._+@=-]+[\\/]/g) ?? []).length };
 	assert(report.pathAntiVacuity.cargo > 0 && report.pathAntiVacuity.opencut + report.pathAntiVacuity.relative > 0, "Same path anti-vacuity threshold as canonical gate");
 	const actual = await import(pathToFileURL(join(pkg, "opencut_wasm_sync.js")).href);
@@ -129,18 +137,18 @@ try {
 	assert.equal(negative.code, 0); assert.match(report.initNegative.probe.error, /__wbindgen_start/);
 	await mkdir(browserPkg, { recursive: Boolean(verifyRoot) });
 	assert.equal(await realpath(browserPkg), browserPkg, "Owned browser output redirected");
-	for (const entry of report.package) await writeFile(join(browserPkg, entry.path), await readFile(join(pkg, entry.path)), { flag: verifyRoot ? "w" : "wx" });
+	for (const entry of report.package) await writeFile(join(browserPkg, entry.path), await readFile(join(pkg, entry.path)), { flag: verifyRoot && !deriveOnly ? "w" : "wx" });
 	// Inline generated glue with only export markers changed to keep import
 	// shims private and expose exactly the canonical entry's public names.
 	// The binary import module names are read from its own table, exactly as sync entry does.
 	const generatedGlue = await readFile(join(pkg, "opencut_wasm_bg.js"), "utf8");
 	const publicNames = new Set(report.jsExports);
 	const browserGlue = generatedGlue.replace(/^export (?=(?:async )?(?:function|class|const|let|var) ([A-Za-z0-9_$]+))/gm, (marker, name) => publicNames.has(name) ? marker : "");
-	const webGlue = browserGlue + `\nlet __authorityModule;\nfunction __authorityFinish(module) { const imports = {}; const glue = {${Object.keys(await import(pathToFileURL(join(pkg, "opencut_wasm_bg.js")).href)).map((name) => JSON.stringify(name) + ": " + name).join(",")}}; for (const item of WebAssembly.Module.imports(module)) imports[item.module] = glue; const instance = new WebAssembly.Instance(module, imports); __wbg_set_wasm(instance.exports); instance.exports.__wbindgen_start(); __authorityModule = module; return instance.exports; }\nexport function initSync(input) { if (__authorityModule) return wasm; const value = input?.module ?? input; return __authorityFinish(value instanceof WebAssembly.Module ? value : new WebAssembly.Module(value)); }\nexport default async function init(input) { if (__authorityModule) return wasm; let value = input?.module_or_path ?? input ?? new URL('./opencut_wasm_bg.wasm', import.meta.url); if (typeof value === 'string' || value instanceof URL || value instanceof Request) value = await fetch(value); if (value instanceof Response) value = await value.arrayBuffer(); return initSync({module: value}); }\n`;
+	const webGlue = browserGlue + `\nlet __authorityModule;\nfunction __authorityImports(module) { const imports = {}; const glue = {${Object.keys(await import(pathToFileURL(join(pkg, "opencut_wasm_bg.js")).href)).map((name) => JSON.stringify(name) + ": " + name).join(",")}}; for (const item of WebAssembly.Module.imports(module)) imports[item.module] = glue; return imports; }\nfunction __authorityStart(module, instance) { __wbg_set_wasm(instance.exports); instance.exports.__wbindgen_start(); __authorityModule = module; return instance.exports; }\nexport function initSync(input) { if (__authorityModule) return wasm; const value = input?.module ?? input; const module = value instanceof WebAssembly.Module ? value : new WebAssembly.Module(value); return __authorityStart(module, new WebAssembly.Instance(module, __authorityImports(module))); }\nexport default async function init(input) { if (__authorityModule) return wasm; let value = input?.module_or_path ?? input ?? new URL('./opencut_wasm_bg.wasm', import.meta.url); if (typeof value === 'string' || value instanceof URL || value instanceof Request) value = await fetch(value); if (value instanceof Response) value = await value.arrayBuffer(); const module = value instanceof WebAssembly.Module ? value : await WebAssembly.compile(value); const instance = await WebAssembly.instantiate(module, __authorityImports(module)); return __authorityStart(module, instance); }\n`;
 	await writeFile(join(browserPkg, "opencut_wasm.js"), webGlue, "utf8");
 	await writeFile(join(browserPkg, "opencut_wasm_sync.js"), `import {readFileSync} from 'node:fs';\nimport {initSync} from './opencut_wasm.js';\ninitSync({module:readFileSync(new URL('./opencut_wasm_bg.wasm',import.meta.url))});\nexport * from './opencut_wasm.js';\n`, "utf8");
-	const verification = { mode: "wasm", exitCode: 0, sourceDirectory: source, sourceManifestSha256: report.sourceManifestSha256, wasmSha256: report.wasmSha256, canonicalPackage: pkg, derivation: "bundler-derived-browser: one release binary, generated glue inlined with only non-public export markers changed; no recompilation", helperSha256: hash(await readFile(fileURLToPath(import.meta.url))) };
-	await writeFile(join(browserPkg, "verification.json"), JSON.stringify(verification, null, 2) + "\n", { flag: verifyRoot ? "w" : "wx" });
+	const verification = { mode: "wasm", exitCode: 0, sourceDirectory: source, sourceManifestSha256: report.sourceManifestSha256, wasmSha256: report.wasmSha256, canonicalPackage: pkg, derivation: "bundler-derived-browser-v2: one release binary, generated glue inlined with only non-public export markers changed; default init awaits compile and instantiate; no recompilation", helperSha256: hash(await readFile(fileURLToPath(import.meta.url))) };
+	await writeFile(join(browserPkg, "verification.json"), JSON.stringify(verification, null, 2) + "\n", { flag: verifyRoot && !deriveOnly ? "w" : "wx" });
 	report.browserPackage = await manifest(browserPkg);
 	assert.equal(hash(await readFile(join(browserPkg, "opencut_wasm_bg.wasm"))), report.wasmSha256);
 	const browserSync = await import(pathToFileURL(join(browserPkg, "opencut_wasm_sync.js")).href);
@@ -150,9 +158,24 @@ try {
 	await browserAsync.default({ module_or_path: binary });
 	assert.deepEqual(Object.keys(browserAsync).filter((name) => !["initSync", "default"].includes(name)).sort(), report.jsExports);
 	report.browserAsyncResolver = checkCapabilities(browserAsync);
+	const forbiddenSync = await import(pathToFileURL(join(browserPkg, "opencut_wasm.js")).href + "?sync-forbidden-control");
+	const originalModule = WebAssembly.Module, originalInstance = WebAssembly.Instance;
+	let synchronousCalls = 0;
+	try {
+		const disallow = { construct() { synchronousCalls++; throw Error("Synchronous WebAssembly constructor forbidden by async control"); } };
+		WebAssembly.Module = new Proxy(originalModule, disallow);
+		WebAssembly.Instance = new Proxy(originalInstance, disallow);
+		assert.throws(() => forbiddenSync.initSync({ module: binary }), /Synchronous WebAssembly constructor forbidden/);
+		assert.equal(synchronousCalls, 1, "Control must catch an actual synchronous initializer");
+		synchronousCalls = 0;
+		await forbiddenSync.default({ module_or_path: binary });
+		assert.equal(synchronousCalls, 0, "Default async initializer must never call synchronous constructors");
+		report.asyncNonSyncControl = { passed: true, explicitSyncNegativeFired: true, defaultSyncConstructorCalls: synchronousCalls, frameCases: checkCapabilities(forbiddenSync).length };
+	} finally { WebAssembly.Module = originalModule; WebAssembly.Instance = originalInstance; }
 	assert.deepEqual(await manifest(pkg), report.package, "Authority package changed during gates");
 	report.browserPackageAfter = await manifest(browserPkg);
 	assert.deepEqual(report.browserPackageAfter, report.browserPackage, "Derived wrapper/glue/binary changed during init contracts");
+	if (deriveOnly) assert.deepEqual(await manifest(join(root, "browser-pkg")), report.previousBrowserPackage, "Historical browser derivative changed");
 	report.runtimeContractsPassed = true;
 	report.derivedGlueContractScope = "Actual Node WebAssembly instances exercise initSync and async init against the same binary and import glue; public names match canonical plus initializer entry points; browser raster matrix remains separate";
 	report.environment = { ROCUT_TEST_WASM_DIRECTORY: browserPkg, ROCUT_TEST_RUST_SOURCE: source, ROCUT_TEST_LIQUID_WASM_DIR: pkg, ROCUT_TEST_LIQUID_WASM_SHA256: report.wasmSha256 };

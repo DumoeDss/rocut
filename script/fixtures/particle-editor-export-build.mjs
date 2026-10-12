@@ -15,8 +15,18 @@ import {
 	treeManifest,
 	writeJson,
 } from "../particle-c4-export-support.mjs";
+import {
+	stageParticleAuthority,
+	writeParticleAuthorityBootstrap,
+} from "./particle-editor-export-authority-stage.mjs";
 
-export async function buildEditorExport({ repo, root, options, sources }) {
+export async function buildEditorExport({
+	repo,
+	root,
+	options,
+	sources,
+	authority,
+}) {
 	const generatedModules = new Map();
 	async function remember(path) {
 		const bytes = await readFile(path),
@@ -30,7 +40,8 @@ export async function buildEditorExport({ repo, root, options, sources }) {
 		sources.set(entry.path, entry);
 		return bytes;
 	}
-	const wasmDirectory = dirname(options["wasm-sync"]);
+	let syncEntry = options["wasm-sync"],
+		bundlerEntry = join(dirname(syncEntry), "opencut_wasm.js");
 	const pinned = {
 		"particle-sampler-wasm.mjs":
 			"205eb2eff08f10677294d38a90aedceb6b65ce52c7e4ea87760b0cbac8a86c3a",
@@ -39,23 +50,31 @@ export async function buildEditorExport({ repo, root, options, sources }) {
 		"particle-sampler-worker-entry.mjs":
 			"e9afc00344177d72276eb6c8ba269749e8cf27644758d9c6037a59e5f7e7dd30",
 	};
-	assert.equal(
-		hash(await remember(join(wasmDirectory, "opencut_wasm_bg.wasm"))),
-		pinned["opencut_wasm_bg.wasm"],
-		"Only the frozen C3 WASM is accepted",
-	);
-	for (const [name, expected] of Object.entries(pinned)) {
+	if (authority) {
+		({ wasmSync: syncEntry, bundlerEntry } = await stageParticleAuthority({
+			authority,
+			root,
+			remember,
+		}));
+	} else {
 		assert.equal(
-			hash(await remember(join(options["sampler-dir"], name))),
-			expected,
-			`Wrong frozen C3 sampler ${name}`,
+			hash(await remember(join(dirname(syncEntry), "opencut_wasm_bg.wasm"))),
+			pinned["opencut_wasm_bg.wasm"],
+			"Only the frozen C3 WASM is accepted",
 		);
-		await copyFile(
-			join(options["sampler-dir"], name),
-			join(root, name),
-			constants.COPYFILE_EXCL,
-		);
-		assert.equal(hash(await remember(join(root, name))), expected);
+		for (const [name, expected] of Object.entries(pinned)) {
+			assert.equal(
+				hash(await remember(join(options["sampler-dir"], name))),
+				expected,
+				`Wrong frozen C3 sampler ${name}`,
+			);
+			await copyFile(
+				join(options["sampler-dir"], name),
+				join(root, name),
+				constants.COPYFILE_EXCL,
+			);
+			assert.equal(hash(await remember(join(root, name))), expected);
+		}
 	}
 	for (const path of [
 		fileURLToPath(import.meta.url),
@@ -68,16 +87,26 @@ export async function buildEditorExport({ repo, root, options, sources }) {
 		join(repo, "script/particle-c4-export-support.mjs"),
 		join(repo, "script/probe-child-lifecycle.mjs"),
 		join(repo, "script/browser-probe-toolchain.mjs"),
-		options["wasm-sync"],
-		join(wasmDirectory, "opencut_wasm.js"),
-		join(wasmDirectory, "opencut_wasm_bg.js"),
+		syncEntry,
+		bundlerEntry,
+		join(dirname(syncEntry), "opencut_wasm_bg.js"),
 		join(options.toolchain, "package-lock.json"),
 	])
 		await remember(path);
+	if (authority) {
+		for (const name of [
+			"particle-editor-export-authority.mjs",
+			"particle-editor-export-authority-identity.mjs",
+			"particle-editor-export-authority-stage.mjs",
+			"particle-editor-export-authority-browser.mjs",
+		])
+			await remember(join(repo, "script/fixtures", name));
+		await remember(join(root, "particle-authority-context.json"));
+	}
 	const hostBundle = await buildHost({
 		absWorkingDir: repo,
 		entryPoints: [join(repo, "script/fixtures/particle-editor-export-host.ts")],
-		outfile: join(root, "host.mjs"),
+		outfile: join(root, authority ? "host-body.mjs" : "host.mjs"),
 		bundle: true,
 		platform: "node",
 		format: "esm",
@@ -93,7 +122,7 @@ export async function buildEditorExport({ repo, root, options, sources }) {
 				name: "isolated-c4-export-host",
 				setup(api) {
 					api.onResolve({ filter: /^opencut-wasm(?:\/sync)?$/ }, () => ({
-						path: pathToFileURL(options["wasm-sync"]).href,
+						path: pathToFileURL(syncEntry).href,
 						external: true,
 					}));
 					api.onResolve({ filter: /^node:child_process$/ }, ({ importer }) =>
@@ -124,10 +153,13 @@ export async function buildEditorExport({ repo, root, options, sources }) {
 		],
 	});
 	assert.equal(hostBundle.outputFiles.length, 1);
-	await writeFile(join(root, "host.mjs"), hostBundle.outputFiles[0].contents, {
+	const hostOutput = join(root, authority ? "host-body.mjs" : "host.mjs");
+	await writeFile(hostOutput, hostBundle.outputFiles[0].contents, {
 		flag: "wx",
 	});
-	await remember(join(root, "host.mjs"));
+	await remember(hostOutput);
+	if (authority)
+		await writeParticleAuthorityBootstrap({ root, authority, remember });
 	const classicRequire = createRequire(
 		new URL("../../packages/editor-classic/package.json", import.meta.url),
 	);
@@ -167,7 +199,7 @@ export async function buildEditorExport({ repo, root, options, sources }) {
 			alias: [
 				{
 					find: /^opencut-wasm$/,
-					replacement: join(wasmDirectory, "opencut_wasm.js"),
+					replacement: bundlerEntry,
 				},
 				{ find: /^mediabunny$/, replacement: mediabunnyEntry },
 			],
@@ -188,4 +220,23 @@ export async function buildEditorExport({ repo, root, options, sources }) {
 		sources: [...sources.values()],
 		generatedModules: [...generatedModules.values()],
 	});
+	if (authority) {
+		const assets = await treeManifest(join(root, "editor"));
+		const wasmFiles = assets.files.filter(({ path }) => path.endsWith(".wasm"));
+		assert.ok(
+			wasmFiles.some(
+				({ sha256 }) =>
+					sha256 === authority.metadata.nativeAuthority.wasmSha256,
+			),
+			"Canonical WASM missing from output",
+		);
+		assert.ok(
+			wasmFiles.every(
+				({ sha256 }) =>
+					sha256 === authority.metadata.nativeAuthority.wasmSha256,
+			),
+			"Unapproved emitted WASM",
+		);
+		await authority.assertUnchanged();
+	}
 }

@@ -1,0 +1,156 @@
+{
+  "schema": "rocut-browser-failure-doc/v1",
+  "attemptNumber": 2,
+  "createdAt": "2026-10-11T11:19:14.4253996Z",
+  "workspace": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/.worktrees/rocut-acceptance-20261011-6fa23f6b/_others/rocut",
+  "sourceCommit": "571cba3b54845d01f50e2e95818fa1af5ed79d27",
+  "group": "C:/Users/Sayo/AppData/Local/Temp/rocut-hf-remotion-browser-20261011-fBBvNT",
+  "attempt": "C:/Users/Sayo/AppData/Local/Temp/rocut-hf-remotion-browser-20261011-fBBvNT/hyperframes-basic-attempt-YgPtSv",
+  "status": "failed-first-entry-stopped",
+  "case": "hyperframes-basic",
+  "startedAt": "2026-10-11T11:14:42.976Z",
+  "finishedAt": "2026-10-11T11:18:19.684Z",
+  "command": {
+    "argv": [
+      "C:/nvm4w/nodejs/node.exe",
+      "script/probe-hf-remotion-browser-authority.mjs",
+      "--run",
+      "C:/Users/Sayo/AppData/Local/Temp/rocut-hf-remotion-browser-20261011-fBBvNT"
+    ],
+    "env": {
+      "ROCUT_BROWSER_WINDOW_AUTHORIZED": "1"
+    },
+    "originalOrder": [
+      "hyperframes-basic",
+      "remotion-basic",
+      "hyperframes-audio-editor",
+      "remotion-audio-editor"
+    ]
+  },
+  "firstActualError": {
+    "name": "TimeoutError",
+    "message": "page.waitForFunction: Timeout 180000ms exceeded.",
+    "source": "script/probe-html-frames.mjs:312",
+    "exitCode": 1,
+    "defaultWatchdogMs": 180000,
+    "watchdogModified": false
+  },
+  "observedFailure": {
+    "diagnosticPath": "C:/Users/Sayo/AppData/Local/Temp/rocut-hf-remotion-browser-20261011-fBBvNT/hyperframes-basic-attempt-YgPtSv/artifacts/failure.json",
+    "passed": false,
+    "diagnosticOnly": true,
+    "browser": "153.0.8010.12",
+    "started": true,
+    "phase": "native-engine-exports",
+    "result": null,
+    "sourceIdentityUnchanged": true,
+    "browserWasmBinarySha256": "084cf7310df5bfdc1b8e4ce3f64bcff842e1b23b9fd0ca57c1c7dcffc0d1fc12",
+    "hostWasmBinarySha256": "084cf7310df5bfdc1b8e4ce3f64bcff842e1b23b9fd0ca57c1c7dcffc0d1fc12",
+    "wrapperSha256": "cc62ca83fb09032be1bf5427a156f572587ef21cc6a6c185d4743ac4fe7ddb39",
+    "packageDirectory": "C:/Users/Sayo/AppData/Local/Temp/rocut-wasm-authority-20261011-GVDTX4/browser-pkg-v2-sntQBC"
+  },
+  "observedPassingSubchecks": [
+    "native HyperFrames nesting and random seek",
+    "media.html/media-tail.html/media-natural.html/media-trim-loop.html/media-ramp.html/media-source.html/media-resource.html decoded-frame cases",
+    "media admission, missing/corrupt inputs and capture recovery",
+    "project images/fonts in Worker and DOM",
+    "HTML alpha and seek",
+    "CSS/inline resource path followed by isolation and validation",
+    "provider cancellation and recovery",
+    "GPU initialization",
+    "one native hyperframes Rocut WebM encode/decode"
+  ],
+  "sourceBasedInference": {
+    "reference": "script/fixtures/html-frame-browser-probe.ts:232",
+    "sequence": "native-engine-exports phase; first runNativeEngineExportProbe(nativeSource) then second HyperFrames video runNativeEngineExportProbe(...indices[16,18],startTime26400,frameTicks1200); gpu-alpha-preview-export phase comes next.",
+    "inference": "One completed native export log and no gpu-alpha-preview-export phase is consistent with timeout before the second native-video export completed. This does not locate its internal operation or establish a production export defect instead of aggregate budget exhaustion.",
+    "priorAttemptInterpretation": "This run explicitly passed project-resources, so the earlier missing project-resources completion log is not evidence of a deterministic resource-probe deadlock."
+  },
+  "acceptance": {
+    "passed": false,
+    "evidenceJsonCreated": false,
+    "finalWorkflowAndActualBytesSuccess": false,
+    "identitySnapshotsAreDiagnosticOnly": true,
+    "electronTested": false,
+    "noExportWholeEntryAcceptanceClaim": true
+  },
+  "identity": {
+    "preSnapshotValid": true,
+    "identitiesUnchanged": true,
+    "sourceCommit": "571cba3b54845d01f50e2e95818fa1af5ed79d27",
+    "fixtureManifestSha256": "6d788fe5eb74b33d115308d89aa13e0fc132b00f3a931e4f45bd86c4abf37a0b",
+    "fixtureFileCount": 6964,
+    "fixtureDrift": [],
+    "fixtureBeforeValid": true,
+    "fixtureAfterValid": true,
+    "toolchainClosureSha256": "957fc6398d085d8cb75a96a58e5e5ca90a24cf0de3cd955eb92418f93b682216"
+  },
+  "unexecutedCases": [
+    "remotion-basic",
+    "hyperframes-audio-editor",
+    "remotion-audio-editor"
+  ],
+  "retries": 0,
+  "capped": false,
+  "skipped": false,
+  "hiddenRetries": false,
+  "preserved": [
+    {
+      "path": "C:/Users/Sayo/AppData/Local/Temp/rocut-hf-remotion-browser-20261011-fBBvNT/plan.json",
+      "sha256": "55a8c6e43f2639b7ab817673847496a79d2e0be371541949de534f110c4e18d5"
+    },
+    {
+      "path": "C:/Users/Sayo/AppData/Local/Temp/rocut-hf-remotion-browser-20261011-fBBvNT/before.json",
+      "sha256": "4156a255eb587555f7562bfbca3e435cc397ca372058bec720f7ba063df25664"
+    },
+    {
+      "path": "C:/Users/Sayo/AppData/Local/Temp/rocut-hf-remotion-browser-20261011-fBBvNT/receipt.json",
+      "sha256": "41120793ab44e98027cfe1129b966a3d8e2b2091b2ec4e58fb7d384549990d9c"
+    },
+    {
+      "path": "C:/Users/Sayo/AppData/Local/Temp/rocut-hf-remotion-browser-20261011-fBBvNT/hyperframes-basic-attempt-YgPtSv/before.json",
+      "sha256": "38745cc151ce95d992f9a5a60d0941d0f4cd39ecdc67eb1f7c73edb24340f89b"
+    },
+    {
+      "path": "C:/Users/Sayo/AppData/Local/Temp/rocut-hf-remotion-browser-20261011-fBBvNT/hyperframes-basic-attempt-YgPtSv/after.json",
+      "sha256": "7436936eccdc8054f910c673f4bbd5411a9ff545da9de0d81c7c0f6c495d04b9"
+    },
+    {
+      "path": "C:/Users/Sayo/AppData/Local/Temp/rocut-hf-remotion-browser-20261011-fBBvNT/hyperframes-basic-attempt-YgPtSv/receipt.json",
+      "sha256": "222d6fdaae3a483d9b25a34292f07cac51bee95d0d3f049a8f42c0d2473fd732"
+    },
+    {
+      "path": "C:/Users/Sayo/AppData/Local/Temp/rocut-hf-remotion-browser-20261011-fBBvNT/hyperframes-basic-attempt-YgPtSv/artifacts/failure.json",
+      "sha256": "55d11e5e714a1e94790659069499ba6bf99aeb0cad0a4796fc1da5ed85a734b8"
+    }
+  ],
+  "cleanup": {
+    "windowReleased": true,
+    "checkedAt": "2026-10-11T11:19:14.4253996Z",
+    "ownedProcessMarkerMatches": [],
+    "chromeProcessCount": 0,
+    "markers": [
+      "script/fixtures/html-frame-host.ts",
+      "rocut-html-frame-",
+      "rocut-hf-remotion-browser-20261011-fBBvNT",
+      "probe-hf-remotion-browser-authority.mjs"
+    ],
+    "otherSessionProcessesUntouched": true
+  },
+  "writes": {
+    "trackedSources": false,
+    "trackedReceipts": false,
+    "head": false,
+    "fixtureManifest": false,
+    "previousPreparationOrFailureArtifactsOverwritten": false
+  },
+  "relatedUntrackedPlanningArtifact": {
+    "path": "C:/Users/Sayo/AppData/Local/Temp/rocut-particle-authority-lane-proposal-20261011-fBBvNT.json",
+    "sha256": "3b989de7f8817c69b3c5c2f10cc7c7774b1a925ce2e016fea8840af6d8edb725"
+  },
+  "limitations": [
+    "Partial failed-run observations only; phase and identity data do not certify actual workflow acceptance.",
+    "First failure stopped the four-entry chain; the other three cases are not-run, not passed/skipped.",
+    "Original180s watchdog and all fixtures/thresholds unchanged."
+  ]
+}

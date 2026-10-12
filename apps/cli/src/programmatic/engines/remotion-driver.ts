@@ -1,16 +1,21 @@
+import { REMOTION_READINESS_OBSERVATION_SOURCE } from "../remotion-readiness-observation";
+
 /** Browser-only entry for the pinned Remotion runtime. Esbuild bundles this with
  * the declared author entry; no authored React code runs in the compiler host. */
-export const REMOTION_FRAME_DRIVER = String.raw`
+export const REMOTION_FRAME_DRIVER =
+	REMOTION_READINESS_OBSERVATION_SOURCE +
+	String.raw`
 import React from 'react';
 import {createRoot} from 'react-dom/client';
 import {flushSync} from 'react-dom';
-import {Internals, delayRender, continueRender, getInputProps} from 'remotion';
+import {Internals, delayRender, continueRender, getInputProps, __rocutCompositionCommitContext as NativeCompositionCommitContext} from 'remotion';
 import 'rocut:entry';
 
 const spec = window.__rocutRemotionSpec;
 const metadataPolicy = window.__rocutRemotionMetadataPolicy;
 if (!metadataPolicy || metadataPolicy.spec !== spec || typeof window.__rocutRemotionLifetimeFactory !== 'function')
   throw Error('Remotion compiled metadata policy missing');
+if (!NativeCompositionCommitContext) throw Error('Pinned Remotion composition commit seam missing');
 const audioAnalysis = window.rocutRemotionAudio?.analysisOnly === true;
 const audioHandled = window.rocutRemotionAudio?.enabled === true;
 let failure;
@@ -42,6 +47,8 @@ const assets = {renderAssets:[], unregisterRenderAsset:id => {
   else failure = Error('Remotion media/artifact output requires an asset adapter; use Rocut tracks');
 }};
 window.__rocutRenderRemotionFrame = async (frame, producedScan = null) => {
+  readinessDiagnostic.frameIndex = frame.index;
+  observeReadiness({ kind: 'frame-enter' });
   if (producedScan && (producedScan.profile !== 'remotion-4.0.440-native-produced-frames-v1'
       || producedScan.canonicalStartFrame !== 0 || producedScan.canonicalEndFrameExclusive !== spec.durationFrames
       || !Array.isArray(producedScan.frames) || producedScan.frames.length !== spec.durationFrames
@@ -54,11 +61,18 @@ window.__rocutRenderRemotionFrame = async (frame, producedScan = null) => {
   let lifetime = window.__rocutRemotionLifetimeFactory({timeoutMs:8000,check:()=>check(deadline)});
   const teardown = () => lifetime.abort(Error('Remotion metadata realm torn down'));
   addEventListener('pagehide',teardown,{once:true});
-  let root, mount, boot, bootReleased=false, completed=false, failureReason;
+  let root, mount, boot, bootReleased=false, completed=false, failureReason, compositionCommitted=false;
+  const nativeCommit = compositionId => {
+    if (compositionId !== spec.compositionId) throw Error('Remotion composition commit identity differs');
+    compositionCommitted=true;
+    observeReadiness({ kind: 'native-composition-committed' });
+    return () => { compositionCommitted=false; };
+  };
   try {
   lifetime.check();
   window.remotion_initialFrame = frame.index;
   boot = delayRender('Rocut composition initialization');
+  observeReadiness({ kind: 'boot-acquired', extra: { handle: boot } });
   while (!Internals.getRoot()) { lifetime.check(); await lifetime.wait(paint()); }
   const Root = Internals.getRoot();
   mount = document.createElement('div');
@@ -70,7 +84,7 @@ window.__rocutRenderRemotionFrame = async (frame, producedScan = null) => {
       frameState={{[spec.compositionId]:frame.index}} visualModeEnabled={false}>
       <Internals.CompositionManagerProvider onlyRenderComposition={spec.compositionId}
         initialCompositions={[]} initialCanvasContent={null} currentCompositionMetadata={metadata}>
-        <Root/><Selection/>
+        <NativeCompositionCommitContext.Provider value={nativeCommit}><Root/><Selection/></NativeCompositionCommitContext.Provider>
       </Internals.CompositionManagerProvider>
     </Internals.RemotionRootContexts></Internals.RenderAssetManager.Provider></Boundary>
   ));
@@ -99,16 +113,22 @@ window.__rocutRenderRemotionFrame = async (frame, producedScan = null) => {
   document.body.appendChild(portal);
   render(metadata);
   flushSync(() => select({type:'composition', compositionId:spec.compositionId}));
+  // Native Suspense acquires its own delay handle in a passive fallback effect.
+  // Keep boot until the selected content itself commits, including empty output.
+  while (!compositionCommitted) { lifetime.check(); await lifetime.wait(paint()); }
   lifetime.check();
   continueRender(boot);
   bootReleased=true;
+  observeReadiness({ kind: 'boot-released', extra: { handle: boot } });
   const settle = async () => {
     let stable = 0;
     while (stable < 2) {
       await lifetime.wait(paint()); lifetime.check();
-      stable = window.remotion_renderReady && window.remotion_delayRenderHandles.length === 0 ? stable + 1 : 0;
+      stable = compositionCommitted && window.remotion_renderReady && window.remotion_delayRenderHandles.length === 0 ? stable + 1 : 0;
+      observeReadiness({ kind: 'settle-turn', extra: { stable } });
     }
     window.rocutMedia.check(true);lifetime.check();
+    observeReadiness({ kind: 'settle-done' });
   };
   await settle();
   if (producedScan) {

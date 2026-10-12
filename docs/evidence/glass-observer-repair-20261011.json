@@ -1,0 +1,271 @@
+{
+  "version": 1,
+  "ok": true,
+  "mode": "observer repair local CPU validation only",
+  "validationRoot": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\.worktrees\\rocut-acceptance-20261011-6fa23f6b\\_others\\rocut\\.artifacts\\glass-observer-repair\\run-m2myvS",
+  "sourceHead": "ad13d94eeca58041ffe3f82fa423cbf833c35aaf",
+  "scope": {
+    "trackedPatchFiles": [
+      "script/fixtures/glass-current-baseline-observer.mjs",
+      "script/fixtures/glass-current-baseline-browser-pins.mjs",
+      "script/fixtures/glass-current-baseline-observer.test.mjs"
+    ],
+    "oldFailuresPreserved": true,
+    "productionChanged": false,
+    "oldProbesChanged": false,
+    "thresholdsChanged": false,
+    "browserLaunched": false,
+    "viteBuilt": false,
+    "stageOrCommitPerformed": false,
+    "manifestGenerated": false
+  },
+  "historicalFailures": [
+    {
+      "run": "run-BfsTqo",
+      "receipt": {
+        "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\.worktrees\\rocut-acceptance-20261011-6fa23f6b\\_others\\rocut\\.artifacts\\glass-current-baseline\\run-BfsTqo\\evidence.json",
+        "bytes": 8149015,
+        "sha256": "2d4352d02125ad594a03262a094fbe213f48295bc5cdbc594f995220bef57973"
+      },
+      "sourceHead": "07b9a934b3587f0dba179f6e69ea11e9ecfed917",
+      "pinsUnchanged": true,
+      "sourceManifestUnchanged": true,
+      "sourceManifest": {
+        "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\.worktrees\\rocut-acceptance-20261011-6fa23f6b\\_others\\rocut\\fixture-source.json",
+        "physical": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\.worktrees\\rocut-acceptance-20261011-6fa23f6b\\_others\\rocut\\fixture-source.json",
+        "bytes": 1127760,
+        "sha256": "3d73717e3a24f82e6a3fd9d8b1d26e02854bcb99c244c7213f80668ac8892b70"
+      },
+      "failure": "editor technical failure retained; no automatic retry\n\n1 !== 0\n",
+      "editorProbeOk": false,
+      "exportStarted": false
+    },
+    {
+      "run": "run-zccWYW",
+      "receipt": {
+        "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\.worktrees\\rocut-acceptance-20261011-6fa23f6b\\_others\\rocut\\.artifacts\\glass-current-baseline\\run-zccWYW\\evidence.json",
+        "bytes": 8149636,
+        "sha256": "abd1da3b98cd8cbbd4e2058be9dd05c1e36ded5fbf24f64b1b44d136981b2e27"
+      },
+      "sourceHead": "ad13d94eeca58041ffe3f82fa423cbf833c35aaf",
+      "pinsUnchanged": true,
+      "sourceManifestUnchanged": true,
+      "sourceManifest": {
+        "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\.worktrees\\rocut-acceptance-20261011-6fa23f6b\\_others\\rocut\\fixture-source.json",
+        "physical": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\.worktrees\\rocut-acceptance-20261011-6fa23f6b\\_others\\rocut\\fixture-source.json",
+        "bytes": 1127760,
+        "sha256": "fc333f5b2bbb16ea60493e0961b783f55cd2ea98018836e0a00ee6acb4adf79a"
+      },
+      "failure": "browser editor byte identity failed\n\nfalse !== true\n",
+      "editorProbeOk": true,
+      "exportStarted": false
+    }
+  ],
+  "candidateValidation": {
+    "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\.worktrees\\rocut-acceptance-20261011-6fa23f6b\\_others\\rocut\\.artifacts\\glass-observer-candidate\\run-DEvlO4\\validation.json",
+    "bytes": 5257,
+    "sha256": "3142a53339dd453ab35d042ce1194ff865e0e3496cb393c375d8bbcba4115394"
+  },
+  "parity": [
+    {
+      "name": "glass-current-baseline-observer.mjs",
+      "transplanted": {
+        "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\.worktrees\\rocut-acceptance-20261011-6fa23f6b\\_others\\rocut\\script\\fixtures\\glass-current-baseline-observer.mjs",
+        "bytes": 5632,
+        "sha256": "877e270e42485d7f5c7ef98c3cf263fb435e188d89321dfeed559a52194a9d39"
+      },
+      "candidate": {
+        "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\.worktrees\\rocut-acceptance-20261011-6fa23f6b\\_others\\rocut\\.artifacts\\glass-observer-candidate\\run-DEvlO4\\glass-current-baseline-observer.mjs",
+        "bytes": 5632,
+        "sha256": "877e270e42485d7f5c7ef98c3cf263fb435e188d89321dfeed559a52194a9d39"
+      },
+      "byteIdentical": true,
+      "preRepairSha256": "04f1248fa2c0f5b8531e4918a4d3d0bc5997d48da6c4633c0a54e13c1437e849"
+    },
+    {
+      "name": "glass-current-baseline-browser-pins.mjs",
+      "transplanted": {
+        "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\.worktrees\\rocut-acceptance-20261011-6fa23f6b\\_others\\rocut\\script\\fixtures\\glass-current-baseline-browser-pins.mjs",
+        "bytes": 5172,
+        "sha256": "013b51359498f93e60e1ab65783d2c904daae9aa0188f4f7c35a8f58063fecce"
+      },
+      "candidate": {
+        "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\.worktrees\\rocut-acceptance-20261011-6fa23f6b\\_others\\rocut\\.artifacts\\glass-observer-candidate\\run-DEvlO4\\glass-current-baseline-browser-pins.mjs",
+        "bytes": 5172,
+        "sha256": "013b51359498f93e60e1ab65783d2c904daae9aa0188f4f7c35a8f58063fecce"
+      },
+      "byteIdentical": true,
+      "preRepairSha256": "d2d8606dcc107831c1eb6ea43d456d6a1b3679c2d3eb076bdb6972cfb300f365"
+    },
+    {
+      "name": "glass-current-baseline-observer.test.mjs",
+      "transplanted": {
+        "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\.worktrees\\rocut-acceptance-20261011-6fa23f6b\\_others\\rocut\\script\\fixtures\\glass-current-baseline-observer.test.mjs",
+        "bytes": 8886,
+        "sha256": "f8375d06ad7a3bca98d9c8c6414555861b386fd6b094f05d5868748fd1192f1c"
+      },
+      "candidate": {
+        "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\.worktrees\\rocut-acceptance-20261011-6fa23f6b\\_others\\rocut\\.artifacts\\glass-observer-candidate\\run-DEvlO4\\glass-current-baseline-observer.test.mjs",
+        "bytes": 8886,
+        "sha256": "f8375d06ad7a3bca98d9c8c6414555861b386fd6b094f05d5868748fd1192f1c"
+      },
+      "byteIdentical": true,
+      "preRepairSha256": "23238aae5a752c799b3f37c909043b578cba965bd983298efab7e15ea9774c89"
+    }
+  ],
+  "localValidation": {
+    "tests": {
+      "passed": 9,
+      "failed": 0,
+      "skipped": 0
+    },
+    "checks": [
+      {
+        "name": "cpu-tests",
+        "executable": "C:\\nvm4w\\nodejs\\node.exe",
+        "args": [
+          "--test",
+          "script/fixtures/glass-current-baseline-observer.test.mjs"
+        ],
+        "exit": 0,
+        "stdout": {
+          "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\.worktrees\\rocut-acceptance-20261011-6fa23f6b\\_others\\rocut\\.artifacts\\glass-observer-repair\\run-m2myvS\\cpu-tests.stdout.log",
+          "bytes": 956,
+          "sha256": "7d8fd4129f83bf8d8f68edac84bb220a78c7daf9af255532b6468ee76e18e099"
+        },
+        "stderr": {
+          "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\.worktrees\\rocut-acceptance-20261011-6fa23f6b\\_others\\rocut\\.artifacts\\glass-observer-repair\\run-m2myvS\\cpu-tests.stderr.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      {
+        "name": "focused-lint",
+        "executable": "C:\\nvm4w\\nodejs\\node.exe",
+        "args": [
+          "node_modules/eslint/bin/eslint.js",
+          "--config",
+          "script/acceptance-focused-js-eslint.config.mjs",
+          "--max-warnings",
+          "0",
+          "script/fixtures/glass-current-baseline-observer.mjs",
+          "script/fixtures/glass-current-baseline-browser-pins.mjs",
+          "script/fixtures/glass-current-baseline-observer.test.mjs"
+        ],
+        "exit": 0,
+        "stdout": {
+          "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\.worktrees\\rocut-acceptance-20261011-6fa23f6b\\_others\\rocut\\.artifacts\\glass-observer-repair\\run-m2myvS\\focused-lint.stdout.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\.worktrees\\rocut-acceptance-20261011-6fa23f6b\\_others\\rocut\\.artifacts\\glass-observer-repair\\run-m2myvS\\focused-lint.stderr.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      {
+        "name": "prettier",
+        "executable": "C:\\nvm4w\\nodejs\\node.exe",
+        "args": [
+          "node_modules/prettier/bin/prettier.cjs",
+          "--check",
+          "script/fixtures/glass-current-baseline-observer.mjs",
+          "script/fixtures/glass-current-baseline-browser-pins.mjs",
+          "script/fixtures/glass-current-baseline-observer.test.mjs"
+        ],
+        "exit": 0,
+        "stdout": {
+          "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\.worktrees\\rocut-acceptance-20261011-6fa23f6b\\_others\\rocut\\.artifacts\\glass-observer-repair\\run-m2myvS\\prettier.stdout.log",
+          "bytes": 66,
+          "sha256": "17aa973d3f004560237d9a95171210b0671deff23d61628eecf7322ff5938f20"
+        },
+        "stderr": {
+          "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\.worktrees\\rocut-acceptance-20261011-6fa23f6b\\_others\\rocut\\.artifacts\\glass-observer-repair\\run-m2myvS\\prettier.stderr.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      {
+        "name": "syntax-0",
+        "executable": "C:\\nvm4w\\nodejs\\node.exe",
+        "args": [
+          "--check",
+          "script/fixtures/glass-current-baseline-observer.mjs"
+        ],
+        "exit": 0,
+        "stdout": {
+          "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\.worktrees\\rocut-acceptance-20261011-6fa23f6b\\_others\\rocut\\.artifacts\\glass-observer-repair\\run-m2myvS\\syntax-0.stdout.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\.worktrees\\rocut-acceptance-20261011-6fa23f6b\\_others\\rocut\\.artifacts\\glass-observer-repair\\run-m2myvS\\syntax-0.stderr.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      {
+        "name": "syntax-1",
+        "executable": "C:\\nvm4w\\nodejs\\node.exe",
+        "args": [
+          "--check",
+          "script/fixtures/glass-current-baseline-browser-pins.mjs"
+        ],
+        "exit": 0,
+        "stdout": {
+          "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\.worktrees\\rocut-acceptance-20261011-6fa23f6b\\_others\\rocut\\.artifacts\\glass-observer-repair\\run-m2myvS\\syntax-1.stdout.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\.worktrees\\rocut-acceptance-20261011-6fa23f6b\\_others\\rocut\\.artifacts\\glass-observer-repair\\run-m2myvS\\syntax-1.stderr.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      {
+        "name": "syntax-2",
+        "executable": "C:\\nvm4w\\nodejs\\node.exe",
+        "args": [
+          "--check",
+          "script/fixtures/glass-current-baseline-observer.test.mjs"
+        ],
+        "exit": 0,
+        "stdout": {
+          "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\.worktrees\\rocut-acceptance-20261011-6fa23f6b\\_others\\rocut\\.artifacts\\glass-observer-repair\\run-m2myvS\\syntax-2.stdout.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\.worktrees\\rocut-acceptance-20261011-6fa23f6b\\_others\\rocut\\.artifacts\\glass-observer-repair\\run-m2myvS\\syntax-2.stderr.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    ],
+    "gitDiffCheckExit": 0,
+    "strictUtf8NoBom": true
+  },
+  "unchangedHelpers": [
+    {
+      "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\.worktrees\\rocut-acceptance-20261011-6fa23f6b\\_others\\rocut\\script\\run-glass-current-baseline.mjs",
+      "bytes": 13252,
+      "sha256": "72b6d0fd0fdc0c806daa79cb2060c93396ead4fba52a0906185f1f4f72833f0b"
+    },
+    {
+      "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\.worktrees\\rocut-acceptance-20261011-6fa23f6b\\_others\\rocut\\script\\fixtures\\glass-current-baseline-host-pins.mjs",
+      "bytes": 3308,
+      "sha256": "f30a0dc96177d27b490c60616a8fa9b777f3cc33aeb5b254983275ec292f1a6b"
+    }
+  ],
+  "evidenceSemantics": {
+    "served": "Actual .wasm Response.clone().arrayBuffer bytes, independently recorded before native initialization. Fetch and streaming each clone/hash independently with explicit source labels.",
+    "loaded": "Successful real native instantiate; nonstreaming compile/instantiate BufferSource copied and independently SHA256 hashed. Unknown modules never promoted.",
+    "linkage": "Exact SHA256 and byteLength, not URL/package location.",
+    "errors": "Clone/body/hash observer failures recorded in errors while preserving native behavior; native rejection retained and final errors=[] gate unchanged.",
+    "privacy": "Only asset basename/role, no private Host nonce frame paths.",
+    "fonts": "Independent font response-body pins retained."
+  },
+  "finishedAt": "2026-10-11T10:55:29.051Z"
+}

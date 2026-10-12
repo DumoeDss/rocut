@@ -609,8 +609,8 @@ function TrackLabelsPanel({
 	hasHorizontalScrollbar,
 	getTrackExpansionHeight,
 }: {
-	trackLabelsRef: React.RefObject<HTMLDivElement>;
-	trackLabelsScrollRef: React.RefObject<HTMLDivElement>;
+	trackLabelsRef: React.RefObject<HTMLDivElement | null>;
+	trackLabelsScrollRef: React.RefObject<HTMLDivElement | null>;
 	timelineHeaderHeight: number;
 	hasHorizontalScrollbar: boolean;
 	getTrackExpansionHeight: (trackIndex: number) => number;

@@ -13,6 +13,7 @@ import {
 	liquidOver,
 	liquidSample,
 } from "./liquid-browser-oracle";
+import { liquidSurfaceQuantizedReference } from "./liquid-surface-quantization";
 
 export function liquidRead(
 	canvas: CanvasImageSource,
@@ -138,7 +139,10 @@ export async function checkLiquidRaster() {
 					width,
 					height,
 				);
-				record(label, actual, expected.pixels);
+				// applyEffectPasses returns an RGBA8 premultiplied canvas, not a
+				// straight GPU texture readback. Keep the CPU oracle unchanged and
+				// compare only its independently declared surface representation.
+				record(label, actual, liquidSurfaceQuantizedReference(expected.pixels));
 				results.push({
 					name: `${label} schedule`,
 					steps: expected.steps,
@@ -182,7 +186,7 @@ export async function checkLiquidRaster() {
 			record(
 				`${width} parameter ${name}`,
 				liquidRead(render(canvas, changed, 26000), width, height),
-				expected.pixels,
+				liquidSurfaceQuantizedReference(expected.pixels),
 			);
 		}
 		const final = liquidExpected(
@@ -210,7 +214,10 @@ export async function checkLiquidRaster() {
 				liquidRate,
 				control,
 			);
-			const difference = liquidDifference(active, bad.pixels);
+			const difference = liquidDifference(
+				active,
+				liquidSurfaceQuantizedReference(bad.pixels),
+			);
 			results.push({ name: `${width} rejects ${control}`, ...difference });
 			if (!difference.failures)
 				errors.push(`${width} oracle did not reject ${control}`);
@@ -300,6 +307,13 @@ export async function checkLiquidRaster() {
 	}
 	return {
 		ok: errors.length === 0,
+		comparisonSpace: "rgba8-premultiplied-canvas-read-as-straight",
+		rawTextureGate: {
+			executed: false,
+			requiredCompanion: "checkLiquidReadback raw CPU oracle",
+			reason:
+				"production applyEffectPasses exposes a canvas, not raw GPU bytes",
+		},
 		thresholds: liquidThresholds,
 		results,
 		errors,

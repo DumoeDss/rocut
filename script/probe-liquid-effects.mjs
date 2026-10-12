@@ -11,6 +11,12 @@ import {
 import { dirname, isAbsolute, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 import { liquidDiagnosticWasmRoute } from "./liquid-diagnostic-wasm.mjs";
+import { resolveProductionProbeWasm } from "./production-probe-wasm.mjs";
+import { observeProbeWasmHttp } from "./fixtures/wasm-http-observation.mjs";
+import {
+	createHtmlProbeWasmPlugin,
+	HTML_PRIVATE_WASM_ID,
+} from "./html-probe-wasm-binding.mjs";
 import {
 	chromium,
 	createServer,
@@ -42,7 +48,8 @@ assert(
 	"Expected the default E: fixture or an explicit task-owned C:/tmps/rocut-stylized-* artifact root",
 );
 const readbackOverride = process.env.ROCUT_LIQUID_READBACK_PKG;
-const defaultPkg = join(root, "rust/wasm/pkg");
+const wasmBinding = resolveProductionProbeWasm();
+const defaultPkg = wasmBinding.directory;
 assert(
 	!/\bapplyEffectPassesReadback\b/.test(
 		await readFile(join(defaultPkg, "opencut_wasm.js"), "utf8"),
@@ -126,6 +133,7 @@ const server = await createServer({
 	cacheDir: join(artifacts, "vite-cache"),
 	logLevel: "error",
 	plugins: [
+		...(!readbackOverride ? [createHtmlProbeWasmPlugin(wasmBinding)] : []),
 		wasm(),
 		topLevelAwait(),
 		...(readbackOverride ? [await liquidDiagnosticWasmRoute(activePkg)] : []),
@@ -133,7 +141,9 @@ const server = await createServer({
 	optimizeDeps: { entries: ["script/fixtures/liquid-browser-probe.ts"] },
 	resolve: {
 		alias: {
-			"opencut-wasm": join(activePkg, "opencut_wasm.js"),
+			"opencut-wasm": readbackOverride
+				? join(activePkg, "opencut_wasm.js")
+				: HTML_PRIVATE_WASM_ID,
 			mediabunny: join(root, "packages/editor-classic/node_modules/mediabunny"),
 		},
 	},
@@ -141,7 +151,7 @@ const server = await createServer({
 		host: "127.0.0.1",
 		port: 0,
 		hmr: false,
-		...(readbackOverride ? { fs: { allow: [root, artifactRoot] } } : {}),
+		fs: { allow: [root, artifactRoot, wasmBinding.directory] },
 	},
 });
 
@@ -259,7 +269,7 @@ try {
 			externalRequests: [],
 		};
 		evidence.attempts.push(attempt);
-		let context;
+		let context, wasmHttp;
 		try {
 			// Chromium's WebGPU selector is independent of ANGLE's WebGL selector.
 			// Without this flag Windows defaults to D3D12, unavailable on this host.
@@ -308,6 +318,15 @@ try {
 			});
 			console.log(JSON.stringify({ phase: backend, artifacts }));
 			const address = server.httpServer.address();
+			const activeWasmBytes = await readFile(
+				join(activePkg, "opencut_wasm_bg.wasm"),
+			);
+			const wasmCdp = await page.context().newCDPSession(page);
+			wasmHttp = await observeProbeWasmHttp(wasmCdp, {
+				url: `http://127.0.0.1:${address.port}/@fs/${join(activePkg, "opencut_wasm_bg.wasm").replaceAll("\\", "/")}`,
+				sha256: evidence.wasmSha256,
+				byteLength: activeWasmBytes.length,
+			});
 			await page.goto(
 				`http://127.0.0.1:${address.port}/script/fixtures/liquid-browser-probe.html?backend=${backend}${readbackOverride ? "&readback=1" : ""}`,
 				{ waitUntil: "commit" },
@@ -317,7 +336,10 @@ try {
 			});
 			Object.assign(
 				attempt,
-				await page.evaluate(() => globalThis.__liquidResult),
+				await page.evaluate(() => ({
+					...globalThis.__liquidResult,
+					wasmInitializationStamp: globalThis.__htmlProbeWasmIdentity ?? null,
+				})),
 			);
 			const media = await page.evaluate(() => globalThis.__liquidMedia),
 				sheet = await page.evaluate(() => globalThis.__liquidSheet);
@@ -348,7 +370,17 @@ try {
 			attempt.ok = false;
 			attempt.failure = String(error.stack ?? error);
 		} finally {
-			await context?.close();
+			try {
+				if (wasmHttp) {
+					attempt.wasmHttp = await wasmHttp.drain();
+					attempt.ok = attempt.ok && attempt.wasmHttp.ok;
+				}
+			} catch (error) {
+				attempt.ok = false;
+				attempt.failure ??= String(error.stack ?? error);
+			} finally {
+				await context?.close();
+			}
 		}
 		await writeFile(
 			join(directory, "evidence.json"),

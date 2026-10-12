@@ -1,0 +1,106 @@
+{
+  "directory": "C:/Users/Sayo/AppData/Local/Temp/rocut-hf-remotion-browser-20261011-Sp5lcR/remotion-audio-editor-attempt-LTHu3K",
+  "provenance": {
+    "receiptPath": "C:/Users/Sayo/AppData/Local/Temp/rocut-hf-remotion-browser-20261011-Sp5lcR/remotion-audio-editor-attempt-LTHu3K/receipt.json",
+    "receiptSha256": "c716b1cee1b9d1880af963d4f1cc5eb53773572df2f307158ac88fa0a596f69b",
+    "failurePath": "C:/Users/Sayo/AppData/Local/Temp/rocut-hf-remotion-browser-20261011-Sp5lcR/remotion-audio-editor-attempt-LTHu3K/artifacts/failure.json",
+    "failureSha256": "b24e9a6227f178b6a8ca8c62c9bc5765bb9f014f1bb582acb19d8959681d78e0",
+    "sourceCommit": "eb75f59b4345aeeddc424443bc0e133996525c6b",
+    "exitCode": 1,
+    "passed": false,
+    "preSnapshotValid": true,
+    "identitiesUnchanged": true,
+    "matchesGroupBefore": true
+  },
+  "failedAcceptance": {
+    "passed": false,
+    "acceptanceEvidence": false,
+    "originalErrors": [
+      "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    ],
+    "resultSummary": {
+      "available": true,
+      "frames": 6,
+      "worst": 7.438833160566816e-9,
+      "nativeAudioRequests": 1,
+      "editorMixerTested": true,
+      "installedEditorTested": false,
+      "bytesLength": 8718,
+      "pcmLength": 70560
+    }
+  },
+  "network": {
+    "schema": "rocut-native-audio-network-observations/v1",
+    "consoleFailures": [
+      {
+        "sequence": 0,
+        "observedAt": "2026-10-11T13:29:52.025Z",
+        "pageUrl": "http://127.0.0.1:5173/script/fixtures/native-audio-editor-browser.html",
+        "location": {
+          "url": "http://127.0.0.1:5173/favicon.ico",
+          "lineNumber": 0,
+          "columnNumber": 0
+        },
+        "textLength": 78,
+        "textSha256": "377ab8b4b5e86078109682c970bd4bbb24606becc5d12a775b80b84e922bbad6",
+        "reports404": true
+      },
+      {
+        "sequence": 1,
+        "observedAt": "2026-10-11T13:29:55.671Z",
+        "pageUrl": "http://127.0.0.1:5173/script/fixtures/native-audio-editor-browser.html",
+        "location": {
+          "url": "http://127.0.0.1:5173/favicon.ico",
+          "lineNumber": 0,
+          "columnNumber": 0
+        },
+        "textLength": 78,
+        "textSha256": "377ab8b4b5e86078109682c970bd4bbb24606becc5d12a775b80b84e922bbad6",
+        "reports404": true
+      }
+    ],
+    "contextHttpFailures": [],
+    "viteHttpFailures": [
+      {
+        "sequence": 0,
+        "observedAt": "2026-10-11T13:29:52.021Z",
+        "server": "vite",
+        "path": "/favicon.ico",
+        "method": "GET",
+        "status": 404
+      },
+      {
+        "sequence": 1,
+        "observedAt": "2026-10-11T13:29:55.669Z",
+        "server": "vite",
+        "path": "/favicon.ico",
+        "method": "GET",
+        "status": 404
+      }
+    ],
+    "fixtureHttpFailures": [],
+    "fixtureServerLimitReached": false,
+    "contextResponses": {
+      "total": 13,
+      "byStatus": {
+        "200": 13
+      }
+    },
+    "dropped": {}
+  },
+  "retainedAudioArtifacts": {
+    "webmSha256": "ba59613bb7cf4ef45ab33ec8f36c0afb0073b74e986060273094f2941d3ef4df",
+    "pcmSha256": "3be9690bf7992609805f5e7c68fa455a551420395abb130ff7851298e11df28e"
+  },
+  "rootCause": "Both captured console 404 events identify /favicon.ico and correlate with two Vite GET /favicon.ico 404 finish records. Both console pageUrl values are the same native-audio-editor-browser.html URL. The fixture HTML has no icon declaration and the isolated build has no explicit favicon asset.",
+  "firstErrorPreserved": true,
+  "pageAttribution": "Two events from one reported top-level URL; no pageId exists in the observations. The runner creates one page and navigates it once. Separate top-level pages or the reason for a second automatic favicon attempt are not established.",
+  "notEstablished": [
+    "No fixture-host/API route 404 appears in this receipt.",
+    "Empty context/page HTTP failure lanes alone would not locate the problem; the independent Vite finish records do.",
+    "The earlier failed AV artifacts are still failed acceptance evidence; no FFmpeg-only promotion.",
+    "The proposed icon has not been verified in a real browser yet."
+  ],
+  "narrowCandidate": "Insert one explicit self-contained data SVG icon into only the confirmed editor fixture head. Preserve all script/title bytes and every probe error/HTTP observation gate. No filtering, route compensation, retries, waits, timeout changes, production media or oracle changes."
+}

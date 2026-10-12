@@ -1,0 +1,241 @@
+{
+  "version": 1,
+  "createdAt": "2026-10-11T10:16:38.894Z",
+  "status": "passed",
+  "scope": "Private Node runtime pack with editor surface omitted; two-build determinism, target-list/ensure smoke, and real fixed Particle worker using the packed WASM module. No browser/GPU/editor export, epkg, or installed Electron proof.",
+  "artifactDirectory": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/.worktrees/rocut-acceptance-20261011-6fa23f6b/rocut-node-runtime-zNeSrZ",
+  "rawEvidence": {
+    "path": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/.worktrees/rocut-acceptance-20261011-6fa23f6b/rocut-node-runtime-zNeSrZ/evidence.json",
+    "sha256": "4b8a84de11b84f2b981955d7e6fff1cf4cd849b218407f90c2adc30f59ad61bb"
+  },
+  "wasmSha256": "084cf7310df5bfdc1b8e4ce3f64bcff842e1b23b9fd0ca57c1c7dcffc0d1fc12",
+  "sourceManifestSha256": "d6cb235399f0090d037eb1c6d8c10241c8042d1d2b16913e56c6dc7a08e207c0",
+  "node": "v24.14.0",
+  "packManifest": {
+    "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\.worktrees\\rocut-acceptance-20261011-6fa23f6b\\rocut-node-runtime-zNeSrZ\\pack-manifest.json",
+    "bytes": 3807,
+    "sha256": "b15a493ce6d427d28deb280326b22565fdd6a8ad98441e33f28dc9169aaad5b8"
+  },
+  "pack": {
+    "command": [
+      "C:\\nvm4w\\nodejs\\node.exe",
+      "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\.worktrees\\rocut-acceptance-20261011-6fa23f6b\\_others\\rocut\\script\\pack-runtime.mjs",
+      "--out",
+      "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\.worktrees\\rocut-acceptance-20261011-6fa23f6b\\rocut-node-runtime-zNeSrZ\\runtime",
+      "--manifest",
+      "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\.worktrees\\rocut-acceptance-20261011-6fa23f6b\\rocut-node-runtime-zNeSrZ\\pack-manifest.json",
+      "--skip-surface",
+      "--allow-dirty"
+    ],
+    "startedAt": "2026-10-11T10:13:12.724Z",
+    "finishedAt": "2026-10-11T10:13:20.661Z",
+    "status": 0,
+    "signal": null,
+    "error": null,
+    "stdoutSha256": "7a982598c7ab4e5848a088d9b124afd360ac77adedf367d887ef782a7682e2da",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "logs": {
+      "stdout": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\.worktrees\\rocut-acceptance-20261011-6fa23f6b\\rocut-node-runtime-zNeSrZ\\pack.stdout.log",
+      "stderr": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\.worktrees\\rocut-acceptance-20261011-6fa23f6b\\rocut-node-runtime-zNeSrZ\\pack.stderr.log"
+    },
+    "summary": [
+      "bundle: rocut.mjs + 9 chunk(s); opencut_wasm_bg.wasm sibling referenced by chunk-4JLPDYNS.js, liquid-object-wasm.mjs, particle-sampler-wasm.mjs, rocut.mjs",
+      "surface: skipped (apps/vite-example/dist absent)",
+      "determinism: reproduced across two packs of 86ddc448c4f8",
+      "REAL_EXIT_CODE[smoke-target-list]:0",
+      "REAL_EXIT_CODE[smoke-ensure]:0",
+      "REAL_EXIT_CODE[smoke-ensure]:0",
+      "REAL_EXIT_CODE[smoke-treekill]:0",
+      "  12 file(s), wasm sibling byte-equal=true, surface skipped",
+      "  determinism: reproduced",
+      "REAL_EXIT_CODE[pack]:0"
+    ]
+  },
+  "workers": {
+    "command": [
+      "bun",
+      "test",
+      "apps/cli/src/__tests__/particle-sampler-worker-real.test.ts"
+    ],
+    "startedAt": "2026-10-11T10:13:20.678Z",
+    "finishedAt": "2026-10-11T10:13:22.623Z",
+    "status": 0,
+    "signal": null,
+    "error": null,
+    "stdoutSha256": "6043908c8d26d62698476b88f737f39d5d3e91008d4155a81730902f5a37479c",
+    "stderrSha256": "34709d74004cd8535dbb9ff82521ebda8828497b1d70926d0945b10cb36e8ba4",
+    "logs": {
+      "stdout": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\.worktrees\\rocut-acceptance-20261011-6fa23f6b\\rocut-node-runtime-zNeSrZ\\workers.stdout.log",
+      "stderr": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\.worktrees\\rocut-acceptance-20261011-6fa23f6b\\rocut-node-runtime-zNeSrZ\\workers.stderr.log"
+    },
+    "summary": [
+      "(pass) production sync subpath resolves through the declared installed package [1.20ms]",
+      "(pass) Bun real worker returns unmodified Rust success and errors then confirms exit [191.26ms]",
+      "(pass) Node runs the same fixed worker entry with real Rust success/error and exit [960.43ms]",
+      "(pass) real response cap rejects inside the worker before returning Rust payload [181.22ms]",
+      "(pass) immediate termination before readiness confirms process close without init-send races [11.99ms]",
+      "(pass) real busy synchronous WASM is force-terminated and all pending settle [115.54ms]",
+      "(pass) real missing module fails initialization and terminates without accepting late work [74.62ms]",
+      "(pass) Bun real initialization timeout and process crash confirm close [197.50ms]",
+      " 8 pass",
+      " 0 fail"
+    ],
+    "results": {
+      "pass": 8,
+      "skip": 0,
+      "fail": 0
+    }
+  },
+  "sourceChecks": {
+    "files": 1524,
+    "stable": true,
+    "scope": "Tracked runtime source excluding test files; raw pins in per-attempt evidence. Authority Rust/build identity separately recorded."
+  },
+  "wasmChecks": {
+    "files": 11,
+    "stable": true
+  },
+  "harness": {
+    "sourceFiles": [
+      {
+        "path": "script/prepare-acceptance-worktree.mjs",
+        "bytes": 14961,
+        "sha256": "317ba24e45ea492d47889d749ac8a4f835ad0656b4554ae63a80e20666979d43"
+      },
+      {
+        "path": "script/finalize-acceptance-worktree.mjs",
+        "bytes": 13544,
+        "sha256": "97863593ad1e75eb5c36e9873e7742189ff5368c1c32b39731d31eac1ef125d6"
+      },
+      {
+        "path": "script/restore-acceptance-dependencies.mjs",
+        "bytes": 8490,
+        "sha256": "f4571b4c6a55f72b95bc6b7b7a6a355c0100febf6f7ee4462845f93d1718ace9"
+      },
+      {
+        "path": "script/run-acceptance-source-contracts.mjs",
+        "bytes": 5621,
+        "sha256": "7e329abbe468e1fdfa2025518a121ea2c94780e33d1fd4285e05bcc7860b3815"
+      },
+      {
+        "path": "script/verify-acceptance-lint-environment.mjs",
+        "bytes": 3762,
+        "sha256": "3232d94ca3bcb511fa0b900bc7cdcbb3cc0de5d2c0a96c925587642e7381f59d"
+      },
+      {
+        "path": "script/probe-acceptance-node-runtime.mjs",
+        "bytes": 7449,
+        "sha256": "2daee8efbdd92b777716536f1f93c9072f7312786a70935269b92f0d907cfc23"
+      }
+    ],
+    "focusedLint": {
+      "command": [
+        "node",
+        "node_modules/eslint/bin/eslint.js",
+        "--config",
+        "script/acceptance-focused-js-eslint.config.mjs",
+        "script/prepare-acceptance-worktree.mjs",
+        "script/finalize-acceptance-worktree.mjs",
+        "script/restore-acceptance-dependencies.mjs",
+        "script/run-acceptance-source-contracts.mjs",
+        "script/verify-acceptance-lint-environment.mjs",
+        "script/probe-acceptance-node-runtime.mjs"
+      ],
+      "status": 0,
+      "errors": 0,
+      "warnings": 0,
+      "history": {
+        "initialError": "run-acceptance-source-contracts.mjs intentional ANSI escape regex: no-control-regex; fixed only by documented line-local exemption; runtime unchanged."
+      }
+    },
+    "encoding": "Strict UTF-8 decoding passed; no BOM or U+FFFD in six helper files.",
+    "syntaxCheck": {
+      "path": "script/probe-acceptance-node-runtime.mjs",
+      "status": 0
+    }
+  },
+  "priorTurnObservedChecks": {
+    "evidenceLevel": "Inherited session execution summary, not a new formally pinned run receipt.",
+    "cliTypecheck": {
+      "typescriptVersion": "5.9.3",
+      "command": [
+        "node",
+        "apps/cli/node_modules/typescript/bin/tsc",
+        "-p",
+        "apps/cli/tsconfig.json",
+        "--noEmit"
+      ],
+      "status": 0
+    },
+    "editor": {
+      "actualFiles": [
+        "programmatic-build-draft.test.ts",
+        "programmatic-recipe-fields.test.tsx"
+      ],
+      "pass": 15,
+      "fail": 0,
+      "assertions": 133,
+      "note": "The previous invocation also supplied a nonexistent generator-fields file that Bun ignored; only the two actual files are counted."
+    }
+  },
+  "limitations": [
+    "Development artifact packed with --allow-dirty; not a release or epkg.",
+    "Editor surface omitted because dist was absent; no UI export claim.",
+    "No GPU/browser/installed Electron acceptance.",
+    "No source soundtrack/Electron full-MV acceptance."
+  ],
+  "history": [
+    {
+      "state": "passed-before-explicit-eight-test-anti-vacuity-gate",
+      "rawEvidence": {
+        "path": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/.worktrees/rocut-acceptance-20261011-6fa23f6b/rocut-node-runtime-SOpN2D/evidence.json",
+        "sha256": "bebe1abd5e72c0d97e0b9275897145bbe8e379b8eb6b151d0d3a198fbb2e99d3"
+      },
+      "helper": {
+        "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\.worktrees\\rocut-acceptance-20261011-6fa23f6b\\_others\\rocut\\script\\probe-acceptance-node-runtime.mjs",
+        "bytes": 7188,
+        "sha256": "1c65c18bd7662a9d2c1f24c7282fbfa40c8568a62734ebce57dd6d3b2059b935"
+      }
+    }
+  ],
+  "integrationTypecheck": {
+    "command": [
+      "node",
+      "apps/cli/node_modules/typescript/bin/tsc",
+      "-p",
+      "apps/cli/tsconfig.json",
+      "--noEmit"
+    ],
+    "status": 0,
+    "wallTimeSeconds": 6.638,
+    "typescriptVersion": "5.9.3",
+    "postRunInputs": [
+      {
+        "path": "apps/cli/tsconfig.json",
+        "bytes": 365,
+        "sha256": "10c5bb0e09f61d9797d9b81d78b6a6e67ae86e1e1fd1df6aa875d8c1122acf5f"
+      },
+      {
+        "path": "apps/cli/src/__tests__/programmatic-build-revision.test.ts",
+        "bytes": 12962,
+        "sha256": "8f76abd6f337e7d34f85ba4e6fc957f9e8dc2bbc1b7ca887d442533b07381662"
+      },
+      {
+        "path": "apps/cli/src/__tests__/programmatic-build-revision-fixture.ts",
+        "bytes": 3672,
+        "sha256": "aa4a69f9dbabd5e74341b0445596cd118c617158a4fafe54e49d3fcf111bdc5e"
+      },
+      {
+        "path": "apps/cli/src/__tests__/programmatic-three-build-revision.test.ts",
+        "bytes": 12399,
+        "sha256": "54dc92142e96e17b84f763a229c91a85bb54dcc18a3c2d1ea3a055370f22f76c"
+      },
+      {
+        "path": "apps/cli/src/__tests__/programmatic-three-build-revision-fixture.ts",
+        "bytes": 8226,
+        "sha256": "f46d4ee545d41c27ff8f2c6dc2b635c393b8197fe7de4944da7bf4c8be71ca0d"
+      }
+    ],
+    "scope": "Observed integrated CLI noEmit typecheck after real revision/Three test changes; these post-run pins identify the inspected files, not a full before/after execution manifest."
+  }
+}

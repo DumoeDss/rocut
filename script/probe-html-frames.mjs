@@ -4,6 +4,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { mkdtemp, readdir, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
+import { saveHtmlProbeFailure } from "./fixtures/html-probe-failure.mjs";
 import {
 	resolveHtmlProbeWasmBinding,
 	assertHtmlProbeWasmIdentity,
@@ -69,6 +70,8 @@ const sourceInputs =
 		? snapshotHtmlProbeSources(root, [
 				"script/probe-html-frames.mjs",
 				"script/html-probe-wasm-binding.mjs",
+				"script/fixtures/html-probe-failure.mjs",
+				"script/fixtures/html-probe-native-exports.ts",
 				"script/fixtures/local-wasm-preload.mjs",
 				`script/fixtures/${fixture}`,
 				`script/fixtures/${fixture.replace(/\.html$/, ".ts")}`,
@@ -79,6 +82,7 @@ const sourceInputs =
 				"apps/cli/src/programmatic/engines/compile-project.ts",
 				"apps/cli/src/programmatic/engines/remotion-compiler-child.ts",
 				"apps/cli/src/programmatic/engines/remotion-driver.ts",
+				"apps/cli/src/programmatic/remotion-readiness-observation.ts",
 				"apps/cli/src/programmatic/engines/toolchain.ts",
 				"apps/cli/src/programmatic/remotion-inspection-driver.ts",
 				"apps/cli/src/programmatic/remotion-inspection-project.ts",
@@ -130,7 +134,9 @@ const host = spawn(
 	},
 );
 const exited = new Promise((resolve) => host.once("exit", resolve));
-let server, browser, hostWasmIdentity;
+let server, browser, page, hostWasmIdentity;
+const consolePhases = [];
+const consoleEpoch = performance.now();
 try {
 	const editorUrl = await new Promise((resolve, reject) => {
 		let text = "";
@@ -227,7 +233,7 @@ try {
 					]
 				: [],
 	});
-	const page = await browser.newPage();
+	page = await browser.newPage();
 	const redact = (value) =>
 		String(value).replaceAll(new URL(editorUrl).pathname, "/[session]/");
 	if (ditherThree)
@@ -283,8 +289,15 @@ try {
 	// Register before navigation so an early module error is never unhandled.
 	scriptFailure.catch(() => {});
 	page.on("console", (message) => {
-		if (message.text().startsWith("HTML probe:"))
-			console.log(redact(message.text()));
+		if (message.text().startsWith("HTML probe:")) {
+			const phase = redact(message.text());
+			// Retained by the existing failure writer even if page evaluation stalls.
+			consolePhases.push(JSON.stringify({
+				message: phase,
+				nodeElapsedMs: performance.now() - consoleEpoch,
+			}));
+			console.log(phase);
+		}
 	});
 	await page.goto(
 		ditherThree
@@ -315,6 +328,7 @@ try {
 		);
 		assertHtmlProbeWasmIdentity(wasmBinding, hostWasmIdentity);
 		result.wasmIdentity = wasmBinding.identity;
+		result.hostWasmIdentity = hostWasmIdentity;
 	}
 	if (result.error || errors.length || externalRequests.length)
 		throw Error(redact(JSON.stringify({ result, errors, externalRequests })));
@@ -394,6 +408,19 @@ try {
 		});
 	}
 	console.log(JSON.stringify(result, null, 2));
+} catch (error) {
+	if (artifactDirectory) {
+		try {
+			await saveHtmlProbeFailure({
+				directory: artifactDirectory, error, page, resultKey,
+				browser: browser?.version(), hostWasmIdentity, root,
+				sourceInputs, consolePhases,
+			});
+		} catch (diagnosticError) {
+			console.error("Failed to persist HTML probe failure:", String(diagnosticError).replace(/https?:\/\/[^\s"'<>]+/g, "[private URL]"));
+		}
+	}
+	throw error;
 } finally {
 	await browser?.close();
 	await server?.close();

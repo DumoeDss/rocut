@@ -14,6 +14,14 @@ import { typeCardReferenceDigest } from "./mv-type-card-reference-realm";
 import { openTunnelNativeReplay } from "./mv-tunnel-native-replay";
 import { prepareTunnelFontPacket } from "../../packages/editor-classic/src/services/renderer/programmatic/mv-tunnel-font-packet";
 
+declare global {
+	var __tunnelRaceTimings: Array<{
+		index: number; control?: string; postControl?: string; stage: string;
+		elapsedMs: number; phases: Record<string, number>; error?: string;
+		iframesAfter: number; hostFontStatus: string;
+	}> | undefined;
+}
+
 /** Actual public producer/metric/raster adapter. Never imports archived drawing
  * or GL reference code, never invents metrics. Negatives replay the actual Rust
  * plan in a private trusted native realm; metric negatives re-enter Rust first.
@@ -97,6 +105,15 @@ async function createCapture({
 		}
 	};
 	return async ({ frame, index, control, postControl }) => {
+		const started = performance.now();
+		const phases: Record<string, number> = {};
+		let stage = "source-discovery";
+		let failure: string | undefined;
+		const timing = (name: string) => {
+			phases[name] = performance.now() - started;
+			stage = name;
+		};
+		try {
 		const durationFrames = frame.duration * 60;
 		if (
 			!Number.isSafeInteger(durationFrames) ||
@@ -158,11 +175,14 @@ async function createCapture({
 			timelineTime: 0,
 		});
 		if (!pending) throw Error("Tunnel public source discovery failed");
+		timing("source-discovery");
+		stage = "preflight-font-admission";
 		let evaluated = await resolveMvResourceFrame({
 			source,
 			frame: pending,
 			resources,
 		});
+		timing("preflight-font-admission");
 		const applied: Record<string, number> = {};
 		const replay =
 			control || postControl ? await openTunnelNativeReplay() : undefined;
@@ -229,19 +249,26 @@ async function createCapture({
 				if (!found) throw Error("Tunnel measured node role missing");
 				return found.advances;
 			};
+			stage = "scene-ticket-font-admission";
 			const sceneTicket = await prepareMvNativeRasterTicket({
 				source,
 				frame: pending,
 				resources,
 				diagnosticNativePostMode: "scene-only",
 			});
+			timing("scene-ticket-font-admission");
+			stage = "scene-raster-and-bitmap-readback";
 			let scenePixels = pixels(
 				await runMvNativeRaster({ ticket: sceneTicket }),
 			);
+			timing("scene-raster-and-bitmap-readback");
+			stage = "complete-frame-admission-raster-and-bitmap-readback";
 			let postPixels = pixels(
 				await renderProgrammaticCanvas({ source, frame: pending, resources }),
 			);
+			timing("complete-frame-admission-raster-and-bitmap-readback");
 			if (replay) {
+				stage = "controlled-replay";
 				const result = await replay.render({
 					frame: evaluated,
 					resources,
@@ -270,6 +297,7 @@ async function createCapture({
 						"Tunnel post control did not reach native uniform boundary",
 					);
 			}
+			stage = "complete";
 			return {
 				pixels: scenePixels,
 				postPixels,
@@ -290,6 +318,17 @@ async function createCapture({
 			};
 		} finally {
 			replay?.dispose();
+		}
+		} catch (error) {
+			failure = String(error);
+			throw error;
+		} finally {
+			globalThis.__tunnelRaceTimings?.push({
+				index, control, postControl, stage, phases, error: failure,
+				elapsedMs: performance.now() - started,
+				iframesAfter: document.querySelectorAll("iframe").length,
+				hostFontStatus: document.fonts.status,
+			});
 		}
 	};
 }

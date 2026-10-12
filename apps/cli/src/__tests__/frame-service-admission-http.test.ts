@@ -110,7 +110,7 @@ if (process.env.ROCUT_FRAME_ADMISSION_ISOLATED !== "1") {
 		};
 	}
 
-	test("a healthy saturated route queues the third HTTP frame instead of returning 429", async () => {
+	test("a healthy saturated route rejects the third HTTP frame until native capacity releases", async () => {
 		const h = await harness();
 		try {
 			const first = h.send(1);
@@ -118,23 +118,17 @@ if (process.env.ROCUT_FRAME_ADMISSION_ISOLATED !== "1") {
 			const second = h.send(2);
 			await waitFor(() => frames.length === 2);
 			const third = h.send(3);
-			let settled = false;
-			third.result
-				.finally(() => {
-					settled = true;
-				})
-				.catch(() => {});
-			await Bun.sleep(20);
-			expect(settled).toBe(false);
+			expect((await third.result).status).toBe(429);
 			expect(frames.map((frame) => frame.id)).toEqual([1, 2]);
 			frames[0]!.finish();
 			expect(await first.result).toEqual({ status: 200, bytes: [1] });
+			const replacement = h.send(4);
 			await waitFor(() => frames.length === 3);
-			expect(frames[2]!.id).toBe(3);
+			expect(frames[2]!.id).toBe(4);
 			frames[1]!.finish();
 			frames[2]!.finish();
 			expect(await second.result).toEqual({ status: 200, bytes: [2] });
-			expect(await third.result).toEqual({ status: 200, bytes: [3] });
+			expect(await replacement.result).toEqual({ status: 200, bytes: [4] });
 		} finally {
 			await h.close();
 		}
@@ -165,12 +159,13 @@ if (process.env.ROCUT_FRAME_ADMISSION_ISOLATED !== "1") {
 			const first = send(1),
 				second = send(2);
 			await waitFor(() => frames.length === 2);
+			first.response.emit("close");
+			expect(frames.find((frame) => frame.id === 1)!.signal.aborted).toBe(true);
+			// Only observed cancellation admits bounded replacements while cleanup drains.
 			const discarded = send(3),
 				next = send(4);
 			discarded.response.emit("close");
-			first.response.emit("close");
 			expect(await discarded.work).toBe(408);
-			expect(frames.find((frame) => frame.id === 1)!.signal.aborted).toBe(true);
 			await Promise.resolve();
 			expect(frames.map((frame) => frame.id)).toEqual([1, 2]);
 			frames.find((frame) => frame.id === 1)!.finish();

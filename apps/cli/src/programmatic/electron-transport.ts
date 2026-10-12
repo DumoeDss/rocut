@@ -32,44 +32,81 @@ export async function captureElectronPng({
 		try {
 			const stat = await file.stat();
 			if (!stat.isFile() || stat.size > 4096) throw Error();
-			value = JSON.parse(new TextDecoder("utf-8", { fatal: true }).decode(await file.readFile()));
+			value = JSON.parse(
+				new TextDecoder("utf-8", { fatal: true }).decode(await file.readFile()),
+			);
 		} finally {
 			await file.close();
 		}
 		endpoint = new URL(value.endpoint);
 		if (
-			value.version !== 1 || value.backend !== "elftia-electron" ||
-			endpoint.protocol !== "http:" || endpoint.hostname !== "127.0.0.1" ||
-			!endpoint.port || endpoint.pathname !== "/v1/frame" ||
-			endpoint.username || endpoint.password || endpoint.search || endpoint.hash ||
-			typeof value.token !== "string" || !/^[a-f0-9]{64}$/.test(value.token)
-		) throw Error();
-		token = value.token;
-		if (nativeVideo && (value.capabilities?.nativeVideoCapture?.version !== 1 ||
-			value.capabilities.nativeVideoCapture.protocol !== ELECTRON_NATIVE_VIDEO_PROTOCOL))
+			value.version !== 1 ||
+			value.backend !== "elftia-electron" ||
+			endpoint.protocol !== "http:" ||
+			endpoint.hostname !== "127.0.0.1" ||
+			!endpoint.port ||
+			endpoint.pathname !== "/v1/frame" ||
+			endpoint.username ||
+			endpoint.password ||
+			endpoint.search ||
+			endpoint.hash ||
+			typeof value.token !== "string" ||
+			!/^[a-f0-9]{64}$/.test(value.token)
+		)
 			throw Error();
-		if (nativeAudio && (value.capabilities?.nativeAudioAnalysis?.version !== 1 ||
-			value.capabilities.nativeAudioAnalysis.protocol !== "html-frames-native-audio-v1"))
+		token = value.token;
+		if (
+			nativeVideo &&
+			(value.capabilities?.nativeVideoCapture?.version !== 1 ||
+				value.capabilities.nativeVideoCapture.protocol !==
+					ELECTRON_NATIVE_VIDEO_PROTOCOL)
+		)
+			throw Error();
+		if (
+			nativeAudio &&
+			(value.capabilities?.nativeAudioAnalysis?.version !== 1 ||
+				value.capabilities.nativeAudioAnalysis.protocol !==
+					"html-frames-native-audio-v1")
+		)
 			throw Error();
 	} catch {
-		throw Error("Elftia Electron capture unavailable; open Elftia with the tool plugin enabled");
+		throw Error(
+			"Elftia Electron capture unavailable; open Elftia with the tool plugin enabled",
+		);
 	}
 	signal.throwIfAborted();
 	let response: Response;
 	try {
 		response = await fetch(endpoint, {
-			method: "POST", redirect: "error", signal,
-			headers: { authorization: `Bearer ${token}`, "content-type": "application/json" },
-			body: JSON.stringify({ version: 1, width, height, expression,
-				...(nativeVideo ? { nativeVideo } : {}), ...(nativeAudio ? { nativeAudio } : {}) }),
+			method: "POST",
+			redirect: "error",
+			signal,
+			headers: {
+				authorization: `Bearer ${token}`,
+				"content-type": "application/json",
+			},
+			body: JSON.stringify({
+				version: 1,
+				width,
+				height,
+				expression,
+				...(nativeVideo ? { nativeVideo } : {}),
+				...(nativeAudio ? { nativeAudio } : {}),
+			}),
 		});
 	} catch {
-		throw Error(signal.aborted ? "Electron capture cancelled" : "Elftia Electron capture connection failed");
+		throw Error(
+			signal.aborted
+				? "Electron capture cancelled"
+				: "Elftia Electron capture connection failed",
+		);
 	}
 	if (!response.ok || response.headers.get("content-type") !== "image/png") {
 		await response.body?.cancel();
-		if (response.status === 422) throw Error("HTML frame evaluation failed (Elftia Electron)");
-		if (response.status === 408) throw Error("HTML frame cancelled or timed out (Elftia Electron)");
+		if (response.status === 422)
+			throw Error("HTML frame evaluation failed (Elftia Electron)");
+		if (response.status === 408)
+			throw Error("HTML frame cancelled or timed out (Elftia Electron)");
 		throw Error(`Elftia Electron capture failed (HTTP ${response.status})`);
 	}
 	// Do not accept an unbounded response even from a misconfigured local service.
@@ -82,14 +119,17 @@ export async function captureElectronPng({
 			const { done, value } = await reader.read();
 			if (done) break;
 			size += value.length;
-			if (size > 80_000_000) throw Error("Elftia Electron capture PNG too large");
+			if (size > 80_000_000)
+				throw Error("Elftia Electron capture PNG too large");
 			chunks.push(Buffer.from(value));
 		}
 	} finally {
 		await reader.cancel();
 	}
 	const png = Buffer.concat(chunks);
-	if (!png.subarray(0, 8).equals(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10])))
+	if (
+		!png.subarray(0, 8).equals(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]))
+	)
 		throw Error("Elftia Electron capture returned invalid PNG");
 	return png;
 }

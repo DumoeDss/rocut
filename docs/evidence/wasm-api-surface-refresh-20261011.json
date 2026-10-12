@@ -1,0 +1,121 @@
+{
+  "version": 1,
+  "recordedAt": "2026-10-11T09:50:11.005Z",
+  "scope": "Isolated worktree API/source gate verification; not installed Electron, all-engine exports or MV full acceptance",
+  "branch": "acceptance/20261011-6fa23f6b",
+  "privateGroup": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\.worktrees\\rocut-acceptance-20261011-6fa23f6b",
+  "sourceSnapshotCommits": {
+    "rocut": "dcf0a00ff7a99fda39d9047a891933c962343b1e",
+    "creator": "96a80a18ed3d5effd4d1ad9827441f671b9c48ed",
+    "producer": "ed98a3bb13c824699d00b754db3eb7383b93e30d",
+    "host": "ce9225abc47672a99ad780c3e42e940cc4534495"
+  },
+  "sourceByteBoundary": "Snapshot commits normalize CRLF at staging with per-command core.autocrlf=input. No Git config or raw frozen build input bytes changed. Rebuild identity uses the 971-file raw-byte manifest, not commit SHA alone.",
+  "authority": {
+    "root": "C:/Users/Sayo/AppData/Local/Temp/rocut-wasm-authority-20261011-GVDTX4",
+    "wasmSha256": "084cf7310df5bfdc1b8e4ce3f64bcff842e1b23b9fd0ca57c1c7dcffc0d1fc12",
+    "sourceManifestSha256": "d6cb235399f0090d037eb1c6d8c10241c8042d1d2b16913e56c6dc7a08e207c0",
+    "sourceContentSha256": "a21f235df3de2bde594d107aabb2f54fed650aa88a738b703317813dc6046f49",
+    "sourceFiles": 971,
+    "provenanceReceipt": {
+      "path": "docs/evidence/wasm-authority-20261011.json",
+      "sha256": "4f503d1f0c908ff4a58fffb71f3fd07da8b0a29a8b5cbf090595d0ef1f9ad77f"
+    }
+  },
+  "apiReview": {
+    "publicJs": 135,
+    "addedPublicJs": 25,
+    "stableBinary": 222,
+    "addedStableBinary": 95,
+    "removedStableBinary": 0,
+    "trampolines": 4,
+    "imports": 631,
+    "importDeltaBoundary": "Prior 614 import names were not retained. Net +17 is established; an exact added-name list is not claimed.",
+    "declarationLines": 228,
+    "generatedGlueExports": 755,
+    "sourceOrigins": "25 public and 95 stable additions mapped to frozen source in provenance receipt.",
+    "fourthClosure": "Generated mutable zero-argument FnMut() timer adapter: effects_readback_wait.rs:27/:44, registered wasm.rs:14; provenance is not a promise of all readback behavior."
+  },
+  "previousFailures": {
+    "api": "verify-GkumKi/api-surface.log remains unchanged; stale 110 JS / 127 stable + 3 trampoline baseline was reviewed before refreshing.",
+    "paths": "Original paths.log remains unchanged; adjacent identity/coverage string and Rust virtual path was a scanner false positive.",
+    "browser": "v1 startup failed in Chromium for >8MB main-thread synchronous compilation; zero Tunnel matrix visits. v1 package is preserved."
+  },
+  "verification": {
+    "apiSurface": {
+      "exitCode": 0,
+      "structuralTypeCompile": true
+    },
+    "controls": {
+      "negative": 27,
+      "positive": 2,
+      "exitCode": 0,
+      "output": "PASS missing-export -> wrapper-exports (exit 1)\nPASS extra-export -> wrapper-exports (exit 1)\nPASS changed-binary-import -> wasm-imports (exit 1)\nPASS changed-binary-export -> wasm-exports (exit 1)\nPASS extra-trampoline -> wasm-exports (exit 1)\nPASS missing-trampoline -> wasm-exports (exit 1)\nPASS stable-export-disguised-as-trampoline -> wasm-exports (exit 1)\nPASS edited-declaration -> binary-declarations (exit 1)\nPASS edited-license -> generated-files (exit 1)\nPASS invalid-backend -> graphics-provider (exit 1)\nPASS boolean-count -> graphics-provider (exit 1)\nPASS boolean-handles -> gpu-provider (exit 1)\nPASS provider-any -> gpu-provider (exit 1)\nPASS unkeyed-release -> gpu-provider (exit 1)\nPASS truncated-files -> generated-files (exit 1)\nPASS sync-entry-export-drift -> entry-parity (exit 1)\nPASS sync-entry-uninitialized -> entry-parity (exit 1)\nPASS condition-swap -> entry-conditions (exit 1)\nPASS condition-dropped -> entry-conditions (exit 1)\nPASS sync-subpath-dropped -> entry-conditions (exit 1)\nPASS sync-subpath-types-dropped -> entry-conditions (exit 1)\nPASS node-condition-added -> entry-conditions (exit 1)\nPASS check-wasm-missing-registration -> gate-registration (exit 1)\nPASS check-wasm-decoy-registration -> gate-registration (exit 1)\nPASS ci-missing-registration -> gate-registration (exit 1)\nPASS ci-before-install-registration -> gate-registration (exit 1)\nPASS gated-missing-registration -> gate-registration (exit 1)\nPASS crlf-checkout -> tolerated (exit 0): an autocrlf=true checkout, so the copied LICENSE/README arrive with CRLF (the exact windows-latest observation)\nPASS trampoline-hash-swap -> tolerated (exit 0): another build host's closure-trampoline symbol hashes (the exact CI observation)\n",
+      "fourthTrampolineIncludedInHostHashMutation": true
+    },
+    "pathControls": {
+      "pass": 6,
+      "fail": 0,
+      "skip": 0,
+      "exitCode": 0
+    },
+    "focusedLint": {
+      "command": "node node_modules/eslint/bin/eslint.js --config script/acceptance-focused-js-eslint.config.mjs --max-warnings 0 script/check-wasm-api-surface.mjs script/wasm-api-surface-contract.mjs script/check-wasm-paths.mjs script/__tests__/check-wasm-paths.test.mjs script/acceptance-wasm-baseline.mjs script/acceptance-focused-js-eslint.config.mjs",
+      "exitCode": 0,
+      "rules": "Explicit @eslint/js recommended with Node globals, not repository zero-rule MJS lint. Unused disable directives are errors.",
+      "deliberateExceptions": "Exactly seven line-local no-control-regex directives preserve the binary security scanner's intentional ASCII control delimiters; no runtime regex or existing production lint rules relaxed."
+    },
+    "encoding": "Six edited JS files strict UTF-8, no BOM or U+FFFD."
+  },
+  "browserV2": {
+    "path": "C:/Users/Sayo/AppData/Local/Temp/rocut-wasm-authority-20261011-GVDTX4/browser-pkg-v2-sntQBC",
+    "wrapperSha256": "cc62ca83fb09032be1bf5427a156f572587ef21cc6a6c185d4743ac4fe7ddb39",
+    "receipt": {
+      "path": "docs/evidence/wasm-authority-browser-v2-20261011.json",
+      "sha256": "cc339900440247996e8c0451773dcb9ee3975067bbf65131616f1664892148d9"
+    },
+    "actualChromiumSmoke": "153.0.8010.12 main thread; async compile/instantiate 1 each, sync constructors 0; same binary and 135 public exports. Matrix is separate.",
+    "helperHashBoundary": "Creation and subsequent CLI safety helper hashes in v2 receipt remain historical; current helper additionally contains a lint-only comment and is pinned below."
+  },
+  "newWasmSourceContracts": {
+    "rocut": {
+      "pass": 43,
+      "skip": 2,
+      "fail": 0,
+      "scope": "Some ownership/Electron/codec contracts use doubles; actual HF/Remotion compile cases still skipped."
+    },
+    "creator": {
+      "pass": 34,
+      "scope": "Pure contract; no WASM/render."
+    },
+    "host": {
+      "pass": 46,
+      "scope": "Mock Electron/CDP/HTTP; no real native window/GPU."
+    },
+    "receipts": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\.worktrees\\rocut-acceptance-20261011-6fa23f6b/source-contracts.json"
+  },
+  "scalarParity": {
+    "command": "node script/probe-scalar-animation-runtime-parity.mjs",
+    "runtime": "Node v24.14.0 (native WASM module import supported experimentally)",
+    "artifact": "C:/Users/Sayo/AppData/Local/Temp/scalar-runtime-parity-Uyj2G4",
+    "wasmSha256": "084cf7310df5bfdc1b8e4ce3f64bcff842e1b23b9fd0ca57c1c7dcffc0d1fc12",
+    "cases": 5,
+    "samples": 80,
+    "maxDelta": 1.1102230246251565e-16,
+    "scope": "Observed TS/WASM CPU differential values, not browser/editor/export acceptance. The script reports observations rather than enforcing a new tolerance."
+  },
+  "scriptHashes": {
+    "script/check-wasm-api-surface.mjs": "3ca433a5217b7d51c11114bc487bc03a41c8011c3adb30f2062e5bd6a44544d4",
+    "script/wasm-api-surface-contract.mjs": "89e065f52477f71aade49f942ffb68c37e58d625489431557171c1a5d5022f2f",
+    "script/check-wasm-paths.mjs": "f2195ce994952e1692219fce497f586c3a9770d25a8627a704580160e607c502",
+    "script/__tests__/check-wasm-paths.test.mjs": "a519097b08ccb61970a508ae3e99edabeab6677de3b66506da46bd5040f6a1fe",
+    "script/acceptance-wasm-baseline.mjs": "bfa5472b0156749b53d54f323ce7ba0f8e652b14f298d084a5f3d1bdde40137d",
+    "script/acceptance-focused-js-eslint.config.mjs": "951e27dd127ab6848cbe4e37168d23ffe8f3ede476a61951d25b58978ec097fa"
+  },
+  "remaining": [
+    "Tunnel v2 original-threshold complete matrix and controlled race attribution.",
+    "Three compile/revise/reopen/export coverage for added archive operations.",
+    "Unified new-package render/export matrix, installed epkg and Electron E2E."
+  ],
+  "externalWrites": "No push, no original developer-tree Git mutation, no installed plugin change."
+}

@@ -1,6 +1,12 @@
 /**
  * The recorded wasm surface.
  *
+ * Refreshed 2026-10-11 from the pinned authoritative rebuild, not an installed shared copy.
+ * Source manifest: d6cb235399f0090d037eb1c6d8c10241c8042d1d2b16913e56c6dc7a08e207c0.
+ * Reviewed 25 public JS / 95 stable binary additions, zero old stable removals; see
+ * docs/evidence/wasm-authority-20261011.json for frozen-source origins and the retained red
+ * baseline. This records ABI/entries, not browser raster or installed Electron acceptance.
+ *
  * **How to re-derive every value here**, so a reader can check rather than trust:
  *
  *     node script/build-wasm.mjs                 # on the pinned toolchain (rust-toolchain.toml
@@ -8,7 +14,7 @@
  *     sha256sum rust/wasm/pkg/*                  # pinnedHashes, and the dts/wrapper/wasmDts values
  *     node script/check-wasm-api-surface.mjs     # reports every value that has moved, by id
  *
- * **Why the pins matter to this file.** Three of the 79 wasm exports are rustc symbol-hash names
+ * **Why the pins matter to this file.** The early surface included three rustc symbol-hash names
  * and the binary's `producers` section carries the compiler version verbatim, so an unpinned
  * toolchain moves this contract without anyone touching the source. That is what happened on
  * PR #2: CI installed `wasm-pack: latest` (v0.15.0) and the runner image's rustc against a surface
@@ -59,10 +65,10 @@ export const BASELINE_DTS_SHA =
  * correspond 1:1" — so this applies the repository's own existing finding to its gate.
  *
  * **What is still asserted, so this is a re-scope and not a hole**: the count of trampolines is
- * exactly `trampolineExportCount`, each must match this shape, the other 82 are an exact set, and
- * the total is 84. Frame-hold and color-adjustment APIs each added two stable exports.
- * Transition graph validation/sampling adds one stable export, evaluateClipTransitions.
- * A 4th trampoline, a missing one, a renamed stable export, or a stable
+ * exactly `trampolineExportCount`, each must match this shape, and all 222 stable exports remain
+ * an exact set (226 total). The 2026-10-11 rebuild adds the FnMut() readback timer adapter;
+ * its frozen-source/glue provenance is in docs/evidence/wasm-authority-20261011.json.
+ * A 5th trampoline, a missing one, a renamed stable export, or a stable
  * export disguised in this shape all fail — each with a committed negative control.
  */
 export const TRAMPOLINE_EXPORT =
@@ -98,7 +104,7 @@ export const EXPECTED = {
 		"package.json":
 			"60502f95b49df31dd41e5be0ada1826e0693b30a525d3b49da73f4e106a1a4b4",
 		[SYNC_ENTRY]:
-			"746f22b8d2b5c78f1c9da873c7d66ec414c70005665711d0f2373fdb900202bb",
+			"3ea9403a7e21fb5c1228062c356fad1843cc461822c57342b942aa3e96b84c17",
 	},
 	/**
 	 * `LICENSE` and `README.md` are copied by wasm-pack; `NOTICE` is copied by the
@@ -140,9 +146,9 @@ export const EXPECTED = {
 		"opencut_wasm_bg.wasm.d.ts":
 			"d19c1b3dc87f095040c7eb1e56eb8c965d587cf7927ca21cc513327cf78ed7c1",
 	},
-	dtsSha: "721a193a3bc2dce4e46cf334a4c529809fca0680ec619509fc74054800d69d87",
+	dtsSha: "c1c554ea5726a473810b4c632d9d7cf26885837a4957ea44a67643cdf3ac88bc",
 	wrapperSha:
-		"a06ccc17ba7bfe15ead5baaa977fae97d456e85bd1a3d5695bfb1183e1db5219",
+		"d09bc88e6ed7a1af99adf7a1e545346e7993a8500cd78e519f9b0b0b17a6aabf",
 	/**
 	 * The low-level declarations, hashed after normalising the trampoline hashes below and sorted
 	 * by line. Exact-byte hashing of this file cannot hold across build hosts for the reason
@@ -153,25 +159,25 @@ export const EXPECTED = {
 	 * hashing recipe in `script/check-wasm-api-surface.mjs` after a pinned WASM rebuild.
 	 */
 	wasmDtsNormalizedSignature:
-		"3d7d8357943a6202bedf4c9ec742dc04f08743095bb9243ece83f0671fd57359",
-	wasmDtsLineCount: 132,
+		"6689fe16269dc2da9a5b459f555e6b50a064f364ad1e02dfa391cebcbf84301b",
+	wasmDtsLineCount: 228,
 	wrapperExportSignature:
-		"de65962d548f8fb4a31cfe84d2abc805dfb28052ffb6ff7a12dc68b574690cb0",
-	wrapperExportCount: 110,
+		"3700daef9601dc5225f499ca86b85e8eaf8381d7a5d40313f21b330eb8b0167a",
+	wrapperExportCount: 135,
 	bgExportSignature:
-		"929fe3df8088dd40ce35531395460aee6c80735ef988d526548fe56551e5d1d6",
-	bgExportCount: 723,
+		"3b38e0d1e79401bbc51e2b1991cf1b52dc3d5caa603a43ac33329d6a76e61c27",
+	bgExportCount: 755,
 	/**
 	 * The stably-named binary exports, as an exact set. This is the real contract: every export
 	 * a consumer can name is pinned here, and any addition, removal or rename fails.
 	 *
-	 * The remaining 3 are compiler-generated closure trampolines whose names carry a rustc symbol
+	 * The remaining 4 are compiler-generated closure trampolines whose names carry a rustc symbol
 	 * hash — see `TRAMPOLINE_EXPORT` for why they are matched by shape and count instead.
 	 */
 	stableWasmExportSignature:
-		"9abd51f88648d0a09cf31370a22a3a3455acc1238ea032e0985b80aaa1f64578",
-	stableWasmExportCount: 127,
-	trampolineExportCount: 3,
+		"f087380708606fd6bd9e09fa46ee61c4ef2ddc012ee321a64e6998afb5f47775",
+	stableWasmExportCount: 222,
+	trampolineExportCount: 4,
 	/**
 	 * The whole export set as recorded on the Windows build machine, kept for diagnosis: on
 	 * failure the gate prints the symmetric difference against it, which is how the host-varying
@@ -309,10 +315,107 @@ export const EXPECTED = {
 		"wasmruntimegraphicsquery_new|function",
 		"wasmruntimegraphicsquery_selectedBackend|function",
 		"wasmruntimegraphicsquery_unavailableReason|function",
+		// Reviewed additions: 95 stable exports and one readback timer trampoline.
+		"__wbg_liquidobjecttransportowner_free|function",
+		"__wbg_mvheartowner_free|function",
+		"__wbg_mvimagepreprocessowner_free|function",
+		"__wbg_mvjzowner_free|function",
+		"__wbg_mvlutatlasowner_free|function",
+		"__wbg_mvmemoriesoutput_free|function",
+		"__wbg_mvmemoriesowner_free|function",
+		"__wbg_mvmemoriespreparation_free|function",
+		"__wbg_mvmemoriesstage_free|function",
+		"__wbg_mvnightowner_free|function",
+		"encodeRemotionProducedAudioWav|function",
+		"evaluateLiquidObjectFrameJson|function",
+		"inspectScalarAnimationDomainsJson|function",
+		"liquidObjectTransportPolicyJson|function",
+		"liquidobjecttransportowner_command|function",
+		"liquidobjecttransportowner_new|function",
+		"mixRemotionProducedAudioPcm|function",
+		"mvheartowner_cancel|function",
+		"mvheartowner_capabilityJson|function",
+		"mvheartowner_diagnosticJson|function",
+		"mvheartowner_dispose|function",
+		"mvheartowner_frameJson|function",
+		"mvheartowner_imageBytes|function",
+		"mvheartowner_manifestJson|function",
+		"mvheartowner_new|function",
+		"mvheartowner_prepareSky|function",
+		"mvheartowner_prepare|function",
+		"mvimagepreprocessowner_admit|function",
+		"mvimagepreprocessowner_begin|function",
+		"mvimagepreprocessowner_dispose|function",
+		"mvimagepreprocessowner_key|function",
+		"mvimagepreprocessowner_new|function",
+		"mvimagepreprocessowner_request|function",
+		"mvimagepreprocessowner_step|function",
+		"mvimagepreprocessowner_take|function",
+		"mvjzowner_checkText|function",
+		"mvjzowner_dispose|function",
+		"mvjzowner_finishFrame|function",
+		"mvjzowner_frame|function",
+		"mvjzowner_new|function",
+		"mvjzowner_preparedJson|function",
+		"mvjzowner_prepare|function",
+		"mvjzowner_release|function",
+		"mvlutatlasowner_bindRow|function",
+		"mvlutatlasowner_clear|function",
+		"mvlutatlasowner_dispose|function",
+		"mvlutatlasowner_new|function",
+		"mvlutatlasowner_prepare|function",
+		"mvlutatlasowner_resolveParameters|function",
+		"mvlutatlasowner_rowPixels|function",
+		"mvlutatlasowner_sample|function",
+		"mvmemoriesoutput_bytes|function",
+		"mvmemoriesoutput_json|function",
+		"mvmemoriesowner_acceptStage|function",
+		"mvmemoriesowner_beginStage|function",
+		"mvmemoriesowner_cancelStage|function",
+		"mvmemoriesowner_cancel|function",
+		"mvmemoriesowner_capabilityJson|function",
+		"mvmemoriesowner_diagnosticJson|function",
+		"mvmemoriesowner_dispose|function",
+		"mvmemoriesowner_finishFrame|function",
+		"mvmemoriesowner_frame|function",
+		"mvmemoriesowner_measurementRequestsJson|function",
+		"mvmemoriesowner_new|function",
+		"mvmemoriesowner_prepareReserved|function",
+		"mvmemoriesowner_preparedBytes|function",
+		"mvmemoriesowner_preparedJson|function",
+		"mvmemoriesowner_prepare|function",
+		"mvmemoriesowner_reserve|function",
+		"mvmemoriesowner_sourceAdmissionJson|function",
+		"mvmemoriesowner_sourceRequestsJson|function",
+		"mvmemoriesstage_bytes|function",
+		"mvmemoriesstage_json|function",
+		"mvnightowner_bindDecoded|function",
+		"mvnightowner_bindLutRow|function",
+		"mvnightowner_bindReflection|function",
+		"mvnightowner_clear|function",
+		"mvnightowner_diagnostic|function",
+		"mvnightowner_dispose|function",
+		"mvnightowner_evaluate|function",
+		"mvnightowner_new|function",
+		"mvnightowner_preflight|function",
+		"mvnightowner_prepareLut|function",
+		"mvnightowner_prepare|function",
+		"mvnightowner_releaseFrame|function",
+		"prepareRemotionInlineAudioSourcesJson|function",
+		"resolveEffectLayerParamsJson|function",
+		"resolveGlassObjectParamsJson|function",
+		"resolveInkObjectParamsJson|function",
+		"resolveLiquidObjectParamsJson|function",
+		"resolveProgrammaticFrameTunnelJson|function",
+		"resolveRemotionProducedAssetsJson|function",
+		"resolveRemotionProducedFramesJson|function",
+		"sampleScalarAnimationBatchJson|function",
+		"validateMasterEffectsJson|function",
+		"wasm_bindgen__convert__closures_____invoke__hda92ba54d0ef34af|function",
 	],
 	wasmImportSignature:
-		"4ded767d22588450181f526f4ca778b0d757153aa50a21c698b8fdd2659ceace",
-	wasmImportCount: 614,
+		"09f3664f1935db3c374d8aa7c312cd913343cd614d9853e5bd5bea0e9ff597fa",
+	wasmImportCount: 631,
 	/**
 	 * The `exports` conditions `emitSyncEntry` writes. Recorded here so the routing that makes the
 	 * artifact initializable outside a bundler is a contract term rather than an incidental

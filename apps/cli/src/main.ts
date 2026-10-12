@@ -142,6 +142,11 @@ export const USAGE_LINES: readonly string[] = [
 ];
 
 async function runCli(argv: readonly string[]): Promise<void> {
+	// Help must never resolve the default live target or dispatch a command.
+	if (argv.includes("--help")) {
+		process.stdout.write(USAGE_LINES.join("\n") + "\n");
+		return;
+	}
 	const [command, ...rest] = argv;
 	const args = parseArgs(rest);
 	const registry = new TargetRegistry(
@@ -457,14 +462,34 @@ async function runCli(argv: readonly string[]): Promise<void> {
 		}
 		case "snapshot": {
 			const tick = flag(args, "tick");
-			if (tick === undefined || !/^\d+$/.test(tick)) throw new Error("snapshot requires --tick <non-negative integer mediaTicks>");
+			if (tick === undefined || !/^\d+$/.test(tick))
+				throw new Error(
+					"snapshot requires --tick <non-negative integer mediaTicks>",
+				);
 			const revision = flag(args, "revision");
-			if (args.flags.has("revision") && (revision === undefined || !/^\d+$/.test(revision))) throw new Error("--revision requires a non-negative integer");
-			for (const key of ["out", "surface", "project", "target"]) if (args.flags.has(key) && flag(args, key) === undefined) throw new Error(`--${key} requires a value`);
+			if (
+				args.flags.has("revision") &&
+				(revision === undefined || !/^\d+$/.test(revision))
+			)
+				throw new Error("--revision requires a non-negative integer");
+			for (const key of ["out", "surface", "project", "target"])
+				if (args.flags.has(key) && flag(args, key) === undefined)
+					throw new Error(`--${key} requires a value`);
 			const resolved = await resolveTarget(args, registry);
 			const project = flag(args, "project");
-			if (project !== undefined && normalizeProjectKey(project) !== normalizeProjectKey(resolved.entry.projectPath)) throw new Error("snapshot-project-target-conflict");
-			const result = await runSnapshotCli({ resolved, tick: Number(tick), out: flag(args, "out"), surfaceId: flag(args, "surface"), expectedRevision: revision === undefined ? undefined : Number(revision) });
+			if (
+				project !== undefined &&
+				normalizeProjectKey(project) !==
+					normalizeProjectKey(resolved.entry.projectPath)
+			)
+				throw new Error("snapshot-project-target-conflict");
+			const result = await runSnapshotCli({
+				resolved,
+				tick: Number(tick),
+				out: flag(args, "out"),
+				surfaceId: flag(args, "surface"),
+				expectedRevision: revision === undefined ? undefined : Number(revision),
+			});
 			process.stdout.write(JSON.stringify(result, null, "\t") + "\n");
 			return;
 		}

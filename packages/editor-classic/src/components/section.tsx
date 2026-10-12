@@ -243,6 +243,11 @@ export function SectionContent({
 	const ctx = useSectionContext();
 	const isCollapsible = ctx?.collapsible ?? false;
 	const isOpen = ctx?.isOpen ?? true;
+	// React 18 treats inert as a native attribute, not its newer boolean prop.
+	// Keep the empty-string DOM/SSR spelling across React type versions.
+	const nativeInertAttribute: Record<string, string> = isOpen
+		? {}
+		: { inert: "" };
 
 	const content = <div className={cn("p-4 pt-0", className)}>{children}</div>;
 
@@ -253,7 +258,7 @@ export function SectionContent({
 				aria-hidden={!isOpen}
 				// React 18 forwards the native boolean attribute as an empty string.
 				// Keep descendants mounted for drafts/animations but out of focus order.
-				{...(isOpen ? {} : { inert: "" })}
+				{...nativeInertAttribute}
 				className={cn(
 					"grid transition-[grid-template-rows] duration-100 ease-out",
 					isOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]",

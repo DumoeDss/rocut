@@ -1,0 +1,44 @@
+{
+  "schema": "rocut-tunnel-pattern-order-ab/v1",
+  "decision": "candidate-rejected-original-order-restored",
+  "acceptancePassed": false,
+  "fullMatrixExecuted": false,
+  "originalSceneMaxGate": 6,
+  "baseline": {
+    "head": "4200134afb61fae257af90e60202f016b31a2b68",
+    "fixtureManifestSha256": "f38e5edd9c483161ecaf65685288ad042361c762eeaa55273ccbf826a90ff84d",
+    "artifact": "C:/Users/Sayo/AppData/Local/Temp/rocut-tunnel-native-Ezf20d",
+    "verificationSha256": "994948cc0813b1d4f90f1500ee4f96e35f62576309d23a09825bec1ff0693272",
+    "sourceSha256": "23a8eccb03a65c26d5418069eb98cf38e5b38cb2e6064557ad0953a27ba664d2",
+    "sceneMax": 10,
+    "sceneChangedChannels": 40,
+    "postMax": 1,
+    "repeatPixelsEqual": true
+  },
+  "candidate": {
+    "head": "c6866315f20bf5f41534a465e9f0b86374c11fbd",
+    "fixtureManifestSha256": "0a0b850a00c1f78d2838d32433340efab12222cee0cf4565c269332820c1f8b9",
+    "artifact": "C:/Users/Sayo/AppData/Local/Temp/rocut-tunnel-native-uob6tS",
+    "verificationSha256": "9fafc6cbfe0d53f7f6724457d672e439fb639b6c82b5ba56be47407df50e9e16",
+    "sourceSha256": "c4a0c0a310c13899bf1a344e39758452f1f8f39a698f95aa1a32330bdf787638",
+    "sceneMax": 10,
+    "sceneChangedChannels": 40,
+    "postMax": 1,
+    "repeatPixelsEqual": false,
+    "repeatFirstDifference": {"x": 624, "y": 642, "channel": 0, "a": 124, "b": 159}
+  },
+  "unchanged": {
+    "sceneAndPostComparisonMetrics": true,
+    "productionSceneThresholds": true,
+    "softwareCanvasDisabled": true,
+    "settleRealmsDisabled": true,
+    "frameDelayMs": 0,
+    "firstAttemptsRetained": true,
+    "retries": 0
+  },
+  "limitations": [
+    "Diagnostic exit 0 proves completion, not pixel acceptance.",
+    "One A/B pair does not establish the causal source of the repeat mismatch.",
+    "Original grain/parity failure remains open. No oracle or threshold was changed."
+  ]
+}

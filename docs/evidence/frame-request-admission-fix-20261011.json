@@ -1,0 +1,116 @@
+{
+  "version": 1,
+  "kind": "Glass frame native admission CPU implementation receipt",
+  "sourceHeadAtImplementation": "571cba3b54845d01f50e2e95818fa1af5ed79d27",
+  "scope": {
+    "trackedSourceModified": [
+      "apps/cli/src/programmatic/frame-service.ts"
+    ],
+    "newSourceFiles": [
+      "apps/cli/src/programmatic/frame-job-slots.ts",
+      "apps/cli/src/__tests__/frame-job-slots.test.ts",
+      "apps/cli/src/__tests__/frame-service-admission.test.ts"
+    ],
+    "browserStarted": false,
+    "gpuStarted": false,
+    "gitWrites": false,
+    "manifestModified": false,
+    "unrelatedChangesReverted": false
+  },
+  "productionInvariants": [
+    "Native frame concurrency remains two, including aborted-but-draining jobs until actual render and cleanup settle.",
+    "Only replacements behind an already-aborted active job may queue; pending is bounded to two and FIFO.",
+    "Ordinary two-live overload and pending overflow still return the original HTTP 429 error. No retry or 429 suppression.",
+    "Each lease has independent identity even when an AbortSignal is reused. Lease release is idempotent.",
+    "Queued and native-active route controllers are all tracked for disposal. Response-close/request-abort listeners and arrival deadline are installed before acquire.",
+    "Queued cancellation promptly removes the waiter. Signal is rechecked after acquire before body reading or native launch.",
+    "The existing 2 MB body cap, error/status semantics, Glass 15 second arrival deadline and existing Electron particle promotion remain unchanged.",
+    "Route finally removes deadline/listeners/controller/drain tracking and releases the lease only after renderFrame has settled with native cleanup.",
+    "The production default still calls the actual renderHtmlPng. Optional renderer and clock injection are explicit CPU test seams, not an alternate production rasterizer or acceptance success oracle."
+  ],
+  "cpuValidation": {
+    "command": "C:/Users/Sayo/.bun/bin/bun.exe test apps/cli/src/__tests__/frame-job-slots.test.ts apps/cli/src/__tests__/frame-service-admission.test.ts apps/cli/src/__tests__/audio-job-slots.test.ts apps/cli/src/__tests__/frame-service-deadline.test.ts",
+    "bunVersion": "1.4.2",
+    "exitCode": 0,
+    "passed": 30,
+    "failed": 0,
+    "expects": 157,
+    "newAllocatorTests": 13,
+    "newRealHttpRouteTests": 8,
+    "existingAudioAndDeadlineControls": 9,
+    "stdout": {
+      "path": ".artifacts/glass-429-implementation-20261011/cpu-tests.txt",
+      "byteLength": 3122,
+      "sha256": "e29e51b3a04fb60eab3389ab17d8e300f40956feeeed97cab63098a3d8cbd392"
+    },
+    "fixtureBoundary": "Real loopback node:http clients, production frame route, production allocator, production deadline and production cleanup combinator. Renderer body and cleanup gates are CPU fixtures. The fixture PNG bytes are not actual rendered PNGs and do not prove Glass visual correctness or GPU behavior.",
+    "controls": [
+      "Two-live overload remains busy; native high-water never exceeds two.",
+      "Cancelled native work keeps its lease until deferred cleanup completes; replacements wait without 429.",
+      "FIFO pending capacity two; overflow remains busy/429.",
+      "Repeated release cannot free replacement work; shared signals never collapse separate leases.",
+      "Queued abort preserves reason and immediately restores waiting capacity; stale queued frame never launches.",
+      "Already-aborted requests never acquire or queue.",
+      "Abort before grant and grant-then-abort-before-continuation both prevent stale native launch.",
+      "Render and cleanup failure remain error responses and eventually restore admission.",
+      "Dispose aborts queued and active controllers, denies new work with 503, and remains pending until both native cleanup gates settle.",
+      "Queued frame expires on original arrival deadline; queue time never grants a fresh budget.",
+      "Real client socket close is observed by Host before the replacement admission positive control; real loopback cancellation bridges delayed cleanup.",
+      "Malformed JSON, oversized body and partial-body timeout preserve 422/413/cancellation behavior and remove route timers.",
+      "Negative late-observation control keeps 429 when Host controllers are still live."
+    ]
+  },
+  "staticValidation": {
+    "eslintCommand": "node node_modules/eslint/bin/eslint.js --config .artifacts/glass-429-implementation-20261011/eslint.config.mjs --max-warnings 0 apps/cli/src/programmatic/frame-job-slots.ts apps/cli/src/programmatic/frame-service.ts apps/cli/src/__tests__/frame-job-slots.test.ts apps/cli/src/__tests__/frame-service-admission.test.ts",
+    "eslintExitCode": 0,
+    "effectiveRulesVerified": "All four files use typescript-eslint/parser with @typescript-eslint/no-unused-vars and no-explicit-any at error severity. This is real CLI coverage, not root frontend-scope ignored-file evidence.",
+    "eslintConfigSha256": "8dbef5864169df7d132e0bf776dfafe3577bae4de819e0853bc8a604bd50ce7f",
+    "strictUtf8": true,
+    "replacementCharacters": 0,
+    "bom": false,
+    "gitDiffCheckExitCode": 0,
+    "trackedDiff": "37 insertions and 24 deletions, frame-service.ts only for this task; unrelated work preserved.",
+    "cliTypecheck": "Deferred to root's single consolidated noEmit pass; not claimed completed by this receipt."
+  },
+  "sourceFiles": [
+    {
+      "path": "apps/cli/src/programmatic/frame-job-slots.ts",
+      "byteLength": 1889,
+      "sha256": "16eb8afa69e5ea86b1dc713b688a7e04b9cb5e09b002a74efa9761ed48f5980c"
+    },
+    {
+      "path": "apps/cli/src/programmatic/frame-service.ts",
+      "byteLength": 6335,
+      "sha256": "ba1a8be6fc9371532441c2b8d4f7b402510006f17a2913f3881a84d5f63bb0bd"
+    },
+    {
+      "path": "apps/cli/src/__tests__/frame-job-slots.test.ts",
+      "byteLength": 12767,
+      "sha256": "ae9d6c809508a39e8126d9ba4f75838626084e4dd2a0ab721323f2fa4396bb79"
+    },
+    {
+      "path": "apps/cli/src/__tests__/frame-service-admission.test.ts",
+      "byteLength": 14523,
+      "sha256": "f1f0791a29aae77347755b2c12cd8e84aca35ef7badea59706266b9643e5a738"
+    }
+  ],
+  "retainedFailure": {
+    "path": ".artifacts/glass-current-baseline/run-4V2cDw/evidence.json",
+    "sha256": "7a29a0342d68656e8fb2b9fe386a111fe3fe46fa9d43972be3d1146758c09fbd",
+    "unexpectedHttp429": 3,
+    "exportStarted": false,
+    "retryPerformed": false
+  },
+  "evidenceLimits": [
+    "The old receipt has no request admission/abort/cleanup timing or occupancy split, so the three individual 429 causes remain unproved.",
+    "If a replacement reaches Host before old response-close cancellation is observed, this narrow policy still returns 429. Ordinary-live queuing or an explicit supersession protocol is not implemented or authorized here.",
+    "No claim that all HTTP 429s are eliminated, no relaxed strict browser acceptance, no browser retry, and no full 49-frame real export result in this receipt.",
+    "Root must complete consolidated typecheck, Git/source pin integration and a new serialized frozen-source strict real UI plus full 49-frame export run."
+  ],
+  "parentIntegratedCliNoEmit": {
+    "command": "node apps/cli/node_modules/typescript/bin/tsc -p apps/cli/tsconfig.json --noEmit",
+    "exitCode": 0,
+    "typescript": "5.9.3",
+    "scope": "Integrated CLI after native frame slot service change; not browser or installed Electron verification"
+  }
+}

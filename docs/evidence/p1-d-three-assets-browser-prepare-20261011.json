@@ -1,0 +1,986 @@
+{
+  "version": 1,
+  "date": "2026-10-11",
+  "status": "cpu-prepared-awaiting-fresh-freeze-and-browser-window",
+  "prepared": true,
+  "browserLaunched": false,
+  "browserTested": false,
+  "exportTested": false,
+  "scope": "New independent P1-D authority wrapper/fixtures; real persisted Host CPU preparation only. Future bounded legal SVG + glTF/animation frames, not arbitrary SVG/codecs or installed Electron.",
+  "preparationReceipt": {
+    "path": ".artifacts/p1d-browser-authority/run-VXLw2m/prepare-receipt.json",
+    "sha256": "18fdba523f6c69ad4c678ef7487fadb5929cbd2051f496c99f84986e94331d7b"
+  },
+  "casePlan": {
+    "path": ".artifacts/p1d-browser-authority/run-VXLw2m/case-plan.json",
+    "sha256": "7c0ca11d755bd3b6c85215e0df8b1e96c75b00ccafcdc80abcb3b9ee324d8e65"
+  },
+  "plan": {
+    "version": 1,
+    "root": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\.worktrees\\rocut-acceptance-20261011-6fa23f6b\\_others\\rocut",
+    "group": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\.worktrees\\rocut-acceptance-20261011-6fa23f6b\\_others\\rocut\\.artifacts\\p1d-browser-authority\\run-VXLw2m",
+    "preparedAt": "2026-10-11T10:59:57.947Z",
+    "featureToolchain": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\.worktrees\\rocut-acceptance-20261011-6fa23f6b\\_others\\rocut\\.artifacts\\p1d-feature-toolchain\\run-lCXGLZ",
+    "ordinaryToolchain": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/_others/rocut/.artifacts/three-toolchain/run-3Hn5Nw",
+    "originalCases": [
+      {
+        "id": "ordinary",
+        "artifact": ".artifacts/three-archive-revision/run-2uS2sC",
+        "evidence": ".artifacts/three-archive-revision/run-2uS2sC/p1-d-evidence.json",
+        "expected": "positive-model-pixels"
+      },
+      {
+        "id": "feature",
+        "artifact": ".artifacts/three-archive-revision/run-9awg6K",
+        "evidence": ".artifacts/three-archive-revision/run-9awg6K/p1-d-feature-evidence.json",
+        "expected": "unsupported-svg-negative"
+      }
+    ],
+    "browserExecutable": "C:\\Users\\Sayo\\AppData\\Local\\ms-playwright\\chromium-1243\\chrome-win64\\chrome.exe",
+    "bun": "C:/Users/Sayo/.bun/bin/bun.exe",
+    "binding": {
+      "directory": "C:\\Users\\Sayo\\AppData\\Local\\Temp\\rocut-wasm-authority-20261011-GVDTX4\\browser-pkg-v2-sntQBC",
+      "files": [
+        {
+          "name": "opencut_wasm.js",
+          "byteLength": 247548,
+          "sha256": "cc62ca83fb09032be1bf5427a156f572587ef21cc6a6c185d4743ac4fe7ddb39"
+        },
+        {
+          "name": "opencut_wasm_bg.wasm",
+          "byteLength": 15069546,
+          "sha256": "084cf7310df5bfdc1b8e4ce3f64bcff842e1b23b9fd0ca57c1c7dcffc0d1fc12"
+        },
+        {
+          "name": "opencut_wasm.d.ts",
+          "byteLength": 42384,
+          "sha256": "c1c554ea5726a473810b4c632d9d7cf26885837a4957ea44a67643cdf3ac88bc"
+        }
+      ]
+    },
+    "expectedWasmSha256": "084cf7310df5bfdc1b8e4ce3f64bcff842e1b23b9fd0ca57c1c7dcffc0d1fc12",
+    "times": [
+      0.75,
+      0,
+      0.25,
+      0.75
+    ],
+    "svgContract": {
+      "profile": "svg-animation-v1",
+      "modeling": {
+        "kind": "flat"
+      },
+      "curveSegments": 8,
+      "scope": "One bounded static filled rectangle in the trusted SVG subset, not arbitrary SVG",
+      "root": "svg with namespace and bounded positive viewBox; root width/height are not admitted",
+      "fill": "none, #RGB, #RRGGBB, black, white, red, green, blue; lime is not admitted",
+      "exclusions": "DTD/entities/comments, scripts, text, external references, url fills, nested svg and other unsupported tags/attributes"
+    },
+    "browserLaunched": false,
+    "exportPlanned": false,
+    "runRequires": "Separately allocated browser/GPU window; fresh --prepare after source/HEAD/fixture-source changes; no hidden retry or identity rebase",
+    "limitations": [
+      "Ordinary persisted model positive, original feature unsupported-SVG runtime negative, new bounded legal SVG/animation positive",
+      "HTTP Host frames plus production capture seam observations, not installed Electron or arbitrary codecs",
+      "Independent known geometry/pose/color gates precede repeat-hash and adapter-parity checks"
+    ]
+  },
+  "execution": {
+    "executable": "C:/Users/Sayo/.bun/bin/bun.exe",
+    "args": [
+      "--preload",
+      "./script/fixtures/local-wasm-preload.mjs",
+      "script/fixtures/p1d-three-browser-host.ts",
+      "--prepare",
+      "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\.worktrees\\rocut-acceptance-20261011-6fa23f6b\\_others\\rocut\\.artifacts\\p1d-browser-authority\\run-VXLw2m"
+    ],
+    "cwd": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\.worktrees\\rocut-acceptance-20261011-6fa23f6b\\_others\\rocut",
+    "explicitEnvironment": {
+      "ROCUT_TEST_WASM_DIRECTORY": "C:/Users/Sayo/AppData/Local/Temp/rocut-wasm-authority-20261011-GVDTX4/browser-pkg-v2-sntQBC",
+      "ROCUT_PROBE_WASM_SHA256": "084cf7310df5bfdc1b8e4ce3f64bcff842e1b23b9fd0ca57c1c7dcffc0d1fc12",
+      "ROCUT_BROWSER_WINDOW_AUTHORIZED": null
+    },
+    "hostWasmIdentity": {
+      "directory": "C:\\Users\\Sayo\\AppData\\Local\\Temp\\rocut-wasm-authority-20261011-GVDTX4\\browser-pkg-v2-sntQBC",
+      "files": [
+        {
+          "name": "opencut_wasm.js",
+          "byteLength": 247548,
+          "sha256": "cc62ca83fb09032be1bf5427a156f572587ef21cc6a6c185d4743ac4fe7ddb39"
+        },
+        {
+          "name": "opencut_wasm_bg.wasm",
+          "byteLength": 15069546,
+          "sha256": "084cf7310df5bfdc1b8e4ce3f64bcff842e1b23b9fd0ca57c1c7dcffc0d1fc12"
+        },
+        {
+          "name": "opencut_wasm.d.ts",
+          "byteLength": 42384,
+          "sha256": "c1c554ea5726a473810b4c632d9d7cf26885837a4957ea44a67643cdf3ac88bc"
+        }
+      ]
+    },
+    "exitCode": 0,
+    "signal": null,
+    "stdout": "{\"wasmIdentity\":{\"directory\":\"C:\\\\Users\\\\Sayo\\\\AppData\\\\Local\\\\Temp\\\\rocut-wasm-authority-20261011-GVDTX4\\\\browser-pkg-v2-sntQBC\",\"files\":[{\"name\":\"opencut_wasm.js\",\"byteLength\":247548,\"sha256\":\"cc62ca83fb09032be1bf5427a156f572587ef21cc6a6c185d4743ac4fe7ddb39\"},{\"name\":\"opencut_wasm_bg.wasm\",\"byteLength\":15069546,\"sha256\":\"084cf7310df5bfdc1b8e4ce3f64bcff842e1b23b9fd0ca57c1c7dcffc0d1fc12\"},{\"name\":\"opencut_wasm.d.ts\",\"byteLength\":42384,\"sha256\":\"c1c554ea5726a473810b4c632d9d7cf26885837a4957ea44a67643cdf3ac88bc\"}]}}\n{\"prepared\":true,\"browserLaunched\":false,\"cases\":[\"ordinary\",\"feature\",\"legal-feature\"]}\n",
+    "stderr": ""
+  },
+  "freezeAtPreparation": {
+    "sourceCommit": "ad13d94eeca58041ffe3f82fa423cbf833c35aaf",
+    "fixtureSource": {
+      "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\.worktrees\\rocut-acceptance-20261011-6fa23f6b\\_others\\rocut\\fixture-source.json",
+      "bytes": 1127760,
+      "sha256": "fc333f5b2bbb16ea60493e0961b783f55cd2ea98018836e0a00ee6acb4adf79a",
+      "sourceCommit": "ad13d94eeca58041ffe3f82fa423cbf833c35aaf",
+      "drift": [
+        "script/fixtures/glass-current-baseline-browser-pins.mjs",
+        "script/fixtures/glass-current-baseline-observer.mjs",
+        "script/fixtures/glass-current-baseline-observer.test.mjs",
+        "script/fixtures/html-frame-browser-probe.ts",
+        "script/probe-html-frames.mjs"
+      ],
+      "valid": false,
+      "actualManifestSha256": "aaa1188aca797211426fc49db17879138e56c8a1562a9dc3383720ac1746c4b4"
+    },
+    "sourceManifestSha256": "f3fa5e2c9c1ae2c85d906cfb0145dcea7b906476fc751d602472a8bd0fe3d164"
+  },
+  "pins": {
+    "toolchain": {
+      "root": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\.worktrees\\rocut-acceptance-20261011-6fa23f6b\\_others\\rocut\\.artifacts\\p1d-feature-toolchain\\run-lCXGLZ",
+      "bytes": 45976692,
+      "files": 1446,
+      "manifestSha256": "d48afa84a45d086e1a8276acd3f0ecf831149c2574c91949a8eecf465526f20b"
+    },
+    "ordinaryToolchain": {
+      "root": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/_others/rocut/.artifacts/three-toolchain/run-3Hn5Nw",
+      "bytes": 35590142,
+      "files": 1398,
+      "manifestSha256": "0f08c92f9650f52684e0c0e86389a23a7c6ae546309c39cb450b53d47d16a463"
+    },
+    "wasm": {
+      "root": "C:\\Users\\Sayo\\AppData\\Local\\Temp\\rocut-wasm-authority-20261011-GVDTX4\\browser-pkg-v2-sntQBC",
+      "manifestSha256": "7165b46f715c9e90f48ee69fda9667c69d664212938c3a511bd5e43ec2c9e6be",
+      "identity": {
+        "directory": "C:\\Users\\Sayo\\AppData\\Local\\Temp\\rocut-wasm-authority-20261011-GVDTX4\\browser-pkg-v2-sntQBC",
+        "files": [
+          {
+            "name": "opencut_wasm.js",
+            "byteLength": 247548,
+            "sha256": "cc62ca83fb09032be1bf5427a156f572587ef21cc6a6c185d4743ac4fe7ddb39"
+          },
+          {
+            "name": "opencut_wasm_bg.wasm",
+            "byteLength": 15069546,
+            "sha256": "084cf7310df5bfdc1b8e4ce3f64bcff842e1b23b9fd0ca57c1c7dcffc0d1fc12"
+          },
+          {
+            "name": "opencut_wasm.d.ts",
+            "byteLength": 42384,
+            "sha256": "c1c554ea5726a473810b4c632d9d7cf26885837a4957ea44a67643cdf3ac88bc"
+          }
+        ]
+      }
+    },
+    "browser": {
+      "directory": "C:\\Users\\Sayo\\AppData\\Local\\ms-playwright\\chromium-1243\\chrome-win64",
+      "files": 308,
+      "bytes": 452900525,
+      "manifestSha256": "0837a3d8bc51efe93e1c28637b16b7c6e331cb3df73faed5a0fb2b950c47f6f4"
+    },
+    "bun": {
+      "path": "C:/Users/Sayo/.bun/bin/bun.exe",
+      "bytes": 86096984,
+      "sha256": "15277c59ccd6c6c20f8dc9716c2b59c1776320d606b6a8658f70be8799519ca4"
+    },
+    "node": {
+      "path": "C:\\nvm4w\\nodejs\\node.exe",
+      "bytes": 91380224,
+      "sha256": "63c259c81e5d472b5f11c8d506070130cb04a1ecf84b80377a34ed6ec9048088"
+    },
+    "preparedInputs": [
+      {
+        "path": "ordinary/project",
+        "root": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\.worktrees\\rocut-acceptance-20261011-6fa23f6b\\_others\\rocut\\.artifacts\\p1d-browser-authority\\run-VXLw2m\\ordinary\\project",
+        "files": 17,
+        "bytes": 894485,
+        "manifestSha256": "07b797fa3f2e41e646e4a667fa7c7f6ee7ec330790e93f0d70b3aafb0c1d5e0d"
+      },
+      {
+        "path": "feature/project",
+        "root": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\.worktrees\\rocut-acceptance-20261011-6fa23f6b\\_others\\rocut\\.artifacts\\p1d-browser-authority\\run-VXLw2m\\feature\\project",
+        "files": 23,
+        "bytes": 4317165,
+        "manifestSha256": "b7cd605340a1226c8bd443326eef434e947e3579e4ffd919c9ce3e59c7909e46"
+      },
+      {
+        "path": "feature/restored-source",
+        "root": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\.worktrees\\rocut-acceptance-20261011-6fa23f6b\\_others\\rocut\\.artifacts\\p1d-browser-authority\\run-VXLw2m\\feature\\restored-source",
+        "files": 4,
+        "bytes": 5019,
+        "manifestSha256": "a2c163bef5ff92c60cd2022aa148ab8f40397f1e770a9a9144f06e91002d53e3"
+      },
+      {
+        "path": "feature/diagnostic-author-unavailable",
+        "root": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\.worktrees\\rocut-acceptance-20261011-6fa23f6b\\_others\\rocut\\.artifacts\\p1d-browser-authority\\run-VXLw2m\\feature\\diagnostic-author-unavailable",
+        "files": 2,
+        "bytes": 1314,
+        "manifestSha256": "d47a100765f42498963d5730bf0e81def6ec0ee6db327aa910b0d803f1a3098a"
+      }
+    ]
+  },
+  "cases": [
+    {
+      "id": "ordinary",
+      "source": {
+        "version": 1,
+        "runtime": "html-document",
+        "code": "",
+        "documentId": "_rocut/compiled.html",
+        "width": 64,
+        "height": 64,
+        "frameRate": {
+          "numerator": 30,
+          "denominator": 1
+        },
+        "durationFrames": 30,
+        "seed": 7,
+        "resources": [
+          {
+            "id": "_rocut/compiled.html",
+            "kind": "document",
+            "mimeType": "text/html",
+            "byteLength": 878920,
+            "sha256": "9642f345d7873b506f93f3c3fe191444bb399102a85870dfcbded81a3d218c10",
+            "attachmentKey": "programmatic-sha256-9642f345d7873b506f93f3c3fe191444bb399102a85870dfcbded81a3d218c10"
+          },
+          {
+            "id": "assets/p1d.glb",
+            "kind": "model",
+            "mimeType": "model/gltf-binary",
+            "byteLength": 1516,
+            "sha256": "2bdee1e657b9db828e971b4c289cd7ffb2edf57bd1830f431a5f859fe5c3dd34",
+            "attachmentKey": "programmatic-sha256-2bdee1e657b9db828e971b4c289cd7ffb2edf57bd1830f431a5f859fe5c3dd34"
+          }
+        ],
+        "build": {
+          "version": 1,
+          "engine": "three",
+          "engineVersion": "0.185.1",
+          "entryFile": "p1d-main.ts",
+          "inputProps": {},
+          "inputs": [
+            {
+              "id": "p1d-main.ts",
+              "kind": "source",
+              "mimeType": "application/octet-stream",
+              "byteLength": 681,
+              "sha256": "9b3ca64366f34d4ecef88241d99a263438d8d2dcf8b95444e58d03ff515fe7ce",
+              "attachmentKey": "programmatic-source-sha256-9b3ca64366f34d4ecef88241d99a263438d8d2dcf8b95444e58d03ff515fe7ce"
+            }
+          ],
+          "toolchainLock": {
+            "id": "_rocut/toolchain-lock.json",
+            "kind": "source",
+            "mimeType": "application/octet-stream",
+            "byteLength": 5341,
+            "sha256": "0c84ed51edd9f4191002ed73ea454cb434baeef99edea70f2c087f02a960515e",
+            "attachmentKey": "programmatic-source-sha256-0c84ed51edd9f4191002ed73ea454cb434baeef99edea70f2c087f02a960515e"
+          }
+        }
+      },
+      "originalEvidence": ".artifacts/three-archive-revision/run-2uS2sC/p1-d-evidence.json",
+      "authorUnavailable": true,
+      "reopenedProjectBytesSha256": "6add8581beee13e1d0f206daf46f7cff443728809623205de13cb7ec9069a0b8",
+      "snapshotExact": true,
+      "expected": "positive-model-pixels",
+      "frameRateNote": "Original 30 fps source quantizes requested .75/.25 seconds to 22/30 and 7/30; expectations use the actual WASM-mapped time",
+      "mappedFrames": [
+        {
+          "requestedTime": 0.75,
+          "frame": {
+            "durationFrames": 30,
+            "frameRate": {
+              "denominator": 1,
+              "numerator": 30
+            },
+            "index": 22,
+            "resourceLimits": {
+              "maxBytes": 16777216,
+              "maxDecodedBytes": 134217728,
+              "maxDimension": 8192,
+              "maxObjects": 100000
+            },
+            "seed": 7,
+            "sourceTime": 88000,
+            "time": 0.7333333333333333,
+            "timelineTime": 90000,
+            "videoLimits": {
+              "maxBytes": 16777216,
+              "maxDimension": 4096,
+              "maxElements": 16
+            }
+          },
+          "expectedModelX": 0.36666666666666664
+        },
+        {
+          "requestedTime": 0,
+          "frame": {
+            "durationFrames": 30,
+            "frameRate": {
+              "denominator": 1,
+              "numerator": 30
+            },
+            "index": 0,
+            "resourceLimits": {
+              "maxBytes": 16777216,
+              "maxDecodedBytes": 134217728,
+              "maxDimension": 8192,
+              "maxObjects": 100000
+            },
+            "seed": 7,
+            "sourceTime": 0,
+            "time": 0,
+            "timelineTime": 0,
+            "videoLimits": {
+              "maxBytes": 16777216,
+              "maxDimension": 4096,
+              "maxElements": 16
+            }
+          },
+          "expectedModelX": 0
+        },
+        {
+          "requestedTime": 0.25,
+          "frame": {
+            "durationFrames": 30,
+            "frameRate": {
+              "denominator": 1,
+              "numerator": 30
+            },
+            "index": 7,
+            "resourceLimits": {
+              "maxBytes": 16777216,
+              "maxDecodedBytes": 134217728,
+              "maxDimension": 8192,
+              "maxObjects": 100000
+            },
+            "seed": 7,
+            "sourceTime": 28000,
+            "time": 0.23333333333333334,
+            "timelineTime": 30000,
+            "videoLimits": {
+              "maxBytes": 16777216,
+              "maxDimension": 4096,
+              "maxElements": 16
+            }
+          },
+          "expectedModelX": 0.11666666666666667
+        },
+        {
+          "requestedTime": 0.75,
+          "frame": {
+            "durationFrames": 30,
+            "frameRate": {
+              "denominator": 1,
+              "numerator": 30
+            },
+            "index": 22,
+            "resourceLimits": {
+              "maxBytes": 16777216,
+              "maxDecodedBytes": 134217728,
+              "maxDimension": 8192,
+              "maxObjects": 100000
+            },
+            "seed": 7,
+            "sourceTime": 88000,
+            "time": 0.7333333333333333,
+            "timelineTime": 90000,
+            "videoLimits": {
+              "maxBytes": 16777216,
+              "maxDimension": 4096,
+              "maxElements": 16
+            }
+          },
+          "expectedModelX": 0.36666666666666664
+        }
+      ]
+    },
+    {
+      "id": "feature",
+      "source": {
+        "version": 1,
+        "runtime": "html-document",
+        "code": "",
+        "documentId": "_rocut/compiled.html",
+        "width": 64,
+        "height": 64,
+        "frameRate": {
+          "numerator": 30,
+          "denominator": 1
+        },
+        "durationFrames": 30,
+        "seed": 7,
+        "resources": [
+          {
+            "id": "_rocut/compiled.html",
+            "kind": "document",
+            "mimeType": "text/html",
+            "byteLength": 2147353,
+            "sha256": "d2312a06ed9cd9615b1c147f93525faf1fc11f6487e7417fb279db6db7a05d77",
+            "attachmentKey": "programmatic-sha256-d2312a06ed9cd9615b1c147f93525faf1fc11f6487e7417fb279db6db7a05d77"
+          },
+          {
+            "id": "assets/p1d.glb",
+            "kind": "model",
+            "mimeType": "model/gltf-binary",
+            "byteLength": 1516,
+            "sha256": "2bdee1e657b9db828e971b4c289cd7ffb2edf57bd1830f431a5f859fe5c3dd34",
+            "attachmentKey": "programmatic-sha256-2bdee1e657b9db828e971b4c289cd7ffb2edf57bd1830f431a5f859fe5c3dd34"
+          },
+          {
+            "id": "assets/shape.svg",
+            "kind": "model",
+            "mimeType": "image/svg+xml",
+            "byteLength": 111,
+            "sha256": "115232401590f14e19510caa426eaf7747f2f5f5d0b0caaa20ee97a9f3bc210e",
+            "attachmentKey": "programmatic-sha256-115232401590f14e19510caa426eaf7747f2f5f5d0b0caaa20ee97a9f3bc210e"
+          }
+        ],
+        "build": {
+          "version": 1,
+          "engine": "three",
+          "engineVersion": "0.185.1",
+          "entryFile": "feature-main.ts",
+          "inputProps": {},
+          "inputs": [
+            {
+              "id": "feature-main.ts",
+              "kind": "source",
+              "mimeType": "application/octet-stream",
+              "byteLength": 731,
+              "sha256": "dc7b56174bcddf7d8df0f704555d8cd4c91da814c9617dfbf2983c8f1cf054ef",
+              "attachmentKey": "programmatic-source-sha256-dc7b56174bcddf7d8df0f704555d8cd4c91da814c9617dfbf2983c8f1cf054ef"
+            }
+          ],
+          "toolchainLock": {
+            "id": "_rocut/toolchain-lock.json",
+            "kind": "source",
+            "mimeType": "application/octet-stream",
+            "byteLength": 7714,
+            "sha256": "b38f8a202742afcb42de9e765e900ba94d64263869dd817e12d4bc9a0d784ae3",
+            "attachmentKey": "programmatic-source-sha256-b38f8a202742afcb42de9e765e900ba94d64263869dd817e12d4bc9a0d784ae3"
+          }
+        }
+      },
+      "originalEvidence": ".artifacts/three-archive-revision/run-9awg6K/p1-d-feature-evidence.json",
+      "authorUnavailable": true,
+      "reopenedProjectBytesSha256": "5d1852a6a89b0f39594235eaa9c9fa091ed905f699b0907f9494f68711114fbf",
+      "snapshotExact": true,
+      "expected": "unsupported-svg-negative",
+      "frameRateNote": "Original 30 fps source quantizes requested .75/.25 seconds to 22/30 and 7/30; expectations use the actual WASM-mapped time",
+      "mappedFrames": [
+        {
+          "requestedTime": 0.75,
+          "frame": {
+            "durationFrames": 30,
+            "frameRate": {
+              "denominator": 1,
+              "numerator": 30
+            },
+            "index": 22,
+            "resourceLimits": {
+              "maxBytes": 16777216,
+              "maxDecodedBytes": 134217728,
+              "maxDimension": 8192,
+              "maxObjects": 100000
+            },
+            "seed": 7,
+            "sourceTime": 88000,
+            "time": 0.7333333333333333,
+            "timelineTime": 90000,
+            "videoLimits": {
+              "maxBytes": 16777216,
+              "maxDimension": 4096,
+              "maxElements": 16
+            }
+          },
+          "expectedModelX": 0.36666666666666664
+        },
+        {
+          "requestedTime": 0,
+          "frame": {
+            "durationFrames": 30,
+            "frameRate": {
+              "denominator": 1,
+              "numerator": 30
+            },
+            "index": 0,
+            "resourceLimits": {
+              "maxBytes": 16777216,
+              "maxDecodedBytes": 134217728,
+              "maxDimension": 8192,
+              "maxObjects": 100000
+            },
+            "seed": 7,
+            "sourceTime": 0,
+            "time": 0,
+            "timelineTime": 0,
+            "videoLimits": {
+              "maxBytes": 16777216,
+              "maxDimension": 4096,
+              "maxElements": 16
+            }
+          },
+          "expectedModelX": 0
+        },
+        {
+          "requestedTime": 0.25,
+          "frame": {
+            "durationFrames": 30,
+            "frameRate": {
+              "denominator": 1,
+              "numerator": 30
+            },
+            "index": 7,
+            "resourceLimits": {
+              "maxBytes": 16777216,
+              "maxDecodedBytes": 134217728,
+              "maxDimension": 8192,
+              "maxObjects": 100000
+            },
+            "seed": 7,
+            "sourceTime": 28000,
+            "time": 0.23333333333333334,
+            "timelineTime": 30000,
+            "videoLimits": {
+              "maxBytes": 16777216,
+              "maxDimension": 4096,
+              "maxElements": 16
+            }
+          },
+          "expectedModelX": 0.11666666666666667
+        },
+        {
+          "requestedTime": 0.75,
+          "frame": {
+            "durationFrames": 30,
+            "frameRate": {
+              "denominator": 1,
+              "numerator": 30
+            },
+            "index": 22,
+            "resourceLimits": {
+              "maxBytes": 16777216,
+              "maxDecodedBytes": 134217728,
+              "maxDimension": 8192,
+              "maxObjects": 100000
+            },
+            "seed": 7,
+            "sourceTime": 88000,
+            "time": 0.7333333333333333,
+            "timelineTime": 90000,
+            "videoLimits": {
+              "maxBytes": 16777216,
+              "maxDimension": 4096,
+              "maxElements": 16
+            }
+          },
+          "expectedModelX": 0.36666666666666664
+        }
+      ]
+    },
+    {
+      "id": "legal-feature",
+      "projectId": "feature",
+      "source": {
+        "version": 1,
+        "runtime": "html-document",
+        "code": "",
+        "documentId": "_rocut/compiled.html",
+        "width": 64,
+        "height": 64,
+        "frameRate": {
+          "numerator": 60,
+          "denominator": 1
+        },
+        "durationFrames": 60,
+        "seed": 7,
+        "resources": [
+          {
+            "id": "_rocut/compiled.html",
+            "kind": "document",
+            "mimeType": "text/html",
+            "byteLength": 2147703,
+            "sha256": "65218d684bfd9e9d4cad7b267e1195787c3a228a88c0eafd4b5b9093f855a3d3",
+            "attachmentKey": "programmatic-sha256-65218d684bfd9e9d4cad7b267e1195787c3a228a88c0eafd4b5b9093f855a3d3"
+          },
+          {
+            "id": "assets/p1d.glb",
+            "kind": "model",
+            "mimeType": "model/gltf-binary",
+            "byteLength": 1516,
+            "sha256": "2bdee1e657b9db828e971b4c289cd7ffb2edf57bd1830f431a5f859fe5c3dd34",
+            "attachmentKey": "programmatic-sha256-2bdee1e657b9db828e971b4c289cd7ffb2edf57bd1830f431a5f859fe5c3dd34"
+          },
+          {
+            "id": "assets/shape.svg",
+            "kind": "model",
+            "mimeType": "image/svg+xml",
+            "byteLength": 111,
+            "sha256": "65521f542a646e5c8815f1b8fa8457d270262367b8e0d640c08fadf8b628d723",
+            "attachmentKey": "programmatic-sha256-65521f542a646e5c8815f1b8fa8457d270262367b8e0d640c08fadf8b628d723"
+          }
+        ],
+        "build": {
+          "version": 1,
+          "engine": "three",
+          "engineVersion": "0.185.1",
+          "entryFile": "scene.ts",
+          "inputProps": {},
+          "inputs": [
+            {
+              "id": "scene.ts",
+              "kind": "source",
+              "mimeType": "application/octet-stream",
+              "byteLength": 1203,
+              "sha256": "ba39899496a5e06686a5f2355d5a8291a867c2663d8173f92091141e0294b9ed",
+              "attachmentKey": "programmatic-source-sha256-ba39899496a5e06686a5f2355d5a8291a867c2663d8173f92091141e0294b9ed"
+            }
+          ],
+          "toolchainLock": {
+            "id": "_rocut/toolchain-lock.json",
+            "kind": "source",
+            "mimeType": "application/octet-stream",
+            "byteLength": 7714,
+            "sha256": "b38f8a202742afcb42de9e765e900ba94d64263869dd817e12d4bc9a0d784ae3",
+            "attachmentKey": "programmatic-source-sha256-b38f8a202742afcb42de9e765e900ba94d64263869dd817e12d4bc9a0d784ae3"
+          }
+        }
+      },
+      "resources": [
+        {
+          "id": "_rocut/compiled.html",
+          "kind": "document",
+          "mimeType": "text/html",
+          "byteLength": 2147703,
+          "sha256": "65218d684bfd9e9d4cad7b267e1195787c3a228a88c0eafd4b5b9093f855a3d3",
+          "attachmentKey": "programmatic-sha256-65218d684bfd9e9d4cad7b267e1195787c3a228a88c0eafd4b5b9093f855a3d3",
+          "actualSha256": "65218d684bfd9e9d4cad7b267e1195787c3a228a88c0eafd4b5b9093f855a3d3"
+        },
+        {
+          "id": "assets/p1d.glb",
+          "kind": "model",
+          "mimeType": "model/gltf-binary",
+          "byteLength": 1516,
+          "sha256": "2bdee1e657b9db828e971b4c289cd7ffb2edf57bd1830f431a5f859fe5c3dd34",
+          "attachmentKey": "programmatic-sha256-2bdee1e657b9db828e971b4c289cd7ffb2edf57bd1830f431a5f859fe5c3dd34",
+          "actualSha256": "2bdee1e657b9db828e971b4c289cd7ffb2edf57bd1830f431a5f859fe5c3dd34"
+        },
+        {
+          "id": "assets/shape.svg",
+          "kind": "model",
+          "mimeType": "image/svg+xml",
+          "byteLength": 111,
+          "sha256": "65521f542a646e5c8815f1b8fa8457d270262367b8e0d640c08fadf8b628d723",
+          "attachmentKey": "programmatic-sha256-65521f542a646e5c8815f1b8fa8457d270262367b8e0d640c08fadf8b628d723",
+          "actualSha256": "65521f542a646e5c8815f1b8fa8457d270262367b8e0d640c08fadf8b628d723"
+        }
+      ],
+      "restored": {
+        "status": "complete",
+        "incomplete": false,
+        "directory": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\.worktrees\\rocut-acceptance-20261011-6fa23f6b\\_others\\rocut\\.artifacts\\p1d-browser-authority\\run-VXLw2m\\feature\\restored-source",
+        "sourceDirectory": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\.worktrees\\rocut-acceptance-20261011-6fa23f6b\\_others\\rocut\\.artifacts\\p1d-browser-authority\\run-VXLw2m\\feature\\restored-source\\source",
+        "entryFile": "scene.gltf",
+        "archivePath": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\.worktrees\\rocut-acceptance-20261011-6fa23f6b\\_others\\rocut\\.artifacts\\p1d-browser-authority\\run-VXLw2m\\feature\\restored-source\\metadata\\model-archive.json",
+        "receiptPath": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\.worktrees\\rocut-acceptance-20261011-6fa23f6b\\_others\\rocut\\.artifacts\\p1d-browser-authority\\run-VXLw2m\\feature\\restored-source\\metadata\\restore-receipt.json",
+        "sourceFileCount": 2,
+        "sourceByteLength": 2688,
+        "glbRebuilt": false
+      },
+      "authorUnavailable": true,
+      "snapshotExact": true,
+      "reopenedProjectBytesSha256": "d66e85d2580b2dc3ca0387d527591b44b012b8b17b7b7e08cfcea8d1a3bef5cc",
+      "expected": "positive-pose-svg-pixels",
+      "diagnosticSourceSha256": "ba39899496a5e06686a5f2355d5a8291a867c2663d8173f92091141e0294b9ed",
+      "svgSha256": "65521f542a646e5c8815f1b8fa8457d270262367b8e0d640c08fadf8b628d723",
+      "frameRateNote": "60 fps produces exact .75/.25 seconds at integer frames 45/15",
+      "mappedFrames": [
+        {
+          "requestedTime": 0.75,
+          "frame": {
+            "durationFrames": 60,
+            "frameRate": {
+              "denominator": 1,
+              "numerator": 60
+            },
+            "index": 45,
+            "resourceLimits": {
+              "maxBytes": 16777216,
+              "maxDecodedBytes": 134217728,
+              "maxDimension": 8192,
+              "maxObjects": 100000
+            },
+            "seed": 7,
+            "sourceTime": 90000,
+            "time": 0.75,
+            "timelineTime": 90000,
+            "videoLimits": {
+              "maxBytes": 16777216,
+              "maxDimension": 4096,
+              "maxElements": 16
+            }
+          },
+          "expectedModelX": 0.375
+        },
+        {
+          "requestedTime": 0,
+          "frame": {
+            "durationFrames": 60,
+            "frameRate": {
+              "denominator": 1,
+              "numerator": 60
+            },
+            "index": 0,
+            "resourceLimits": {
+              "maxBytes": 16777216,
+              "maxDecodedBytes": 134217728,
+              "maxDimension": 8192,
+              "maxObjects": 100000
+            },
+            "seed": 7,
+            "sourceTime": 0,
+            "time": 0,
+            "timelineTime": 0,
+            "videoLimits": {
+              "maxBytes": 16777216,
+              "maxDimension": 4096,
+              "maxElements": 16
+            }
+          },
+          "expectedModelX": 0
+        },
+        {
+          "requestedTime": 0.25,
+          "frame": {
+            "durationFrames": 60,
+            "frameRate": {
+              "denominator": 1,
+              "numerator": 60
+            },
+            "index": 15,
+            "resourceLimits": {
+              "maxBytes": 16777216,
+              "maxDecodedBytes": 134217728,
+              "maxDimension": 8192,
+              "maxObjects": 100000
+            },
+            "seed": 7,
+            "sourceTime": 30000,
+            "time": 0.25,
+            "timelineTime": 30000,
+            "videoLimits": {
+              "maxBytes": 16777216,
+              "maxDimension": 4096,
+              "maxElements": 16
+            }
+          },
+          "expectedModelX": 0.125
+        },
+        {
+          "requestedTime": 0.75,
+          "frame": {
+            "durationFrames": 60,
+            "frameRate": {
+              "denominator": 1,
+              "numerator": 60
+            },
+            "index": 45,
+            "resourceLimits": {
+              "maxBytes": 16777216,
+              "maxDecodedBytes": 134217728,
+              "maxDimension": 8192,
+              "maxObjects": 100000
+            },
+            "seed": 7,
+            "sourceTime": 90000,
+            "time": 0.75,
+            "timelineTime": 90000,
+            "videoLimits": {
+              "maxBytes": 16777216,
+              "maxDimension": 4096,
+              "maxElements": 16
+            }
+          },
+          "expectedModelX": 0.375
+        }
+      ]
+    }
+  ],
+  "sourcePins": [
+    {
+      "path": "script/probe-p1d-three-assets-browser-authority.mjs",
+      "bytes": 13131,
+      "sha256": "7117d9bb256e8025570af3db8349535e21376450d3e78e3f097ad5b43786a853",
+      "strictUtf8": true,
+      "bom": false,
+      "replacement": false
+    },
+    {
+      "path": "script/fixtures/p1d-three-browser-host.ts",
+      "bytes": 15743,
+      "sha256": "f2f0f541861bb6a80faadaf504461ff59ed91cfaed6bc84cc221b7182eb535a5",
+      "strictUtf8": true,
+      "bom": false,
+      "replacement": false
+    },
+    {
+      "path": "script/fixtures/p1d-three-browser-oracle.mjs",
+      "bytes": 2894,
+      "sha256": "1682348e7a64d95c230e63745eceab0d8f611900546a8d8f99eaa4aa1f6ea28a",
+      "strictUtf8": true,
+      "bom": false,
+      "replacement": false
+    },
+    {
+      "path": "script/fixtures/p1d-three-browser-oracle.test.mjs",
+      "bytes": 2110,
+      "sha256": "489716ad998009329f11da3657483dd7d6b546eb0f615fba85aaa79561bfe31a",
+      "strictUtf8": true,
+      "bom": false,
+      "replacement": false
+    },
+    {
+      "path": "script/fixtures/p1d-three-browser.tsconfig.json",
+      "bytes": 256,
+      "sha256": "30fc1e9906d2bac4ec46a97f6465c0a99de43e7b3ad9cba695d427c9176be678",
+      "strictUtf8": true,
+      "bom": false,
+      "replacement": false
+    }
+  ],
+  "frozenReadyReceipt": {
+    "path": "docs/evidence/p1-d-three-assets-feature-cpu-20261011.json",
+    "sha256": "592d6225522b4dee3b459181b8c3576bdedfaf7c600d8b0d6e0450f498eb3926",
+    "unchanged": true
+  },
+  "validation": {
+    "cpuPreparation": {
+      "passed": true,
+      "sourceToolchainWasmBrowserOriginalProjectsUnchanged": true,
+      "actualWasmMappedFrameChecks": true,
+      "saveReopenAndRestoredByteBindings": true
+    },
+    "independentOracle": {
+      "passed": 2,
+      "failed": 0,
+      "positive": "Analytic known geometry/material/SVG fixture; no implementation-produced screenshot as expected output",
+      "negatives": [
+        "blank",
+        "frozen pose/pixels",
+        "wrong model color",
+        "missing SVG",
+        "wrong model position",
+        "frozen sequence"
+      ]
+    },
+    "unauthorizedRunGate": {
+      "passed": true,
+      "expectedExit": 1,
+      "browserLaunched": false
+    },
+    "mjsSyntaxAndFocusedLint": "passed",
+    "strictUtf8AndNoBomOrReplacement": "passed",
+    "jsonSyntax": "passed",
+    "scopedDiffCheck": "passed",
+    "targetedTypecheck": {
+      "command": "bunx --no-install tsc -p script/fixtures/p1d-three-browser.tsconfig.json",
+      "passed": false,
+      "selectedFixtureDiagnostics": 0,
+      "productionDependencyDiagnostics": 19,
+      "reason": "ArrayBufferLike/SharedArrayBuffer not assignable to ArrayBuffer in nine unchanged production dependency files",
+      "files": [
+        "apps/cli/src/programmatic/audio-import.ts",
+        "apps/cli/src/programmatic/engines/build-revision.ts",
+        "apps/cli/src/programmatic/engines/compile-project.ts",
+        "apps/cli/src/programmatic/engines/three-toolchain-profile.ts",
+        "apps/cli/src/programmatic/engines/toolchain.ts",
+        "apps/cli/src/programmatic/image-sequence-import.ts",
+        "apps/cli/src/programmatic/model-import.ts",
+        "apps/cli/src/programmatic/model-restore.ts",
+        "apps/cli/src/programmatic/remotion-inspection-project.ts"
+      ],
+      "note": "Not a whole-project green typecheck claim; no tracked fixes or threshold changes"
+    }
+  },
+  "supportedSvg": {
+    "profile": "svg-animation-v1",
+    "modeling": {
+      "kind": "flat"
+    },
+    "curveSegments": 8,
+    "scope": "One bounded static filled rectangle in the trusted SVG subset, not arbitrary SVG",
+    "root": "svg with namespace and bounded positive viewBox; root width/height are not admitted",
+    "fill": "none, #RGB, #RRGGBB, black, white, red, green, blue; lime is not admitted",
+    "exclusions": "DTD/entities/comments, scripts, text, external references, url fills, nested svg and other unsupported tags/attributes"
+  },
+  "publicDocumentationCheck": {
+    "path": "C:/tmps/three-assets-production-20261011/README.md",
+    "finding": "Current package README does not describe SVG; no root width/height or lime acceptance declaration was found there. Runtime subset is grounded in actual pinned dist/svg-model.js validation."
+  },
+  "retainedCpuIterations": [
+    {
+      "group": ".artifacts/p1d-browser-authority/run-ozVfBr",
+      "status": "failed",
+      "reason": "ordinary archived source opened against feature instead of original ordinary toolchain; corrected new helper, no browser launched"
+    },
+    {
+      "group": ".artifacts/p1d-browser-authority/run-1zFzc4",
+      "status": "passed-earlier-source",
+      "browserLaunched": false
+    },
+    {
+      "group": ".artifacts/p1d-browser-authority/run-maIfWP",
+      "status": "passed-earlier-source",
+      "browserLaunched": false
+    },
+    {
+      "group": ".artifacts/p1d-browser-authority/run-uaPk7F",
+      "status": "passed-earlier-source",
+      "browserLaunched": false
+    },
+    {
+      "group": ".artifacts/p1d-browser-authority/run-VXLw2m",
+      "status": "passed-final-helper",
+      "browserLaunched": false
+    }
+  ],
+  "releasePlan": {
+    "currentPlanReleaseEligible": false,
+    "reason": "Recorded fixture-source drift; parent will save ready files and refresh manifest. HEAD/source/manifest changes require a fresh group.",
+    "prepareArgv": [
+      "C:\\nvm4w\\nodejs\\node.exe",
+      "script/probe-p1d-three-assets-browser-authority.mjs",
+      "--prepare"
+    ],
+    "runArgv": [
+      "C:\\nvm4w\\nodejs\\node.exe",
+      "script/probe-p1d-three-assets-browser-authority.mjs",
+      "--run",
+      "<new fresh group from --prepare>"
+    ],
+    "runEnvironment": {
+      "ROCUT_BROWSER_WINDOW_AUTHORIZED": "1"
+    },
+    "runAuthority": "Only after parent allocates a browser/GPU window; --run rechecks source/HEAD/fixture-source, full closures and prepared project/archive/author inputs before launching.",
+    "successGates": [
+      "Actual model x [.375,0,.125,.375] at exact 60 fps times [.75,0,.25,.75] from known linear glTF keys",
+      "Known transparent/model edge/green SVG interior and warm glTF color gates",
+      "Repeated absolute RGBA hash exact with independently required visible motion",
+      "Original persisted unsupported SVG rejects instead of falsely rendering successfully",
+      "Project/attachment/archive/toolchain/WASM/source identities unchanged before/after; all browser ownership closed"
+    ],
+    "browserRetries": 0,
+    "exportPlanned": false
+  }
+}

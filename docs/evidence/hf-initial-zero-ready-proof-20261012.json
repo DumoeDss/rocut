@@ -1,0 +1,17 @@
+{
+  "schema": "rocut-hf-initial-zero-ready-proof/v1",
+  "baseCommit": "2bcfbe88f6428f1000d57663d742b2afe7d53b42",
+  "externalCandidate": "C:/Users/Sayo/AppData/Local/Temp/rocut-hf-initial-zero-ready-proof-20261012-6a95d04e",
+  "candidateManifestSha256": "ec895fbafe6223358e34456cc85b0a040d92356c2383f1c0d0e0c8dae509da8e",
+  "productionSha256": "9118d38d982e37b363deffafade040d7c4684d05f7d0c9090999fd7da115f5d8",
+  "regressionSha256": "630ff256669692f8b7d910224d05aa4e82cc64e573acbe16eca59f8541755040",
+  "observedFailureReceipt": "C:/Users/Sayo/AppData/Local/Temp/rocut-hf-remotion-browser-20261011-w6SgHf/receipt.json",
+  "observedFailureReceiptSha256": "c60af5c687ba8730e69e3333b23ef105b926d875900adb5e336e45985ed37b29",
+  "change": "Retain validated immutable first-zero callback proof only when seeking is false and readyState is low; browser loadeddata/canplay/seeked events may admit it after all scope, deadline, resource, source, target and freshness guards are rechecked.",
+  "semanticDelta": "Eligible low-ready initial-zero callbacks now validate metadata and source before waiting; previously unread faults can therefore become terminal earlier.",
+  "unchanged": ["absolute deadline", "original rejected-callback rearm", "nonzero and later-zero paths", "callback-seeking rejection", "pixel oracles", "export gates"],
+  "rootVerification": {"regressionPass": 102, "fail": 0, "skip": 0, "newCases": 28, "syntax": true, "recommendedNodeLint": true, "prettier": true, "strictUtf8": true, "scopedDiffCheck": true},
+  "externalIndependentAB": {"pass": 1, "baseline": "timeout", "candidate": "pass"},
+  "browserFixValidated": false,
+  "acceptance": false
+}

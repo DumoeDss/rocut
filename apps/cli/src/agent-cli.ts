@@ -89,21 +89,23 @@ export async function runAgentCli({
 				),
 			);
 			const route =
-				action === "animation-inspect" ? "programmatic/animation-inspect" : action === "object-params"
-					? "programmatic/object-params"
-					: action === "produced"
-					? "programmatic/produced"
-					: action === "audio-import"
-						? "programmatic/resources/import-audio"
-						: action === "sequence-import"
-							? "programmatic/resources/import-image-sequence"
-							: action === "sequence-restore"
-								? "programmatic/resources/restore-image-sequence-source"
-								: action === "model-restore"
-									? "programmatic/resources/restore-model-source"
-									: action === "source-restore"
-										? "programmatic/resources/restore-build-source"
-										: `programmatic/build/${action}`;
+				action === "animation-inspect"
+					? "programmatic/animation-inspect"
+					: action === "object-params"
+						? "programmatic/object-params"
+						: action === "produced"
+							? "programmatic/produced"
+							: action === "audio-import"
+								? "programmatic/resources/import-audio"
+								: action === "sequence-import"
+									? "programmatic/resources/import-image-sequence"
+									: action === "sequence-restore"
+										? "programmatic/resources/restore-image-sequence-source"
+										: action === "model-restore"
+											? "programmatic/resources/restore-model-source"
+											: action === "source-restore"
+												? "programmatic/resources/restore-build-source"
+												: `programmatic/build/${action}`;
 			const result = await request(resolved.secret, "POST", route, input);
 			if (
 				action === "revise" &&

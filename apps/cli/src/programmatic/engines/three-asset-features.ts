@@ -62,7 +62,6 @@ export function hasThreeSvgModel(
 			resource.kind === "model" && resource.mimeType === "image/svg+xml",
 	);
 }
-
 export function selectThreeAssetDriver({
 	driver,
 	modelFeatures,

@@ -1,0 +1,64 @@
+{
+  "schema": "rocut-hf-remotion-case-entry/v1",
+  "status": "implemented-cpu-verified-browser-pending",
+  "defaultScope": "four existing cases in original order; first failure stops, 180000ms watchdog unchanged",
+  "explicitSingleCaseEntry": "node script/probe-hf-remotion-browser-authority.mjs --prepare --case <fixed-id>",
+  "fixedIds": [
+    "hyperframes-basic",
+    "remotion-basic",
+    "hyperframes-audio-editor",
+    "remotion-audio-editor"
+  ],
+  "behavior": [
+    "Single-case version2 groups declare scope 1/4 and preserve not-selected/unexecuted cases; never full-four acceptance.",
+    "Legacy version1 plans remain full-four only. Run cannot override entries, arguments or selection.",
+    "Invalid and unknown cases fail closed; no arbitrary executable or entry selection.",
+    "Adds only passive elapsed checkpoints around second native-video preview/capture/encode/decode; fixture, gates and references unchanged."
+  ],
+  "validation": {
+    "nodeTests": {
+      "pass": 14,
+      "fail": 0,
+      "scope": "7 selection, 5 identity and 2 failure controls"
+    },
+    "finalSelectionRerun": 7,
+    "javascriptSyntax": "passed",
+    "focusedRecommendedEslint": "passed",
+    "fixtureTypeScript": "esbuild CPU transform and recommended TypeScript lint passed; not browser acceptance",
+    "strictUtf8": "passed",
+    "diffCheck": "passed"
+  },
+  "files": [
+    {
+      "path": "script/probe-hf-remotion-browser-authority.mjs",
+      "bytes": 12699,
+      "sha256": "70fda6dcbb143021927caa455fc51da61a11222b62429d85e7039f12710db16c"
+    },
+    {
+      "path": "script/fixtures/hf-remotion-case-selection.mjs",
+      "bytes": 3928,
+      "sha256": "d1f1e3ec244f958df743578d1b4b793e89823c40d7813bda6cbaceaac461bb28"
+    },
+    {
+      "path": "script/__tests__/hf-remotion-case-selection.test.mjs",
+      "bytes": 5793,
+      "sha256": "a3cda563ffc00d5c92ee5eb21f88169e17ccfb8ea94f1ae18f0c8294581bd3d3"
+    },
+    {
+      "path": "script/fixtures/html-frame-browser-probe.ts",
+      "bytes": 13549,
+      "sha256": "d9893b2b2c9238534d27527b8726ca6b5b8bf268284af06edb45ba4440d56ee7"
+    },
+    {
+      "path": "script/fixtures/hyperframes-browser-probe.ts",
+      "bytes": 8091,
+      "sha256": "95bef6295c145577d27e049f5513f3e0a5e3a45179428514d45398812a48133b"
+    }
+  ],
+  "browserAcceptance": "not-run for the new entry",
+  "priorHyperframesFailure": "docs/evidence/hf-remotion-browser-attempt2-20261011.json",
+  "remaining": [
+    "Independent Remotion basic and both audio/editor chains",
+    "HyperFrames basic full-chain timeout diagnosis and fix; partial native export is not full acceptance"
+  ]
+}

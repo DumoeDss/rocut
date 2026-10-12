@@ -34,9 +34,17 @@ export const PROGRAMMATIC_RESOURCE_CAPABILITY = {
 		restore: "programmatic/resources/restore-build-source",
 		input: ["source", "outputDirectory"],
 		format: "rocut-build-source-restore-v1",
-		output: ["source/", "resources/", "metadata/build-source.json", "metadata/toolchain-lock.json", "metadata/restore-receipt.json"],
-		scope: "declared-build-inputs-and-source.resources-attachments; no-compile-import-or-project-mutation",
-		outputDirectory: "must-not-exist; existing-nonredirected-parent; incomplete-output-retained",
+		output: [
+			"source/",
+			"resources/",
+			"metadata/build-source.json",
+			"metadata/toolchain-lock.json",
+			"metadata/restore-receipt.json",
+		],
+		scope:
+			"declared-build-inputs-and-source.resources-attachments; no-compile-import-or-project-mutation",
+		outputDirectory:
+			"must-not-exist; existing-nonredirected-parent; incomplete-output-retained",
 	},
 	modelArchive: {
 		restore: "programmatic/resources/restore-model-source",

@@ -1,0 +1,85 @@
+{
+	"schema": "rocut-clean-lf-wasm-authority-integration/v1",
+	"date": "2026-10-11",
+	"baseSourceCommit": "25f1d550eec0d8f2892fb82324d02a8b2813d6c0",
+	"builtNativeCommit": "ab7d91a52f1445ac93e58d996b9cb6e5ffae760d",
+	"scope": "Fresh private release build from raw-exact clean Git LF source; coherent ABI and actual Chromium async-init smoke; not unified raster/editor/Electron acceptance",
+	"privateRoot": "C:/Users/Sayo/AppData/Local/Temp/rocut-wasm-lf-preparation-20261011-9ad208e4",
+	"sourceManifest": {
+		"path": "C:/Users/Sayo/AppData/Local/Temp/rocut-wasm-lf-preparation-20261011-9ad208e4/source-manifest.json",
+		"sha256": "0d217928b2b124cfbb6f9ec722f05a187f8b20289cb5d6064527efa9997d687f",
+		"logicalSha256": "721aeee561a6a24e8c990df8cce9da58215439b0d5881fd3513465ab84d9b908",
+		"inputs": 971,
+		"rawGitExact": 971
+	},
+	"nativePackage": "C:/Users/Sayo/AppData/Local/Temp/rocut-wasm-lf-preparation-20261011-9ad208e4/pkg",
+	"browserPackage": "C:/Users/Sayo/AppData/Local/Temp/rocut-wasm-lf-preparation-20261011-9ad208e4/browser-pkg-lf-v1",
+	"wasm": {
+		"sha256": "362d29a7dba0b29fcf00965a5eba5342e70acd334c7171e2b73ca8ff06eb75be",
+		"bytes": 15069189,
+		"previousCrLfSha256": "084cf7310df5bfdc1b8e4ce3f64bcff842e1b23b9fd0ca57c1c7dcffc0d1fc12",
+		"lfShaderWitnesses": 8,
+		"oldCrLfShaderStringsAbsent": true
+	},
+	"browserJsSha256": "cc62ca83fb09032be1bf5427a156f572587ef21cc6a6c185d4743ac4fe7ddb39",
+	"validation": {
+		"buildExitCode": 0,
+		"buildDurationMs": 438288,
+		"apiSurface": true,
+		"publicJsExports": 135,
+		"binaryExports": 226,
+		"glueImports": 631,
+		"structuralCompile": true,
+		"pathGate": true,
+		"nodeAndBunInit": true,
+		"transitionChecksPerRuntime": 14,
+		"resolverCases": 7,
+		"sourceRawUnchanged": true,
+		"actualChromeAsyncMainThreadSmoke": true,
+		"actualFetchedWasmHashChecked": true,
+		"syncConstructorNegativeFired": true,
+		"defaultSyncConstructorCalls": 0,
+		"routingCpuPass": 12
+	},
+	"browser": {
+		"version": "153.0.8010.12",
+		"executableSha256": "9b07943f834485b43c9d54caea2951c78715f9f07070a80ab6658465ebd3e711"
+	},
+	"receipts": [
+		{
+			"path": "C:/Users/Sayo/AppData/Local/Temp/rocut-wasm-lf-preparation-20261011-9ad208e4/native-validation.json",
+			"sha256": "5e67d5c0c59a34cfc025dfadb0e011e15c7dfff3154843122a949d5729bb72ed"
+		},
+		{
+			"path": "C:/Users/Sayo/AppData/Local/Temp/rocut-wasm-lf-preparation-20261011-9ad208e4/browser-derivative.json",
+			"sha256": "b5ce0fccc55dbe4712aea351ba80c90c49e20b26f9724244578b6b0b89075c40"
+		},
+		{
+			"path": "C:/Users/Sayo/AppData/Local/Temp/rocut-wasm-lf-preparation-20261011-9ad208e4/browser-main-thread.json",
+			"sha256": "1b615b3a9848534a9245d16eedd58a3d71ada6558b9d80d6fccc386d5c044926"
+		},
+		{
+			"path": "C:/Users/Sayo/AppData/Local/Temp/rocut-wasm-lf-preparation-20261011-9ad208e4/source-manifest.json",
+			"sha256": "0d217928b2b124cfbb6f9ec722f05a187f8b20289cb5d6064527efa9997d687f"
+		},
+		{
+			"path": "C:/Users/Sayo/AppData/Local/Temp/rocut-wasm-lf-preparation-20261011-9ad208e4/native-reuse.json",
+			"sha256": "3278d37a9e3dd0670d43e904b4e47461a41df5469f3c915a40268298688684a5"
+		},
+		{
+			"path": "C:/Users/Sayo/AppData/Local/Temp/rocut-wasm-lf-preparation-20261011-9ad208e4/handoff-final.json",
+			"sha256": "a2dc96fe3806bc685a48d265bab5b8a0dd64f43e0a068f900ff7a413762c1641"
+		}
+	],
+	"boundary": {
+		"oldAuthorityUnchanged": true,
+		"original24DirtyRawFilesPreserved": true,
+		"sharedDependencyWrites": false,
+		"installedPluginWrites": false,
+		"pushed": false,
+		"unifiedBrowserMediaAcceptance": false,
+		"fullRepositoryGate": false
+	},
+	"reuseContract": "Later JavaScript-only commits may reuse this binary only when all 971 committed native/build input Git blobs match the frozen raw manifest; do not reinterpret dirty working-tree EOL bytes as the built source",
+	"retention": "External receipt roots are referenced acceptance evidence, not unowned scratch. Preserve until archived or explicitly retired."
+}

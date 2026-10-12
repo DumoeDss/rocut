@@ -1,0 +1,41 @@
+{
+	"schema": "rocut-wasm-http-bounded-cache/v1",
+	"baseCommit": "afbce436a88149e5e9a6484d66a2feee8fd8bb33",
+	"portableDeliveryManifestSha256": "c4a7be0862e44b4c6da34428bf7bae7d03005b543c35e3e43fcacb18b71823f7",
+	"productionSha256AfterFormatting": "a4dcf80c6e523065c6dc9c373bd01263239cd5e2133e9974a2179ad6f4f10e63",
+	"historicalFailure": "original HTTP200 body unavailable: protocol-body-evicted; byte-verified initialization stamp remains separate evidence",
+	"chromiumSourceTag": "153.0.8010.12",
+	"sourceEvidence": [
+		"network_resources_data.cc: MaybeDecodeDataToContent checks Content().CharactersSizeInBytes()",
+		"inspector_page_agent.cc: binary content Base64Encode",
+		"base64.cc: StringBuffer<LChar>"
+	],
+	"binaryAdmissionBytesUnchanged": 15728640,
+	"actualBinaryBytes": 15069189,
+	"actualBase64CacheBytes": 20092252,
+	"resourceCacheBytes": 20971520,
+	"totalCacheBytes": 41943040,
+	"rationale": "Resource cache is ceil(binary admission / 3) * 4; total reserves one bounded peer resource. Transport capacity does not enlarge admitted binary content.",
+	"unchanged": [
+		"original requestId",
+		"HTTP200",
+		"exact SHA and byte length",
+		"canonical base64",
+		"decoded binary limit15MiB",
+		"bounded records",
+		"no refetch",
+		"closure/late/duplicate fail closed",
+		"no timeout relaxation",
+		"stamp cannot replace response body"
+	],
+	"verification": {
+		"portableHttpCpuTests": 17,
+		"fail": 0,
+		"skip": 0,
+		"nodeRecommendedLint": true,
+		"prettier": true,
+		"strictUtf8": true
+	},
+	"browserABExecuted": false,
+	"acceptance": false
+}

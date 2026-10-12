@@ -1,0 +1,68 @@
+{
+  "schema": "rocut-frozen-browser-wave-results/v1",
+  "accepted": false,
+  "sourceCommit": "d0f94f2ead6c8f7b52412189a5672221d376be00",
+  "sourceManifestSha256": "f71fd37b9c2be953a34cdcb8e23dc86d4e9a6bc1fa5d1b95421e256e0416f6ce",
+  "sourceFileCount": 6983,
+  "authorityWasmSha256": "084cf7310df5bfdc1b8e4ce3f64bcff842e1b23b9fd0ca57c1c7dcffc0d1fc12",
+  "canvas": {
+    "group": ".artifacts/canvas-browser-authority/run-l2A1UT",
+    "passed": true,
+    "cases": ["default", "generators", "spatial", "magnify", "displacement", "wave"],
+    "receiptSha256": "5bc194a4aa7511b291ad58e105fc668e2fd8530fceb64b0500dce9bc844814e2",
+    "scope": "Existing standalone Chromium six-mode gates, including their original encode/decode gates; not installed Electron or full MV"
+  },
+  "glass": {
+    "group": ".artifacts/glass-current-baseline/run-lAxSyv",
+    "editorPassed": true,
+    "http429": 0,
+    "exportPassed": false,
+    "exportProductionCallReached": false,
+    "failure": "Bootstrap imported the authority web wrapper without calling its default async initializer; TICKS_PER_SECOND was read before WASM was initialized",
+    "receiptSha256": "ffe9248e0fa098f3c6ba788a240cb9f165495129360a630c44047d6353039685",
+    "windowReleaseSha256": "a8bdef96bb6c861e4d331b327c436e945769e7f1e4aea7d31e50d828099a4d6c"
+  },
+  "p1d": {
+    "group": ".artifacts/p1d-browser-authority/run-Nn8oEP",
+    "passed": false,
+    "receiptSha256": "639a8eea70a049cefdddb9c8fdd8598953168d922954a3344d0b066219c20fd7",
+    "identitiesUnchanged": true,
+    "failedContext": { "id": "legal-feature", "stage": "http:assertions" },
+    "svgSample": [147, 228, 89, 255],
+    "classification": "Existing Three ACES/exposure1/sRGB output agrees with independent math; the old pure-green screen oracle assumed an unpromised tone-mapping exemption",
+    "poseBranchExecuted": false,
+    "cleanupErrors": []
+  },
+  "hfRemotion": [
+    {
+      "case": "remotion-basic", "scope": "1/4", "passed": false,
+      "group": "C:/Users/Sayo/AppData/Local/Temp/rocut-hf-remotion-browser-20261011-W73ZRz",
+      "receiptSha256": "6a7edc4a843915149ad75f14e9c8d7b3d2cd8b1c53662ea0c83e1c7b5abd5752",
+      "identitiesUnchanged": true,
+      "failure": "At requested frame23 lazy/delayRender state pixel remained red rather than cyan; readiness cause is not yet established"
+    },
+    {
+      "case": "hyperframes-audio-editor", "scope": "1/4", "passed": true,
+      "group": "C:/Users/Sayo/AppData/Local/Temp/rocut-hf-remotion-browser-20261011-nlkzZg",
+      "receiptSha256": "06a7bb7e0919615ad2483d671bbd1fac9e5268880b59230745f16035fdcef048",
+      "identitiesUnchanged": true,
+      "verification": "Native HyperFrames, HTTP frame/audio, editor placement/trim/gain/mix, SceneExporter and independent FFmpeg audio/video decode"
+    },
+    {
+      "case": "remotion-audio-editor", "scope": "1/4", "passed": false,
+      "group": "C:/Users/Sayo/AppData/Local/Temp/rocut-hf-remotion-browser-20261011-rBo2wE",
+      "receiptSha256": "3d6c28553f0eddfe1fb717fd83ae7f8312ed344019e6a82179aec8aa4e733061",
+      "identitiesUnchanged": true,
+      "failure": "Native result contained exported video and PCM; two browser resource404 console errors failed the unchanged console gate before independent decode",
+      "decodeGateExecuted": false
+    }
+  ],
+  "fullFourHfRemotionAcceptance": false,
+  "unchangedFailuresRetained": true,
+  "automaticRetries": 0,
+  "ownedProcessMatchesAtFinalRelease": [],
+  "installedPluginChanged": false,
+  "electronTested": false,
+  "nextRepairs": ["Glass explicit async bootstrap", "Independent ACES SVG oracle with original tolerance", "Remotion async readiness investigation", "Remotion audio failed AV and HTTP path retention"],
+  "remaining": ["HyperFrames basic watchdog", "Particle authority integration", "Extended and remaining effect/object matrices", "Tunnel", "Packaging and installed Electron/E2E"]
+}

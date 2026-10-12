@@ -1,0 +1,47 @@
+{
+  "schema": "rocut-p1d-browser-attempt/v1",
+  "status": "failed-retained",
+  "sourceCommit": "571cba3b54845d01f50e2e95818fa1af5ed79d27",
+  "authorityWasmSha256": "084cf7310df5bfdc1b8e4ce3f64bcff842e1b23b9fd0ca57c1c7dcffc0d1fc12",
+  "receipts": [
+    {
+      "path": ".artifacts/p1d-browser-authority/run-QZAL7A/run-receipt.json",
+      "sha256": "c9729fd1716887a7c29180d4296bbd7d2e73d2cd57e6b32fb03f7d35f3a9bdd6"
+    },
+    {
+      "path": ".artifacts/p1d-browser-authority/run-QZAL7A/browser-evidence.json",
+      "sha256": "09b22debdf244745b3a0adfc056e7b92b6ac91cb9458a00f436faa90943cfc6f"
+    }
+  ],
+  "ordinaryModel": {
+    "passed": true,
+    "projectBytesUnchanged": true,
+    "frameIndices": [
+      22,
+      0,
+      7,
+      22
+    ],
+    "rgbaHashes": [
+      "1896e2d278cf5a1067d28c3042adbfb7439d23398c6a89544415000509da6cb2",
+      "5fb8f0c824e948d98646676e4c28489a1eb72459532029d183ed173e4e40c1f8",
+      "9e2d46def21d113ad5f2fed4275b6e12b605a80aacce1adbe3d578075665e3ca",
+      "1896e2d278cf5a1067d28c3042adbfb7439d23398c6a89544415000509da6cb2"
+    ]
+  },
+  "unsupportedSvgNegative": {
+    "passed": true,
+    "rejection": "{\"error\":\"HTML frame evaluation failed: Error: AssetError: Unsupported SVG attribute or reference\\n    at <anonymous>:29:19\"}"
+  },
+  "legalSvgAnimation": {
+    "passed": false,
+    "failedStage": "green interior pixel gate before pose/capture-seam check",
+    "error": "AssertionError [ERR_ASSERTION]: Known independent green SVG interior\n    at checkP1dPixels (E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\.worktrees\\rocut-acceptance-20261011-6fa23f6b\\_others\\rocut\\script\\fixtures\\p1d-three-browser-oracle.mjs:37:3)\n    at E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\.worktrees\\rocut-acceptance-20261011-6fa23f6b\\_others\\rocut\\script\\fixtures\\p1d-three-browser-host.ts:156:22\n    at processTicksAndRejections (native:7:39)",
+    "failedPngRetained": false,
+    "rootCause": "not established; independent CPU review suggests default ACES tone mapping is inconsistent with pure-green oracle, but actual failed pixel was not retained"
+  },
+  "identitiesUnchanged": true,
+  "retries": 0,
+  "exportTested": false,
+  "next": "Persist actual PNG/raw pixels/direct pose before original assertions; keep old failed receipts, source/fixture/reference/thresholds unchanged; schedule fresh short matrix after unified source save."
+}

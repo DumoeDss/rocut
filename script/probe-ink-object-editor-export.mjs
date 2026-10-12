@@ -7,11 +7,13 @@ import {copyFile,mkdir,mkdtemp,readFile,readdir,writeFile} from 'node:fs/promise
 import {basename,dirname,extname,join,resolve} from 'node:path';
 import {fileURLToPath,pathToFileURL} from 'node:url';
 import {chromium} from './browser-probe-toolchain.mjs';
+import {resolveNativeProbeWasm,assertNativeProbeWasmIdentity} from './native-probe-wasm-binding.mjs';
+import {stageNativeProbeWasm} from './native-probe-wasm-staging.mjs';
 import {pngPixels,visibility} from './fixtures/liquid-object-capture-probe-pixels.mjs';
 const repo=resolve(dirname(fileURLToPath(import.meta.url)),'..'),root=await mkdtemp('C:/tmps/ink-object-editor-export-');
 const preparation=process.argv[2],saved='C:/tmps/ink-object-host-P3xegw';
 assert(preparation?.startsWith('C:/tmps/ink-object-editor-export-preparation-'));
-const pkg='C:/tmps/liquid-object-wasm-development-35IsB3/pkg',packed='C:/tmps/liquid-object-packed-acceptance-9HwhTX';
+const binding=resolveNativeProbeWasm(),pkg=binding.directory,packed='C:/tmps/liquid-object-packed-acceptance-9HwhTX';
 const toolchain='C:/Users/Sayo/AppData/Local/Temp/rocut-three-resources-oSn2hb/.artifacts/three-toolchain/run-YuITk9';
 const ffmpeg='E:/Software/ffmpeg-6.0-full_build/bin/ffmpeg.exe',ffprobe='E:/Software/ffmpeg-6.0-full_build/bin/ffprobe.exe';
 const sha=bytes=>createHash('sha256').update(bytes).digest('hex');
@@ -30,15 +32,19 @@ try{
  report.formalFrame=await pin('C:/tmps/ink-object-project-UxDlvp/frame-0.png');assert.equal(report.formalFrame.sha256,formal.frames[0].sha256);
  const prep=JSON.parse(await readFile(join(preparation,'evidence.json'),'utf8'));assert(prep.ok);report.preparation=await pin(join(preparation,'evidence.json'));
  for(const item of [...prep.sources,...prep.outputs])assert.deepEqual(await pin(item.path),item);
+ for(const item of prep.pkgBefore){const name=basename(item.path),selected=binding.identity.find(file=>file.name===name);assert(selected&&selected.bytes===item.bytes&&selected.sha256===item.sha256,'Browser preparation and Host native package differ');}
+ if(binding.lane==='production')assertNativeProbeWasmIdentity(binding,prep.wasmBinding?.identity);
  const temp=join(root,'temp');await mkdir(temp);for(const key of ['TEMP','TMP','TMPDIR'])process.env[key]=temp;
- for(const name of ['liquid-object-wasm.mjs'])await copyFile(join(packed,name),join(root,name));
+ if(binding.lane==='legacy')for(const name of ['liquid-object-wasm.mjs'])await copyFile(join(packed,name),join(root,name));
+ const staged=await stageNativeProbeWasm({binding,runRoot:root});
+ report.wasmBinding={lane:binding.lane,sha256:binding.wasmSha256,source:binding.directory,node:staged.directory,identity:binding.identity,browserEvidenceKind:'served-byte-fetch-stamp-after-native-entry-import',wasmInstantiationObserved:false};
  await copyFile(join(pkg,'opencut_wasm_bg.wasm'),join(root,'opencut_wasm_bg.wasm'));
  await copyFile(join(repo,'apps/cli/src/programmatic/liquid-object-worker-entry.mjs'),join(root,'liquid-object-worker-entry.mjs'));
- report.nativePackage=await Promise.all(['opencut_wasm_sync.js','opencut_wasm_bg.wasm'].map(name=>pin(join(pkg,name))));assert.equal(report.nativePackage[1].sha256,'7f7dba6b40fa79618d1e2f7fedab82e1731dee9c26564796f597bf31758b349c');
+ report.nativePackage=await Promise.all(['opencut_wasm_sync.js','opencut_wasm_bg.wasm'].map(name=>pin(join(pkg,name))));assert.equal(report.nativePackage[1].sha256,binding.wasmSha256);
  const esbuild=await import(pathToFileURL(join(toolchain,'node_modules/esbuild/lib/main.js')).href);
  const build=await esbuild.build({entryPoints:[join(repo,'script/fixtures/ink-object-editor-export-host.ts')],bundle:true,write:false,platform:'node',format:'esm',logLevel:'silent',
- banner:{js:"import {createRequire as __probeRequire} from 'node:module';const require=__probeRequire(import.meta.url);"},define:{'import.meta.__ROCUT_PACKED_LIQUID_OBJECT_MODULE_V1__':JSON.stringify('./liquid-object-wasm.mjs')},
- plugins:[{name:'frozen-native-byte-pins',setup(api){api.onResolve({filter:/^opencut-wasm$/},()=>({path:pathToFileURL(join(pkg,'opencut_wasm_sync.js')).href,external:true}));api.onLoad({filter:/\.(ts|tsx|js|mjs|cjs|json)$/},async({path})=>{const bytes=await readFile(path);sources.set(path,{path,bytes:bytes.length,sha256:sha(bytes)});const suffix=extname(path);return {contents:bytes,loader:suffix==='.ts'?'ts':suffix==='.tsx'?'tsx':suffix==='.json'?'json':'js'};});}}]});esbuild.stop();
+ banner:{js:"import {createRequire as __probeRequire} from 'node:module';const require=__probeRequire(import.meta.url);"},define:binding.lane==='legacy'?{'import.meta.__ROCUT_PACKED_LIQUID_OBJECT_MODULE_V1__':JSON.stringify('./liquid-object-wasm.mjs')}:{},
+ plugins:[{name:'frozen-native-byte-pins',setup(api){api.onResolve({filter:/^opencut-wasm(\/sync)?$/},()=>({path:pathToFileURL(staged.syncEntry).href,external:true}));api.onLoad({filter:/\.(ts|tsx|js|mjs|cjs|json)$/},async({path})=>{const bytes=await readFile(path);sources.set(path,{path,bytes:bytes.length,sha256:sha(bytes)});const suffix=extname(path);return {contents:bytes,loader:suffix==='.ts'?'ts':suffix==='.tsx'?'tsx':suffix==='.json'?'json':'js'};});}}]});esbuild.stop();
  const bundle=join(root,'host.mjs');await writeFile(bundle,build.outputFiles[0].contents,{flag:'wx'});report.hostBundle=await pin(bundle);report.hostSources=[...sources.values()];await persist();
  const entry=await import(pathToFileURL(bundle).href);host=await entry.openInkExportHost({root,projectRoot:join(saved,'project'),staticDir:join(preparation,'editor'),toolchain,executable:chromium.executablePath(),ffmpeg,ffprobe});
  report.stage='GPU-production-export';await persist();
@@ -47,6 +53,7 @@ try{
  page.on('pageerror',error=>errors.push(error.message));page.on('console',message=>{if(message.type()==='error')errors.push(message.text());});
  await page.route('**/*',async route=>{const url=new URL(route.request().url());if(/^https?:$/.test(url.protocol)&&url.origin!==origin){external.push(url.origin);await route.abort();}else await route.continue();});
  await page.goto(host.editorUrl,{waitUntil:'load',timeout:60000});await page.waitForFunction(()=>typeof globalThis.__inkExportRun==='function',undefined,{timeout:60000});
+ if(binding.lane==='production'){report.browserWasmIdentity=await page.evaluate(()=>globalThis.__nativeProbeWasmIdentity);assertNativeProbeWasmIdentity(binding,report.browserWasmIdentity);}assertNativeProbeWasmIdentity(staged);
  const project=JSON.parse(await readFile(join(saved,'project/project.json'),'utf8'));
  const result=await page.evaluate(async options=>{const result=await globalThis.__inkExportRun(options);const encode=bytes=>{let binary='';for(let i=0;i<bytes.length;i+=32768)binary+=String.fromCharCode(...bytes.subarray(i,i+32768));return btoa(binary);};return {...result,video:encode(result.video),references:result.references.map(encode)};},{project,base:new URL('api',host.editorUrl).href});
  assert(result.ok);assert.equal(result.frameCount,4);assert.equal(errors.length,0);assert.equal(external.length,0);
@@ -59,6 +66,7 @@ try{
  for(let i=0;i<4;i++)assert(Math.abs(Number(report.probe.frames[i].best_effort_timestamp_time)-i/24)<=report.thresholds.timestampToleranceSeconds);
  const raw=join(root,'decoded.rgba');await run(ffmpeg,['-hide_banner','-loglevel','error','-n','-i',video,'-frames:v','4','-f','rawvideo','-pix_fmt','rgba',raw],{windowsHide:true,timeout:30000});const decoded=await readFile(raw);assert.equal(decoded.length,4*192*128*4);report.decoded=await pin(raw);report.decodedComparisons=[];
  for(let i=0;i<4;i++){const difference=compare({a:references[i],b:decoded.subarray(i*192*128*4,(i+1)*192*128*4)});report.decodedComparisons.push(difference);assert(difference.mean<=report.thresholds.decodedMean&&difference.activeMean<=report.thresholds.decodedActiveMean,`Encoded frame ${i} mismatch`);}
+ assertNativeProbeWasmIdentity(binding);assertNativeProbeWasmIdentity(staged);
  report.ok=true;report.stage='complete';
 }catch(error){report.failure={name:error.name,message:error.message.replace(/https?:\/\/[^\s"'<>]+/g,'[private URL]'),stack:error.stack?.replace(/https?:\/\/[^\s"'<>]+/g,'[private URL]')};process.exitCode=1;}
 finally{

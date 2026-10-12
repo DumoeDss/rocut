@@ -1,0 +1,232 @@
+{
+  "version": 1,
+  "status": "instrumentation-ready-for-parent-save-and-fresh-browser-authorization",
+  "workspace": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/.worktrees/rocut-acceptance-20261011-6fa23f6b/_others/rocut",
+  "scope": {
+    "ownedFiles": [
+      "script/fixtures/p1d-three-browser-host.ts",
+      "script/fixtures/p1d-three-browser-observation.mjs",
+      "script/fixtures/p1d-three-browser-observation.test.mjs"
+    ],
+    "browserLaunched": false,
+    "gitWritten": false,
+    "manifestWritten": false,
+    "dependenciesChanged": false,
+    "oracleChanged": false,
+    "sceneCameraGeometryChanged": false,
+    "oldFailureOverwritten": false
+  },
+  "frozenFailure": {
+    "group": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\.worktrees\\rocut-acceptance-20261011-6fa23f6b\\_others\\rocut\\.artifacts\\p1d-browser-authority\\run-QZAL7A",
+    "receiptSha256": "c9729fd1716887a7c29180d4296bbd7d2e73d2cd57e6b32fb03f7d35f3a9bdd6",
+    "evidenceSha256": "09b22debdf244745b3a0adfc056e7b92b6ac91cb9458a00f436faa90943cfc6f",
+    "hashesRechecked": true,
+    "passed": false,
+    "failedStage": "first legal-feature HTTP pixel assertion, Known independent green SVG interior",
+    "retainedFrames": 4,
+    "missingFailurePng": true,
+    "directObservationBranchReached": false,
+    "retries": 0,
+    "exportTested": false
+  },
+  "readOnlyAssessment": {
+    "rootCauseBoundary": "The old run proves an assertion failed, not its actual failed pixel. Geometry/material/color-contract reasoning is CPU-only; missing HTTP PNG prevents concluding the GPU result. Default ACES mixes color channels, contradicting the old pure-green assumption if this material reaches the sampled pixel. No production change or oracle correction is currently authorized.",
+    "references": [
+      {
+        "path": "apps/cli/src/programmatic/engines/three-driver.ts",
+        "lines": [
+          31,
+          32
+        ],
+        "sha256": "8785ea25026813927bbe6bed7a700ab63a0d3c30c32f9c3183f4e1df1befc026",
+        "fact": "SRGB output and ACESFilmicToneMapping"
+      },
+      {
+        "path": "feature-toolchain/node_modules/@elftia/three-assets/dist/svg-model.js",
+        "lines": [
+          162,
+          163,
+          192
+        ],
+        "sha256": "7e16046d0cba89842805b20ab959a9c1750df7aad0d416f3cc62557de2722028",
+        "fact": "viewBox origin/y transformation and default MeshBasicMaterial"
+      },
+      {
+        "path": "feature-toolchain/node_modules/three/src/materials/Material.js",
+        "lines": [
+          457,
+          1170
+        ],
+        "fact": "toneMapped defaults true and clone preserves it"
+      },
+      {
+        "path": "feature-toolchain/node_modules/three/src/renderers/WebGLRenderer.js",
+        "lines": [
+          2353
+        ],
+        "fact": "toneMapped default-framebuffer materials use renderer tone mapping"
+      }
+    ],
+    "cpuReference": {
+      "scope": "Read-only CPU geometry, actual Three ShapeGeometry/material/camera and scalar interpretation of pinned ACES shader; not DOM XML parse, GPU raster or observed failed pixel",
+      "geometry": {
+        "shapes": 1,
+        "vertices": 4,
+        "localMin": [
+          0,
+          -64,
+          0
+        ],
+        "localMax": [
+          64,
+          0,
+          0
+        ],
+        "worldMin": [
+          -0.8,
+          0.16000000000000003,
+          -0.2
+        ],
+        "worldMax": [
+          -0.16000000000000003,
+          0.8,
+          -0.2
+        ],
+        "rasterBox": [
+          [
+            14.933333333333334,
+            14.933333333333334,
+            -0.5879396984924623
+          ],
+          [
+            28.586666666666666,
+            28.586666666666666,
+            -0.5879396984924623
+          ]
+        ],
+        "samplePixelCenter": [
+          16.5,
+          16.5
+        ],
+        "inside": true
+      },
+      "material": {
+        "color": [
+          0,
+          1,
+          0
+        ],
+        "toneMapped": true,
+        "opacity": 1,
+        "transparent": false,
+        "side": 2
+      },
+      "tone": {
+        "shaderSha": "0e82e57cbc2747a20901ef227078f8d440edd6fb7cab807c525e09e5fe000e78",
+        "input": [
+          0.5909666666666668,
+          1.5139,
+          0.22305000000000003
+        ],
+        "fit": [
+          0.43424039111385254,
+          0.739808771402391,
+          0.14375416467060453
+        ],
+        "linear": [
+          0.2933592560122896,
+          0.7746073220329723,
+          0.09943390398268362
+        ],
+        "srgb": [
+          0.577906066458001,
+          0.8934997007428814,
+          0.34824146201671063
+        ],
+        "rgba": [
+          147,
+          228,
+          89,
+          255
+        ],
+        "oldGateWouldAccept": false
+      },
+      "assets": [
+        {
+          "id": "_rocut/compiled.html",
+          "bytes": 2147703,
+          "sha256": "65218d684bfd9e9d4cad7b267e1195787c3a228a88c0eafd4b5b9093f855a3d3"
+        },
+        {
+          "id": "assets/p1d.glb",
+          "bytes": 1516,
+          "sha256": "2bdee1e657b9db828e971b4c289cd7ffb2edf57bd1830f431a5f859fe5c3dd34"
+        },
+        {
+          "id": "assets/shape.svg",
+          "bytes": 111,
+          "sha256": "65521f542a646e5c8815f1b8fa8457d270262367b8e0d640c08fadf8b628d723",
+          "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" fill=\"#00ff00\"/></svg>"
+        }
+      ]
+    },
+    "limits": [
+      "No new DOM parse/GPU raster/readback performed.",
+      "Predicted [147,228,89,255] is not a recovered screenshot.",
+      "Original unsupported SVG rejection remains an expected fixed-subset rejection, not proof of arbitrary SVG support."
+    ]
+  },
+  "implementation": {
+    "orderedPersistence": [
+      "Unmodified HTTP/direct PNG via existing wx scoped writer",
+      "Raw decoded dimensions, exact selected RGBA samples and full RGBA hash in samples JSON",
+      "Direct Runtime.evaluate result in observation JSON, including exceptionDetails before assertions",
+      "Unchanged original status/pose/pixel/parity assertions",
+      "Only then mark the individual attempt passed"
+    ],
+    "failures": "Each capture attempt starts passed false, retains case/frame/source/status/stage/error and captured artifact hashes. Top-level evidence remains false until the full original matrix and cleanup succeed. Primary assertion/capture/storage failures remain primary; cleanup failures are separately recorded. Evidence-write failure is surfaced and cannot hide the primary failure.",
+    "noBypass": "No threshold changes, renderer/material changes, toneMapped=false workaround, geometry/time changes, extra browser after HTTP failure, retries, export or old artifact writes.",
+    "sourceHashes": {
+      "host": "78a981adbfb2e2ea51300615ff63143d0b959a754e85ff2a92a91ff75c816eb0",
+      "helper": "978ab1db8914e9cd79c324ecc5073181fb654d7ed4cfc8099884506ab4e489b7",
+      "tests": "7d708f26856bc8a721b8ce1b04d23058dfdbe4759b3ae9ea99fad66f325c4ec9",
+      "unchangedOracle": "1682348e7a64d95c230e63745eceab0d8f611900546a8d8f99eaa4aa1f6ea28a",
+      "unchangedDiagnosticScene": "ba39899496a5e06686a5f2355d5a8291a867c2663d8173f92091141e0294b9ed"
+    }
+  },
+  "verification": {
+    "tests": {
+      "command": "node --test script/fixtures/p1d-three-browser-observation.test.mjs script/fixtures/p1d-three-browser-oracle.test.mjs",
+      "pass": 11,
+      "fail": 0,
+      "newRetentionTests": 9,
+      "unchangedOracleTests": 2,
+      "cases": [
+        "Failing original green oracle retains exact synthetic bytes/raw samples and unchanged primary error; top evidence false.",
+        "Success artifacts precede validation.",
+        "Pose, pixel and parity failures each retain direct PNG/raw samples/observation.",
+        "Decode failure retains raw PNG.",
+        "wx EEXIST never overwrites prior bytes.",
+        "Sample-storage failure never validates or publishes success; cleanup runs.",
+        "Cleanup error cannot hide primary error; standalone cleanup error still fails.",
+        "Existing blank/frozen/wrong-color/missing-SVG/wrong-pose/repeat controls remain rejected."
+      ],
+      "fixtureLimitation": "Retention tests use synthetic capture bytes plus injected decoder; no browser pass or real PNG color validation is claimed."
+    },
+    "parse": {
+      "mjs": "node --check both helper/test: pass",
+      "host": "esbuild transformSync loader ts: pass"
+    },
+    "typecheck": {
+      "command": "node node_modules/typescript/bin/tsc --project script/fixtures/p1d-three-browser.tsconfig.json --noEmit --pretty false",
+      "version": "6.0.3",
+      "pass": true
+    },
+    "lint": {
+      "mjs": "Repository ESLint helper/test: pass",
+      "host": "Repository ESLint reports ignored/no matching configuration; no host ESLint pass claimed. TS parse/typecheck cover syntax/types."
+    },
+    "encoding": "All three edited/new files strictly UTF-8 decoded; no BOM/U+FFFD. Scoped git diff --check passed. Scene and oracle hashes verified unchanged."
+  },
+  "nextRequired": "Parent saves/refreshes authority manifest and grants fresh short browser window. First retain the real legal-feature HTTP failure PNG/raw samples with unchanged oracle. If actual readback confirms the independent default-ACES color contract, separately authorize an independent oracle correction in new evidence; do not widen gates or change the fixture to bypass production behavior."
+}

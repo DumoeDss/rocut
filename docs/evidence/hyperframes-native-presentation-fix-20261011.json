@@ -1,0 +1,37 @@
+{
+  "schema": "hyperframes-native-presentation-fix/v1",
+  "sourceParent": "14c563950473e7fcfd07d5fcd8c6a09dd523c553",
+  "candidateManifest": {
+    "path": "C:/Users/Sayo/AppData/Local/Temp/rocut-hf-video-audio-compatible-20261011-u7PBSo/MANIFEST.json",
+    "sha256": "60cd5beaf7c8c0f70985f179716caeb62fadf737a5df6e3938b8653ad81df3e1"
+  },
+  "independentReview": {
+    "path": "C:/Users/Sayo/AppData/Local/Temp/hf-fence-independent-review-20261011-A8rL3n/REVISION-REVIEW.md",
+    "sha256": "10a92eabb1b89dfa92e53591c5cdb3dab9a2ba99a219540b2ae88f0fe730f10f",
+    "pass": 7,
+    "fail": 0
+  },
+  "integrationChecks": {
+    "rawPostimagesExact": 7,
+    "nodeRegressionTests": { "pass": 27, "fail": 0, "skip": 0 },
+    "focusedJsLint": "passed",
+    "prettier": "passed",
+    "strictUtf8AndNoBom": true,
+    "diffWhitespace": "passed",
+    "wholeRepositoryTypedGate": "not claimed"
+  },
+  "behavior": [
+    "Observe native video presentation before the two pinned decoder assignments; preserve original target mapping and microsecond rounding",
+    "Audio-only and mixed audio assignments retain the original direct currentTime path and authored-audible prepare ordering",
+    "Reject stale submitted frames without treating mediaTime as an exact source-PTS oracle",
+    "Keep one absolute native-frame deadline and retain terminal failures",
+    "Captured frame tokens prevent expired work from using or closing a successor scope"
+  ],
+  "originalNativeDeadlineMs": 8000,
+  "originalProbeWatchdogMs": 180000,
+  "timeoutsOrPixelGatesChanged": false,
+  "originalFailedBrowserReceiptSha256": "c4d853b848ff45f090c4d7f3eb7d3db45a87a4853c632d268b145813b0fae231",
+  "browserAfterFix": "pending",
+  "earlierWatchdogFailureResolved": false,
+  "limitations": ["CPU event-order tests do not establish Chromium decoder/GPU correctness", "Exact original marker gates and complete export/cancel/recovery cases remain required", "Cold paused same-time media without fresh seeked and rVFC fails at the original deadline"]
+}

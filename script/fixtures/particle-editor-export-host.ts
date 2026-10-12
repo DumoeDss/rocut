@@ -6,6 +6,8 @@ import { startHost, type RunningHost } from "../../apps/cli/src/host";
 import { TargetRegistry } from "../../apps/cli/src/target-registry";
 import { FileProjectStore } from "../../apps/cli/src/file-store";
 import { admitFinalUiProject } from "./particle-editor-export-admission";
+import { admitParticleAuthorityHostContext } from "./particle-editor-export-authority-stage.mjs";
+import { parseThreeParticleArchive } from "../../apps/cli/src/programmatic/three-particle-provenance";
 
 const [
 	rootArgument,
@@ -15,6 +17,7 @@ const [
 	ffprobe,
 	clipId,
 	electronConnectionFile,
+	authorityContextPath,
 ] = process.argv.slice(2);
 const root = resolve(rootArgument || ".");
 const secrets = new Set<string>();
@@ -42,7 +45,25 @@ let failed = false;
 let watchdog: ReturnType<typeof setTimeout> | undefined;
 
 try {
-	assert.equal(process.versions.bun, "1.2.18");
+	const admittedAuthority = authorityContextPath
+		? await admitParticleAuthorityHostContext({
+				root,
+				path: authorityContextPath,
+				executable: process.execPath,
+				version: process.versions.bun,
+			})
+		: undefined;
+	if (admittedAuthority) {
+		const observer = Reflect.get(
+			globalThis,
+			"__particleAuthorityWasmObservation",
+		);
+		assert.ok(observer, "Authority bootstrap must precede static sync imports");
+		await write(
+			"host-actual-wasm-authority.json",
+			await observer.assertConsumed(),
+		);
+	} else assert.equal(process.versions.bun, "1.2.18");
 	assert.ok(rootArgument && isAbsolute(rootArgument));
 	const tail = relative(resolve("C:/tmps"), root);
 	assert.ok(
@@ -169,6 +190,30 @@ try {
 		const bytes = new Uint8Array(await response.arrayBuffer());
 		assert.equal(bytes.length, resource.byteLength);
 		assert.equal(digest(bytes), resource.sha256);
+		if (admittedAuthority && resource.id === source.build.toolchainLock.id) {
+			const archive = parseThreeParticleArchive(
+				source,
+				bytes.buffer as ArrayBuffer,
+			);
+			assert.ok(
+				archive,
+				"New authority source must preserve its actual particle archive",
+			);
+			assert.deepEqual(
+				archive.samplerIdentity,
+				admittedAuthority.authority.metadata.productionIdentity.packedSidecar,
+			);
+			assert.equal(
+				archive.adapterSha256,
+				admittedAuthority.authority.metadata.productionIdentity.adapterSha256,
+			);
+			await write("host-archived-particle-authority.json", {
+				archived: archive,
+				authorityReceiptSha256:
+					admittedAuthority.authority.authorityReceiptSha256,
+				productionCaptureRequiresArchivedIdentity: true,
+			});
+		}
 		verified.push({
 			id: resource.id,
 			sha256: resource.sha256,
@@ -213,6 +258,16 @@ try {
 		digest(projectBefore),
 		"Read-only export must not change persisted project bytes",
 	);
+	if (admittedAuthority) {
+		await write(
+			"host-actual-wasm-authority-final.json",
+			await Reflect.get(
+				globalThis,
+				"__particleAuthorityWasmObservation",
+			).assertConsumed(),
+		);
+		await admittedAuthority.authority.assertUnchanged();
+	}
 } catch (error) {
 	failed = true;
 	failure = error;

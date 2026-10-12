@@ -33,6 +33,14 @@ export function spatialParams() {
 		height: 360,
 		fps: spatialSource.frameRate,
 		compositor: new WasmCompositor({
+			setTimeout: ({ handler, ms }) => {
+				const id = globalThis.setTimeout(handler, ms);
+				return {
+					kind: "timeout",
+					resourceId: `spatial:timeout:${id}`,
+					cancel: () => globalThis.clearTimeout(id),
+				};
+			},
 			trackGpuResource: ({ handle, label }) => ({
 				handle,
 				label,

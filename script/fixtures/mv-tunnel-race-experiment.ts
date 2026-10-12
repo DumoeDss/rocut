@@ -8,7 +8,7 @@ type Oracle = Awaited<ReturnType<typeof createTunnelBrowserOracle>>;
 type Output = Pick<TunnelNativeOutput, "pixels" | "postPixels">;
 declare global {
 	var __tunnelRaceFailure: {
-		metadata: unknown;
+		metadata: Record<string, unknown>;
 		buffers: Record<string, Output>;
 	} | undefined;
 }
@@ -42,6 +42,7 @@ export function tunnelRaceFailureRecorder({
 		const plans: unknown[] = [structuredClone(readPlan())];
 		const timings: unknown[] = [];
 		globalThis.__tunnelRaceFailure = { metadata: { key, frame, index, oldHashes }, buffers };
+		try {
 		for (let i = 0; i < 2; i++) {
 			const start = performance.now();
 			buffers[`originalRepeat${i}`] = snapshot(await oracle.render({ frame }));
@@ -49,7 +50,8 @@ export function tunnelRaceFailureRecorder({
 			buffers[`nativeRepeat${i}`] = snapshot(await captureNative({ frame, index }));
 			plans.push(structuredClone(readPlan()));
 			timings.push({ oracleMs: afterOracle - start, nativeMs: performance.now() - afterOracle,
-				iframesAfter: document.querySelectorAll("iframe").length, fontStatus: document.fonts.status });
+				iframesAfter: document.querySelectorAll("iframe").length,
+				fontStatus: document.fonts.status, hostFontStatus: document.fonts.status });
 		}
 		const hashes: Record<string, unknown> = {};
 		for (const [owner, output] of Object.entries(buffers)) hashes[owner] = {
@@ -62,11 +64,17 @@ export function tunnelRaceFailureRecorder({
 			sceneSamples: tunnelPixelSamples({ a: a.pixels, b: b.pixels }).samples,
 		});
 		globalThis.__tunnelRaceFailure.metadata = {
-			key, frame, index, oldHashes, hashes, timings, plans,
+			key, frame, index, oldHashes, hashes, timings, plans, preflightPlans: plans,
 			originalRepeats: [0, 1].map(i => compare(buffers.original!, buffers[`originalRepeat${i}`]!)),
 			nativeRepeats: [0, 1].map(i => compare(buffers.native!, buffers[`nativeRepeat${i}`]!)),
 			parityRepeats: [0, 1].map(i => compare(buffers[`nativeRepeat${i}`]!, buffers[`originalRepeat${i}`]!)),
 			scope: "Failure follow-up only; the original gate result is never replaced by a retry",
 		};
+		} catch (error) {
+			globalThis.__tunnelRaceFailure.metadata = {
+				...globalThis.__tunnelRaceFailure.metadata,
+				diagnosticError: String(error), timings, plans, preflightPlans: plans,
+			};
+		}
 	};
 }

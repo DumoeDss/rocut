@@ -4,15 +4,21 @@ import {createHash} from 'node:crypto';
 import {createRequire} from 'node:module';
 import {syncBuiltinESMExports} from 'node:module';
 import {promisify} from 'node:util';
-import {copyFile,mkdir,mkdtemp,readFile,readdir,stat,writeFile} from 'node:fs/promises';
+import {copyFile,mkdir,mkdtemp,readFile,readdir,writeFile} from 'node:fs/promises';
 import {basename,dirname,extname,isAbsolute,join,resolve} from 'node:path';
 import {fileURLToPath,pathToFileURL} from 'node:url';
 import {build,wasm,topLevelAwait,chromium} from './browser-probe-toolchain.mjs';
-import {pngPixels,visibility} from './fixtures/liquid-object-capture-probe-pixels.mjs';
+import {resolveNativeProbeWasm,assertNativeProbeWasmIdentity} from './native-probe-wasm-binding.mjs';
+import {stageNativeProbeWasm} from './native-probe-wasm-staging.mjs';
+import {createNativeProbeWasmPlugin,NATIVE_PRIVATE_WASM_ID} from './native-probe-wasm-browser.mjs';
+import {visibility} from './fixtures/liquid-object-capture-probe-pixels.mjs';
 const repo=resolve(dirname(fileURLToPath(import.meta.url)),'..');
 const [creatorAssetsArg,pkgArg,toolchainArg,executableArg,ffmpegArg,ffprobeArg]=process.argv.slice(2);
+assert.equal(process.argv.length,8,'Full object export requires six explicit arguments');
+assert(pkgArg&&isAbsolute(pkgArg),'Full object export requires an explicit absolute native package');
 const root=await mkdtemp('C:/tmps/liquid-object-editor-export-full-');
-const creatorAssets=resolve(creatorAssetsArg),pkg=resolve(pkgArg),toolchain=resolve(toolchainArg);
+const binding=resolveNativeProbeWasm({directory:pkgArg});
+const creatorAssets=resolve(creatorAssetsArg),pkg=binding.directory,toolchain=resolve(toolchainArg);
 for(const target of [creatorAssets,pkg,toolchain])assert(isAbsolute(target));
 assert(executableArg&&isAbsolute(resolve(executableArg)),'Chromium executable path required');
 assert(ffmpegArg&&ffprobeArg,'FFmpeg/FFprobe paths required');
@@ -33,9 +39,9 @@ try{
  // Compile and persist the Liquid Object project under this same Node
  // process so the archived particle-sampler identity (source-sync layout,
  // node runtime, copied worker closure files) matches the export host.
- const installedWasm=join(repo,'node_modules','opencut-wasm');
- const nodeWasm=join(root,'node_modules','opencut-wasm');await mkdir(nodeWasm,{recursive:true});
- for(const name of ['package.json','opencut_wasm.js','opencut_wasm_bg.js','opencut_wasm_sync.js','opencut_wasm_bg.wasm'])await copyFile(join(installedWasm,name),join(nodeWasm,name));
+ const staged=await stageNativeProbeWasm({binding,runRoot:root});
+ const nodeWasm=staged.directory;
+ report.wasmBinding={lane:binding.lane,sha256:binding.wasmSha256,source:binding.directory,node:nodeWasm,identity:binding.identity,browserEvidenceKind:'served-byte-fetch-stamp-after-native-entry-import',wasmInstantiationObserved:false};
  await copyFile(join(pkg,'opencut_wasm_bg.wasm'),join(root,'opencut_wasm_bg.wasm'));
  await copyFile(join(repo,'apps/cli/src/programmatic/liquid-object-worker-entry.mjs'),join(root,'liquid-object-worker-entry.mjs'));
  const creator=join(root,'creator');await mkdir(creator);
@@ -45,7 +51,7 @@ try{
  const creatorBuild=await creatorEsbuild.build({entryPoints:[join(repo,'script/fixtures/liquid-object-project-entry.ts')],bundle:true,write:false,platform:'node',format:'esm',logLevel:'silent',
   banner:{js:"import {createRequire as __probeRequire} from 'node:module';const require=__probeRequire(import.meta.url);"},
   plugins:[{name:'liquid-project-creator-pins',setup(api){
-   api.onResolve({filter:/^opencut-wasm(\/sync)?$/},args=>({path:args.path.endsWith('/sync')?pathToFileURL(join(nodeWasm,'opencut_wasm_sync.js')).href:pathToFileURL(join(nodeWasm,'opencut_wasm.js')).href,external:true}));
+   api.onResolve({filter:/^opencut-wasm(\/sync)?$/},()=>({path:pathToFileURL(staged.syncEntry).href,external:true}));
    api.onLoad({filter:/\.(ts|tsx|js|mjs|cjs|json)$/},async({path})=>{
     if(path.startsWith(root))return null;
     const bytes=await readFile(path);const item={path,bytes:bytes.length,sha256:sha(bytes)};const old=sources.get(path);if(old)assert.deepEqual(old,item);sources.set(path,item);
@@ -76,15 +82,15 @@ try{
  await build({root:input,configFile:false,envDir:root,envPrefix:'GLASS_EXPORT_PUBLIC_',cacheDir:join(root,'vite-cache'),base:'./',logLevel:'error',
   // Vite's public transform hook uses its required positional (code, id) signature.
   // eslint-disable-next-line opencut/prefer-object-params
-  plugins:[wasm(),topLevelAwait(),{name:'liquid-export-consumed-byte-pins',async transform(code,id){
+  plugins:[createNativeProbeWasmPlugin(binding),wasm(),topLevelAwait(),{name:'liquid-export-consumed-byte-pins',async transform(code,id){
    const path=id.split('?')[0];if(path==='/__vite-plugin-wasm-helper')return null;if(isAbsolute(path)&&!path.includes('\0')){const bytes=await readFile(path);const item={path,bytes:bytes.length,sha256:sha(bytes)};const old=sources.get(path);if(old)assert.deepEqual(old,item);sources.set(path,item);}return null;
-  }}],resolve:{alias:[{find:/^opencut-wasm$/,replacement:join(pkg,'opencut_wasm.js')},{find:/^mediabunny$/,replacement:mediabunny}]},
+  }}],resolve:{alias:[{find:/^opencut-wasm$/,replacement:NATIVE_PRIVATE_WASM_ID},{find:/^mediabunny$/,replacement:mediabunny}]},
   build:{outDir:join(root,'static'),emptyOutDir:false,rollupOptions:{input:join(input,'index.html')}}});
  report.sources=[...sources.values()];report.outputs=await tree(join(root,'static'));report.outputBytes=report.outputs.reduce((sum,item)=>sum+item.bytes,0);assert(report.outputBytes<60*1024*1024);
  const esbuild=await import(pathToFileURL(join(toolchain,'node_modules/esbuild/lib/main.js')).href);
  const hostBundleBuild=await esbuild.build({entryPoints:[join(repo,'script/fixtures/liquid-object-editor-export-host.ts')],bundle:true,write:false,platform:'node',format:'esm',logLevel:'silent',
  banner:{js:"import {createRequire as __probeRequire} from 'node:module';const require=__probeRequire(import.meta.url);"},
- plugins:[{name:'liquid-export-host-pins',setup(api){api.onResolve({filter:/^opencut-wasm(\/sync)?$/},args=>({path:pathToFileURL(join(nodeWasm,args.path.endsWith('/sync')?'opencut_wasm_sync.js':'opencut_wasm.js')).href,external:true}));api.onLoad({filter:/\.(ts|tsx|js|mjs|cjs|json)$/},async({path})=>{const bytes=await readFile(path);const item={path,bytes:bytes.length,sha256:sha(bytes)};const old=sources.get(path);if(old)assert.deepEqual(old,item);sources.set(path,item);const suffix=extname(path);return {contents:bytes,loader:suffix==='.ts'?'ts':suffix==='.tsx'?'tsx':suffix==='.json'?'json':'js'};});}}]});esbuild.stop();
+ plugins:[{name:'liquid-export-host-pins',setup(api){api.onResolve({filter:/^opencut-wasm(\/sync)?$/},()=>({path:pathToFileURL(staged.syncEntry).href,external:true}));api.onLoad({filter:/\.(ts|tsx|js|mjs|cjs|json)$/},async({path})=>{const bytes=await readFile(path);const item={path,bytes:bytes.length,sha256:sha(bytes)};const old=sources.get(path);if(old)assert.deepEqual(old,item);sources.set(path,item);const suffix=extname(path);return {contents:bytes,loader:suffix==='.ts'?'ts':suffix==='.tsx'?'tsx':suffix==='.json'?'json':'js'};});}}]});esbuild.stop();
  const bundle=join(root,'host.mjs');await writeFile(bundle,hostBundleBuild.outputFiles[0].contents,{flag:'wx'});report.hostBundle=await pin(bundle);report.hostSources=[...sources.values()];await persist();
  const entry=await import(pathToFileURL(bundle).href);host=await entry.openLiquidExportHost({root,projectRoot:join(saved,'project'),staticDir:join(root,'static'),toolchain,executable:resolve(executableArg),ffmpeg,ffprobe});
  report.stage='GPU-production-export';await persist();
@@ -93,6 +99,7 @@ try{
  page.on('pageerror',error=>errors.push(error.message));page.on('console',message=>{if(message.type()==='error')errors.push(message.text());});
  await page.route('**/*',async route=>{const url=new URL(route.request().url());if(/^https?:$/.test(url.protocol)&&url.origin!==origin){external.push(url.origin);await route.abort();}else await route.continue();});
  await page.goto(host.editorUrl,{waitUntil:'load',timeout:60000});await page.waitForFunction(()=>typeof globalThis.__liquidExportRun==='function',undefined,{timeout:60000});
+ report.browserWasmIdentity=await page.evaluate(()=>globalThis.__nativeProbeWasmIdentity);assertNativeProbeWasmIdentity(binding,report.browserWasmIdentity);assertNativeProbeWasmIdentity(staged);
  const result=await page.evaluate(async options=>{const result=await globalThis.__liquidExportRun(options);const encode=bytes=>{let binary='';for(let i=0;i<bytes.length;i+=32768)binary+=String.fromCharCode(...bytes.subarray(i,i+32768));return btoa(binary);};return {...result,video:encode(result.video),references:result.references.map(encode)};},{project:parsed,base:new URL('api',host.editorUrl).href,window:frameWindow});
  assert(result.ok);assert.equal(result.frameCount,frameWindow.frameCount);assert.equal(errors.length,0,JSON.stringify(errors));assert.equal(external.length,0);
  const video=join(root,'production.webm');await writeFile(video,Buffer.from(result.video,'base64'),{flag:'wx'});report.video=await pin(video);delete result.video;
@@ -104,6 +111,7 @@ try{
  for(let i=0;i<frameWindow.frameCount;i++)assert(Math.abs(Number(report.probe.frames[i].best_effort_timestamp_time)-i/30)<=report.thresholds.timestampToleranceSeconds,`Frame ${i} PTS mismatch`);
  const raw=join(root,'decoded.rgba');await run(ffmpeg,['-hide_banner','-loglevel','error','-n','-i',video,'-frames:v',String(frameWindow.frameCount),'-f','rawvideo','-pix_fmt','rgba',raw],{windowsHide:true,timeout:120000});const decoded=await readFile(raw);assert.equal(decoded.length,frameWindow.frameCount*192*128*4);report.decoded=await pin(raw);report.decodedComparisons=[];
  for(let i=0;i<frameWindow.frameCount;i++){const difference=compare({a:references[i],b:decoded.subarray(i*192*128*4,(i+1)*192*128*4)});report.decodedComparisons.push(difference);assert(difference.mean<=report.thresholds.decodedMean&&difference.activeMean<=report.thresholds.decodedActiveMean,`Encoded frame ${i} mismatch: ${JSON.stringify(difference)}`);}
+ assertNativeProbeWasmIdentity(binding);assertNativeProbeWasmIdentity(staged);
  report.ok=true;report.stage='complete';
 }catch(error){report.failure={name:error.name,message:error.message.replace(/https?:\/\/[^\s"'<>]+/g,'[private URL]'),stack:error.stack?.replace(/https?:\/\/[^\s"'<>]+/g,'[private URL]')};process.exitCode=1;}
 finally{

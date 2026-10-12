@@ -1,0 +1,186 @@
+{
+  "version": 1,
+  "createdAt": "2026-10-11T10:25:21.535Z",
+  "status": "in-progress-not-fully-accepted",
+  "group": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/.worktrees/rocut-acceptance-20261011-6fa23f6b",
+  "branch": "acceptance/20261011-6fa23f6b",
+  "scope": "Parallel review/source safety, authority WASM rebuild, and Tunnel experiments; finite unified behavioral rerun on an isolated four-repository worktree.",
+  "authority": {
+    "wasmSha256": "084cf7310df5bfdc1b8e4ce3f64bcff842e1b23b9fd0ca57c1c7dcffc0d1fc12",
+    "rustBuildInputs": 971,
+    "sourceManifestSha256": "d6cb235399f0090d037eb1c6d8c10241c8042d1d2b16913e56c6dc7a08e207c0",
+    "browserPackage": "C:/Users/Sayo/AppData/Local/Temp/rocut-wasm-authority-20261011-GVDTX4/browser-pkg-v2-sntQBC",
+    "browserJsSha256": "cc62ca83fb09032be1bf5427a156f572587ef21cc6a6c185d4743ac4fe7ddb39",
+    "warning": "Historical v1 sync-on-main-thread wrapper remains preserved as a failed derivative. No UnlimitedSyncCompilation flag."
+  },
+  "receipts": [
+    {
+      "path": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/.worktrees/rocut-acceptance-20261011-6fa23f6b/source-freeze.json",
+      "sha256": "b62e2acec5b8a33fdf4f87bc6dcb9979cd3a0a5be5e242cc23e2f24b4f90d0d7"
+    },
+    {
+      "path": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/.worktrees/rocut-acceptance-20261011-6fa23f6b/source-provenance.json",
+      "sha256": "3b8f501fe3c5f8a9b3eb8f15dcc138f713cf7d4d1b22068afb499135114e864b"
+    },
+    {
+      "path": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/.worktrees/rocut-acceptance-20261011-6fa23f6b/wasm-binding.json",
+      "sha256": "d799c3f05c28651e44bb470da52efbcbf8fa65e4887e1b4227c0daa4099a38d7"
+    },
+    {
+      "path": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/.worktrees/rocut-acceptance-20261011-6fa23f6b/source-contracts.json",
+      "sha256": "b6aea6d063a3715643fd071b3c6e81857bc78a7bf45a0458eb34dbaa517ac9b9"
+    }
+  ],
+  "completedEvidence": [
+    {
+      "path": "docs/evidence/wasm-authority-20261011.json",
+      "sha256": "4f503d1f0c908ff4a58fffb71f3fd07da8b0a29a8b5cbf090595d0ef1f9ad77f",
+      "bytes": 402753
+    },
+    {
+      "path": "docs/evidence/wasm-authority-browser-v2-20261011.json",
+      "sha256": "cc339900440247996e8c0451773dcb9ee3975067bbf65131616f1664892148d9",
+      "bytes": 14669
+    },
+    {
+      "path": "docs/evidence/mv-tunnel-race-experiment-20261011.json",
+      "sha256": "084bb3251152779f3335fcb7da9876ac842cbf1893c61a5a530367d7fbc9c84d",
+      "bytes": 45419
+    },
+    {
+      "path": "docs/evidence/three-archive-revision-20261011.json",
+      "sha256": "d78afb34f134be2d994d9785b0be961c3331b7b5527b08cdc9aaeb8364b3012f",
+      "bytes": 910050
+    },
+    {
+      "path": "docs/evidence/hf-remotion-build-revision-20261011.json",
+      "sha256": "3afa72c02c7e767e9496ad7a72be0cc90440096e2e30238c7221af4291013397",
+      "bytes": 906073
+    },
+    {
+      "path": "docs/evidence/acceptance-node-runtime-20261011.json",
+      "sha256": "f9852281b8ac719b1706d1cfdbee10d8a96754e748e6ec13cd4befe3bda093de",
+      "bytes": 10434
+    },
+    {
+      "createdAt": "2026-10-11T10:25:21.535Z",
+      "path": "docs/evidence/mv-tunnel-grain-cpu-20261011.json",
+      "sha256": "25e13055833b8d0b21a080203b02ef773559ba210464542032050224be6c8757"
+    }
+  ],
+  "statusByArea": {
+    "reviewAndSourceIsolation": {
+      "state": "initial-review-and-frozen-source-local-commits-done",
+      "remaining": "Save new test/instrumentation edits; browser/installation behavior remains outside source contracts."
+    },
+    "authorityWasm": {
+      "state": "rebuilt-and-gates-passed",
+      "scope": "Path/API/init controls, Node/Bun and actual Chrome async-main-thread init use the same binary; no declaration that the entire render matrix passed."
+    },
+    "threeArchiveRevision": {
+      "state": "real-compile-and-persistence-passed-render-pending",
+      "tests": 1,
+      "assertions": 92,
+      "rejectedOperations": 10,
+      "toolchainFiles": 1398,
+      "scope": "Initial/add/rename/import/props/delete revision, real old/new rebuild and Host reopen. Raw project and eight attachment identities remain unchanged."
+    },
+    "hfRemotionArchiveRevision": {
+      "state": "real-compile-and-persistence-passed",
+      "pass": 4,
+      "fail": 0,
+      "skip": 0,
+      "assertions": 178,
+      "toolchainFiles": 4097,
+      "history": "Two stale test controls fixed without production changes; both real failures retained."
+    },
+    "nodeRuntime": {
+      "state": "development-pack-and-worker-passed",
+      "pass": 8,
+      "fail": 0,
+      "skip": 0,
+      "determinism": "two-build-byte-identical",
+      "smoke": [
+        "target-list",
+        "host-started",
+        "host-reused",
+        "owned-daemon-exited"
+      ],
+      "scope": "No editor dist or epkg; development pack allowed dirty source. Full source/WASM before-after invariants pass."
+    },
+    "cliTypecheck": {
+      "state": "passed",
+      "typescript": "5.9.3",
+      "scope": "Integrated CLI noEmit after archive revision test changes; not browser/export validation."
+    },
+    "tunnel": {
+      "state": "original-matrix-failed-grain-contribution-isolated-not-fixed",
+      "originalSceneMax": 10,
+      "requiredSceneMax": 6,
+      "thresholdRelaxed": false,
+      "nativeRepeat": "bit-exact in captured repeats",
+      "oracleRepeat": "A large drift occurred in the full failed run; later continuous/fresh/software diagnostics do not erase it.",
+      "diagnostics": {
+        "softwareOracle": "12 scene/post repeats bit-exact; diagnostic only",
+        "extraRealmSettle": "No change to stable max10",
+        "grainOmitted": "scene/post bit-exact; diagnostic only",
+        "cpuGrain": "Complete 256x256 tile and seed/frame/transform/alpha/blend agree"
+      },
+      "candidate": "Match pattern creation composite state/order; no production patch applied or real-raster success claimed."
+    },
+    "glass": {
+      "state": "prepared-not-run",
+      "next": "Real editor inputProps edit/undo/redo/reopen, then original all-49-frame export with separate observed browser and Host WASM identities."
+    },
+    "hfRemotionBrowser": {
+      "state": "identity-plumbing-frozen-browser-pending",
+      "next": "Existing basic video+GPU+encode/decode probes and existing short standalone audio/editor probes; no Electron source.audio claim.",
+      "preparationReceipt": "docs/evidence/hf-remotion-browser-preparation-20261011.json",
+      "preparationSha256": "2b2c8eda71b1a733177c3d2dd0f589e2a1d0a5264cd16b450c28f7bc9d67b08f",
+      "checks": "5 unit/static controls, independent audio Host typecheck, two CPU audio bundles passed.",
+      "lintBoundary": "Seven old broad-JS lint issues remain; strict new helper/builder lint passed. No full lint-green claim."
+    },
+    "modelSvgAnimation": {
+      "state": "preparing-new-real-short-case",
+      "next": "Actual local glTF import/archive/restore, SVG feature and animation clip compile; nonsequential browser frame/export separately queued.",
+      "compatibility": "Existing ordinary Three toolchain lacks svg-animation-v1 profile; SVG positive support cannot be inferred. Actual unavailable-feature rejection will be recorded separately."
+    },
+    "remainingFiniteMatrix": {
+      "state": "not-complete",
+      "reference": "docs/evidence/integration-review-20261011.md",
+      "includes": [
+        "Canvas/spatial/warp families",
+        "Reveal/Sweep/Mesh/Cloth",
+        "Liquid/cancellation",
+        "Droplets/Clouds/Blaze/Bubble/Frost/FlameWrap",
+        "Three/Meshopt/model/SVG/animation",
+        "Particle/Glass/Ink/Liquid Object exports",
+        "HF/Remotion short audio/video",
+        "MV family fixed matrices"
+      ]
+    },
+    "installedEpKgAndE2e": {
+      "state": "not-run",
+      "scope": "No installed plugin replacement, Elftia launch/stop, or Electron installation acceptance this round."
+    }
+  },
+  "authorizationBoundary": {
+    "originalDevelopmentRepositoriesWritten": false,
+    "sharedDependenciesReinstalled": false,
+    "installedPluginChanged": false,
+    "otherSessionProcessesStopped": false,
+    "pushed": false
+  },
+  "evidenceRules": [
+    "Keep failed, skipped, diagnostic, and accepted runs distinct.",
+    "Do not replace original thresholds with cap, preroll, software Canvas or silent retries.",
+    "Actual loaded binary bytes and frozen source/toolchain/browser identity are required per runtime.",
+    "Serial browser/GPU scheduling does not remove external CPU/GPU load from other sessions."
+  ],
+  "nextSequence": [
+    "Finish and locally save test-only identity plumbing; generate current fixture-source.",
+    "Run Glass real editor and 49-frame export, then HF/Remotion short chains.",
+    "Continue the documented finite matrix; revisit the grain candidate in a separately pinned experiment.",
+    "Only afterward prepare installed-state epkg and actual Electron/E2E with explicit scope."
+  ]
+}

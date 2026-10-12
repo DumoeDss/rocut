@@ -1,0 +1,1050 @@
+{
+  "status": "bounded CPU observation; input bytes agree, exact raster cause unresolved",
+  "scope": "fakeCanvas records production/reference calls only; no real raster, browser or acceptance decision",
+  "fullMatrixTested": false,
+  "thresholdsUnchanged": true,
+  "sourceMapping": {
+    "index": 15,
+    "songTicks": 1500000,
+    "songTime": 12.5,
+    "grainFrame24": 300
+  },
+  "pins": {
+    "binary": {
+      "path": "C:\\Users\\Sayo\\AppData\\Local\\Temp\\rocut-wasm-authority-20261011-GVDTX4\\browser-pkg-v2-sntQBC\\opencut_wasm_bg.wasm",
+      "bytes": 15069546,
+      "sha256": "084cf7310df5bfdc1b8e4ce3f64bcff842e1b23b9fd0ca57c1c7dcffc0d1fc12"
+    },
+    "sourceManifestSha256": "d6cb235399f0090d037eb1c6d8c10241c8042d1d2b16913e56c6dc7a08e207c0",
+    "rustPins": [
+      {
+        "relative": "rust/crates/editor-api/src/mv_recipe/tunnel_layers.rs",
+        "snapshot": {
+          "path": "C:\\Users\\Sayo\\AppData\\Local\\Temp\\rocut-wasm-authority-20261011-GVDTX4\\source\\rust\\crates\\editor-api\\src\\mv_recipe\\tunnel_layers.rs",
+          "bytes": 7723,
+          "sha256": "88262db68ff0751bc29c986cca2aaed8f8ab73ae03ba5e962e2aebfc63fe8ddd"
+        },
+        "current": {
+          "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\.worktrees\\rocut-acceptance-20261011-6fa23f6b\\_others\\rocut\\rust\\crates\\editor-api\\src\\mv_recipe\\tunnel_layers.rs",
+          "bytes": 7723,
+          "sha256": "88262db68ff0751bc29c986cca2aaed8f8ab73ae03ba5e962e2aebfc63fe8ddd"
+        }
+      },
+      {
+        "relative": "rust/crates/editor-api/src/mv_recipe/converge_math.rs",
+        "snapshot": {
+          "path": "C:\\Users\\Sayo\\AppData\\Local\\Temp\\rocut-wasm-authority-20261011-GVDTX4\\source\\rust\\crates\\editor-api\\src\\mv_recipe\\converge_math.rs",
+          "bytes": 2636,
+          "sha256": "414d75c539ee501672de3bcd7291d2da84556987729733f8358b37e85edac857"
+        },
+        "current": {
+          "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\.worktrees\\rocut-acceptance-20261011-6fa23f6b\\_others\\rocut\\rust\\crates\\editor-api\\src\\mv_recipe\\converge_math.rs",
+          "bytes": 2636,
+          "sha256": "414d75c539ee501672de3bcd7291d2da84556987729733f8358b37e85edac857"
+        }
+      }
+    ],
+    "inputs": [
+      {
+        "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\vocaloid-style-mv-pipeline\\skills\\vocaloid-style-mv\\template\\engine\\core\\util.js",
+        "bytes": 6248,
+        "sha256": "1e6be8d7551fdb3ded2a6dde027fab9630837fcc47c34ac3c1dc622664dedd48"
+      },
+      {
+        "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\vocaloid-style-mv-pipeline\\skills\\vocaloid-style-mv\\template\\engine\\scenes\\typo.js",
+        "bytes": 65319,
+        "sha256": "ac339c33e218db842066b05f2a1a465a1e88e32a542f2a6b1d3d4dc917b92554"
+      },
+      {
+        "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\.worktrees\\rocut-acceptance-20261011-6fa23f6b\\_others\\rocut\\packages\\editor-classic\\src\\services\\renderer\\programmatic\\mv-ember-raster.ts",
+        "bytes": 8587,
+        "sha256": "23a8eccb03a65c26d5418069eb98cf38e5b38cb2e6064557ad0953a27ba664d2"
+      },
+      {
+        "path": "C:\\Users\\Sayo\\AppData\\Local\\Temp\\rocut-tunnel-native-uM3cZF\\native-production-root-plan.json",
+        "bytes": 3890838,
+        "sha256": "2362d38d4d70d3182ba4d1f0d5276995508fc5e32a63910135174d448d49e9ec"
+      },
+      {
+        "path": "C:\\Users\\Sayo\\AppData\\Local\\Temp\\rocut-tunnel-native-uM3cZF\\verification.json",
+        "bytes": 10286960,
+        "sha256": "cdf926d04a4e757f97f55ebd391f4d2518e2ea544217982cc5114eea9295034e"
+      },
+      {
+        "path": "C:\\Users\\Sayo\\AppData\\Local\\Temp\\rocut-tunnel-native-hvfKn7\\oracle-repeat-diagnostic.json",
+        "bytes": 8330521,
+        "sha256": "9b083c6b0b37f5826e59343127c683220a715ffe5a0baa0647e0e79e20e9d632"
+      },
+      {
+        "path": "C:\\Users\\Sayo\\AppData\\Local\\Temp\\rocut-tunnel-native-uM3cZF\\originalOmitted-scene.rgba",
+        "bytes": 8294400,
+        "sha256": "a656fbc2fca8ca0650103a683b2747f3f1e343e4900a029c6df7ceb5c13cc07e"
+      },
+      {
+        "path": "C:\\Users\\Sayo\\AppData\\Local\\Temp\\rocut-tunnel-native-uM3cZF\\nativeOmitted-scene.rgba",
+        "bytes": 8294400,
+        "sha256": "a656fbc2fca8ca0650103a683b2747f3f1e343e4900a029c6df7ceb5c13cc07e"
+      },
+      {
+        "path": "C:\\Users\\Sayo\\AppData\\Local\\Temp\\rocut-tunnel-native-uM3cZF\\original-scene.rgba",
+        "bytes": 8294400,
+        "sha256": "7b435378a8a194df12b6800c8cdd4dc2346c0ec9c4dcf686f4ac97f119c29148"
+      },
+      {
+        "path": "C:\\Users\\Sayo\\AppData\\Local\\Temp\\rocut-tunnel-native-uM3cZF\\production-scene.rgba",
+        "bytes": 8294400,
+        "sha256": "5622a4f6a9ba5b19d15a6aeb7bc134e42617adb6ca55438c2ef122a02e6842a3"
+      }
+    ]
+  },
+  "inputComparison": {
+    "seed": 4242,
+    "stream": "reference util.js executed unchanged (mulberry32); Rust captured plan from pinned WASM",
+    "all65536GrayBytesEqual": true,
+    "rgbaSha256": "e366fc2ce4f45b3dfc16e7169915e3e9870c148740257a6f4bc38ac199eaf616",
+    "transform": [
+      1,
+      0,
+      0,
+      1,
+      -229,
+      -34
+    ],
+    "rect": [
+      0,
+      0,
+      2176,
+      1336
+    ],
+    "alpha": 0.07,
+    "composite": "overlay",
+    "first16Gray": [
+      129,
+      155,
+      41,
+      101,
+      154,
+      19,
+      188,
+      125,
+      62,
+      75,
+      80,
+      71,
+      18,
+      164,
+      114,
+      76
+    ]
+  },
+  "commandObservation": {
+    "referenceFake": [
+      {
+        "method": "save",
+        "args": [],
+        "before": {
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "globalAlpha": 1,
+          "globalCompositeOperation": "source-over",
+          "filter": "none",
+          "fillStyle": {
+            "kind": "reference-vignette"
+          }
+        }
+      },
+      {
+        "method": "setTransform",
+        "args": [
+          1,
+          0,
+          0,
+          1,
+          -229,
+          -34
+        ],
+        "before": {
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "globalAlpha": 1,
+          "globalCompositeOperation": "source-over",
+          "filter": "none",
+          "fillStyle": {
+            "kind": "reference-vignette"
+          }
+        }
+      },
+      {
+        "set": "globalAlpha",
+        "value": 1
+      },
+      {
+        "set": "globalCompositeOperation",
+        "value": "source-over"
+      },
+      {
+        "set": "filter",
+        "value": "none"
+      },
+      {
+        "set": "globalCompositeOperation",
+        "value": "overlay"
+      },
+      {
+        "set": "globalAlpha",
+        "value": 0.07
+      },
+      {
+        "method": "translate",
+        "args": [
+          -229,
+          -34
+        ],
+        "before": {
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "globalAlpha": 0.07,
+          "globalCompositeOperation": "overlay",
+          "filter": "none",
+          "fillStyle": {
+            "kind": "reference-vignette"
+          }
+        }
+      },
+      {
+        "method": "createPattern",
+        "args": [
+          {
+            "size": [
+              256,
+              256
+            ],
+            "rgbaSha256": "e366fc2ce4f45b3dfc16e7169915e3e9870c148740257a6f4bc38ac199eaf616"
+          },
+          "repeat"
+        ],
+        "before": {
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            -229,
+            -34
+          ],
+          "globalAlpha": 0.07,
+          "globalCompositeOperation": "overlay",
+          "filter": "none",
+          "fillStyle": {
+            "kind": "reference-vignette"
+          }
+        }
+      },
+      {
+        "set": "fillStyle",
+        "value": {
+          "kind": "pattern",
+          "repeat": "repeat"
+        }
+      },
+      {
+        "method": "fillRect",
+        "args": [
+          0,
+          0,
+          2176,
+          1336
+        ],
+        "before": {
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            -229,
+            -34
+          ],
+          "globalAlpha": 0.07,
+          "globalCompositeOperation": "overlay",
+          "filter": "none",
+          "fillStyle": {
+            "kind": "pattern",
+            "repeat": "repeat"
+          }
+        }
+      },
+      {
+        "method": "restore",
+        "args": [],
+        "before": {
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            -229,
+            -34
+          ],
+          "globalAlpha": 0.07,
+          "globalCompositeOperation": "overlay",
+          "filter": "none",
+          "fillStyle": {
+            "kind": "pattern",
+            "repeat": "repeat"
+          }
+        }
+      }
+    ],
+    "nativeFake": [
+      {
+        "method": "setTransform",
+        "args": [
+          1,
+          0,
+          0,
+          1,
+          -229,
+          -34
+        ],
+        "before": {
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "globalAlpha": 1,
+          "globalCompositeOperation": "source-over",
+          "filter": "none",
+          "fillStyle": "#000000"
+        }
+      },
+      {
+        "method": "getTransform",
+        "args": [],
+        "before": {
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            -229,
+            -34
+          ],
+          "globalAlpha": 1,
+          "globalCompositeOperation": "source-over",
+          "filter": "none",
+          "fillStyle": "#000000"
+        }
+      },
+      {
+        "method": "setTransform",
+        "args": [
+          1,
+          0,
+          0,
+          1,
+          0,
+          0
+        ],
+        "before": {
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            -229,
+            -34
+          ],
+          "globalAlpha": 1,
+          "globalCompositeOperation": "source-over",
+          "filter": "none",
+          "fillStyle": "#000000"
+        }
+      },
+      {
+        "method": "createRadialGradient",
+        "args": [
+          960,
+          540,
+          324,
+          960,
+          540,
+          1134
+        ],
+        "before": {
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "globalAlpha": 1,
+          "globalCompositeOperation": "source-over",
+          "filter": "none",
+          "fillStyle": "#000000"
+        }
+      },
+      {
+        "set": "fillStyle",
+        "value": {
+          "kind": "radial",
+          "args": [
+            960,
+            540,
+            324,
+            960,
+            540,
+            1134
+          ],
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "stops": [
+            {
+              "offset": 0,
+              "color": "rgba(0,0,0,0)"
+            },
+            {
+              "offset": 1,
+              "color": "rgba(3,2,6,0.5995985186327766)"
+            }
+          ]
+        }
+      },
+      {
+        "method": "setTransform",
+        "args": [
+          {
+            "a": 1,
+            "b": 0,
+            "c": 0,
+            "d": 1,
+            "e": -229,
+            "f": -34
+          }
+        ],
+        "before": {
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "globalAlpha": 1,
+          "globalCompositeOperation": "source-over",
+          "filter": "none",
+          "fillStyle": {
+            "kind": "radial",
+            "args": [
+              960,
+              540,
+              324,
+              960,
+              540,
+              1134
+            ],
+            "transform": [
+              1,
+              0,
+              0,
+              1,
+              0,
+              0
+            ],
+            "stops": [
+              {
+                "offset": 0,
+                "color": "rgba(0,0,0,0)"
+              },
+              {
+                "offset": 1,
+                "color": "rgba(3,2,6,0.5995985186327766)"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "method": "createPattern",
+        "args": [
+          {
+            "size": [
+              256,
+              256
+            ],
+            "rgbaSha256": "e366fc2ce4f45b3dfc16e7169915e3e9870c148740257a6f4bc38ac199eaf616"
+          },
+          "repeat"
+        ],
+        "before": {
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            -229,
+            -34
+          ],
+          "globalAlpha": 1,
+          "globalCompositeOperation": "source-over",
+          "filter": "none",
+          "fillStyle": {
+            "kind": "radial",
+            "args": [
+              960,
+              540,
+              324,
+              960,
+              540,
+              1134
+            ],
+            "transform": [
+              1,
+              0,
+              0,
+              1,
+              0,
+              0
+            ],
+            "stops": [
+              {
+                "offset": 0,
+                "color": "rgba(0,0,0,0)"
+              },
+              {
+                "offset": 1,
+                "color": "rgba(3,2,6,0.5995985186327766)"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "set": "globalCompositeOperation",
+        "value": "overlay"
+      },
+      {
+        "set": "globalAlpha",
+        "value": 0.07
+      },
+      {
+        "set": "fillStyle",
+        "value": {
+          "kind": "pattern",
+          "repeat": "repeat"
+        }
+      },
+      {
+        "method": "fillRect",
+        "args": [
+          0,
+          0,
+          2176,
+          1336
+        ],
+        "before": {
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            -229,
+            -34
+          ],
+          "globalAlpha": 0.07,
+          "globalCompositeOperation": "overlay",
+          "filter": "none",
+          "fillStyle": {
+            "kind": "pattern",
+            "repeat": "repeat"
+          }
+        }
+      }
+    ],
+    "realOraclePattern": {
+      "method": "createPattern",
+      "args": [
+        {
+          "object": 31,
+          "type": "[object HTMLCanvasElement]",
+          "width": 256,
+          "height": 256
+        },
+        "repeat"
+      ],
+      "before": {
+        "transform": [
+          1,
+          0,
+          0,
+          1,
+          -229,
+          -34
+        ],
+        "font": "10px sans-serif",
+        "letterSpacing": "",
+        "textAlign": "start",
+        "textBaseline": "alphabetic",
+        "alpha": 0.07,
+        "composite": "overlay",
+        "filter": "none",
+        "lineWidth": 1,
+        "lineCap": "butt",
+        "fillStyle": {
+          "object": 30,
+          "type": "[object CanvasGradient]"
+        },
+        "strokeStyle": "#000000",
+        "attributes": {
+          "alpha": true,
+          "colorSpace": "srgb",
+          "colorType": "unorm8",
+          "desynchronized": false,
+          "toneMapping": {
+            "mode": "standard"
+          },
+          "willReadFrequently": false
+        }
+      }
+    },
+    "realOracleDraw": {
+      "method": "fillRect",
+      "args": [
+        0,
+        0,
+        2176,
+        1336
+      ],
+      "before": {
+        "transform": [
+          1,
+          0,
+          0,
+          1,
+          -229,
+          -34
+        ],
+        "font": "10px sans-serif",
+        "letterSpacing": "",
+        "textAlign": "start",
+        "textBaseline": "alphabetic",
+        "alpha": 0.07,
+        "composite": "overlay",
+        "filter": "none",
+        "lineWidth": 1,
+        "lineCap": "butt",
+        "fillStyle": {
+          "object": 32,
+          "type": "[object CanvasPattern]"
+        },
+        "strokeStyle": "#000000",
+        "attributes": {
+          "alpha": true,
+          "colorSpace": "srgb",
+          "colorType": "unorm8",
+          "desynchronized": false,
+          "toneMapping": {
+            "mode": "standard"
+          },
+          "willReadFrequently": false
+        }
+      }
+    }
+  },
+  "neighborhood": [
+    {
+      "x": 102,
+      "y": 747,
+      "tile": [
+        75,
+        13
+      ],
+      "gray": 177,
+      "rgba": {
+        "originalOmitted": [
+          8,
+          5,
+          14,
+          255
+        ],
+        "nativeOmitted": [
+          8,
+          5,
+          14,
+          255
+        ],
+        "original": [
+          8,
+          5,
+          14,
+          255
+        ],
+        "production": [
+          8,
+          5,
+          14,
+          255
+        ]
+      }
+    },
+    {
+      "x": 103,
+      "y": 747,
+      "tile": [
+        76,
+        13
+      ],
+      "gray": 132,
+      "rgba": {
+        "originalOmitted": [
+          8,
+          6,
+          15,
+          255
+        ],
+        "nativeOmitted": [
+          8,
+          6,
+          15,
+          255
+        ],
+        "original": [
+          8,
+          6,
+          15,
+          255
+        ],
+        "production": [
+          8,
+          6,
+          15,
+          255
+        ]
+      }
+    },
+    {
+      "x": 104,
+      "y": 747,
+      "tile": [
+        77,
+        13
+      ],
+      "gray": 59,
+      "rgba": {
+        "originalOmitted": [
+          15,
+          11,
+          23,
+          255
+        ],
+        "nativeOmitted": [
+          15,
+          11,
+          23,
+          255
+        ],
+        "original": [
+          14,
+          11,
+          22,
+          255
+        ],
+        "production": [
+          14,
+          11,
+          22,
+          255
+        ]
+      }
+    },
+    {
+      "x": 102,
+      "y": 748,
+      "tile": [
+        75,
+        14
+      ],
+      "gray": 167,
+      "rgba": {
+        "originalOmitted": [
+          36,
+          31,
+          51,
+          255
+        ],
+        "nativeOmitted": [
+          36,
+          31,
+          51,
+          255
+        ],
+        "original": [
+          37,
+          32,
+          52,
+          255
+        ],
+        "production": [
+          37,
+          32,
+          52,
+          255
+        ]
+      }
+    },
+    {
+      "x": 103,
+      "y": 748,
+      "tile": [
+        76,
+        14
+      ],
+      "gray": 161,
+      "rgba": {
+        "originalOmitted": [
+          51,
+          44,
+          70,
+          255
+        ],
+        "nativeOmitted": [
+          51,
+          44,
+          70,
+          255
+        ],
+        "original": [
+          52,
+          45,
+          71,
+          255
+        ],
+        "production": [
+          60,
+          52,
+          81,
+          255
+        ]
+      }
+    },
+    {
+      "x": 104,
+      "y": 748,
+      "tile": [
+        77,
+        14
+      ],
+      "gray": 170,
+      "rgba": {
+        "originalOmitted": [
+          65,
+          57,
+          89,
+          255
+        ],
+        "nativeOmitted": [
+          65,
+          57,
+          89,
+          255
+        ],
+        "original": [
+          66,
+          58,
+          91,
+          255
+        ],
+        "production": [
+          66,
+          58,
+          91,
+          255
+        ]
+      }
+    },
+    {
+      "x": 102,
+      "y": 749,
+      "tile": [
+        75,
+        15
+      ],
+      "gray": 136,
+      "rgba": {
+        "originalOmitted": [
+          66,
+          58,
+          89,
+          255
+        ],
+        "nativeOmitted": [
+          66,
+          58,
+          89,
+          255
+        ],
+        "original": [
+          66,
+          58,
+          89,
+          255
+        ],
+        "production": [
+          66,
+          58,
+          89,
+          255
+        ]
+      }
+    },
+    {
+      "x": 103,
+      "y": 749,
+      "tile": [
+        76,
+        15
+      ],
+      "gray": 83,
+      "rgba": {
+        "originalOmitted": [
+          66,
+          58,
+          90,
+          255
+        ],
+        "nativeOmitted": [
+          66,
+          58,
+          90,
+          255
+        ],
+        "original": [
+          65,
+          57,
+          88,
+          255
+        ],
+        "production": [
+          65,
+          57,
+          88,
+          255
+        ]
+      }
+    },
+    {
+      "x": 104,
+      "y": 749,
+      "tile": [
+        77,
+        15
+      ],
+      "gray": 159,
+      "rgba": {
+        "originalOmitted": [
+          66,
+          58,
+          89,
+          255
+        ],
+        "nativeOmitted": [
+          66,
+          58,
+          89,
+          255
+        ],
+        "original": [
+          67,
+          59,
+          91,
+          255
+        ],
+        "production": [
+          67,
+          59,
+          91,
+          255
+        ]
+      }
+    }
+  ],
+  "conditionalAlgebra": {
+    "scope": "Opaque-destination scalar overlay model, NOT Canvas raster emulation",
+    "assumption": "Omission capture equals the true normal-render destination immediately before grain (not established)",
+    "idealUnroundedRgb": [
+      51.938,
+      44.809254901960784,
+      71.28745098039215
+    ],
+    "nearestByteRgb": [
+      52,
+      45,
+      71
+    ],
+    "actualOracleRgb": [
+      52,
+      45,
+      71
+    ],
+    "actualNativeRgb": [
+      60,
+      52,
+      81
+    ]
+  },
+  "interpretation": {
+    "ruledOutAtThisSample": "No seed/RNG, grayscale byte, integer pattern-offset, extent or declared opacity mismatch at frame15. The two current Rust source pins agree with the frozen compiled source and prior browser admission.",
+    "remainingDifferences": [
+      "Reference sets overlay/.07 before createPattern; native sets them after createPattern (at creation native is source-over/1).",
+      "Reference inherits the already drawn vignette gradient; native per-command isolation recreates and reassigns a nominally identical fillHistory gradient.",
+      "Reference grain tile is cached across calls in its realm; native allocates a new tile per frame. Bytes match, object and backend residency do not."
+    ],
+    "minimalCandidate": "After fillHistory restoration, move native overlay/globalAlpha assignments to BEFORE createPattern, retaining the existing fillHistory. This aligns the observed pattern-creation state; it is only a proposed diagnostic patch, not an established fix.",
+    "authority": "No production source was changed. Seek parent authorization before applying the candidate and test only a bounded paired normal frame15 raster before any acceptance claim.",
+    "unresolved": "Cannot distinguish real Canvas batching/paint-history differences from a normal-render pre-grain raster difference using these separate-render artifacts. No specific GPU cause established."
+  },
+  "limits": [
+    "Captured plan was evaluated by the prior real pinned WASM browser run; this CPU run does not invoke a new WASM evaluation.",
+    "No actual pattern/composite cache state is simulated by fakeCanvas.",
+    "Grain omission is a separate-render counterfactual, not a same-render pre-grain pixel snapshot; omission may affect batching/history."
+  ],
+  "command": "node script/diagnose-mv-tunnel-grain-cpu.mjs E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/_others/vocaloid-style-mv-pipeline C:/Users/Sayo/AppData/Local/Temp/rocut-tunnel-native-uM3cZF C:/Users/Sayo/AppData/Local/Temp/rocut-tunnel-native-hvfKn7 C:/Users/Sayo/AppData/Local/Temp/rocut-wasm-authority-20261011-GVDTX4",
+  "verification": {
+    "scriptExitCode": 0,
+    "nodeSyntax": true,
+    "eslint": "targeted MJS lint passed after final patch",
+    "encoding": "New script and receipt strict UTF8/no BOM/no replacement; JSON valid",
+    "noBrowserStarted": true,
+    "productionAndPriorReceiptsUnchanged": true
+  }
+}

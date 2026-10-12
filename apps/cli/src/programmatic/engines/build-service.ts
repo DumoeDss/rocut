@@ -5,7 +5,10 @@ import { compileProgrammaticProject } from "./compile-project";
 import { createRemotionInspectionSession } from "../remotion-inspection-service";
 import { threeLiquidObjectCapability } from "./three-liquid-object-capability";
 import { threeModelCapability } from "./three-model-capability";
-import { pinElectronAudioSessionConnection, ELECTRON_AUDIO_SESSION_PROTOCOL } from "../electron-audio-session";
+import {
+	pinElectronAudioSessionConnection,
+	ELECTRON_AUDIO_SESSION_PROTOCOL,
+} from "../electron-audio-session";
 import { resolveEngineToolchain } from "./toolchain-resolver";
 
 export function createProgrammaticBuildService(
@@ -17,7 +20,8 @@ export function createProgrammaticBuildService(
 	const toolchain = resolveEngineToolchain({ explicit: toolchainDirectory });
 	const configured = toolchain.configured;
 	toolchainDirectory = toolchain.directory;
-	const ready = (engine: string) => toolchain.probes.find(p => p.engine === engine)?.ready === true;
+	const ready = (engine: string) =>
+		toolchain.probes.find((p) => p.engine === engine)?.ready === true;
 	const active = new Map<AbortController, Promise<void>>();
 	let disposed = false;
 	const inspectionExecutable =
@@ -27,11 +31,18 @@ export function createProgrammaticBuildService(
 		process.env.ELFTIA_HTML_FRAME_CONNECTION_FILE;
 	let electronInspection = false;
 	if (inspectionConnection) {
-		try { pinElectronAudioSessionConnection(inspectionConnection); electronInspection = true; } catch { /* No standalone fallback for an Electron selection. */ }
+		try {
+			pinElectronAudioSessionConnection(inspectionConnection);
+			electronInspection = true;
+		} catch {
+			/* No standalone fallback for an Electron selection. */
+		}
 	}
 	const inspection =
 		ready("remotion") &&
-		(inspectionConnection ? electronInspection : inspectionExecutable && isAbsolute(inspectionExecutable))
+		(inspectionConnection
+			? electronInspection
+			: inspectionExecutable && isAbsolute(inspectionExecutable))
 			? createRemotionInspectionSession({
 					context,
 					enqueue,
@@ -44,12 +55,22 @@ export function createProgrammaticBuildService(
 		capability: {
 			version: 1,
 			configured,
-			engines: toolchain.probes.filter(p => p.ready).map(({ engine, version }) => ({ engine, version })),
+			engines: toolchain.probes
+				.filter((p) => p.ready)
+				.map(({ engine, version }) => ({ engine, version })),
 			toolchain: {
 				source: toolchain.source,
-				boundary: "dependency-metadata-and-compiler-files; not-compile-browser-or-GPU-health",
+				boundary:
+					"dependency-metadata-and-compiler-files; not-compile-browser-or-GPU-health",
 				diagnostics: toolchain.diagnostics,
-				engines: toolchain.probes.map(({ engine, ready, diagnostics, requiredPackages }) => ({ engine, available: ready, diagnostics, requiredPackages })),
+				engines: toolchain.probes.map(
+					({ engine, ready, diagnostics, requiredPackages }) => ({
+						engine,
+						available: ready,
+						diagnostics,
+						requiredPackages,
+					}),
+				),
 			},
 			availability: configured ? "configured-not-health-probed" : "unavailable",
 			threeLiquidObject: threeLiquidObjectCapability({
@@ -65,9 +86,15 @@ export function createProgrammaticBuildService(
 			threeModels: threeModelCapability(),
 			remotionInspection: {
 				configured: !!inspection,
-				backend: inspectionConnection ? "elftia-electron-source-session" : "standalone-chromium",
-				requiredProtocol: inspectionConnection ? ELECTRON_AUDIO_SESSION_PROTOCOL : undefined,
-				availability: inspection ? "configured-not-health-probed" : "unavailable",
+				backend: inspectionConnection
+					? "elftia-electron-source-session"
+					: "standalone-chromium",
+				requiredProtocol: inspectionConnection
+					? ELECTRON_AUDIO_SESSION_PROTOCOL
+					: undefined,
+				availability: inspection
+					? "configured-not-health-probed"
+					: "unavailable",
 				inspect: "programmatic/build/inspect",
 				compile: "programmatic/build/compile-inspected",
 				scope: "host-session-single-snapshot; no-project-mutation",
@@ -114,7 +141,8 @@ export function createProgrammaticBuildService(
 				json(503, {
 					error:
 						"Remotion inspection requires a standalone browser or Electron native audio session grant, and a pinned toolchain",
-					diagnostics: toolchain.probes.find(p => p.engine === "remotion")?.diagnostics,
+					diagnostics: toolchain.probes.find((p) => p.engine === "remotion")
+						?.diagnostics,
 				});
 				return;
 			}
@@ -166,11 +194,21 @@ export function createProgrammaticBuildService(
 						Buffer.concat(chunks),
 					),
 				);
-				const engine = action === "inspect" || action === "compile-inspected"
-					? "remotion" : action === "compile" ? input?.engine : action === "revise" ? input?.source?.build?.engine : input?.build?.engine;
-				const probe = toolchain.probes.find(p => p.engine === engine);
+				const engine =
+					action === "inspect" || action === "compile-inspected"
+						? "remotion"
+						: action === "compile"
+							? input?.engine
+							: action === "revise"
+								? input?.source?.build?.engine
+								: input?.build?.engine;
+				const probe = toolchain.probes.find((p) => p.engine === engine);
 				if (probe && !probe.ready) {
-					json(503, { error: `Engine compiler unavailable for ${engine}; required pinned dependencies are missing or invalid`, engine, diagnostics: probe.diagnostics });
+					json(503, {
+						error: `Engine compiler unavailable for ${engine}; required pinned dependencies are missing or invalid`,
+						engine,
+						diagnostics: probe.diagnostics,
+					});
 					return;
 				}
 				const result =

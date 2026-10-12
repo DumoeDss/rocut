@@ -273,7 +273,7 @@ function validate(surface) {
 			`stably-named binary export set is not the exact recorded set of ${EXPECTED.stableWasmExportCount}\n${exportDelta(surface.wasmExports)}`,
 		);
 	}
-	// The 3 compiler-generated trampolines are matched by shape and COUNT: their hashes vary by
+	// Compiler-generated trampolines are matched by shape and COUNT: their hashes vary by
 	// build host (see TRAMPOLINE_EXPORT), their number does not. A 4th one, or a missing one, is a
 	// real change to what the binary exports and still fails here.
 	if (observedTrampolines.length !== EXPECTED.trampolineExportCount) {
@@ -481,18 +481,22 @@ function mutate(surface, control) {
 			"a09d79579ac121a05ab38ca5c4cba505d91f2ee4359d336cc2cc1fd36b4d3191";
 	}
 	if (control === "trampoline-hash-swap") {
-		// POSITIVE control: another build host's symbol hashes, in both the export table and the
-		// declarations. This is exactly what CI observed; it must pass.
+		// POSITIVE control: different host hashes in both the export table and declarations.
+		// Mutate EVERY current adapter, including the fourth readback timer closure, so a
+		// historical three-name control cannot silently leave a newly pinned adapter untested.
 		const swaps = copy.wasmExports
 			.filter((entry) => TRAMPOLINE_EXPORT.test(entry.split("|")[0]))
 			.map((entry, index) => [
-				entry.split("|")[0].match(/h[0-9a-f]{16}$/)[0],
-				`h${(index + 1).toString(16).padStart(16, "0")}`,
+				entry.split("|")[0],
+				`wasm_bindgen__convert__closures_____invoke__h${(index + 1).toString(16).padStart(16, "0")}`,
 			]);
 		if (swaps.length !== EXPECTED.trampolineExportCount) {
-			throw Error("Positive control did not mutate every current trampoline");
+			throw new Error("trampoline-hash-swap did not cover the recorded adapters");
 		}
 		for (const [from, to] of swaps) {
+			if (from === to || !copy.wasmDts.includes(from)) {
+				throw new Error("trampoline-hash-swap would not mutate a declaration");
+			}
 			copy.wasmExports = copy.wasmExports.map((entry) =>
 				entry.replace(from, to),
 			);

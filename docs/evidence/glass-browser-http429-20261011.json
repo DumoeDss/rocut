@@ -1,0 +1,39 @@
+{
+  "schema": "rocut-glass-browser-attempt/v1",
+  "status": "failed-retained",
+  "sourceCommit": "571cba3b54845d01f50e2e95818fa1af5ed79d27",
+  "authorityWasmSha256": "084cf7310df5bfdc1b8e4ce3f64bcff842e1b23b9fd0ca57c1c7dcffc0d1fc12",
+  "receipt": {
+    "path": ".artifacts/glass-current-baseline/run-4V2cDw/evidence.json",
+    "sha256": "7a29a0342d68656e8fb2b9fe386a111fe3fe46fa9d43972be3d1146758c09fbd"
+  },
+  "uiArtifact": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\.worktrees\\rocut-acceptance-20261011-6fa23f6b\\_others\\rocut\\.artifacts\\glass-current-baseline\\run-4V2cDw\\glass-editor\\run-277S8H",
+  "httpFailuresCount": 3,
+  "httpFailuresEndpoint": "/api/programmatic/frame",
+  "httpFailuresStatus": 429,
+  "identity": {
+    "browser": {
+      "ok": true,
+      "linkedLoadedCount": 2,
+      "receipt": {
+        "path": ".artifacts/glass-current-baseline/run-4V2cDw/browser-pins-editor.json",
+        "sha256": "6e039a7c0f456c2e87a1e3d05d1af6b99fbffa89406731ae837e16c81cddf83b"
+      }
+    },
+    "sourceManifestUnchanged": true,
+    "pinsUnchanged": true
+  },
+  "failedGate": "existing strict no-HTTP-failures gate",
+  "passedScope": [
+    "real editor edit/recompile/undo/redo/reload",
+    "Host project reopen",
+    "actual browser served/loaded WASM bytes",
+    "actual Bun Host WASM bytes"
+  ],
+  "export49Frames": "not-started",
+  "retries": 0,
+  "installedPluginTested": false,
+  "electronTested": false,
+  "rootCauseBoundary": "HTTP request cancellation can settle before native cleanup releases Host admission slots; exact timing of these three failures was not captured. No permanent leak proved.",
+  "next": "Bounded cancelled-drain slot allocator and deterministic CPU controls, then original strict Glass UI/export gate on fresh source freeze."
+}

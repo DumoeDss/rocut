@@ -3,6 +3,7 @@ import { ThemeProvider } from "next-themes";
 import { useEmbeddedHostTheme } from "./host/use-embedded-host-theme";
 import { bindEmbeddedHostLifecycle } from "./host/embedded-host-lifecycle";
 import { createHostEditorTasks } from "./host/editor-tasks";
+import { createProjectReadiness } from "./host/project-readiness";
 import { Toaster } from "@opencut/editor-classic/ui";
 import { TooltipProvider } from "@opencut/editor-classic/ui";
 import { MobileGate } from "@opencut/editor-classic/ui";
@@ -158,9 +159,20 @@ function HostServedApp({ surface }: { surface: HostServedSurface }) {
  */
 function HostServedSync({ projectId }: { projectId: string }) {
 	const editor = useEditorInstance();
+	const readiness = useMemo(
+		() =>
+			createProjectReadiness({
+				reload: () => editor.project.loadProject({ id: projectId }),
+				schedule: (run) => {
+					const timer = window.setTimeout(run, 250);
+					return () => window.clearTimeout(timer);
+				},
+			}),
+		[editor, projectId],
+	);
 	const editorTasks = useMemo(
-		() => createHostEditorTasks({ editor }),
-		[editor],
+		() => createHostEditorTasks({ editor }, readiness.whenReady),
+		[editor, readiness],
 	);
 	useEffect(
 		() =>
@@ -180,6 +192,7 @@ function HostServedSync({ projectId }: { projectId: string }) {
 	// inside a running export's callbacks, where a re-rendered closure would
 	// see a stale value and keep rendering a job the CLI already cancelled.
 	const cancelledJobs = useRef(new Set<string>());
+	const exportWaiters = useRef(new Map<string, AbortController>());
 	const exporting = useRef(false);
 
 	/**
@@ -199,7 +212,11 @@ function HostServedSync({ projectId }: { projectId: string }) {
 				return;
 			}
 			exporting.current = true;
+			const waiter = new AbortController();
+			exportWaiters.current.set(jobId, waiter);
 			try {
+				await readiness.whenReady(waiter.signal);
+				if (cancelledJobs.current.has(jobId)) throw new Error("cancelled");
 				const result = await editor.renderer.exportProject({
 					options: {
 						format: options.format,
@@ -252,10 +269,11 @@ function HostServedSync({ projectId }: { projectId: string }) {
 				});
 			} finally {
 				exporting.current = false;
+				exportWaiters.current.delete(jobId);
 				cancelledJobs.current.delete(jobId);
 			}
 		},
-		[editor],
+		[editor, readiness],
 	);
 
 	const onCommand = useCallback(
@@ -263,6 +281,7 @@ function HostServedSync({ projectId }: { projectId: string }) {
 			if (editorTasks.handle(command)) return;
 			if (command.command === "export.cancel") {
 				cancelledJobs.current.add(command.jobId);
+				exportWaiters.current.get(command.jobId)?.abort(new Error("cancelled"));
 				return;
 			}
 			if (command.command === "export.start")
@@ -272,26 +291,18 @@ function HostServedSync({ projectId }: { projectId: string }) {
 	);
 
 	useEffect(() => {
-		let timer: number | undefined;
 		const dispose = subscribeHostEvents({
 			editorTaskSurface: editorTasks.surfaceId,
 			onDisconnect: () => editorTasks.disconnect(),
-			onRevision: () => {
-				window.clearTimeout(timer);
-				timer = window.setTimeout(() => {
-					void editor.project
-						.loadProject({ id: projectId })
-						.catch(() => undefined);
-				}, 250);
-			},
+			onRevision: () => readiness.changed(),
 			onCommand,
 		});
 		return () => {
 			dispose();
 			editorTasks.disconnect();
-			window.clearTimeout(timer);
+			readiness.cancelPending();
 		};
-	}, [editor, projectId, onCommand, editorTasks]);
+	}, [readiness, onCommand, editorTasks]);
 	return null;
 }
 

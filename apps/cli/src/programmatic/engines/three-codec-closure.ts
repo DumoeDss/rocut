@@ -4,7 +4,6 @@ import { resourceDigest } from "../resources";
 import { LOCK_ID, sourceDescription } from "./build-source";
 
 export const THREE_ASSET_CODEC_PROFILE = "offline-codecs-v1";
-
 export const THREE_ASSET_CODEC_FILES = [
 	"dist/draco.js",
 	"dist/draco-decoder.js",

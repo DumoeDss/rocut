@@ -37,6 +37,9 @@ if (process.env.ROCUT_CAPTURE_OWNERSHIP_ISOLATED !== "1") {
 		commitRenderFrameForHandle: () => {
 			committed++;
 		},
+		commitRenderFramePngForHandle: () => {
+			throw Error("Cancelled PNG capture must not commit.");
+		},
 		cancelRenderFrameForHandle: () => {
 			cancelled++;
 		},
@@ -100,25 +103,26 @@ if (process.env.ROCUT_CAPTURE_OWNERSHIP_ISOLATED !== "1") {
 		compositor.render(frame);
 		await compositor.close();
 	});
-	test("Host close during begin sees reserved ownership before entering WASM", async () => {
-		const compositor = create();
-		const before = released;
-		let closing: Promise<void> | undefined;
-		onBegin = () => {
-			closing = compositor.close();
-			expect(() => compositor.dispose()).toThrow("Active compositor work");
-			expect(released).toBe(before);
-		};
-		try {
-			await expect(compositor.renderAsync(frame)).rejects.toMatchObject({
-				code: "RENDER_CANCELLED",
-			});
-			await closing;
-			expect(released).toBe(before + 1);
-		} finally {
-			onBegin = () => {};
-		}
-	});
+	for (const method of ["renderAsync", "renderPngAsync"] as const)
+		test(`Host close during ${method} begin sees reserved ownership before entering WASM`, async () => {
+			const compositor = create();
+			const before = released;
+			let closing: Promise<void> | undefined;
+			onBegin = () => {
+				closing = compositor.close();
+				expect(() => compositor.dispose()).toThrow("Active compositor work");
+				expect(released).toBe(before);
+			};
+			try {
+				await expect(compositor[method](frame)).rejects.toMatchObject({
+					code: "RENDER_CANCELLED",
+				});
+				await closing;
+				expect(released).toBe(before + 1);
+			} finally {
+				onBegin = () => {};
+			}
+		});
 	for (const cancellation of ["caller", "cancelAndDrain"] as const)
 		test(`real transaction ${cancellation} normalizes native reason only after operation drain`, async () => {
 			const compositor = create();

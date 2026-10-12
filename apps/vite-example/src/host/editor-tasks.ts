@@ -4,6 +4,7 @@ import type { HostCommand } from "./host-served";
 /** HTTP and cancellation only; editor business behavior stays in the provider. */
 export function createHostEditorTasks(
 	options: Parameters<typeof createEditorTaskRunner>[0],
+	whenReady: (signal?: AbortSignal) => Promise<void> = async () => {},
 ) {
 	const runner = createEditorTaskRunner(options);
 	const active = new Map<string, AbortController>();
@@ -64,15 +65,22 @@ export function createHostEditorTasks(
 			const controller = new AbortController();
 			active.set(command.jobId, controller);
 			const { jobId, token, request } = command;
-			void runner
-				.run({
-					request,
-					signal: controller.signal,
-					onProgress: (progress) => {
-						void report({ jobId, payload: { token, progress } }).catch(() =>
-							controller.abort(),
-						);
-					},
+			void Promise.resolve()
+				.then(() => {
+					controller.signal.throwIfAborted();
+					return whenReady(controller.signal);
+				})
+				.then(() => {
+					controller.signal.throwIfAborted();
+					return runner.run({
+						request,
+						signal: controller.signal,
+						onProgress: (progress) => {
+							void report({ jobId, payload: { token, progress } }).catch(() =>
+								controller.abort(),
+							);
+						},
+					});
 				})
 				.then(async (result) => {
 					if (request.kind === "snapshot.png") {

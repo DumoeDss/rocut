@@ -4,9 +4,14 @@ import { readFile, rename, writeFile } from "node:fs/promises";
 import { isAbsolute, join } from "node:path";
 import { startHost, type RunningHost } from "../../apps/cli/src/host";
 import { TargetRegistry } from "../../apps/cli/src/target-registry";
-import { inside, plain } from "../particle-c4-export-support.mjs";
+import { admitParticleAuthorityHostContext } from "./particle-editor-export-authority-stage.mjs";
+import {
+	parseThreeParticleArchive,
+	loadThreeParticleRuntime,
+} from "../../apps/cli/src/programmatic/three-particle-provenance";
+import { inside, plain, treeManifest } from "../particle-c4-export-support.mjs";
 
-const [root, toolchain, chromium] = process.argv.slice(2);
+const [root, toolchain, chromium, authorityContextPath] = process.argv.slice(2);
 const observed = (globalThis as any).__particleC2Processes as {
 	closed: boolean;
 }[];
@@ -59,7 +64,37 @@ async function open() {
 	return host;
 }
 try {
-	assert.equal(process.versions.bun, "1.2.18");
+	const admittedAuthority = authorityContextPath
+		? await admitParticleAuthorityHostContext({
+				root,
+				path: authorityContextPath,
+				executable: process.execPath,
+				version: process.versions.bun,
+			})
+		: undefined;
+	if (admittedAuthority) {
+		const observer = Reflect.get(
+			globalThis,
+			"__particleAuthorityWasmObservation",
+		);
+		assert.ok(observer, "Authority bootstrap must precede static sync imports");
+		await write(
+			"host-actual-wasm-authority.json",
+			await observer.assertConsumed(),
+		);
+		const runtime = await loadThreeParticleRuntime(
+			AbortSignal.timeout(15000),
+			admittedAuthority.authority.metadata.productionIdentity.packedSidecar,
+		);
+		assert.deepEqual(
+			runtime.samplerIdentity,
+			admittedAuthority.authority.metadata.productionIdentity.packedSidecar,
+		);
+		await write("host-packed-particle-authority.json", {
+			runtime,
+			actualWorkerClosedBeforeReceipt: true,
+		});
+	} else assert.equal(process.versions.bun, "1.2.18");
 	assert.ok(
 		[root, toolchain, chromium].every((path) => path && isAbsolute(path)),
 	);
@@ -80,6 +115,11 @@ try {
 	assert.equal(source.build.engine, "three");
 	assert.equal(initial.revision, 2);
 	assert.equal(clip.editing?.params.opacity, 0.85);
+	if (admittedAuthority)
+		assert.equal(
+			digest(Buffer.from(JSON.stringify(source))),
+			admittedAuthority.baseline.metadata.sourceSha256,
+		);
 	const verifiedResources = [];
 	for (const resource of [
 		...(source.resources ?? []),
@@ -98,6 +138,27 @@ try {
 		const bytes: Uint8Array = new Uint8Array(await response.arrayBuffer());
 		assert.equal(bytes.length, resource.byteLength);
 		assert.equal(digest(bytes), resource.sha256);
+		if (admittedAuthority && resource.id === source.build.toolchainLock.id) {
+			const archived = parseThreeParticleArchive(
+				source,
+				bytes.buffer as ArrayBuffer,
+			);
+			assert.ok(archived);
+			assert.deepEqual(
+				archived.samplerIdentity,
+				admittedAuthority.authority.metadata.productionIdentity.packedSidecar,
+			);
+			assert.equal(
+				archived.adapterSha256,
+				admittedAuthority.authority.metadata.productionIdentity.adapterSha256,
+			);
+			await write("host-archived-particle-authority.json", {
+				archived,
+				authorityReceiptSha256:
+					admittedAuthority.authority.authorityReceiptSha256,
+				productionCaptureRequiresArchivedIdentity: true,
+			});
+		}
 		verifiedResources.push({
 			id: resource.id,
 			sha256: resource.sha256,
@@ -105,6 +166,11 @@ try {
 		});
 	}
 	await write("initial-state.json", initial);
+	if (admittedAuthority)
+		assert.equal(
+			digest(await readFile(join(root, "initial-state.json"))),
+			admittedAuthority.baseline.metadata.fullStateSha256,
+		);
 	await write("host-resources.json", { verifiedResources });
 	await write("host-ready.pending-private.json", {
 		token: host.token,
@@ -146,6 +212,9 @@ try {
 			expected,
 			"Attached Host state must equal full final UI snapshot",
 		);
+		const beforeReopen = admittedAuthority
+			? await treeManifest(join(root, "project"))
+			: undefined;
 		await host.close();
 		host = undefined;
 		const reopened = await open();
@@ -159,6 +228,25 @@ try {
 			"Fresh FileProjectStore reopen must preserve complete UI state and revision",
 		);
 		await write("host-reopened-state.json", await snapshot());
+		if (admittedAuthority) {
+			assert.deepEqual(
+				await treeManifest(join(root, "project")),
+				beforeReopen,
+				"Reopen must preserve complete project and attachment bytes",
+			);
+			await write("host-reopen-project-stability.json", {
+				completeProjectUnmodified: true,
+				beforeReopen,
+			});
+			await write(
+				"host-actual-wasm-authority-final.json",
+				await Reflect.get(
+					globalThis,
+					"__particleAuthorityWasmObservation",
+				).assertConsumed(),
+			);
+			await admittedAuthority.authority.assertUnchanged();
+		}
 	}
 } catch (error) {
 	failed = true;

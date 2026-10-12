@@ -1,0 +1,333 @@
+{
+  "version": 1,
+  "scope": "Same authoritative release binary; immutable browser-v2 derivative with genuine async default initializer; actual Chrome main-thread smoke only, no Tunnel raster acceptance claim",
+  "privateRoot": "C:\\Users\\Sayo\\AppData\\Local\\Temp\\rocut-wasm-authority-20261011-GVDTX4",
+  "source": "C:\\Users\\Sayo\\AppData\\Local\\Temp\\rocut-wasm-authority-20261011-GVDTX4\\source",
+  "canonicalPackage": "C:\\Users\\Sayo\\AppData\\Local\\Temp\\rocut-wasm-authority-20261011-GVDTX4\\pkg",
+  "browserPackageDirectory": "C:\\Users\\Sayo\\AppData\\Local\\Temp\\rocut-wasm-authority-20261011-GVDTX4\\browser-pkg-v2-sntQBC",
+  "sourceManifestSha256": "d6cb235399f0090d037eb1c6d8c10241c8042d1d2b16913e56c6dc7a08e207c0",
+  "wasmSha256": "084cf7310df5bfdc1b8e4ce3f64bcff842e1b23b9fd0ca57c1c7dcffc0d1fc12",
+  "derivativeOwnership": {
+    "directory": "C:\\Users\\Sayo\\AppData\\Local\\Temp\\rocut-wasm-authority-20261011-GVDTX4\\browser-pkg-v2-sntQBC",
+    "purpose": "Immutable async browser derivative v2; same authority binary, no Rust recompilation",
+    "owner": "wasm_authority 20261011",
+    "retention": "Retain alongside v1 failure receipts; no automatic removal or overwrite"
+  },
+  "helper": {
+    "path": "script/acceptance-wasm-baseline.mjs",
+    "sha256": "3b3e4da678533c76adc8e95eb235183ea62adb3aff879cbec9a4954b18ef3db7"
+  },
+  "helperCurrentSha256": "9b507747b72a478bb032517226c16e32e0118a25f6059101ade27a4e25eb6b73",
+  "subsequentHelperRoutingVerification": {"verify":"C:/Users/Sayo/AppData/Local/Temp/rocut-wasm-authority-20261011-GVDTX4/verify-yDVhkj","browser":"C:\\Users\\Sayo\\AppData\\Local\\Temp\\rocut-wasm-authority-20261011-GVDTX4\\browser-pkg-v2-teWbH9","helper":{"path":"script/acceptance-wasm-baseline.mjs","sha256":"9b507747b72a478bb032517226c16e32e0118a25f6059101ade27a4e25eb6b73"},"wrapper":{"path":"opencut_wasm.js","bytes":247548,"sha256":"cc62ca83fb09032be1bf5427a156f572587ef21cc6a6c185d4743ac4fe7ddb39"},"gates":{"api":0,"path":0,"structural":0},"async":{"passed":true,"explicitSyncNegativeFired":true,"defaultSyncConstructorCalls":0,"frameCases":7},"note":"The legacy --verify-root spelling now also creates a fresh v2 directory, protecting historical receipts. Wrapper bytes are identical to the Chrome-tested sntQBC artifact; sntQBC remains the fixed matrix input."},
+  "package": [
+    {
+      "path": ".gitignore",
+      "bytes": 1,
+      "sha256": "684888c0ebb17f374298b65ee2807526c066094c701bcc7ebbe1c1095f494fc1"
+    },
+    {
+      "path": "LICENSE",
+      "bytes": 1060,
+      "sha256": "814632368a8331fd1f485f4bd4b7ecb6401e5f2a24fba79cd3e21aff8ca39a6e"
+    },
+    {
+      "path": "NOTICE",
+      "bytes": 17150,
+      "sha256": "1111d13303b79967e726d09b1ca99d9183dea59e8e8343ceaccfa18a8bc11fe4"
+    },
+    {
+      "path": "README.md",
+      "bytes": 2649,
+      "sha256": "c8fe27ab5d2e12963e1f04571549afc9828060f4dfec85e6afaa188d3d90a128"
+    },
+    {
+      "path": "opencut_wasm.d.ts",
+      "bytes": 42384,
+      "sha256": "c1c554ea5726a473810b4c632d9d7cf26885837a4957ea44a67643cdf3ac88bc"
+    },
+    {
+      "path": "opencut_wasm.js",
+      "bytes": 247548,
+      "sha256": "cc62ca83fb09032be1bf5427a156f572587ef21cc6a6c185d4743ac4fe7ddb39"
+    },
+    {
+      "path": "opencut_wasm_bg.js",
+      "bytes": 194263,
+      "sha256": "a5317704b269497f6208b7f946c4f6e393e9e5be8a9fdc972e40ae19a0d156cc"
+    },
+    {
+      "path": "opencut_wasm_bg.wasm",
+      "bytes": 15069546,
+      "sha256": "084cf7310df5bfdc1b8e4ce3f64bcff842e1b23b9fd0ca57c1c7dcffc0d1fc12"
+    },
+    {
+      "path": "opencut_wasm_bg.wasm.d.ts",
+      "bytes": 17858,
+      "sha256": "1497c91f1bb47a7839a21c86cb045575bd3d8e624c75fe9cab04755dd54123aa"
+    },
+    {
+      "path": "opencut_wasm_sync.js",
+      "bytes": 201,
+      "sha256": "e9cb7bcbcf91efdc2935900e53e4f948dbd69919b31b46121a5422781101f379"
+    },
+    {
+      "path": "package.json",
+      "bytes": 843,
+      "sha256": "60502f95b49df31dd41e5be0ada1826e0693b30a525d3b49da73f4e106a1a4b4"
+    },
+    {
+      "path": "verification.json",
+      "bytes": 713,
+      "sha256": "7da4b27a9c116908e71ab5745ca5af7df385f302b873bf0be60c8fc181fb4748"
+    }
+  ],
+  "canonicalPackageHashes": [
+    {
+      "path": ".gitignore",
+      "bytes": 1,
+      "sha256": "684888c0ebb17f374298b65ee2807526c066094c701bcc7ebbe1c1095f494fc1"
+    },
+    {
+      "path": "LICENSE",
+      "bytes": 1060,
+      "sha256": "814632368a8331fd1f485f4bd4b7ecb6401e5f2a24fba79cd3e21aff8ca39a6e"
+    },
+    {
+      "path": "NOTICE",
+      "bytes": 17150,
+      "sha256": "1111d13303b79967e726d09b1ca99d9183dea59e8e8343ceaccfa18a8bc11fe4"
+    },
+    {
+      "path": "README.md",
+      "bytes": 2649,
+      "sha256": "c8fe27ab5d2e12963e1f04571549afc9828060f4dfec85e6afaa188d3d90a128"
+    },
+    {
+      "path": "opencut_wasm.d.ts",
+      "bytes": 42384,
+      "sha256": "c1c554ea5726a473810b4c632d9d7cf26885837a4957ea44a67643cdf3ac88bc"
+    },
+    {
+      "path": "opencut_wasm.js",
+      "bytes": 3644,
+      "sha256": "d09bc88e6ed7a1af99adf7a1e545346e7993a8500cd78e519f9b0b0b17a6aabf"
+    },
+    {
+      "path": "opencut_wasm_bg.js",
+      "bytes": 194263,
+      "sha256": "a5317704b269497f6208b7f946c4f6e393e9e5be8a9fdc972e40ae19a0d156cc"
+    },
+    {
+      "path": "opencut_wasm_bg.wasm",
+      "bytes": 15069546,
+      "sha256": "084cf7310df5bfdc1b8e4ce3f64bcff842e1b23b9fd0ca57c1c7dcffc0d1fc12"
+    },
+    {
+      "path": "opencut_wasm_bg.wasm.d.ts",
+      "bytes": 17858,
+      "sha256": "1497c91f1bb47a7839a21c86cb045575bd3d8e624c75fe9cab04755dd54123aa"
+    },
+    {
+      "path": "opencut_wasm_sync.js",
+      "bytes": 4741,
+      "sha256": "3ea9403a7e21fb5c1228062c356fad1843cc461822c57342b942aa3e96b84c17"
+    },
+    {
+      "path": "package.json",
+      "bytes": 843,
+      "sha256": "60502f95b49df31dd41e5be0ada1826e0693b30a525d3b49da73f4e106a1a4b4"
+    }
+  ],
+  "environment": {
+    "ROCUT_TEST_WASM_DIRECTORY": "C:\\Users\\Sayo\\AppData\\Local\\Temp\\rocut-wasm-authority-20261011-GVDTX4\\browser-pkg-v2-sntQBC",
+    "ROCUT_TEST_RUST_SOURCE": "C:\\Users\\Sayo\\AppData\\Local\\Temp\\rocut-wasm-authority-20261011-GVDTX4\\source",
+    "ROCUT_TEST_LIQUID_WASM_DIR": "C:\\Users\\Sayo\\AppData\\Local\\Temp\\rocut-wasm-authority-20261011-GVDTX4\\pkg",
+    "ROCUT_TEST_LIQUID_WASM_SHA256": "084cf7310df5bfdc1b8e4ce3f64bcff842e1b23b9fd0ca57c1c7dcffc0d1fc12"
+  },
+  "nodeContracts": {
+    "init": [
+      {
+        "runtime": "node v24.14.0",
+        "specifier": "file:///C:/Users/Sayo/AppData/Local/Temp/rocut-wasm-authority-20261011-GVDTX4/pkg/opencut_wasm_sync.js",
+        "resolved": "file:///C:/Users/Sayo/AppData/Local/Temp/rocut-wasm-authority-20261011-GVDTX4/pkg/opencut_wasm_sync.js",
+        "exports": 135,
+        "ticksPerSecond": 120000,
+        "mediaTimeFromSeconds2": 240000,
+        "roundToFrame": 12000,
+        "transitionGraphChecks": 14,
+        "error": null
+      },
+      {
+        "runtime": "bun 1.4.2",
+        "specifier": "file:///C:/Users/Sayo/AppData/Local/Temp/rocut-wasm-authority-20261011-GVDTX4/pkg/opencut_wasm_sync.js",
+        "resolved": "file:///C:/Users/Sayo/AppData/Local/Temp/rocut-wasm-authority-20261011-GVDTX4/pkg/opencut_wasm_sync.js",
+        "exports": 135,
+        "ticksPerSecond": 120000,
+        "mediaTimeFromSeconds2": 240000,
+        "roundToFrame": 12000,
+        "transitionGraphChecks": 14,
+        "error": null
+      }
+    ],
+    "negative": {
+      "runtime": "bun 1.4.2",
+      "specifier": "file:///C:/Users/Sayo/AppData/Local/Temp/rocut-wasm-authority-20261011-GVDTX4/pkg/opencut_wasm.js",
+      "resolved": "file:///C:/Users/Sayo/AppData/Local/Temp/rocut-wasm-authority-20261011-GVDTX4/pkg/opencut_wasm.js",
+      "exports": 0,
+      "ticksPerSecond": null,
+      "mediaTimeFromSeconds2": null,
+      "roundToFrame": null,
+      "transitionGraphChecks": 0,
+      "error": "wasm.__wbindgen_start is not a function. (In 'wasm.__wbindgen_start()', 'wasm.__wbindgen_start' is undefined)"
+    },
+    "asyncNonSync": {
+      "passed": true,
+      "explicitSyncNegativeFired": true,
+      "defaultSyncConstructorCalls": 0,
+      "frameCases": 7
+    },
+    "frameCases": [
+      {
+        "name": "plain-three-no-declaration",
+        "accepted": true
+      },
+      {
+        "name": "liquid-object-v1",
+        "accepted": true
+      },
+      {
+        "name": "mixed",
+        "accepted": false
+      },
+      {
+        "name": "duplicate",
+        "accepted": false
+      },
+      {
+        "name": "unknown",
+        "accepted": false
+      },
+      {
+        "name": "hyperframes",
+        "accepted": false
+      },
+      {
+        "name": "remotion",
+        "accepted": false
+      }
+    ],
+    "syncInitializerCases": 7,
+    "asyncInitializerCases": 7,
+    "publicNameParity": true,
+    "glueImportBindings": 631
+  },
+  "gateResults": {
+    "api": {
+      "command": "C:\\nvm4w\\nodejs\\node.exe",
+      "args": [
+        "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\.worktrees\\rocut-acceptance-20261011-6fa23f6b\\_others\\rocut\\script\\check-wasm-api-surface.mjs",
+        "--pkg-dir",
+        "C:\\Users\\Sayo\\AppData\\Local\\Temp\\rocut-wasm-authority-20261011-GVDTX4\\pkg"
+      ],
+      "cwd": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\.worktrees\\rocut-acceptance-20261011-6fa23f6b\\_others\\rocut",
+      "code": 0,
+      "signal": null,
+      "reason": null,
+      "durationMs": 980,
+      "log": "C:\\Users\\Sayo\\AppData\\Local\\Temp\\rocut-wasm-authority-20261011-GVDTX4\\verify-jtSrL3\\api-surface.log"
+    },
+    "paths": {
+      "command": "C:\\nvm4w\\nodejs\\node.exe",
+      "args": [
+        "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\.worktrees\\rocut-acceptance-20261011-6fa23f6b\\_others\\rocut\\script\\check-wasm-paths.mjs",
+        "--file",
+        "C:\\Users\\Sayo\\AppData\\Local\\Temp\\rocut-wasm-authority-20261011-GVDTX4\\pkg\\opencut_wasm_bg.wasm"
+      ],
+      "cwd": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\.worktrees\\rocut-acceptance-20261011-6fa23f6b\\_others\\rocut",
+      "code": 0,
+      "signal": null,
+      "reason": null,
+      "durationMs": 217,
+      "log": "C:\\Users\\Sayo\\AppData\\Local\\Temp\\rocut-wasm-authority-20261011-GVDTX4\\verify-jtSrL3\\paths.log"
+    },
+    "structural": {
+      "command": "C:\\nvm4w\\nodejs\\node.exe",
+      "args": [
+        "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\.worktrees\\rocut-acceptance-20261011-6fa23f6b\\_others\\rocut\\script\\run-wasm-api-contract.mjs",
+        "--pkg-dir",
+        "C:\\Users\\Sayo\\AppData\\Local\\Temp\\rocut-wasm-authority-20261011-GVDTX4\\pkg"
+      ],
+      "cwd": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\.worktrees\\rocut-acceptance-20261011-6fa23f6b\\_others\\rocut",
+      "code": 0,
+      "signal": null,
+      "reason": null,
+      "durationMs": 835,
+      "log": "C:\\Users\\Sayo\\AppData\\Local\\Temp\\rocut-wasm-authority-20261011-GVDTX4\\verify-jtSrL3\\structural-compile.log"
+    }
+  },
+  "sourceUnchanged": true,
+  "currentMatchingSourceDrift": [],
+  "gatesUnchanged": true,
+  "sharedPackageDrift": false,
+  "historicalV1PackageUnchanged": true,
+  "historicalV1Identity": {
+    "opencut_wasm.js": "3e8217f5c635548a8f1a4b0e5e92ff44663da5df92b14270ab3448c11516870e",
+    "opencut_wasm_bg.wasm": "084cf7310df5bfdc1b8e4ce3f64bcff842e1b23b9fd0ca57c1c7dcffc0d1fc12",
+    "verification.json": "f1138a30e127dc0baacba9ec1a271375c64eb86fb3acd385dd00c4786fc98b92"
+  },
+  "actualChrome": {
+    "executable": "C:/Users/Sayo/AppData/Local/ms-playwright/chromium-1243/chrome-win64/chrome.exe",
+    "executableSha256": "9b07943f834485b43c9d54caea2951c78715f9f07070a80ab6658465ebd3e711",
+    "args": [
+      "--disable-gpu-rasterization"
+    ],
+    "expectedWasm": "084cf7310df5bfdc1b8e4ce3f64bcff842e1b23b9fd0ca57c1c7dcffc0d1fc12",
+    "v2": {
+      "digest": "084cf7310df5bfdc1b8e4ce3f64bcff842e1b23b9fd0ca57c1c7dcffc0d1fc12",
+      "bytes": 15069546,
+      "syncCalls": 0,
+      "compileCalls": 1,
+      "instantiateCalls": 1,
+      "explicitSyncNegative": "Synchronous WASM constructor forbidden by browser control",
+      "publicExports": 135,
+      "ticksPerSecond": 120000,
+      "frameIndex": 0
+    },
+    "before": {
+      "v1": {
+        "opencut_wasm.js": "3e8217f5c635548a8f1a4b0e5e92ff44663da5df92b14270ab3448c11516870e",
+        "opencut_wasm_bg.wasm": "084cf7310df5bfdc1b8e4ce3f64bcff842e1b23b9fd0ca57c1c7dcffc0d1fc12",
+        "verification.json": "f1138a30e127dc0baacba9ec1a271375c64eb86fb3acd385dd00c4786fc98b92"
+      },
+      "v2": {
+        "opencut_wasm.js": "cc62ca83fb09032be1bf5427a156f572587ef21cc6a6c185d4743ac4fe7ddb39",
+        "opencut_wasm_bg.wasm": "084cf7310df5bfdc1b8e4ce3f64bcff842e1b23b9fd0ca57c1c7dcffc0d1fc12",
+        "verification.json": "7da4b27a9c116908e71ab5745ca5af7df385f302b873bf0be60c8fc181fb4748"
+      }
+    },
+    "browserVersion": "153.0.8010.12",
+    "v1": {
+      "error": "WebAssembly.Compile is disallowed on the main thread, if the buffer size is larger than 8MB. Use WebAssembly.compile, compile on a worker thread, or use the flag `--enable-features=WebAssemblyUnlimitedSyncCompilation`.",
+      "bytes": 15069546
+    },
+    "after": {
+      "v1": {
+        "opencut_wasm.js": "3e8217f5c635548a8f1a4b0e5e92ff44663da5df92b14270ab3448c11516870e",
+        "opencut_wasm_bg.wasm": "084cf7310df5bfdc1b8e4ce3f64bcff842e1b23b9fd0ca57c1c7dcffc0d1fc12",
+        "verification.json": "f1138a30e127dc0baacba9ec1a271375c64eb86fb3acd385dd00c4786fc98b92"
+      },
+      "v2": {
+        "opencut_wasm.js": "cc62ca83fb09032be1bf5427a156f572587ef21cc6a6c185d4743ac4fe7ddb39",
+        "opencut_wasm_bg.wasm": "084cf7310df5bfdc1b8e4ce3f64bcff842e1b23b9fd0ca57c1c7dcffc0d1fc12",
+        "verification.json": "7da4b27a9c116908e71ab5745ca5af7df385f302b873bf0be60c8fc181fb4748"
+      }
+    },
+    "ok": true
+  },
+  "smokeScriptSha256": "0c84d1cee023a53818b06fa89b236aaa03103d631b3c11b2116e3a83d44ac992",
+  "evidence": "C:/Users/Sayo/AppData/Local/Temp/rocut-wasm-authority-20261011-GVDTX4/verify-jtSrL3/evidence.json",
+  "browserSmokeEvidence": "C:/Users/Sayo/AppData/Local/Temp/rocut-wasm-authority-20261011-GVDTX4/verify-jtSrL3/browser-main-thread-smoke.json",
+  "implementation": "default init awaits WebAssembly.compile(bytes) and WebAssembly.instantiate(module, exact generated imports), then sets glue handle and calls start; initSync remains explicit for Node consumers",
+  "reproduce": "node script/acceptance-wasm-baseline.mjs --derive-root C:\\Users\\Sayo\\AppData\\Local\\Temp\\rocut-wasm-authority-20261011-GVDTX4",
+  "retention": "Keep old browser-pkg and all failure receipts intact; each derive-root run creates a fresh browser-pkg-v2-* directory. Do not overwrite this v2 directory while matrix runs."
+}

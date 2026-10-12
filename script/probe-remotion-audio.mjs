@@ -6,6 +6,22 @@ import { fileURLToPath } from "node:url";
 import { tmpdir } from "node:os";
 import { chromium, createServer } from "./browser-probe-toolchain.mjs";
 import { buildNativeAudioExportProbe } from "./native-audio-export-build.mjs";
+import { resolveProbeBrowserExecutable, resolveRequiredProbeWasmBinding } from "./fixtures/browser-probe-identity.mjs";
+import { assertHtmlProbeWasmIdentity, resolveHtmlProbeArtifactDirectory, snapshotHtmlProbeSources, saveHtmlProbeEvidence } from "./html-probe-wasm-binding.mjs";
+import {
+	nativeAudioHttpObservation,
+	nativeAudioResultSummary,
+	saveNativeAudioProbeFailure,
+} from "./fixtures/native-audio-probe-diagnostics.mjs";
+import {
+	nativeAudioConsoleObservation,
+	nativeAudioContextHttpObservation,
+	nativeAudioServerObservation,
+} from "./fixtures/native-audio-diagnostic-observations.mjs";
+import {
+	createNativeAudioNetworkObservations,
+	recordNativeAudioNetworkObservation,
+} from "./fixtures/native-audio-network-observations.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const isolated = process.env.ROCUT_TEST_WASM_DIRECTORY;
@@ -14,14 +30,21 @@ const editor = process.argv.includes("--editor");
 const fixture = editor ? "native-audio-editor-browser" : "native-audio-export-browser";
 if (!process.argv[2] || !isolated || !isAbsolute(isolated) || !ffmpeg || !ffprobe)
   throw Error("Provide isolated toolchain, ROCUT_TEST_WASM_DIRECTORY, ROCUT_TEST_FFMPEG and ROCUT_TEST_FFPROBE");
+const binding = resolveRequiredProbeWasmBinding({ directory: isolated, expectedWasmSha256: process.env.ROCUT_PROBE_WASM_SHA256 });
+const executablePath = resolveProbeBrowserExecutable({ configured: process.env.ROCUT_PROBE_BROWSER_PATH, fallback: chromium.executablePath() });
+const artifactDirectory = resolveHtmlProbeArtifactDirectory(process.env.ROCUT_PROBE_ARTIFACTS);
+const sourceInputs = snapshotHtmlProbeSources(root, ["script/probe-remotion-audio.mjs", "script/fixtures/native-audio-probe-diagnostics.mjs", "script/fixtures/native-audio-network-observations.mjs", "script/fixtures/native-audio-diagnostic-observations.mjs", "script/native-audio-export-build.mjs", "script/html-probe-wasm-binding.mjs", "script/fixtures/browser-probe-identity.mjs", "script/fixtures/local-wasm-preload.mjs", "script/fixtures/remotion-audio-pcm-diagnostic.ts", `script/fixtures/${fixture}.ts`, `script/fixtures/${fixture}.html`]);
 const temporary = await mkdtemp(join(tmpdir(), "rocut-native-audio-export-"));
-const host = spawn("bun", ["--preload", "./script/fixtures/isolated-web-wasm-preload.mjs",
+const host = spawn("bun", ["--preload", "./script/fixtures/local-wasm-preload.mjs",
   "script/fixtures/remotion-audio-pcm-diagnostic.ts", process.argv[2], "--fixture-server", ...(editor ? ["--editor-only"] : [])], {
   cwd: root, windowsHide: true, stdio: ["pipe", "pipe", "pipe"],
   env: { ...process.env, TEMP: temporary, TMP: temporary, TMPDIR: temporary },
 });
 const exited = new Promise(resolve => host.once("close", resolve));
-let browser, server, hostReady = false;
+let browser, server, hostReady = false, hostWasmIdentity;
+let result, browserWasmIdentity;
+const errors = [], httpFailures = [];
+const networkObservations = createNativeAudioNetworkObservations();
 try {
   const endpoint = await new Promise((resolve, reject) => {
     let output = "";
@@ -34,7 +57,22 @@ try {
       let end;
       while ((end = output.indexOf("\n")) >= 0) {
         const line = output.slice(0, end); output = output.slice(end + 1);
-        try { const value = JSON.parse(line); if (value.endpoint) { clearTimeout(timer); resolve(value.endpoint); } } catch {}
+        let value;
+        try { value = JSON.parse(line); } catch { continue; }
+        if (value.wasmIdentity) hostWasmIdentity = value.wasmIdentity;
+        if (value.nativeAudioFixtureHttpFailure) {
+          recordNativeAudioNetworkObservation({
+            observations: networkObservations,
+            key: "fixtureHttpFailures",
+            value: value.nativeAudioFixtureHttpFailure,
+          });
+        }
+        if (value.nativeAudioFixtureHttpFailureLimit) networkObservations.fixtureServerLimitReached = true;
+        if (value.endpoint) {
+          try { assertHtmlProbeWasmIdentity(binding, hostWasmIdentity); }
+          catch (error) { fail(error); return; }
+          clearTimeout(timer); resolve(value.endpoint);
+        }
       }
     });
   });
@@ -44,18 +82,68 @@ try {
   const output = join(temporary, "web");
   await buildNativeAudioExportProbe(root, isolated, output, fixture);
   server = await createServer({ root: output, configFile: false, cacheDir: join(temporary, "vite-cache"), logLevel: "error",
+    plugins: [
+	{
+		name: "native-audio-passive-http-diagnostics",
+		configureServer(viteServer) {
+			viteServer.middlewares.use((request, response, next) => {
+				const url = request.url,
+					method = request.method;
+				response.once("finish", () => {
+					if (response.statusCode >= 400)
+						recordNativeAudioNetworkObservation({
+							observations: networkObservations,
+							key: "viteHttpFailures",
+							value: nativeAudioServerObservation({
+								server: "vite",
+								url,
+								method,
+								status: response.statusCode,
+							}),
+						});
+				});
+				next();
+			});
+		},
+	},
+],
     optimizeDeps: { noDiscovery: true, include: [] },
     server: { host: "127.0.0.1", hmr: false, port: 0, proxy: { "/api": { target: endpoint } } },
   });
-  await server.listen(); browser = await chromium.launch({ headless: true, args: ["--autoplay-policy=no-user-gesture-required"] });
-  const page = await browser.newPage(), errors = [];
+  await server.listen(); browser = await chromium.launch({ headless: true, executablePath, args: ["--autoplay-policy=no-user-gesture-required"] });
+  const page = await browser.newPage();
   page.on("pageerror", error => errors.push(error.message));
-  page.on("console", message => { if (message.type() === "error") errors.push(message.text().slice(0, 1000)); });
+  page.on("console", (message) => {
+	if (message.type() === "error") {
+		errors.push(message.text().slice(0, 1000));
+		recordNativeAudioNetworkObservation({
+			observations: networkObservations,
+			key: "consoleFailures",
+			value: nativeAudioConsoleObservation({ message, page }),
+		});
+	}
+});
+page.context().on("response", (response) => {
+	const status = response.status();
+	networkObservations.contextResponses.total++;
+	networkObservations.contextResponses.byStatus[status] =
+		(networkObservations.contextResponses.byStatus[status] ?? 0) + 1;
+	if (status >= 400)
+		recordNativeAudioNetworkObservation({
+			observations: networkObservations,
+			key: "contextHttpFailures",
+			value: nativeAudioContextHttpObservation(response),
+		});
+});
+  page.on("response", response => { if (response.status() >= 400) httpFailures.push(nativeAudioHttpObservation(response)); });
   await page.goto(`http://127.0.0.1:${server.httpServer.address().port}/script/fixtures/${fixture}.html`, { waitUntil: "commit", timeout: 90000 });
   await page.waitForFunction(() => globalThis.__nativeAudioExport, undefined, { timeout: editor ? 180000 : 30000 })
     .catch(error => { throw Error(JSON.stringify({ error: String(error), errors })); });
-  const result = await page.evaluate(() => globalThis.__nativeAudioExport);
-  if (result.error || errors.length) throw Error(JSON.stringify({ result, errors }));
+  result = await page.evaluate(() => globalThis.__nativeAudioExport);
+  browserWasmIdentity = await page.evaluate(() => globalThis.__htmlProbeWasmIdentity);
+  assertHtmlProbeWasmIdentity(binding, browserWasmIdentity);
+  assertHtmlProbeWasmIdentity(binding, hostWasmIdentity);
+  if (result.error || errors.length) throw Error(JSON.stringify({ result: nativeAudioResultSummary(result), errors, httpFailures }));
   const file = join(temporary, "soundtrack.webm");
   await writeFile(file, Buffer.from(result.bytes));
   if (editor && process.env.ROCUT_AUDIO_KEEP_DIAGNOSTIC === "1") {
@@ -120,13 +208,20 @@ try {
       channels.push({ rmsError, correlation, silence });
     }
   }
-  console.log(JSON.stringify({ passed: true, exportedBytes: result.bytes.length, videoFrames: editor ? 6 : 5,
+  const evidence = { passed: true, exportedBytes: result.bytes.length, videoFrames: editor ? 6 : 5,
     audio: "stereo Opus 48000", decodedSamples: decoded.length / 8, sourceSamples: expected.length / 8,
     codecPaddingSamples: (decoded.length - expected.length) / 8, channels,
     ...(editor ? { editorMixMaxError: result.worst, nativeAudioRequests: result.nativeAudioRequests, preview: result.preview } : {}),
     scope: editor ? "native Remotion -> HTTP audio runtime -> editor trim/gain/ordinary mix -> buildScene -> SceneExporter; independent AV decode; not installed/Electron"
-      : "native Remotion -> PCM -> real Rocut SceneExporter; synthetic picture; not installed-editor integration" }, null, 2));
+      : "native Remotion -> PCM -> real Rocut SceneExporter; synthetic picture; not installed-editor integration",
+    wasmIdentity: browserWasmIdentity, hostWasmIdentity, browserExecutable: executablePath };
+  if (artifactDirectory) await saveHtmlProbeEvidence({ directory: artifactDirectory, result: evidence, binding,
+    browser: browser.version(), frameBackend: "private-chromium", root, sourceInputs });
+  console.log(JSON.stringify(evidence, null, 2));
 } catch (error) {
+  try {
+    await saveNativeAudioProbeFailure({ directory: artifactDirectory, result, errors, httpFailures, networkObservations, failure: String(error), wasmIdentity: browserWasmIdentity, hostWasmIdentity, sourceInputs });
+  } catch (diagnosticError) { console.error("Failed to retain native audio diagnostics: " + String(diagnosticError)); }
   console.error(error?.stack ?? String(error)); process.exitCode = 1;
 } finally {
   await browser?.close(); await server?.close();

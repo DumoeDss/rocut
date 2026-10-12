@@ -1,0 +1,53 @@
+{
+	"schema": "rocut-hf-native-timeout-observer-integration/v2",
+	"date": "2026-10-11",
+	"baseSourceCommit": "25f1d550eec0d8f2892fb82324d02a8b2813d6c0",
+	"scope": "Passive timeout attribution only, not a native presentation fix or browser pass",
+	"rejectedV1": {
+		"report": "C:/Users/Sayo/AppData/Local/Temp/hf-timeout-observer-independent-review-20261011-5c359d46/independent-review.json",
+		"sha256": "63a763e84fa8a16d8bbd86d606d216b397cff797255c7ee2b10a4adfadbad2f2",
+		"finding": "Extra metadata getter reads could consume the first native failure and change rejection to success"
+	},
+	"approvedV2": {
+		"folder": "C:/Users/Sayo/AppData/Local/Temp/hf-timeout-observer-v2-independent-review-20261011-9df96fa1",
+		"patchSha256": "346f827e28f157afab64b30c26e384711db62d16a1c1afcd0605b09735d7519c",
+		"reportSha256": "e07b39f024d8a25dc8c5303dd7aac17ecd36359974b87f2222e514b919415d9c",
+		"manifestSha256": "ad00405369ccf4d6f689cbf9279ed4f853ceed4712dcbe72e731d3233a3bc511"
+	},
+	"change": "Read metadata own data-property descriptors without invoking getters; retain exact native gate reads, numeric/boolean allowlists, fixed stages and fixture checkpoint",
+	"rootCpu": {
+		"pass": 65,
+		"fail": 0,
+		"skip": 0
+	},
+	"independentDifferential": {
+		"pass": 5,
+		"firstFaultReads": 1,
+		"changingOwnershipReads": 1,
+		"healthyReadCounts": {
+			"mediaTime": 3,
+			"presentationTime": 4,
+			"presentedFrames": 3
+		}
+	},
+	"invariants": {
+		"deadlineMs": 8000,
+		"seekFormulaChanged": false,
+		"callbackRegistrationChanged": false,
+		"admissionThresholdChanged": false,
+		"oracleChanged": false,
+		"assetUrlsLogged": false,
+		"firstErrorPreserved": true,
+		"postimagesRawExact": true,
+		"original24DirtyRawFilesPreserved": true
+	},
+	"checks": {
+		"reviewedSyntax": true,
+		"reviewedEmbeddedJsLint": true,
+		"focusedRunnerLint": true,
+		"rootDiff": true,
+		"wholeRepositoryLintOrTypecheck": false
+	},
+	"next": "Freeze updated committed source and run original HyperFrames basic browser probe against new clean-LF WASM; old receipt index/stage remains unknown",
+	"browserExecutedAfterIntegration": false
+}

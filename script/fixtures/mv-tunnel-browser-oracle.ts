@@ -13,6 +13,7 @@ import type { TunnelReference } from "./mv-tunnel-reference";
 import type { TunnelPostReference } from "./mv-tunnel-post-reference";
 import type { TunnelOracleFrame } from "./mv-tunnel-oracle";
 import { snapshotTunnelInput } from "./mv-tunnel-input";
+import { observeTunnelCanvas } from "./mv-tunnel-oracle-observation";
 import {
 	TUNNEL_FONTS,
 	TUNNEL_DEFAULT_WORDS,
@@ -97,10 +98,12 @@ export async function createTunnelBrowserOracle({
 	reference,
 	postReference,
 	fonts,
+	onObservation,
 }: {
 	reference: TunnelReference;
 	postReference: TunnelPostReference;
 	fonts: readonly TypeCardReferenceFont[];
+	onObservation?: (record: Record<string, unknown>) => void;
 }) {
 	const privateReference = {
 		scripts: reference.scripts.map(({ id, code, sha256 }) => ({
@@ -341,10 +344,18 @@ export async function createTunnelBrowserOracle({
 						throw Error(
 							"Tunnel oracle disposed during source identity admission",
 						);
+					const observed = onObservation ? observeTunnelCanvas(ctx) : undefined;
+					const before = observed?.state();
 					engine.SCENES.tunnel.draw(
-						controlledTunnelContext({ ctx, control }),
+						controlledTunnelContext({ ctx: observed?.ctx ?? ctx, control }),
 						sample,
 					);
+					onObservation?.({ cacheIdentity, metrics, before, after: observed?.state(),
+						commands: observed?.records,
+						sample: { t: sample.t, lt: sample.lt, dur: sample.dur, shotKeys: Object.keys(shot) },
+						fontSetStatus: realm.document.fonts.status,
+						fontFaces: [...realm.document.fonts].map(face => ({ family: face.family, weight: face.weight, status: face.status })),
+					});
 					const pixels = ctx.getImageData(0, 0, 1920, 1080).data;
 					const renderPost = engine.__tunnelMainReference.postFor(
 						shot,

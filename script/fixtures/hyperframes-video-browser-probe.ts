@@ -41,7 +41,10 @@ export async function runHyperframesVideoProbe(spec: Record<string, unknown>) {
 	let attachmentSource: ProgrammaticSource | undefined;
 	for (const [entryFile, cases] of Object.entries(hyperframesMediaCases)) {
 		const source = await compile(entryFile, entryFile === "media-resource.html" ? { resources: [resource] } : {});
-		for (const [index, bottom] of cases) await check(source, index, bottom);
+		for (const [index, bottom] of cases) {
+			console.log(`HTML probe: HyperFrames decoded-frame attempt ${JSON.stringify({ entryFile, index, bottom })}`);
+			await check(source, index, bottom);
+		}
 		if (entryFile === "media.html") hyperframesVideoSource = source;
 		if (entryFile === "media-resource.html") attachmentSource = source;
 		console.log(`HTML probe: HyperFrames ${entryFile} decoded-frame checks passed`);
@@ -56,6 +59,7 @@ export async function runHyperframesVideoProbe(spec: Record<string, unknown>) {
 	const corrupt = await compile("media-corrupt.html");
 	await rejected(() => render(corrupt, 1), /decode failed/);
 	await rejected(() => render({ ...attachmentSource!, resources: attachmentSource!.resources!.filter(r => r.id !== resource.id) }, 1), /Unknown.*resource|Missing.*resource|not declared/i);
+	console.log(`HTML probe: HyperFrames decoded-frame attempt ${JSON.stringify({ entryFile: "media.html", index: 18, bottom: 18 })}`);
 	await check(hyperframesVideoSource!, 18, 18);
 	console.log("HTML probe: HyperFrames media admission, missing/corrupt inputs and capture recovery passed");
 }

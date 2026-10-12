@@ -5,6 +5,12 @@ import { mkdir, mkdtemp, readFile, readdir, writeFile } from "node:fs/promises";
 import { dirname, isAbsolute, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { build, chromium } from "./browser-probe-toolchain.mjs";
+import { resolveProductionProbeWasm } from "./production-probe-wasm.mjs";
+import {
+	assertHtmlProbeWasmIdentity,
+	createHtmlProbeWasmPlugin,
+	HTML_PRIVATE_WASM_ID,
+} from "./html-probe-wasm-binding.mjs";
 import { runLiquidEditor } from "./fixtures/liquid-editor-checks.mjs";
 import { runLiquidEditorExport } from "./fixtures/liquid-editor-export-checks.mjs";
 
@@ -45,9 +51,14 @@ if (exportSource) {
 		"Export reuses the accepted private editor build",
 	);
 }
-const wasmSha256 = digest(
-	await readFile(join(root, "rust/wasm/pkg/opencut_wasm_bg.wasm")),
-);
+const binding =
+	process.env.ROCUT_TEST_WASM_DIRECTORY === undefined &&
+	process.env.ROCUT_PROBE_WASM_SHA256 === undefined
+		? undefined
+		: resolveProductionProbeWasm();
+const wasmSha256 = binding
+	? binding.identity.files.find((file) => file.name.endsWith(".wasm")).sha256
+	: digest(await readFile(join(root, "rust/wasm/pkg/opencut_wasm_bg.wasm")));
 await writeFile(join(artifacts, "source-manifest.json"), manifestBytes, {
 	flag: "wx",
 });
@@ -56,6 +67,7 @@ const evidence = {
 	mode: exportSource ? "existing-ui-project-export" : "real-editor-ui-history",
 	sourceManifestSha256: digest(manifestBytes),
 	wasmSha256,
+	wasmIdentity: binding?.identity,
 	backend: "private Chromium SwiftShader",
 	installedPluginTested: false,
 	electronTested: false,
@@ -69,6 +81,7 @@ const evidence = {
 };
 const env = {
 	...process.env,
+	...(binding ? { ROCUT_TEST_WASM_DIRECTORY: binding.directory } : {}),
 	TEMP: temp,
 	TMP: temp,
 	TMPDIR: temp,
@@ -88,6 +101,7 @@ try {
 		const accepted = JSON.parse(sourceEvidence);
 		assert(accepted.ok && accepted.hostRestart.hostReopenedAfterEdits);
 		assert.equal(accepted.wasmSha256, wasmSha256);
+		if (binding) assertHtmlProbeWasmIdentity(binding, accepted.wasmIdentity);
 		evidence.sourceUiEvidenceSha256 = digest(sourceEvidence);
 	}
 	if (process.env.ROCUT_LIQUID_EDITOR_DIST) {
@@ -113,8 +127,13 @@ try {
 			configFile: join(root, "apps/vite-example/vite.config.ts"),
 			cacheDir: join(temp, "vite-cache"),
 			logLevel: "warn",
+			plugins: binding ? [createHtmlProbeWasmPlugin(binding)] : [],
 			resolve: {
-				alias: { "opencut-wasm": join(root, "rust/wasm/pkg/opencut_wasm.js") },
+				alias: {
+					"opencut-wasm": binding
+						? HTML_PRIVATE_WASM_ID
+						: join(root, "rust/wasm/pkg/opencut_wasm.js"),
+				},
 			},
 			build: {
 				outDir: editorDist,
@@ -185,12 +204,20 @@ try {
 				buffered = buffered.slice(boundary + 1);
 				try {
 					const message = JSON.parse(line);
+					if (message.wasmIdentity && binding) {
+						assertHtmlProbeWasmIdentity(binding, message.wasmIdentity);
+						evidence.hostWasmIdentity = message.wasmIdentity;
+					}
 					if (message.editorUrl) {
+						if (binding)
+							assertHtmlProbeWasmIdentity(binding, evidence.hostWasmIdentity);
 						clearTimeout(timer);
 						resolve(message.editorUrl);
 					}
-				} catch {
-					/* Only the private readiness envelope is consumed. */
+				} catch (error) {
+					if (error instanceof SyntaxError) continue;
+					clearTimeout(timer);
+					reject(error);
 				}
 			}
 		});
@@ -251,6 +278,17 @@ try {
 		return value;
 	};
 	await page.goto(editorUrl, { waitUntil: "commit", timeout: 90000 });
+	if (binding) {
+		await page.waitForFunction(
+			() => globalThis.__htmlProbeWasmIdentity !== undefined,
+			undefined,
+			{ timeout: 60000 },
+		);
+		evidence.browserWasmIdentity = await page.evaluate(
+			() => globalThis.__htmlProbeWasmIdentity,
+		);
+		assertHtmlProbeWasmIdentity(binding, evidence.browserWasmIdentity);
+	}
 	await page
 		.locator('[data-testid="timeline-clip"][data-element-id="liquid-0"]')
 		.waitFor({ timeout: 120000 });
@@ -300,6 +338,8 @@ try {
 		),
 	);
 	evidence.expectedConsoleErrors = evidence.consoleErrors;
+	if (binding)
+		assertHtmlProbeWasmIdentity(binding, evidence.browserWasmIdentity);
 	evidence.ok = true;
 } catch (error) {
 	evidence.failure = redact(error.stack ?? error);

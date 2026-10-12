@@ -12,6 +12,60 @@ const readConfig = `const fs=require('node:fs/promises');
 const config=JSON.parse(input);`;
 const finish = `})().catch(error=>{console.error(error.message);process.exit(1);});`;
 
+test("compiler preserves only the exact Electron Node-mode flag", async () => {
+	const originalFlag = process.env.ELECTRON_RUN_AS_NODE;
+	const originalPrivate = process.env.ROCUT_COMPILER_PRIVATE_TEST;
+	process.env.ROCUT_COMPILER_PRIVATE_TEST = "must-not-inherit";
+	try {
+		for (const flag of [undefined, "0", "true", "1"]) {
+			if (flag === undefined) delete process.env.ELECTRON_RUN_AS_NODE;
+			else process.env.ELECTRON_RUN_AS_NODE = flag;
+			await runCompilerChild(
+				{ expected: flag === "1" ? "1" : null },
+				AbortSignal.timeout(5000),
+				`${readConfig}
+if((process.env.ELECTRON_RUN_AS_NODE??null)!==config.expected)throw Error('Node-mode flag changed');
+if(process.env.ROCUT_COMPILER_PRIVATE_TEST!==undefined)throw Error('private environment inherited');
+${finish}`,
+			);
+		}
+	} finally {
+		if (originalFlag === undefined) delete process.env.ELECTRON_RUN_AS_NODE;
+		else process.env.ELECTRON_RUN_AS_NODE = originalFlag;
+		if (originalPrivate === undefined)
+			delete process.env.ROCUT_COMPILER_PRIVATE_TEST;
+		else process.env.ROCUT_COMPILER_PRIVATE_TEST = originalPrivate;
+	}
+});
+
+test("Electron runtime guard keeps Node mode even without an exact parent flag", async () => {
+	const originalElectron = Object.getOwnPropertyDescriptor(
+		process.versions,
+		"electron",
+	);
+	const originalFlag = process.env.ELECTRON_RUN_AS_NODE;
+	try {
+		Object.defineProperty(process.versions, "electron", {
+			configurable: true,
+			value: "cpu-fixture",
+		});
+		process.env.ELECTRON_RUN_AS_NODE = "0";
+		await runCompilerChild(
+			{},
+			AbortSignal.timeout(5000),
+			`${readConfig}
+if(process.env.ELECTRON_RUN_AS_NODE!=='1')throw Error('Electron runtime guard missing');
+${finish}`,
+		);
+	} finally {
+		if (originalElectron)
+			Object.defineProperty(process.versions, "electron", originalElectron);
+		else delete process.versions.electron;
+		if (originalFlag === undefined) delete process.env.ELECTRON_RUN_AS_NODE;
+		else process.env.ELECTRON_RUN_AS_NODE = originalFlag;
+	}
+});
+
 test("large fixed compiler starts without command-line transport and cleans its private entry", async () => {
 	const directory = await mkdtemp(join(tmpdir(), "rocut-compiler-test-"));
 	const output = join(directory, "result.json");
@@ -108,33 +162,57 @@ test("pre-aborted compilation never starts a compiler", async () => {
 });
 
 const electronPath = process.env.ROCUT_TEST_ELECTRON_PATH;
-test.skipIf(!electronPath)("real Electron Node parent preserves child mode and complete UTF8 stdin without secret env", async () => {
-	const directory = await mkdtemp(join(tmpdir(), "rocut-compiler-electron-test-"));
-	const entry = join(directory, "parent.mjs"), output = join(directory, "result.json");
-	try {
-		const built = await Bun.build({
-			entrypoints: [join(import.meta.dir, "compiler-electron-worker.ts")],
-			outdir: directory,
-			naming: "parent.mjs",
-			target: "node",
-		});
-		expect(built.success).toBe(true);
-		const env: Record<string, string> = {};
-		for (const key of ["PATH", "Path", "SystemRoot", "WINDIR", "TEMP", "TMP"])
-			if (process.env[key] !== undefined) env[key] = process.env[key]!;
-		env.ELECTRON_RUN_AS_NODE = "1";
-		env.ROCUT_COMPILER_TEST_SECRET = "must-not-propagate";
-		const child = spawn(electronPath!, [entry, output], { windowsHide: true, stdio: ["ignore", "pipe", "pipe"], env });
-		let logs = "";
-		child.stdout.on("data", chunk => { logs = (logs + chunk).slice(-2000); });
-		child.stderr.on("data", chunk => { logs = (logs + chunk).slice(-2000); });
-		const timer = setTimeout(() => child.kill(), 15000);
-		const code = await new Promise<number | null>((resolve, reject) => { child.once("error", reject); child.once("close", resolve); }).finally(() => clearTimeout(timer));
-		expect({ code, logs }).toEqual({ code: 0, logs: "" });
-		expect(JSON.parse(await readFile(output, "utf8"))).toEqual({ label: "\u8d44\u6e90\u56fe", payloadLength: 70000, electron: true, nodeMode: "1", secretInherited: false });
-	} finally {
-		await rm(output, { force: true });
-		await rm(entry, { force: true });
-		await rmdir(directory);
-	}
-}, 20000);
+test.skipIf(!electronPath)(
+	"real Electron Node parent preserves child mode and complete UTF8 stdin without secret env",
+	async () => {
+		const directory = await mkdtemp(
+			join(tmpdir(), "rocut-compiler-electron-test-"),
+		);
+		const entry = join(directory, "parent.mjs"),
+			output = join(directory, "result.json");
+		try {
+			const built = await Bun.build({
+				entrypoints: [join(import.meta.dir, "compiler-electron-worker.ts")],
+				outdir: directory,
+				naming: "parent.mjs",
+				target: "node",
+			});
+			expect(built.success).toBe(true);
+			const env: Record<string, string> = {};
+			for (const key of ["PATH", "Path", "SystemRoot", "WINDIR", "TEMP", "TMP"])
+				if (process.env[key] !== undefined) env[key] = process.env[key]!;
+			env.ELECTRON_RUN_AS_NODE = "1";
+			env.ROCUT_COMPILER_TEST_SECRET = "must-not-propagate";
+			const child = spawn(electronPath!, [entry, output], {
+				windowsHide: true,
+				stdio: ["ignore", "pipe", "pipe"],
+				env,
+			});
+			let logs = "";
+			child.stdout.on("data", (chunk) => {
+				logs = (logs + chunk).slice(-2000);
+			});
+			child.stderr.on("data", (chunk) => {
+				logs = (logs + chunk).slice(-2000);
+			});
+			const timer = setTimeout(() => child.kill(), 15000);
+			const code = await new Promise<number | null>((resolve, reject) => {
+				child.once("error", reject);
+				child.once("close", resolve);
+			}).finally(() => clearTimeout(timer));
+			expect({ code, logs }).toEqual({ code: 0, logs: "" });
+			expect(JSON.parse(await readFile(output, "utf8"))).toEqual({
+				label: "\u8d44\u6e90\u56fe",
+				payloadLength: 70000,
+				electron: true,
+				nodeMode: "1",
+				secretInherited: false,
+			});
+		} finally {
+			await rm(output, { force: true });
+			await rm(entry, { force: true });
+			await rmdir(directory);
+		}
+	},
+	20000,
+);

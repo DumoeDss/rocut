@@ -2,7 +2,10 @@ import type { ServerResponse } from "node:http";
 import { importProgrammaticResource } from "./resource-import";
 import { importMvAudio } from "./audio-import";
 import { importImageSequence } from "./image-sequence-import";
-import { restoreBuildSource, BuildSourceRestoreIncompleteError } from "./build-source-restore";
+import {
+	restoreBuildSource,
+	BuildSourceRestoreIncompleteError,
+} from "./build-source-restore";
 import {
 	restoreModelSource,
 	ModelRestoreIncompleteError,
@@ -48,7 +51,8 @@ export async function handleProgrammaticResourceRoute({
 	};
 	const modelRestore = action === "restore-model-source";
 	const buildSourceRestore = action === "restore-build-source";
-	if (sequenceOperation || modelRestore || buildSourceRestore) response.once("close", onClose);
+	if (sequenceOperation || modelRestore || buildSourceRestore)
+		response.once("close", onClose);
 	try {
 		if (sequenceOperation) {
 			const operation =
@@ -68,12 +72,15 @@ export async function handleProgrammaticResourceRoute({
 		} else if (modelRestore || buildSourceRestore) {
 			json(
 				200,
-				await enqueue(async () =>
-					await (buildSourceRestore ? restoreBuildSource : restoreModelSource)({
-						...resourceStore,
-						input,
-						signal: cancellation.signal,
-					}),
+				await enqueue(
+					async () =>
+						await (
+							buildSourceRestore ? restoreBuildSource : restoreModelSource
+						)({
+							...resourceStore,
+							input,
+							signal: cancellation.signal,
+						}),
 				),
 			);
 		} else if (action === "import-audio") {
@@ -118,6 +125,7 @@ export async function handleProgrammaticResourceRoute({
 				: {}),
 		});
 	} finally {
-		if (sequenceOperation || modelRestore || buildSourceRestore) response.off("close", onClose);
+		if (sequenceOperation || modelRestore || buildSourceRestore)
+			response.off("close", onClose);
 	}
 }

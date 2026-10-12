@@ -1,0 +1,34 @@
+{
+	"schema": "particle-baseline-topology-fix/v1",
+	"sourceParent": "c36b03da1bc7179dd27ff78591fe954a4ff2dfd9",
+	"retainedFailure": {
+		"root": "C:/tmps/rocut-particle-authority-20261011-b8POXh/particle-authority-compile-tchB14",
+		"failureSha256": "aef9bbc487adbfd675aec2c7b7eaa0a78e56047be4a5493e085c6d74ad87f4b9",
+		"cause": "Fixture expected only one track despite the required system empty main video track and the authored particle graphic track"
+	},
+	"candidate": {
+		"root": "C:/Users/Sayo/AppData/Local/Temp/rocut-particle-topology-candidate-20261011-51oVJa",
+		"manifestSha256": "fa8431026c627f1692eb8722637d12d1abb8ae30789d5e0287145793abe22de6",
+		"focusedPatchSha256": "44673a070f0a2051fc476b5e52e9067be7b560b7e6d0c6ae573575abb2fc3a4b"
+	},
+	"reviewedBy": "root after independent source/fixture contract review",
+	"fix": "Capture revision-zero system main and scene topology before import/compile; require unchanged empty main, exactly one authored graphic lane and one particle clip, matching native persistence and automation projections",
+	"uiSnapshotShapePreserved": ["clips", "tracks", "revision"],
+	"sourceDimensions": { "width": 320, "height": 240 },
+	"savedCanvasDimensions": { "width": 1920, "height": 1080 },
+	"preservedContract": {
+		"revision": 2,
+		"opacity": 0.85,
+		"frameCount": 121,
+		"fps": { "numerator": 30, "denominator": 1 },
+		"durationTicks": 484000
+	},
+	"integratedCpuRegression": { "pass": 81, "fail": 0, "skip": 0 },
+	"productionPixelOracleChanged": false,
+	"baselineApproved": false,
+	"limitations": [
+		"Retained offline failure confirms topology diagnosis but is not fresh compile evidence",
+		"Fresh compile and separate independent baseline approval are still required",
+		"Does not establish browser, full video export or installed Electron acceptance"
+	]
+}

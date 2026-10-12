@@ -12,6 +12,7 @@ import { renderHtmlPng } from "../../apps/cli/src/programmatic/html-rasterizer";
 import { FileProjectStore } from "../../apps/cli/src/file-store";
 import { nativeAudioWav } from "./native-audio-fixture";
 import type { ProgrammaticFrameRequest, ProgrammaticSource } from "@opencut/editor-contracts";
+import { resolveProbeBrowserExecutable } from "./browser-probe-identity.mjs";
 
 const toolchainDirectory = process.argv[2];
 const ffmpeg = process.env.ROCUT_TEST_FFMPEG, ffprobe = process.env.ROCUT_TEST_FFPROBE;
@@ -19,7 +20,9 @@ if (!toolchainDirectory || !ffmpeg || !ffprobe) throw Error("Configure isolated 
 const parent = resolve(tmpdir()), root = await mkdtemp(join(parent, "rocut-hf-audio-editor-host-"));
 const require = createRequire(new URL("../../apps/vite-example/package.json", import.meta.url));
 const { chromium } = await import(pathToFileURL(require.resolve("@playwright/test")).href);
-const decoder = { ffmpeg, ffprobe }, executable = chromium.executablePath();
+const decoder = { ffmpeg, ffprobe }, executable = resolveProbeBrowserExecutable({
+	configured: process.env.ROCUT_PROBE_BROWSER_PATH, fallback: chromium.executablePath(),
+});
 const context = { store: new FileProjectStore({ root: join(root, "project"), schemaVersion: 1 }), projectId: "hf-audio-editor" };
 const sourceDirectory = join(root, "author");
 // These originals are the oracle, not a result from the system under test.

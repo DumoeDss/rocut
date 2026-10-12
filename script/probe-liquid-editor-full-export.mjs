@@ -5,6 +5,12 @@ import { mkdir, mkdtemp, readFile, readdir, writeFile } from "node:fs/promises";
 import { dirname, isAbsolute, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { build, chromium } from "./browser-probe-toolchain.mjs";
+import { resolveProductionProbeWasm } from "./production-probe-wasm.mjs";
+import {
+	assertHtmlProbeWasmIdentity,
+	createHtmlProbeWasmPlugin,
+	HTML_PRIVATE_WASM_ID,
+} from "./html-probe-wasm-binding.mjs";
 import { capture, poll, seek } from "./fixtures/stylized-fusion-checks.mjs";
 import { normalizeLiquidPreview } from "./fixtures/liquid-editor-export-decode.mjs";
 import {
@@ -25,6 +31,10 @@ const accepted = JSON.parse(
 	await readFile(join(sourceRun, "evidence.json"), "utf8"),
 );
 assert(accepted.ok && accepted.hostRestart.hostReopenedAfterEdits);
+assert(
+	!process.env.ROCUT_LIQUID_READBACK_PKG,
+	"Editor acceptance uses the normal production WASM only",
+);
 const digest = (bytes) => createHash("sha256").update(bytes).digest("hex");
 const manifestBytes = await readFile(join(root, "fixture-source.json"));
 const manifest = JSON.parse(manifestBytes);
@@ -42,9 +52,16 @@ await mkdir(temp);
 const editorDist =
 	process.env.ROCUT_LIQUID_EDITOR_DIST || join(temp, "editor-dist");
 assert(isAbsolute(editorDist));
-const wasmSha256 = digest(
-	await readFile(join(root, "rust/wasm/pkg/opencut_wasm_bg.wasm")),
-);
+const binding =
+	process.env.ROCUT_TEST_WASM_DIRECTORY === undefined &&
+	process.env.ROCUT_PROBE_WASM_SHA256 === undefined
+		? undefined
+		: resolveProductionProbeWasm();
+const wasmSha256 = binding
+	? binding.identity.files.find((file) => file.name.endsWith(".wasm")).sha256
+	: digest(await readFile(join(root, "rust/wasm/pkg/opencut_wasm_bg.wasm")));
+assert.equal(accepted.wasmSha256, wasmSha256);
+if (binding) assertHtmlProbeWasmIdentity(binding, accepted.wasmIdentity);
 await writeFile(join(artifacts, "source-manifest.json"), manifestBytes, {
 	flag: "wx",
 });
@@ -58,6 +75,7 @@ const evidence = {
 	mode: "existing-ui-project-full-duration-export",
 	sourceManifestSha256: digest(manifestBytes),
 	wasmSha256,
+	wasmIdentity: binding?.identity,
 	backend: "private Chromium SwiftShader",
 	installedPluginTested: false,
 	electronTested: false,
@@ -73,6 +91,7 @@ const evidence = {
 };
 const env = {
 	...process.env,
+	...(binding ? { ROCUT_TEST_WASM_DIRECTORY: binding.directory } : {}),
 	TEMP: temp,
 	TMP: temp,
 	TMPDIR: temp,
@@ -80,7 +99,9 @@ const env = {
 };
 const redact = (value) =>
 	String(value).replace(/https?:\/\/[^\s"'<>]+/g, "[URL redacted]");
-console.log(JSON.stringify({ phase: "preparing-liquid-full-export", artifacts }));
+console.log(
+	JSON.stringify({ phase: "preparing-liquid-full-export", artifacts }),
+);
 let browser,
 	page,
 	host,
@@ -110,8 +131,13 @@ try {
 			configFile: join(root, "apps/vite-example/vite.config.ts"),
 			cacheDir: join(temp, "vite-cache"),
 			logLevel: "warn",
+			plugins: binding ? [createHtmlProbeWasmPlugin(binding)] : [],
 			resolve: {
-				alias: { "opencut-wasm": join(root, "rust/wasm/pkg/opencut_wasm.js") },
+				alias: {
+					"opencut-wasm": binding
+						? HTML_PRIVATE_WASM_ID
+						: join(root, "rust/wasm/pkg/opencut_wasm.js"),
+				},
 			},
 			build: {
 				outDir: editorDist,
@@ -180,12 +206,20 @@ try {
 				buffered = buffered.slice(boundary + 1);
 				try {
 					const message = JSON.parse(line);
+					if (message.wasmIdentity && binding) {
+						assertHtmlProbeWasmIdentity(binding, message.wasmIdentity);
+						evidence.hostWasmIdentity = message.wasmIdentity;
+					}
 					if (message.editorUrl) {
+						if (binding)
+							assertHtmlProbeWasmIdentity(binding, evidence.hostWasmIdentity);
 						clearTimeout(timer);
 						resolve(message.editorUrl);
 					}
-				} catch {
-					/* Only the private readiness envelope is consumed. */
+				} catch (error) {
+					if (error instanceof SyntaxError) continue;
+					clearTimeout(timer);
+					reject(error);
 				}
 			}
 		});
@@ -246,6 +280,17 @@ try {
 		return value;
 	};
 	await page.goto(editorUrl, { waitUntil: "commit", timeout: 90000 });
+	if (binding) {
+		await page.waitForFunction(
+			() => globalThis.__htmlProbeWasmIdentity !== undefined,
+			undefined,
+			{ timeout: 60000 },
+		);
+		evidence.browserWasmIdentity = await page.evaluate(
+			() => globalThis.__htmlProbeWasmIdentity,
+		);
+		assertHtmlProbeWasmIdentity(binding, evidence.browserWasmIdentity);
+	}
 	await page
 		.locator('[data-testid="timeline-clip"][data-element-id="liquid-0"]')
 		.waitFor({ timeout: 120000 });
@@ -274,9 +319,6 @@ try {
 		emptyTrack.y + emptyTrack.height / 2,
 	);
 	await page.getByText("It's empty here", { exact: true }).waitFor();
-	const canvas = page
-		.locator('canvas[width="640"][height="360"]')
-		.filter({ visible: true });
 	await page.getByLabel("Preview zoom", { exact: true }).click();
 	await page.getByRole("option", { name: "100%", exact: true }).click();
 	await page.keyboard.press("Escape");
@@ -489,6 +531,8 @@ try {
 		),
 	);
 	evidence.expectedConsoleErrors = evidence.consoleErrors;
+	if (binding)
+		assertHtmlProbeWasmIdentity(binding, evidence.browserWasmIdentity);
 	evidence.ok = true;
 } catch (error) {
 	evidence.failure = redact(error.stack ?? error);
