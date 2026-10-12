@@ -41,12 +41,14 @@ if (process.env.ROCUT_EXPORT_CANCEL_ISOLATED !== "1") {
 	let blockQuantizerClose = false;
 	const quantizerTimings: unknown[] = [];
 	const quantizerLifecycle: string[] = [];
+	const quantizerValues: number[] = [];
 	mock.module("../export-vp9-quantizer-source", () => ({
 		ExportVp9QuantizerSource: class {
 			source = { close() {} };
 			private readonly signal?: AbortSignal;
-			constructor({ options }: { options: { signal?: AbortSignal } }) {
+			constructor({ options }: { options: { signal?: AbortSignal; quantizer: number } }) {
 				this.signal = options.signal;
+				quantizerValues.push(options.quantizer);
 			}
 			async initialize() {
 				quantizerLifecycle.push("initialize");
@@ -139,18 +141,26 @@ if (process.env.ROCUT_EXPORT_CANCEL_ISOLATED !== "1") {
 		mediaTimeToSeconds: ({ time }: { time: number }) => time / 120000,
 		resolveVideoExportJson: (request: string) => {
 			const input = JSON.parse(request) as {
+				codec?: string;
+				quality?: string;
+				format?: string;
 				videoChroma?: string;
 				videoQuantizer?: number;
 			};
 			bitrateRequests.push(input);
-			if (input.videoQuantizer !== undefined && policyProvidesQuantizer)
+			const defaultQuantizer = input.codec === "vp9" && input.format === "webm" &&
+				input.quality === "very_high" && input.videoChroma !== "444";
+			if ((input.videoQuantizer !== undefined || defaultQuantizer) && policyProvidesQuantizer)
 				return JSON.stringify({
 					kind: "vp9Quantizer",
 					bitrate: 6_000_000,
-					quantizer: input.videoQuantizer,
+					quantizer: input.videoQuantizer ?? 8,
+					...(defaultQuantizer ? { default: true } : {}),
 					keyFrameIntervalFrames: 2,
 					nativeConfig: {
-						codec: "vp09.01.41.08.03.01.13.01.01",
+						codec: defaultQuantizer
+							? "vp09.00.41.08.01.01.13.01.01"
+							: "vp09.01.41.08.03.01.13.01.01",
 						width: 1920,
 						height: 1080,
 						displayWidth: 1920,
@@ -281,6 +291,7 @@ if (process.env.ROCUT_EXPORT_CANCEL_ISOLATED !== "1") {
 		expect(finalizedOutputs).toBe(1);
 		expect(bitrateRequests.at(-1)).toEqual({
 			codec: "avc",
+			format: "mp4",
 			quality: "high",
 			width: 1920,
 			height: 1080,
@@ -476,6 +487,37 @@ if (process.env.ROCUT_EXPORT_CANCEL_ISOLATED !== "1") {
 			videoQuantizer: 0,
 			videoChroma: "444",
 		});
+	});
+	test("default WebM very-high exports send format without an explicit quantizer", async () => {
+		const wasBlocked = blocked;
+		blocked = false;
+		try {
+			for (const videoChroma of [undefined, "420"] as const) {
+				const beforeCanvas = encoderOptions.length;
+				quantizerLifecycle.length = 0;
+				quantizerValues.length = 0;
+				const next = new SceneExporter({
+					width: 1920,
+					height: 1080,
+					fps: { numerator: 30, denominator: 1 },
+					format: "webm",
+					quality: "very_high",
+					...(videoChroma === undefined ? {} : { videoChroma }),
+					compositor: {} as WasmCompositor,
+					videoCache: {} as VideoCache,
+				});
+				expect(await next.export(options)).toBeInstanceOf(ArrayBuffer);
+				expect(bitrateRequests.at(-1)).toMatchObject({
+					codec: "vp9", quality: "very_high", format: "webm",
+				});
+				expect(bitrateRequests.at(-1)).not.toHaveProperty("videoQuantizer");
+				expect(quantizerValues).toEqual([8]);
+				expect(quantizerLifecycle).toEqual(["initialize", "close", "finalize"]);
+				expect(encoderOptions.length).toBe(beforeCanvas);
+			}
+		} finally {
+			blocked = wasBlocked;
+		}
 	});
 	test("an old Rust response cannot silently omit the explicit quantizer", async () => {
 		policyProvidesQuantizer = false;

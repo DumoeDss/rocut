@@ -20,6 +20,9 @@ import {
 	sandboxFailure,
 	type ProgrammaticSandboxOperation,
 	type ProgrammaticSandboxPhase,
+	SANDBOX_WORKER_STAGES,
+	type SandboxStageEvent,
+	type SandboxWorkerStage,
 } from "./sandbox-failure";
 
 interface SandboxRequest {
@@ -30,6 +33,7 @@ interface SandboxRequest {
 	sequenceImages?: readonly ResolvedSequenceImage[];
 	imageAdmissions?: readonly ImageDecodeAdmission[];
 	operation: ProgrammaticSandboxOperation;
+	onStage?: (event: SandboxStageEvent) => void | Promise<void>;
 }
 
 /** Digests cannot be interrupted, but a cancelled preparation must not retain
@@ -77,6 +81,7 @@ export function runProgrammaticSandbox(
 ): Promise<ResourceMeasurements>;
 export async function runProgrammaticSandbox({
 	signal,
+	onStage,
 	...request
 }: SandboxRequest): Promise<
 	| ImageBitmap
@@ -137,8 +142,27 @@ export async function runProgrammaticSandbox({
 		let connected = false;
 		let dispatched = false;
 		let phase: ProgrammaticSandboxPhase = "iframe-load";
+		const startedAt = performance.now();
+		let workerStage: SandboxWorkerStage | undefined;
+		let workerElapsedMs: number | undefined;
+		let elapsedMs = 0;
+		const diagnostics = () => {
+			const elapsed = performance.now() - startedAt;
+			if (Number.isFinite(elapsed) && elapsed >= 0)
+				elapsedMs = Math.max(elapsedMs, elapsed);
+			return {
+				elapsedMs,
+				...(workerStage ? { workerStage } : {}),
+				...(workerElapsedMs !== undefined ? { workerElapsedMs } : {}),
+			};
+		};
 		const failure = (message: string) =>
-			sandboxFailure({ ...request, phase, message });
+			sandboxFailure({
+				...request,
+				phase,
+				message,
+				diagnostics: diagnostics(),
+			});
 		const cleanup = () => {
 			// Teardown must not replace the operation result/reason or strand its
 			// promise. Attempt every independent release even if one API fails.
@@ -189,13 +213,47 @@ export async function runProgrammaticSandbox({
 				fail(failure("Invalid programmatic frame response"));
 				return;
 			}
-			if (
-				!settled &&
-				dispatched &&
-				Reflect.get(data, "sandboxStage") === "worker-started" &&
-				Object.keys(data).length === 1
-			) {
-				phase = "worker-result";
+			if (Reflect.has(data, "sandboxStage")) {
+				const bitmap = Reflect.get(data, "bitmap");
+				if (bitmap instanceof ImageBitmap) {
+					try {
+						bitmap.close();
+					} catch {
+						/* Retain the transport failure. */
+					}
+					fail(failure("Invalid programmatic progress"));
+					return;
+				}
+				const stage = Reflect.get(data, "sandboxStage");
+				const elapsed = Reflect.get(data, "workerElapsedMs");
+				const legacy =
+					workerStage === undefined &&
+					stage === "worker-started" &&
+					Object.keys(data).length === 1;
+				const timed =
+					Object.keys(data).length === 2 &&
+					typeof elapsed === "number" &&
+					Number.isFinite(elapsed) &&
+					elapsed >= 0 &&
+					(workerElapsedMs === undefined || elapsed >= workerElapsedMs);
+				if (
+					!settled &&
+					dispatched &&
+					SANDBOX_WORKER_STAGES.includes(stage) &&
+					(legacy || timed)
+				) {
+					phase = "worker-result";
+					workerStage = stage;
+					if (timed) workerElapsedMs = elapsed;
+					const event = Object.freeze({ phase, ...diagnostics() });
+					try {
+						void Promise.resolve(onStage?.(event)).catch(() => {
+							/* A late observer rejection is observational too. */
+						});
+					} catch {
+						/* Diagnostics must not change the operation or bitmap ownership. */
+					}
+				}
 				return;
 			}
 			const bitmap: unknown = Reflect.get(data, "bitmap");

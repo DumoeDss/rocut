@@ -206,6 +206,7 @@ export class SceneExporter extends EventEmitter<SceneExporterEvents> {
 		const codec = this.format === "webm" ? "vp9" : "avc";
 		const plan = resolveExportVideoPlan({
 			codec,
+			format: this.format,
 			quality: this.quality,
 			frameRate: fps,
 			width: outputCanvas.width,
@@ -215,7 +216,7 @@ export class SceneExporter extends EventEmitter<SceneExporterEvents> {
 				: { videoChroma: this.videoChroma }),
 			...(this.videoQuantizer === undefined
 				? {}
-				: { videoQuantizer: this.videoQuantizer, format: this.format }),
+				: { videoQuantizer: this.videoQuantizer }),
 		});
 		const quantizerSource = plan.native
 			? new (

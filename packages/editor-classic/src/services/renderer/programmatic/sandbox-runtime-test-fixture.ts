@@ -36,6 +36,7 @@ export function installSandboxHarness() {
 	let removeCalls = 0;
 	let connections = 0;
 	let connectError = false;
+	let now = 0;
 	const iframe = {
 		sandbox: { add() {} },
 		hidden: false,
@@ -55,6 +56,7 @@ export function installSandboxHarness() {
 		},
 	};
 	const replacements = {
+		performance: { now: () => now },
 		document: {
 			createElement() {
 				return iframe;
@@ -86,6 +88,9 @@ export function installSandboxHarness() {
 		iframe,
 		channels,
 		deadlines,
+		setNow(value: number) {
+			now = value;
+		},
 		get connections() {
 			return connections;
 		},

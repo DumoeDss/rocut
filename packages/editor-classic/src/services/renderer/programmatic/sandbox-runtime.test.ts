@@ -46,6 +46,162 @@ async function start(signal?: AbortSignal) {
 	return { result, transport: harness };
 }
 
+for (const workerStage of [
+	"worker-font-resources",
+	"worker-image-decode",
+	"worker-render",
+	"worker-bitmap-transfer",
+]) {
+	test(`slow ${workerStage} reports exact stage with one unchanged total deadline`, async () => {
+		const { result, transport } = await start();
+		const outcome = result.catch((error: unknown) => error);
+		transport.iframe.onload();
+		transport.send("ready");
+		transport.setNow(4200.25);
+		transport.send({ sandboxStage: workerStage, workerElapsedMs: 4000.125 });
+		expect(transport.disposed).toBe(false);
+		expect(transport.deadlines).toHaveLength(1);
+		expect(transport.deadlines[0].milliseconds).toBe(5000);
+		transport.setNow(5000);
+		transport.deadlines[0].callback();
+		const error = await outcome;
+		expect(error).toMatchObject({
+			context: {
+				phase: "worker-result",
+				workerStage,
+				workerElapsedMs: 4000.125,
+				elapsedMs: 5000,
+			},
+		});
+		transport.send({ sandboxStage: "worker-render", workerElapsedMs: 5001 });
+		expect(error).toMatchObject({
+			context: { workerStage, workerElapsedMs: 4000.125 },
+		});
+		expect(transport.disposed).toBe(true);
+	});
+}
+
+test("optional stage observer failures cannot change result ownership or cancellation", async () => {
+	harness = installSandboxHarness();
+	const observed: unknown[] = [];
+	const result = runProgrammaticSandbox({
+		source,
+		frame,
+		resources: [],
+		operation: "render",
+		onStage(event) {
+			observed.push(event);
+			throw Error("observer only");
+		},
+	});
+	for (let i = 0; i < 12; i++) await Promise.resolve();
+	harness.iframe.onload();
+	harness.send("ready");
+	harness.setNow(25);
+	harness.send({ sandboxStage: "worker-render", workerElapsedMs: 10 });
+	const bitmap = new SandboxBitmap();
+	harness.send({ bitmap });
+	expect(await result).toBe(bitmap);
+	expect(bitmap.closed).toBe(false);
+	expect(observed).toContainEqual({
+		phase: "worker-result",
+		workerStage: "worker-render",
+		workerElapsedMs: 10,
+		elapsedMs: 25,
+	});
+	expect(harness.disposed).toBe(true);
+});
+
+test("invalid or regressing stage clocks cannot corrupt failure context or reset the watchdog", async () => {
+	const { result, transport } = await start();
+	const outcome = result.catch((error: unknown) => error);
+	transport.send({ sandboxStage: "worker-render", workerElapsedMs: 1 }); // Before dispatch.
+	transport.iframe.onload();
+	transport.send("ready");
+	transport.setNow(10);
+	transport.send({ sandboxStage: "worker-image-decode", workerElapsedMs: 5 });
+	for (const workerElapsedMs of [NaN, Infinity, -1, "6", 4])
+		transport.send({ sandboxStage: "worker-render", workerElapsedMs });
+	transport.send({ sandboxStage: "unknown", workerElapsedMs: 6 });
+	transport.send({ sandboxStage: "worker-started" }); // Legacy cannot rewind a timed stage.
+	transport.setNow(NaN);
+	transport.send({ error: "image decode rejected" });
+	expect(await outcome).toMatchObject({
+		context: {
+			phase: "worker-result",
+			workerStage: "worker-image-decode",
+			workerElapsedMs: 5,
+			elapsedMs: 10,
+		},
+	});
+	expect(transport.deadlines).toHaveLength(1);
+	expect(transport.disposed).toBe(true);
+});
+
+test("a throwing stage observer may abort without replacing the exact abort reason", async () => {
+	harness = installSandboxHarness();
+	const controller = new AbortController();
+	const reason = { cancelled: "original" };
+	const result = runProgrammaticSandbox({
+		source,
+		frame,
+		resources: [],
+		operation: "render",
+		signal: controller.signal,
+		onStage() {
+			controller.abort(reason);
+			throw Error("observer only");
+		},
+	});
+	const outcome = result.catch((error: unknown) => error);
+	for (let i = 0; i < 12; i++) await Promise.resolve();
+	harness.iframe.onload();
+	harness.send("ready");
+	harness.send({ sandboxStage: "worker-render", workerElapsedMs: 1 });
+	expect(await outcome).toBe(reason);
+	expect(harness.disposed).toBe(true);
+});
+
+test("a late async observer rejection is absorbed after a successful caller-owned bitmap", async () => {
+	harness = installSandboxHarness();
+	let rejectObserver!: (error: Error) => void;
+	const observation = new Promise<void>((_resolve, reject) => {
+		rejectObserver = reject;
+	});
+	const result = runProgrammaticSandbox({
+		source,
+		frame,
+		resources: [],
+		operation: "render",
+		onStage: () => observation,
+	});
+	for (let i = 0; i < 12; i++) await Promise.resolve();
+	harness.iframe.onload();
+	harness.send("ready");
+	harness.send({ sandboxStage: "worker-render", workerElapsedMs: 1 });
+	const bitmap = new SandboxBitmap();
+	harness.send({ bitmap });
+	expect(await result).toBe(bitmap);
+	rejectObserver(Error("late observer rejection"));
+	for (let i = 0; i < 12; i++) await Promise.resolve();
+	expect(bitmap.closed).toBe(false);
+	expect(harness.disposed).toBe(true);
+});
+
+test("a malformed progress bitmap closes exactly as an invalid terminal response", async () => {
+	const { result, transport } = await start();
+	const outcome = result.catch((error: unknown) => error);
+	transport.iframe.onload();
+	transport.send("ready");
+	const bitmap = new SandboxBitmap();
+	transport.send({ sandboxStage: "worker-render", bitmap });
+	expect(await outcome).toMatchObject({
+		message: expect.stringContaining("Invalid programmatic progress"),
+	});
+	expect(bitmap.closed).toBe(true);
+	expect(transport.disposed).toBe(true);
+});
+
 for (const phase of [
 	"iframe-load",
 	"sandbox-ready",

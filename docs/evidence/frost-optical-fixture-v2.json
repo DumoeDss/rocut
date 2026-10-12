@@ -1,0 +1,48 @@
+{
+	"id": "frost-optical-fixture-v2",
+	"recordedAt": "2026-10-12",
+	"status": "portable-independent-reference-pre-output-policy",
+	"productionGpuExecuted": false,
+	"replacesHistoricalFixture": false,
+	"historicalFixture": "docs/evidence/frost-gpu-preoutput-gates.json",
+	"historicalFixtureState": "Original external oracle and RGBA fixture files were absent on inspection; their pins, gates and existing receipts are not modified.",
+	"generator": "script/fixtures/frost-reference-fixture.mjs",
+	"math": "script/fixtures/frost-reference-math.mjs",
+	"tests": "script/fixtures/frost-reference.test.mjs",
+	"dimensions": { "width": 64, "height": 48, "rgbaBytes": 12288 },
+	"sourceAlphaHistogram": { "0": 109, "96": 424, "255": 2539 },
+	"sourceSha256": "5dd0eef78e66b98cec21ef8565b605e85797f214023e02472213565eaab32260",
+	"expectedSha256": {
+		"static-ice": "169572a563a8e5e6974bbd368e9e7c17d778f704bc06ee5374a6fece0fd0c835",
+		"before-stamp": "169572a563a8e5e6974bbd368e9e7c17d778f704bc06ee5374a6fece0fd0c835",
+		"stamp-full": "d748e7028abb01e3652cda910a4b878bd37855bbe45fa3d9b86c72435a75c3fc",
+		"hold-end": "d748e7028abb01e3652cda910a4b878bd37855bbe45fa3d9b86c72435a75c3fc",
+		"recover-half": "a95a1a40a33e4204aacbfe012460b782574fdd151e2234ea653ae36ed814fa00",
+		"recovered": "169572a563a8e5e6974bbd368e9e7c17d778f704bc06ee5374a6fece0fd0c835",
+		"restamped": "d748e7028abb01e3652cda910a4b878bd37855bbe45fa3d9b86c72435a75c3fc",
+		"seed-variant": "d477e18ac44a554ba7f19595453a345dd91b2b8766b523adb86eb3cf1d0c0c9a",
+		"negative-handle": "5dd0eef78e66b98cec21ef8565b605e85797f214023e02472213565eaab32260",
+		"neutral": "5dd0eef78e66b98cec21ef8565b605e85797f214023e02472213565eaab32260"
+	},
+	"gates": {
+		"native": { "maxRgbError": 2, "meanRgbError": 0.15, "maxAlphaError": 0 },
+		"presentation": { "maxRgbError": 5, "meanRgbError": 0.5, "maxAlphaError": 0 },
+		"source": { "mode": "premultiplied", "maxRgbError": 1, "meanRgbError": 0.1, "maxAlphaError": 0 },
+		"presentationFidelity": { "mode": "premultiplied", "maxRgbError": 1, "meanRgbError": 0.1, "maxAlphaError": 0 }
+	},
+	"gateOrigin": "Numeric gates are unchanged from the historical pre-output policy, chosen before any production capture for this new fixture. No all-device error bound is claimed.",
+	"hardInvariants": {
+		"alpha": "Every active output retains authored alpha; active alpha-zero pixels are exact RGBA0.",
+		"plateau": "Independent pixel-center capsule mask has 568 interior pixels, 459 positive-alpha and 109 transparent. Positive-alpha full-melt pixels match authored RGBA exactly.",
+		"equivalence": [["static-ice", "before-stamp", "recovered"], ["stamp-full", "hold-end", "restamped"]],
+		"bypass": "negative-handle and neutral preserve authored poisoned RGBA exactly and must resolve to zero native passes. These are not GPU frames.",
+		"canonicalPair": "Matching default/diagnostic production Canvas outputs must be byte-identical; raw-ingress and Canvas-ingress are separately audited."
+	},
+	"requiredBeforeRuntimeAcceptance": [
+		"Pin current source, generator, math, fixture manifest, matching default/diagnostic build inputs and actual delivered WASM bytes.",
+		"Observe real native resolver passes and raw raster API; diagnostic ABI absent in default package.",
+		"Execute eight active cases serially on an identified backend/format; independently audit alpha, transparent RGB, plateau, equivalence and unchanged scalar gates.",
+		"Demonstrate rejection recovery, cleanup and optical/time/seed negative controls without changing expectations or gates.",
+		"Keep editor/history, encoded video, installed runtime and hardware claims separate from this reference."
+	]
+}

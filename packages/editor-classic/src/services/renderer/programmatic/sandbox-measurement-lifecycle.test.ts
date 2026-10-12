@@ -10,6 +10,7 @@ test("resource measurement releases all decoded images before publishing facts a
 	)?.[1];
 	if (!encoded) throw Error("Missing fixed sandbox Worker");
 	const events: string[] = [];
+	const stages: unknown[] = [];
 	let decoded = 0,
 		live = 0;
 	const resource = (id: string) => ({
@@ -27,6 +28,7 @@ test("resource measurement releases all decoded images before publishing facts a
 		ArrayBuffer,
 		Blob,
 		self: {},
+		performance,
 		OffscreenCanvas: class {
 			width: number;
 			height: number;
@@ -53,11 +55,12 @@ test("resource measurement releases all decoded images before publishing facts a
 			};
 		},
 		postMessage(message: unknown) {
-			expect(live).toBe(0);
 			if (message && typeof message === "object" && "sandboxStage" in message) {
-				expect(message).toEqual({ sandboxStage: "worker-started" });
+				expect(typeof message.sandboxStage).toBe("string");
+				stages.push(message.sandboxStage);
 				return;
 			}
+			expect(live).toBe(0);
 			expect(message).toMatchObject({
 				fontMetrics: [],
 				imageDimensions: resources.map(({ resource }) => ({
@@ -94,6 +97,12 @@ test("resource measurement releases all decoded images before publishing facts a
 		},
 	});
 	expect(decoded).toBe(2);
+	expect(stages).toEqual([
+		"worker-started",
+		"worker-font-resources",
+		"worker-image-decode",
+		"worker-font-measure",
+	]);
 	expect(events).toEqual([
 		"font-metrics-canvas",
 		"close-1",

@@ -113,6 +113,65 @@ test("Worker start is relayed without terminating the worker or releasing its Bl
 	expect(transport.revoked).toEqual(["blob:fixture"]);
 });
 
+test("timed Worker stages relay scalar diagnostics without becoming a terminal result", () => {
+	const transport = broker();
+	for (const sandboxStage of [
+		"worker-font-resources",
+		"worker-image-decode",
+		"worker-render",
+		"worker-bitmap-transfer",
+	]) {
+		transport.workers[0].onmessage({
+			data: { sandboxStage, workerElapsedMs: 17.125 },
+		});
+		expect(transport.messages.at(-1)).toEqual({
+			sandboxStage,
+			workerElapsedMs: 17.125,
+		});
+		expect(transport.workers[0].terminated).toBe(0);
+	}
+	const before = transport.messages.length;
+	for (const workerElapsedMs of [NaN, Infinity, -1, "17"])
+		transport.workers[0].onmessage({
+			data: { sandboxStage: "worker-render", workerElapsedMs },
+		});
+	expect(transport.messages).toHaveLength(before);
+	const bitmap = new SandboxBitmap();
+	transport.workers[0].onmessage({ data: { bitmap } });
+	transport.workers[0].onmessage({
+		data: { sandboxStage: "worker-render", workerElapsedMs: 18 },
+	});
+	expect(transport.messages).toHaveLength(before + 1);
+	expect(bitmap.closed).toBe(false);
+	expect(transport.workers[0].terminated).toBe(1);
+});
+
+test("progress relay transport failure releases the worker and reports an ordinary error", () => {
+	const transport = broker();
+	transport.failReply();
+	transport.workers[0].onmessage({
+		data: { sandboxStage: "worker-image-decode", workerElapsedMs: 4 },
+	});
+	expect(transport.messages.at(-1)).toEqual({
+		error: "Programmatic Worker progress dispatch failed",
+	});
+	expect(transport.workers[0].terminated).toBe(1);
+	expect(transport.revoked).toHaveLength(1);
+});
+
+test("a malformed progress message cannot strand its bitmap ownership", () => {
+	const transport = broker();
+	const bitmap = new SandboxBitmap();
+	transport.workers[0].onmessage({
+		data: { sandboxStage: "worker-render", bitmap },
+	});
+	expect(bitmap.closed).toBe(true);
+	expect(transport.messages.at(-1)).toEqual({
+		error: "Invalid worker progress",
+	});
+	expect(transport.workers[0].terminated).toBe(1);
+});
+
 test("a Worker constructor failure returns an error immediately and releases its Blob", () => {
 	const transport = broker({ startupFailure: true });
 	expect(transport.messages).toEqual([
@@ -139,6 +198,7 @@ test("the actual generated Worker emits start before its resource/render pipelin
 	const workerSource = await transport.blobs[0].text();
 	const context = {
 		self: {},
+		performance,
 		postMessage(data: unknown) {
 			messages.push(data);
 		},
@@ -152,7 +212,11 @@ test("the actual generated Worker emits start before its resource/render pipelin
 	for (let i = 0; i < 12; i++) await Promise.resolve();
 	expect(messages[0]).toEqual({ sandboxStage: "worker-started" });
 	// Missing decode limits deliberately terminates after the genuine start event.
-	expect(messages[1]).toMatchObject({ error: expect.any(String) });
+	expect(messages[1]).toMatchObject({
+		sandboxStage: "worker-font-resources",
+		workerElapsedMs: expect.any(Number),
+	});
+	expect(messages.at(-1)).toMatchObject({ error: expect.any(String) });
 });
 
 test("broker Worker and request-port message errors fail immediately and dispose once", () => {
@@ -229,6 +293,7 @@ for (const transferFails of [false, true])
 			(await transport.blobs[0].text()) + "\n;onmessage",
 			{
 				self: {},
+				performance,
 				OffscreenCanvas: class {
 					constructor(
 						public width: number,
@@ -258,11 +323,102 @@ for (const transferFails of [false, true])
 				resources: [],
 			},
 		});
-		expect(messages).toEqual([
-			{ sandboxStage: "worker-started" },
+		expect(messages[0]).toEqual({ sandboxStage: "worker-started" });
+		expect(
+			messages.flatMap((message) =>
+				message && typeof message === "object" && "sandboxStage" in message
+					? [message.sandboxStage]
+					: [],
+			),
+		).toEqual([
+			"worker-started",
+			"worker-font-resources",
+			"worker-image-decode",
+			"worker-sequence-decode",
+			"worker-render",
+			"worker-bitmap-transfer",
+		]);
+		expect(messages.at(-1)).toEqual(
 			transferFails
 				? { error: "Error: Worker bitmap transfer failed" }
 				: { bitmap },
-		]);
+		);
 		expect(bitmap.closed).toBe(transferFails);
 	});
+
+test("generated Worker stages identify deferred font preparation and user eval before bitmap failure", async () => {
+	const transport = broker();
+	const messages: unknown[] = [];
+	let finishFont!: () => void;
+	let finishRender!: () => void;
+	const fontGate = new Promise<void>((resolve) => {
+		finishFont = resolve;
+	});
+	const renderGate = new Promise<void>((resolve) => {
+		finishRender = resolve;
+	});
+	let now = 100;
+	const context = {
+		self: {},
+		fontGate,
+		renderGate,
+		performance: { now: () => now++ },
+		postMessage(message: unknown) {
+			messages.push(message);
+		},
+		OffscreenCanvas: class {
+			constructor(
+				public width: number,
+				public height: number,
+			) {}
+			transferToImageBitmap() {
+				throw Error("deterministic bitmap failure");
+			}
+		},
+	};
+	const onmessage = runInNewContext(
+		(await transport.blobs[0].text()) +
+			"\nloadProgrammaticFont = () => fontGate; onmessage",
+		context,
+	);
+	const font = { id: "font", kind: "font" };
+	const pending = onmessage({
+		data: {
+			source: {
+				width: 64,
+				height: 48,
+				resources: [font],
+				code: "await globalThis.renderGate",
+			},
+			frame: {
+				seed: 1,
+				imageDecodeLimits: {
+					maxDimension: 8192,
+					maxDecodedBytes: 128 * 1024 * 1024,
+				},
+			},
+			resources: [{ resource: font, body: new ArrayBuffer(1) }],
+		},
+	});
+	expect(messages.at(-1)).toEqual({
+		sandboxStage: "worker-font-resources",
+		workerElapsedMs: 1,
+	});
+	finishFont();
+	for (let i = 0; i < 12; i++) await Promise.resolve();
+	expect(messages.at(-1)).toEqual({
+		sandboxStage: "worker-render",
+		workerElapsedMs: 4,
+	});
+	finishRender();
+	await pending;
+	expect(messages.at(-2)).toEqual({
+		sandboxStage: "worker-bitmap-transfer",
+		workerElapsedMs: 5,
+	});
+	expect(messages.at(-1)).toEqual({
+		error: "Error: deterministic bitmap failure",
+	});
+	// The pipeline is genuine generated Worker JS; font completion and Canvas are
+	// controlled lifecycle doubles, not real Host scheduling or raster acceptance.
+});

@@ -5,6 +5,7 @@ import { IMAGE_DIMENSIONS_WORKER_SOURCE } from "./image-dimensions-worker";
 import { MV_REFERENCE_POST_SOURCE } from "./mv-reference-post";
 import { MV_ROAD_REFERENCE_POST_SOURCE } from "./mv-road-reference-post";
 import { MV_ROAD_POST_BACKEND_SOURCE } from "./mv-road-post-backend";
+import { SANDBOX_WORKER_STAGES } from "./sandbox-failure";
 
 const WORKER_SOURCE =
 	SEQUENCE_IMAGE_DECODER_SOURCE +
@@ -19,6 +20,12 @@ onmessage = async ({data}) => {
   const {source, frame, resources = [], sequenceImages = [], imageAdmissions = [], operation = 'render'} = data;
   const send = postMessage.bind(self);
   send({sandboxStage:"worker-started"});
+  const startedAt = performance.now();
+  const stage = sandboxStage => {
+    const workerElapsedMs = performance.now() - startedAt;
+    if (!Number.isFinite(workerElapsedMs) || workerElapsedMs < 0) return;
+    try { send({sandboxStage,workerElapsedMs}); } catch {}
+  };
   const resourceBytes = new Map();
   const descriptors = new Map();
   let sequenceAssets;
@@ -26,6 +33,7 @@ onmessage = async ({data}) => {
   let tunnelFonts;
   try {
     if (resources.length !== (source.resources || []).length) throw Error("Missing programmatic resources");
+    stage("worker-font-resources");
     for (let i = 0; i < resources.length; i++) {
       const {resource, body} = resources[i];
       if (JSON.stringify(resource) !== JSON.stringify(source.resources[i])) throw Error("Resource manifest mismatch");
@@ -37,6 +45,7 @@ onmessage = async ({data}) => {
       }
     }
     if (operation === 'measure-fonts') {
+      stage("worker-font-measure");
       if (!Array.isArray(frame.fontMetricRequests)) throw Error('Missing font metric requests');
       send({fontMetrics: measureProgrammaticFonts(frame.fontMetricRequests, descriptors)});
       return;
@@ -46,6 +55,7 @@ onmessage = async ({data}) => {
       descriptor(id) { if (!descriptors.has(id)) throw Error('Unknown Tunnel descriptor'); return descriptors.get(id); }
     });
     if (operation === 'measure-tunnel-fonts') {
+      stage("worker-tunnel-fonts");
       if (!Array.isArray(frame.tunnelFontMetricRequests)) throw Error('Missing Tunnel font requests');
       tunnelFonts=await mvTunnelFontStacks(fontAssets,self.fonts);
       const context=new OffscreenCanvas(1,1).getContext('2d');
@@ -56,8 +66,10 @@ onmessage = async ({data}) => {
     }
     if (operation !== 'render' && operation !== 'measure-resources') throw Error('Unknown Canvas operation');
     const budget = createMvImageDecodeBudget(frame.imageDecodeLimits);
+    stage("worker-image-decode");
     imageAssets = await decodeMvDeclaredImages(frame, resources, imageAdmissions, operation, budget);
     if (operation === 'measure-resources') {
+      stage("worker-font-measure");
       const measured = {fontMetrics:measureProgrammaticFonts(frame.fontMetricRequests || [], descriptors),imageDimensions:imageAssets.facts};
       // Release decoded measurement images before publishing facts. A caller
       // may immediately admit/render the next phase after receiving this reply.
@@ -65,8 +77,10 @@ onmessage = async ({data}) => {
       send(measured);
       return;
     }
+    stage("worker-sequence-decode");
     sequenceAssets = await decodeMvSequenceImages(frame, sequenceImages, budget);
     if (frame.tunnelFontStacks?.length) {
+      stage("worker-tunnel-fonts");
       tunnelFonts=await mvTunnelFontStacks(fontAssets,self.fonts);
       for (const bound of frame.tunnelFontStacks) await tunnelFonts.load(bound.fontStack);
     }
@@ -96,6 +110,7 @@ onmessage = async ({data}) => {
     let seed = frame.seed >>> 0;
     const random = () => { seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0; return seed / 4294967296; };
     Math.random = random;
+    stage("worker-render");
     if (source.recipe) renderMvRecipe(canvas, frame.recipePlan, assets);
     else {
       const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
@@ -103,6 +118,7 @@ onmessage = async ({data}) => {
       await render(canvas, Object.freeze({...frame, random}), assets);
     }
     if (canvas.width !== source.width || canvas.height !== source.height) throw Error("Source resized its canvas");
+    stage("worker-bitmap-transfer");
     const bitmap = canvas.transferToImageBitmap();
     try { send({bitmap}, [bitmap]); }
     catch (error) { try { bitmap.close(); } catch {} throw error; }
@@ -131,6 +147,7 @@ addEventListener("message", function connect(event) {
     try { if (currentUrl) URL.revokeObjectURL(currentUrl); } catch {}
   };
   let terminal = false;
+  const stages = ${JSON.stringify(SANDBOX_WORKER_STAGES)};
   const fail = error => {
     if (terminal) return;
     terminal = true;
@@ -147,7 +164,16 @@ addEventListener("message", function connect(event) {
       if (terminal) { if (data?.bitmap instanceof ImageBitmap) { try { data.bitmap.close(); } catch {} } return; }
       if (!data || typeof data !== "object") { fail("Invalid worker result"); return; }
       try {
-      if (data.sandboxStage === "worker-started" && Object.keys(data).length === 1) { port.postMessage({sandboxStage:"worker-started"}); return; }
+      if (Object.hasOwn(data,"sandboxStage")) {
+        if (data.bitmap instanceof ImageBitmap) { try { data.bitmap.close(); } catch {} fail("Invalid worker progress"); return; }
+        const legacy = data.sandboxStage === "worker-started" && Object.keys(data).length === 1;
+        const timed = Object.keys(data).length === 2 && Number.isFinite(data.workerElapsedMs) && data.workerElapsedMs >= 0;
+        if (stages.includes(data.sandboxStage) && (legacy || timed)) {
+          try { port.postMessage(legacy ? {sandboxStage:data.sandboxStage} : {sandboxStage:data.sandboxStage,workerElapsedMs:data.workerElapsedMs}); }
+          catch { fail("Programmatic Worker progress dispatch failed"); }
+        }
+        return;
+      }
       if (data.bitmap instanceof ImageBitmap) port.postMessage({bitmap:data.bitmap}, [data.bitmap]);
       else if (Array.isArray(data.fontMetrics) && Array.isArray(data.imageDimensions)) port.postMessage({fontMetrics:data.fontMetrics,imageDimensions:data.imageDimensions});
       else if (Array.isArray(data.fontMetrics)) port.postMessage({fontMetrics:data.fontMetrics});
