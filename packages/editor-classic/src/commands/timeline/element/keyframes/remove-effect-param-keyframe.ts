@@ -5,9 +5,11 @@ import {
 } from "../../../base-command";
 import { removeEffectParamKeyframe } from "../../../../animation/effect-param-channel";
 import {
+	buildEffectParamPath,
 	buildGraphicParamPath,
 	removeElementKeyframe,
 } from "../../../../animation";
+import { admitAnimationTargetChannels } from "../../../../animation/scalar-admission";
 import { updateElementInSceneTracks } from "../../../../timeline";
 import { isVisualElement } from "../../../../timeline/element-utils";
 import type {
@@ -60,26 +62,41 @@ export class RemoveEffectParamKeyframeCommand extends Command {
 			update: (element) => {
 				if (element.type === "effect") {
 					if (this.effectId !== element.id) return element;
-					const propertyPath = buildGraphicParamPath({
-						paramKey: this.paramKey,
-					});
-					if (!resolveAnimationTarget({ element, path: propertyPath }))
-						return element;
-					return {
-						...element,
-						animations: removeElementKeyframe({
-							animations: element.animations,
-							propertyPath,
-							keyframeId: this.keyframeId,
-						}),
-					};
 				}
-				const animations = removeEffectParamKeyframe({
-					animations: element.animations,
-					effectId: this.effectId,
-					paramKey: this.paramKey,
-					keyframeId: this.keyframeId,
-				});
+				const propertyPath =
+					element.type === "effect"
+						? buildGraphicParamPath({ paramKey: this.paramKey })
+						: buildEffectParamPath({
+								effectId: this.effectId,
+								paramKey: this.paramKey,
+							});
+				const target = resolveAnimationTarget({ element, path: propertyPath });
+				if (element.type === "effect" && !target) return element;
+				const animations =
+					element.type === "effect"
+						? removeElementKeyframe({
+								animations: element.animations,
+								propertyPath,
+								keyframeId: this.keyframeId,
+							})
+						: removeEffectParamKeyframe({
+								animations: element.animations,
+								effectId: this.effectId,
+								paramKey: this.paramKey,
+								keyframeId: this.keyframeId,
+							});
+				// Unknown legacy attached channels remain explicitly removable.
+				const admissions = target
+					? admitAnimationTargetChannels({
+							animations,
+							propertyPath,
+							duration: element.duration,
+							target,
+						})
+					: [];
+				for (const admission of admissions)
+					if (admission.kind === "rejected")
+						throw new RangeError(admission.reason);
 				return { ...element, animations };
 			},
 		});

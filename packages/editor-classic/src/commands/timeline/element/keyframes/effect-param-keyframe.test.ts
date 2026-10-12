@@ -5,8 +5,17 @@ import type { EditorCommandContext } from "../../../base-command";
 import type { EffectElement, SceneTracks } from "../../../../timeline";
 import { UpsertEffectParamKeyframeCommand } from "./upsert-effect-param-keyframe";
 import { RemoveEffectParamKeyframeCommand } from "./remove-effect-param-keyframe";
+import { RetimeKeyframeCommand } from "./retime-keyframe";
+import { mediaTime, ZERO_MEDIA_TIME } from "../../../../wasm";
+import { isScalarChannelData } from "../../../../animation/scalar-batch-resolver";
 
 registerDefaultEffects();
+function amountKeys({ element }: { element: EffectElement }) {
+	const channel = element.animations?.["params.amount"];
+	if (!isScalarChannelData(channel))
+		throw Error("Expected a scalar amount channel");
+	return channel.keys;
+}
 const definition = effectsRegistry
 	.getAll()
 	.find((effect) =>
@@ -94,13 +103,13 @@ test("named standalone commands create, modify, remove and undo the canonical ch
 	const create = upsert();
 	create.execute(context);
 	expect(Object.keys(current().animations!)).toEqual(["params.amount"]);
-	expect(current().animations!["params.amount"].keys[0]).toMatchObject({
+	expect(amountKeys({ element: current() })[0]).toMatchObject({
 		id: "key",
 		value: 0.5,
 	});
 	upsert("standalone", "amount", 0.75).execute(context);
-	expect(current().animations!["params.amount"].keys).toHaveLength(1);
-	expect(current().animations!["params.amount"].keys[0].value).toBe(0.75);
+	expect(amountKeys({ element: current() })).toHaveLength(1);
+	expect(amountKeys({ element: current() })[0]?.value).toBe(0.75);
 	const populated = structuredClone(current());
 	remove("wrong-id").execute(context);
 	expect(current()).toEqual(populated);
@@ -112,7 +121,7 @@ test("named standalone commands create, modify, remove and undo the canonical ch
 	create.undo(context);
 	expect(current()).toEqual(before);
 	create.redo(context);
-	expect(current().animations!["params.amount"].keys[0].value).toBe(0.5);
+	expect(amountKeys({ element: current() })[0]?.value).toBe(0.5);
 });
 test("named standalone upsert rejects wrong ids and catalog static fields", () => {
 	let tracks = tracksFixture();
@@ -183,9 +192,185 @@ test("named visual commands retain the effect-id-qualified channel", () => {
 	).toBeUndefined();
 });
 
+for (const standalone of [true, false]) {
+	test(`${standalone ? "standalone" : "attached"} effects reject deletion and retiming that change extrapolation`, () => {
+		let tracks = tracksFixture();
+		const path = standalone
+			? "params.amount"
+			: "effects.visual-effect.params.amount";
+		const source = effectFixture();
+		source.animations = {
+			[path]: {
+				extrapolation: { before: "hold", after: "linear" },
+				keys: [
+					{
+						id: "a",
+						time: ZERO_MEDIA_TIME,
+						value: 0,
+						segmentToNext: "linear",
+						tangentMode: "flat",
+					},
+					{
+						id: "mid",
+						time: mediaTime({ ticks: 60000 }),
+						value: 0.8,
+						segmentToNext: "linear",
+						tangentMode: "flat",
+					},
+					{
+						id: "b",
+						time: mediaTime({ ticks: 120000 }),
+						value: 1,
+						segmentToNext: "linear",
+						tangentMode: "flat",
+					},
+				],
+			},
+		};
+		if (standalone) tracks.overlay[0].elements[0] = source;
+		else
+			tracks.overlay = [
+				{
+					id: "fx",
+					name: "Graphic",
+					type: "graphic",
+					hidden: false,
+					elements: [
+						{
+							...source,
+							type: "graphic",
+							definitionId: "fixture",
+							effects: [
+								{
+									id: "visual-effect",
+									type: definition.type,
+									enabled: true,
+									params: { amount: 0.25 },
+								},
+							],
+						},
+					],
+				},
+			];
+		let writes = 0;
+		const context = {
+			editor: {
+				scenes: { getActiveScene: () => ({ tracks }) },
+				timeline: {
+					updateTracks: (next: SceneTracks) => {
+						tracks = next;
+						writes++;
+					},
+				},
+			},
+		} as unknown as EditorCommandContext;
+		const before = structuredClone(tracks);
+		const deletion = new RemoveEffectParamKeyframeCommand({
+			trackId: "fx",
+			elementId: "standalone",
+			effectId: standalone ? "standalone" : "visual-effect",
+			paramKey: "amount",
+			keyframeId: "b",
+		});
+		expect(() => deletion.execute(context)).toThrow(RangeError);
+		expect(writes).toBe(0);
+		expect(tracks).toEqual(before);
+		const retime = new RetimeKeyframeCommand({
+			trackId: "fx",
+			elementId: "standalone",
+			propertyPath: path,
+			keyframeId: "b",
+			nextTime: mediaTime({ ticks: 90000 }),
+		});
+		expect(() => retime.execute(context)).toThrow(RangeError);
+		expect(writes).toBe(0);
+		expect(tracks).toEqual(before);
+		const safe = new RemoveEffectParamKeyframeCommand({
+			trackId: "fx",
+			elementId: "standalone",
+			effectId: standalone ? "standalone" : "visual-effect",
+			paramKey: "amount",
+			keyframeId: "mid",
+		});
+		safe.execute(context);
+		expect(writes).toBe(1);
+		safe.undo(context);
+		expect(tracks).toEqual(before);
+	});
+}
+
 const nativeTest = test.skipIf(
 	process.env.ROCUT_RUN_RECIPE_COMMAND_TESTS !== "1",
 );
+nativeTest(
+	"rejected endpoint removal and retiming leave durable history and saves unchanged",
+	async () => {
+		const { commandHarness } =
+			await import("../../../../core/managers/__tests__/command-test-harness");
+		const { projectFixture } =
+			await import("../../../../editor/transactions/opencut/__tests__/fixture");
+		const project = projectFixture();
+		const source = effectFixture();
+		source.animations = {
+			"params.amount": {
+				extrapolation: { before: "hold", after: "linear" },
+				keys: [
+					{
+						id: "a",
+						time: ZERO_MEDIA_TIME,
+						value: 0,
+						segmentToNext: "linear",
+						tangentMode: "flat",
+					},
+					{
+						id: "mid",
+						time: mediaTime({ ticks: 60000 }),
+						value: 0.8,
+						segmentToNext: "linear",
+						tangentMode: "flat",
+					},
+					{
+						id: "b",
+						time: mediaTime({ ticks: 120000 }),
+						value: 1,
+						segmentToNext: "linear",
+						tangentMode: "flat",
+					},
+				],
+			},
+		};
+		project.scenes[0].tracks = tracksFixture();
+		project.scenes[0].tracks.overlay[0].elements[0] = source;
+		const h = await commandHarness(project);
+		const before = structuredClone(h.getScenes()),
+			history = h.command.getHistoryCount(),
+			saves = h.fixture.getSaveCount();
+		for (const command of [
+			new RemoveEffectParamKeyframeCommand({
+				trackId: "fx",
+				elementId: "standalone",
+				effectId: "standalone",
+				paramKey: "amount",
+				keyframeId: "b",
+			}),
+			new RetimeKeyframeCommand({
+				trackId: "fx",
+				elementId: "standalone",
+				propertyPath: "params.amount",
+				keyframeId: "b",
+				nextTime: mediaTime({ ticks: 90000 }),
+			}),
+		]) {
+			await expect(h.command.execute({ command })).rejects.toBeInstanceOf(
+				RangeError,
+			);
+			expect(h.getScenes()).toEqual(before);
+			expect(h.command.getHistoryCount()).toBe(history);
+			expect(h.fixture.getSaveCount()).toBe(saves);
+		}
+	},
+);
+
 nativeTest(
 	"named standalone keyframes project through durable history and storage failure atomically",
 	async () => {
@@ -200,11 +385,11 @@ nativeTest(
 			h.getScenes()[0].tracks.overlay[0].elements[0] as EffectElement;
 		const before = structuredClone(current());
 		await h.command.execute({ command: upsert() });
-		expect(current().animations!["params.amount"].keys[0].value).toBe(0.5);
+		expect(amountKeys({ element: current() })[0]?.value).toBe(0.5);
 		await h.command.undo();
 		expect(current()).toEqual(before);
 		await h.command.redo();
-		expect(current().animations!["params.amount"].keys[0].value).toBe(0.5);
+		expect(amountKeys({ element: current() })[0]?.value).toBe(0.5);
 		await h.command.execute({ command: remove() });
 		expect(current().animations?.["params.amount"]).toBeUndefined();
 		await h.command.undo();

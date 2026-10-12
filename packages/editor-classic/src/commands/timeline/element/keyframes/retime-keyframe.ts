@@ -1,4 +1,5 @@
 import { retimeElementKeyframe } from "../../../../animation";
+import { admitAnimationTargetChannels } from "../../../../animation/scalar-admission";
 import {
 	Command,
 	type EditorCommandContext,
@@ -54,7 +55,11 @@ export class RetimeKeyframeCommand extends Command {
 			trackId: this.trackId,
 			elementId: this.elementId,
 			update: (element) => {
-				if (!resolveAnimationTarget({ element, path: this.propertyPath })) {
+				const target = resolveAnimationTarget({
+					element,
+					path: this.propertyPath,
+				});
+				if (!target) {
 					return element;
 				}
 
@@ -62,15 +67,22 @@ export class RetimeKeyframeCommand extends Command {
 					a: ZERO_MEDIA_TIME,
 					b: minMediaTime({ a: this.nextTime, b: element.duration }),
 				});
-				return {
-					...element,
-					animations: retimeElementKeyframe({
-						animations: element.animations,
-						propertyPath: this.propertyPath,
-						keyframeId: this.keyframeId,
-						time: boundedTime,
-					}),
-				};
+				const animations = retimeElementKeyframe({
+					animations: element.animations,
+					propertyPath: this.propertyPath,
+					keyframeId: this.keyframeId,
+					time: boundedTime,
+				});
+				const admissions = admitAnimationTargetChannels({
+					animations,
+					propertyPath: this.propertyPath,
+					duration: element.duration,
+					target,
+				});
+				for (const admission of admissions)
+					if (admission.kind === "rejected")
+						throw new RangeError(admission.reason);
+				return { ...element, animations };
 			},
 		});
 

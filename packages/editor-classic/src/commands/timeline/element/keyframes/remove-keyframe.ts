@@ -2,6 +2,7 @@ import {
 	hasKeyframesForPath,
 	removeElementKeyframe,
 } from "../../../../animation";
+import { admitAnimationTargetChannels } from "../../../../animation/scalar-admission";
 import {
 	Command,
 	type EditorCommandContext,
@@ -34,6 +35,14 @@ function removeKeyframeAndPersist({
 		propertyPath,
 		keyframeId,
 	});
+	const admissions = admitAnimationTargetChannels({
+		animations: nextAnimations,
+		propertyPath,
+		duration: element.duration,
+		target,
+	});
+	for (const admission of admissions)
+		if (admission.kind === "rejected") throw new RangeError(admission.reason);
 
 	const isChannelNowEmpty = !hasKeyframesForPath({
 		animations: nextAnimations,

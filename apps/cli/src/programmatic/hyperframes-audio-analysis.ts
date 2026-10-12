@@ -4,8 +4,14 @@ import { launchFrameBrowser } from "./chromium-process";
 import { resolveHtmlDocumentCode } from "./document-resource";
 import { collectHyperframesAudioSnapshot } from "./hyperframes-audio-analysis-frame";
 import { htmlAudioAnalysisExpression } from "./html-document";
-import { analyzeElectronAudio, pinElectronAudioConnection } from "./electron-audio-transport";
-import { openElectronAudioSession, pinElectronAudioSessionConnection } from "./electron-audio-session";
+import {
+	analyzeElectronAudio,
+	pinElectronAudioConnection,
+} from "./electron-audio-transport";
+import {
+	openElectronAudioSession,
+	pinElectronAudioSessionConnection,
+} from "./electron-audio-session";
 import type { HyperframesFxProvenance } from "./hyperframes-fx-types";
 import type {
 	HyperframesNativeHistoryCapture,
@@ -44,7 +50,10 @@ interface AudioAnalyzer {
 interface AudioGraphAnalyzer {
 	sources: NativeAudioSource[];
 	/** One fresh authored realm for the complete Rust canonical write scan. */
-	history(graph: unknown, seeks: NativeSeek[]): Promise<HyperframesNativeHistoryResult>;
+	history(
+		graph: unknown,
+		seeks: NativeSeek[],
+	): Promise<HyperframesNativeHistoryResult>;
 	/** Browser output is untrusted; the caller must admit it in Rust before PCM work. */
 	frame(
 		request: FrameTiming,
@@ -57,10 +66,13 @@ interface AudioGraphAnalyzer {
 }
 interface RawAudioAnalyzer {
 	sources: NativeAudioSource[];
-	history(graph: unknown, seeks: NativeSeek[]): Promise<HyperframesNativeHistoryResult>;
+	history?(
+		graph: unknown,
+		seeks: NativeSeek[],
+	): Promise<HyperframesNativeHistoryResult>;
 	normalize(frameIndex: number, assets: unknown): NativeAudioObservation[];
 	frame(request: FrameTiming): Promise<{ frameIndex: number; value: unknown }>;
-	seek(
+	seek?(
 		graph: unknown,
 		seek: NativeSeek,
 	): Promise<{ time: number; value: unknown }>;
@@ -89,27 +101,39 @@ export async function withHyperframesAudioGraphAnalyzer<T>(
 	options: AnalysisOptions,
 	consume: (analyzer: AudioGraphAnalyzer) => Promise<T>,
 ): Promise<T> {
-	return withHyperframesAudioCollection(options, true, (analyzer) =>
-		consume({
+	return withHyperframesAudioCollection(options, true, (analyzer) => {
+		const { history, seek: collectSeek } = analyzer;
+		if (!history || !collectSeek)
+			throw Error(
+				"Graph collection requires native history and seek capabilities",
+			);
+		return consume({
 			sources: analyzer.sources,
-			history: (graph, seeks) => analyzer.history(graph, seeks),
+			history: (graph, seeks) => history(graph, seeks),
 			async frame(timing) {
 				const result = await analyzer.frame(timing);
 				return { frameIndex: result.frameIndex, snapshot: result.value };
 			},
 			async seek(graph, seek) {
-				const result = await analyzer.seek(graph, seek);
+				const result = await collectSeek(graph, seek);
 				return { time: result.time, snapshot: result.value };
 			},
-		}),
-	);
+		});
+	});
 }
 
 /** A private Chromium process per bounded range, with fresh documents per frame.
  * The pinned runtime observer supplies facts; Rust admits them before PCM work.
  */
 async function withHyperframesAudioCollection<T>(
-	{ executable, connectionFile, request, resourceStore, signal, expectedProvenance }: AnalysisOptions,
+	{
+		executable,
+		connectionFile,
+		request,
+		resourceStore,
+		signal,
+		expectedProvenance,
+	}: AnalysisOptions,
 	hyperframesGraph: boolean,
 	consume: (analyzer: RawAudioAnalyzer) => Promise<T>,
 ): Promise<T> {
@@ -117,7 +141,8 @@ async function withHyperframesAudioCollection<T>(
 	if (connectionFile && !hyperframesGraph) {
 		pinElectronAudioConnection(connectionFile);
 	}
-	if (connectionFile && hyperframesGraph) pinElectronAudioSessionConnection(connectionFile);
+	if (connectionFile && hyperframesGraph)
+		pinElectronAudioSessionConnection(connectionFile);
 	const source = JSON.parse(
 		JSON.stringify(request.source),
 	) as ProgrammaticFrameRequest["source"];
@@ -189,35 +214,68 @@ async function withHyperframesAudioCollection<T>(
 	// Source-only Rust admission must precede browser startup in both modes.
 	normalize(map(request).index, []);
 	if (connectionFile && !hyperframesGraph) {
+		const controller = new AbortController();
+		const lifetime = AbortSignal.any([signal, controller.signal]);
+		const pendingFrames = new Set<Promise<unknown>>();
 		let busy = false;
-		return consume({ sources, normalize,
-			async history() { throw Error("Electron HyperFrames graph history is unavailable"); },
-			async seek() { throw Error("Electron HyperFrames graph seeks are unavailable"); },
-			async frame(timing) {
-				signal.throwIfAborted();
-				if (busy) throw Error("HyperFrames audio frames must be collected serially");
-				busy = true;
-				try {
-					const mapped = map(timing);
-					const value = await analyzeElectronAudio({ connectionFile, width: source.width, height: source.height, signal,
-						expression: htmlAudioAnalysisExpression(code, mapped, resources, {
-							engine: "hyperframes", limits, sources: browserSources,
-						}) });
-					return { frameIndex: mapped.index, value };
-				} finally { busy = false; }
+		const collectFrame = async (timing: FrameTiming) => {
+			lifetime.throwIfAborted();
+			if (busy)
+				throw Error("HyperFrames audio frames must be collected serially");
+			busy = true;
+			try {
+				const mapped = map(timing);
+				const value = await analyzeElectronAudio({
+					connectionFile,
+					width: source.width,
+					height: source.height,
+					signal: lifetime,
+					expression: htmlAudioAnalysisExpression(code, mapped, resources, {
+						engine: "hyperframes",
+						limits,
+						sources: browserSources,
+					}),
+				});
+				lifetime.throwIfAborted();
+				return { frameIndex: mapped.index, value };
+			} catch (error) {
+				lifetime.throwIfAborted();
+				throw error;
+			} finally {
+				busy = false;
 			}
-		});
+		};
+		try {
+			return await consume({
+				sources,
+				normalize,
+				frame(timing) {
+					const pending = collectFrame(timing);
+					pendingFrames.add(pending);
+					const released = () => pendingFrames.delete(pending);
+					void pending.then(released, released);
+					return pending;
+				},
+			});
+		} finally {
+			controller.abort(Error("HyperFrames audio analyzer closed"));
+			await Promise.allSettled([...pendingFrames]);
+		}
 	}
-	if (!connectionFile && !executable) throw Error("No native audio browser backend configured");
+	if (!connectionFile && !executable)
+		throw Error("No native audio browser backend configured");
 	const controller = new AbortController();
 	const lifetime = AbortSignal.any([signal, controller.signal]);
 	const startTimer = setTimeout(() => controller.abort(), 15000);
-	const browser = connectionFile ? undefined : await launchFrameBrowser(executable!, lifetime).finally(() =>
-		clearTimeout(startTimer),
-	);
+	const browser = connectionFile
+		? undefined
+		: await launchFrameBrowser(executable!, lifetime).finally(() =>
+				clearTimeout(startTimer),
+			);
 	if (connectionFile) clearTimeout(startTimer);
 	let busy = false;
-	const collect = async (
+	const pendingCollections = new Set<Promise<unknown>>();
+	const collectFrame = async (
 		resolveFrame: () => ReturnType<typeof map>,
 		hyperframesNativeHistory?: HyperframesNativeHistoryCapture,
 	) => {
@@ -226,73 +284,145 @@ async function withHyperframesAudioCollection<T>(
 			throw Error("HyperFrames audio frames must be collected serially");
 		const mapped = resolveFrame();
 		busy = true;
-		const timeoutMs = hyperframesNativeHistory ? (connectionFile ? Math.min(1800000, 30000 + hyperframesNativeHistory.scan.frames.length * 8000) : 60000) : 15000;
+		const timeoutMs = hyperframesNativeHistory
+			? connectionFile
+				? Math.min(
+						1800000,
+						30000 + hyperframesNativeHistory.scan.frames.length * 8000,
+					)
+				: 60000
+			: 15000;
 		const timer = setTimeout(() => controller.abort(), timeoutMs);
 		try {
-			const analysis = { engine: "hyperframes" as const, hyperframesGraph,
-				...(hyperframesNativeHistory ? { hyperframesNativeHistory } : {}), limits, sources: browserSources };
+			const analysis = {
+				engine: "hyperframes" as const,
+				hyperframesGraph,
+				...(hyperframesNativeHistory ? { hyperframesNativeHistory } : {}),
+				limits,
+				sources: browserSources,
+			};
 			let value: unknown;
 			if (connectionFile) {
-				const session = await openElectronAudioSession({ connectionFile, profile: "source", width: source.width, height: source.height, signal: lifetime });
+				const session = await openElectronAudioSession({
+					connectionFile,
+					profile: "source",
+					width: source.width,
+					height: source.height,
+					signal: lifetime,
+				});
+				let failed = false;
 				try {
-					if (expectedProvenance && (session.epoch !== expectedProvenance.electronHostEpoch || JSON.stringify(session.browser) !== JSON.stringify(expectedProvenance.browser)))
+					if (
+						expectedProvenance &&
+						(session.epoch !== expectedProvenance.electronHostEpoch ||
+							JSON.stringify(session.browser) !==
+								JSON.stringify(expectedProvenance.browser))
+					)
 						throw Error("HyperFrames source observation Host identity changed");
-					value = await session.evaluate(htmlAudioAnalysisExpression(code, mapped, resources, analysis), { timeoutMs });
+					value = await session.evaluate(
+						htmlAudioAnalysisExpression(code, mapped, resources, analysis),
+						{ timeoutMs },
+					);
+					lifetime.throwIfAborted();
+				} catch (error) {
+					failed = true;
+					lifetime.throwIfAborted();
+					throw error;
+				} finally {
+					if (failed) await session.close().catch(() => {});
+					else await session.close();
 				}
-				finally { await session.close(); }
-			} else value = await collectHyperframesAudioSnapshot(browser!, {
-				width: source.width,
-				height: source.height,
-				code,
-				frame: mapped,
-				resources,
-				signal: lifetime,
-				analysis: {
-					engine: "hyperframes",
-					hyperframesGraph,
-					...(hyperframesNativeHistory ? { hyperframesNativeHistory } : {}),
-					limits,
-					sources: browserSources,
-				},
-			});
+			} else
+				value = await collectHyperframesAudioSnapshot(browser!, {
+					width: source.width,
+					height: source.height,
+					code,
+					frame: mapped,
+					resources,
+					signal: lifetime,
+					analysis: {
+						engine: "hyperframes",
+						hyperframesGraph,
+						...(hyperframesNativeHistory ? { hyperframesNativeHistory } : {}),
+						limits,
+						sources: browserSources,
+					},
+				});
 			return {
 				frameIndex: mapped.index,
 				time: mapped.time,
 				value,
 			};
+		} catch (error) {
+			lifetime.throwIfAborted();
+			throw error;
 		} finally {
 			clearTimeout(timer);
 			busy = false;
 		}
 	};
+	const collect = (...args: Parameters<typeof collectFrame>) => {
+		const pending = collectFrame(...args);
+		pendingCollections.add(pending);
+		const released = () => pendingCollections.delete(pending);
+		void pending.then(released, released);
+		return pending;
+	};
+	let completed = false;
 	try {
-		return await consume({
+		const result = await consume({
 			sources,
 			normalize,
 			async history(graph, seeks) {
-				if (!hyperframesGraph) throw Error("Native history requires graph collection");
-				const mapped = JSON.parse(wasm.resolveHyperframesAudioSeekJson(JSON.stringify({
-					source,
-					graph: { ...(graph as object), sources: admittedSources },
-					nativeHistoryScan: true,
-				}))) as { error?: string; nativeHistoryScan?: HyperframesNativeHistoryScan };
+				lifetime.throwIfAborted();
+				if (!hyperframesGraph)
+					throw Error("Native history requires graph collection");
+				const mapped = JSON.parse(
+					wasm.resolveHyperframesAudioSeekJson(
+						JSON.stringify({
+							source,
+							graph: { ...(graph as object), sources: admittedSources },
+							nativeHistoryScan: true,
+						}),
+					),
+				) as {
+					error?: string;
+					nativeHistoryScan?: HyperframesNativeHistoryScan;
+				};
 				if (mapped.error || !mapped.nativeHistoryScan?.frames.length)
-					throw Error(mapped.error ?? "Missing Rust native history frame mapping");
+					throw Error(
+						mapped.error ?? "Missing Rust native history frame mapping",
+					);
 				const scan = mapped.nativeHistoryScan;
 				const result = await collect(() => scan.frames[0], {
 					scan,
-					observationTimes: seeks.map(seek => seek.time),
+					observationTimes: seeks.map((seek) => seek.time),
 				});
-				const value = result.value as HyperframesNativeHistoryResult | undefined;
-				if (!Array.isArray(value?.observations) || !Array.isArray(value?.fallbackHistories))
-					throw Error("Native history collector returned an incomplete envelope");
+				const value = result.value as
+					HyperframesNativeHistoryResult | undefined;
+				if (
+					!Array.isArray(value?.observations) ||
+					!Array.isArray(value?.fallbackHistories)
+				)
+					throw Error(
+						"Native history collector returned an incomplete envelope",
+					);
 				return value;
 			},
 			frame: (timing) => collect(() => map(timing)),
 			seek: (graph, seek) => collect(() => mapSeek(graph, seek)),
 		});
+		completed = true;
+		return result;
 	} finally {
-		await browser?.close();
+		// Callback-scoped ownership also applies to semantic Electron sessions:
+		// escaped analyzers cannot allocate fresh realms after consumption ends.
+		controller.abort(Error("HyperFrames audio analyzer closed"));
+		await Promise.allSettled([...pendingCollections]);
+		if (browser) {
+			if (completed) await browser.close();
+			else await browser.close().catch(() => {});
+		}
 	}
 }
 
