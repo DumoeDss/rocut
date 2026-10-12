@@ -2,6 +2,10 @@ import { expect, test } from "bun:test";
 import type { ProgrammaticSource } from "@opencut/editor-contracts";
 import { recipeSource, changedRecipe } from "./programmatic-recipe-fixture";
 
+type MvPost = NonNullable<
+	NonNullable<ProgrammaticSource["recipe"]>["post"]
+>[number];
+
 // Genuine Rust transaction/history harness; GPU/media collaborators only are
 // stubbed by the existing harness. Root runs this with its private WASM preload.
 const nativeTest = test.skipIf(
@@ -193,6 +197,102 @@ nativeTest(
 		).rejects.toBeDefined();
 		expect(h.current()).toEqual(after);
 		expect(h.command.getHistoryCount()).toBe(afterHistory);
+	},
+);
+
+nativeTest(
+	"post group creation and binding-safe effect order share real admission and history",
+	async () => {
+		const { getMvRecipeCatalog } =
+			await import("../../editor/transactions/opencut/mv-recipe-catalog");
+		const {
+			editPostCollection,
+			newPostEffect,
+			newPostGroup,
+			postRoleChoices,
+			remapPostEffects,
+		} = await import("./programmatic-recipe-post-collection-data");
+		const catalog = getMvRecipeCatalog();
+		const effect = newPostEffect(
+			"vignette",
+			{ amount: 0.3 },
+			catalog.finishing.effects,
+		);
+		if (!effect) throw Error("Actual catalog refused new vignette");
+		const group = newPostGroup({
+			stage: "role",
+			roles: ["background"],
+			effect,
+			postStages: catalog.postStages,
+			roleChoices: postRoleChoices(catalog.extensions.sceneParameters ?? {}),
+		});
+		if (!group) throw Error("Actual catalog refused new role post");
+		const expectedGroup: MvPost = {
+			stage: "role",
+			roles: ["background"],
+			effects: [{ kind: "vignette", amount: 0.3 }],
+		};
+		expect(group).toEqual(expectedGroup);
+		const h = await setup(),
+			before = structuredClone(h.current());
+		const text = editPostCollection(
+			JSON.stringify(recipeSource.recipe),
+			[group],
+			false,
+		)!;
+		await h.command.execute({ command: h.recipeCommand({ text }) });
+		expect(h.current().programmatic?.recipe?.post).toEqual([expectedGroup]);
+		const grain = newPostEffect(
+			"grain",
+			{ amount: 0.5, fps: 24 },
+			catalog.finishing.effects,
+		);
+		if (!grain) throw Error("Actual catalog refused new grain");
+		const post = {
+			...group,
+			effects: [effect, grain],
+			automation: [
+				{ effect: 0, keyframes: [{ frame: 0, value: 0.1, easing: "linear" }] },
+			],
+		};
+		const moved = remapPostEffects(post, [1, 0], false)!;
+		const expectedMoved: MvPost = {
+			stage: "role",
+			roles: ["background"],
+			effects: [
+				{ kind: "grain", amount: 0.5, fps: 24 },
+				{ kind: "vignette", amount: 0.3 },
+			],
+			automation: [
+				{ effect: 1, keyframes: [{ frame: 0, value: 0.1, easing: "linear" }] },
+			],
+		};
+		expect(moved).toEqual(expectedMoved);
+		const edited = editPostCollection(text, [moved], false)!;
+		await h.command.execute({ command: h.recipeCommand({ text: edited }) });
+		expect(h.current().programmatic?.recipe?.post).toEqual([expectedMoved]);
+		expect(
+			h.current().programmatic?.recipe?.post?.[0]?.automation?.[0]?.effect,
+		).toBe(1);
+		await h.command.undo();
+		expect(h.current().programmatic?.recipe?.post).toEqual([expectedGroup]);
+		await h.command.undo();
+		expect(h.current()).toEqual(before);
+		await h.command.redo();
+		await h.command.redo();
+		expect(h.current().programmatic?.recipe?.post).toEqual([expectedMoved]);
+		const after = structuredClone(h.current()),
+			history = h.command.getHistoryCount();
+		const oversize = editPostCollection(
+			edited,
+			Array.from({ length: 9 }, () => group),
+			false,
+		)!;
+		await expect(
+			h.command.execute({ command: h.recipeCommand({ text: oversize }) }),
+		).rejects.toBeDefined();
+		expect(h.current()).toEqual(after);
+		expect(h.command.getHistoryCount()).toBe(history);
 	},
 );
 

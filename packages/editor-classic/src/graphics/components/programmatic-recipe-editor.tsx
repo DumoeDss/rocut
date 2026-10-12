@@ -50,6 +50,7 @@ export function ProgrammaticRecipeEditor({
 			sceneParameters={catalog.sceneParameters}
 			transitionParameters={catalog.transitionParameters}
 			finishing={catalog.finishing}
+			postStages={catalog.postStages}
 			id={id}
 			state={state}
 			readOnly={recipeReadOnlyReason(source)}

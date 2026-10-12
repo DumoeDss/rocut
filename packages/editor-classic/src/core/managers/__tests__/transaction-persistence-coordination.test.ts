@@ -24,25 +24,45 @@ describe("transaction persistence coordination", () => {
 		const original = structuredClone(record);
 		const expected = projectFixture();
 		persistence.subscribeProjectRecords((snapshot) => {
-			(snapshot.data as { metadata: { name: string } }).metadata.name = "listener edit";
+			(snapshot.data as { metadata: { name: string } }).metadata.name =
+				"listener edit";
 		});
 		const clone = spyOn(globalThis, "structuredClone");
 		try {
-			expect(await persistence.adoptCommittedProjectRecord({ record, returnProject: false })).toBeUndefined();
-			expect(clone.mock.calls.filter(([value]) => value === record.data)).toHaveLength(1);
-			expect(clone.mock.calls.filter(([value]) => Bun.deepEquals(value, expected))).toHaveLength(0);
+			expect(
+				await persistence.adoptCommittedProjectRecord({
+					record,
+					returnProject: false,
+				}),
+			).toBeUndefined();
+			expect(
+				clone.mock.calls.filter(([value]) => value === record.data),
+			).toHaveLength(1);
+			expect(
+				clone.mock.calls.filter(([value]) => Bun.deepEquals(value, expected)),
+			).toHaveLength(0);
 		} finally {
 			clone.mockRestore();
 		}
 		expect(record).toEqual(original);
-		(record.data as { metadata: { name: string } }).metadata.name = "input edit";
+		(record.data as { metadata: { name: string } }).metadata.name =
+			"input edit";
 		const cached = persistence.readCachedProject({ id: TEST_PROJECT_ID });
 		expect(cached).toEqual(expected);
 		if (!cached) throw new Error("missing cache");
 		cached.metadata.name = "returned cache edit";
-		expect(persistence.readCachedProject({ id: TEST_PROJECT_ID })).toEqual(expected);
-		await expect(persistence.adoptCommittedProjectRecord({ record: { ...original, id: "wrong" }, returnProject: false })).rejects.toThrow("identity does not match");
-		expect(persistence.readCachedProject({ id: TEST_PROJECT_ID })).toEqual(expected);
+		expect(persistence.readCachedProject({ id: TEST_PROJECT_ID })).toEqual(
+			expected,
+		);
+		await expect(
+			persistence.adoptCommittedProjectRecord({
+				record: { ...original, id: "wrong" },
+				returnProject: false,
+			}),
+		).rejects.toThrow("identity does not match");
+		expect(persistence.readCachedProject({ id: TEST_PROJECT_ID })).toEqual(
+			expected,
+		);
 		expect(fixture.getSaveCount()).toBe(0);
 	});
 
@@ -59,7 +79,7 @@ describe("transaction persistence coordination", () => {
 		});
 		persistence.subscribeProjectRecords((snapshot) => received.push(snapshot));
 		const clone = spyOn(globalThis, "structuredClone");
-		let adopted;
+		let adopted: ReturnType<typeof projectFixture> | undefined;
 		try {
 			adopted = await persistence.adoptCommittedProjectRecord({ record });
 			// The fresh decoded project is copied only for the private cache.
@@ -208,4 +228,143 @@ describe("transaction persistence coordination", () => {
 			).toBe("#123456");
 		});
 	}
+
+	test("transaction then legacy save preserves revision, replay receipts and later transactions", async () => {
+		const fixture = await storeFixture();
+		const arbiter = new ProjectMutationArbiter();
+		const persistence = new SessionPersistenceCoordinator(
+			fixture.store,
+			arbiter,
+		);
+		await persistence.loadProject({ id: TEST_PROJECT_ID });
+		const facade = new SessionOpenCutTransactions({
+			persistence,
+			arbiter,
+			publish: () => undefined,
+		});
+		await facade.open({ projectId: TEST_PROJECT_ID, assets: [] });
+		const batch = {
+			operations: [
+				{
+					kind: "update-track" as const,
+					trackId: trackId("main-track"),
+					patch: { name: "first" },
+				},
+			],
+			idempotencyKey: "before-legacy",
+		};
+		const first = await facade.apply(batch);
+		const legacy = persistence.readCachedProject({ id: TEST_PROJECT_ID })!;
+		legacy.settings.background = { type: "color", color: "#123456" };
+		await persistence.saveProject({ project: legacy });
+		expect(Number(await facade.revision())).toBe(1);
+		expect((await facade.project())?.background).toEqual(
+			legacy.settings.background,
+		);
+		const saves = fixture.getSaveCount();
+		expect(await facade.apply(batch)).toEqual(first);
+		expect(fixture.getSaveCount()).toBe(saves);
+		await facade.apply({
+			operations: [
+				{
+					kind: "update-track",
+					trackId: trackId("main-track"),
+					patch: { name: "second" },
+				},
+			],
+		});
+		expect(Number(await facade.revision())).toBe(2);
+		expect((await facade.tracks())[0].name).toBe("second");
+		expect((await facade.project())?.background).toEqual(
+			legacy.settings.background,
+		);
+		const record = await fixture.store.load({ id: TEST_PROJECT_ID });
+		expect((record!.data as Record<string, unknown>).nestedOpaque).toEqual({
+			sentinel: ["keep", { value: 42 }],
+		});
+		await facade.dispose();
+	});
+
+	for (const pendingLegacySave of [false, true]) {
+		test(`external loaded records reject stale engine mutations (pending legacy ${pendingLegacySave})`, async () => {
+			const fixture = await storeFixture();
+			const arbiter = new ProjectMutationArbiter();
+			const persistence = new SessionPersistenceCoordinator(
+				fixture.store,
+				arbiter,
+			);
+			await persistence.loadProject({ id: TEST_PROJECT_ID });
+			const facade = new SessionOpenCutTransactions({
+				persistence,
+				arbiter,
+				publish: () => undefined,
+			});
+			await facade.open({ projectId: TEST_PROJECT_ID, assets: [] });
+			if (pendingLegacySave) {
+				const legacy = persistence.readCachedProject({ id: TEST_PROJECT_ID })!;
+				legacy.settings.background = { type: "color", color: "#123456" };
+				await persistence.saveProject({ project: legacy });
+				// No router read/apply: the local legacy rebase is still pending.
+			}
+			const record = await fixture.store.load({ id: TEST_PROJECT_ID });
+			const data = record!.data as { settings: { background: unknown } };
+			data.settings.background = { type: "color", color: "#654321" };
+			await fixture.store.save({
+				record: record!,
+				summary: {
+					id: record!.id,
+					name: "external",
+					createdAt: "2026-08-10T00:00:00.000Z",
+					updatedAt: "2026-08-10T00:00:00.000Z",
+				},
+			});
+			await persistence.loadProject({ id: TEST_PROJECT_ID });
+			const saves = fixture.getSaveCount();
+			await expect(
+				facade.apply({
+					operations: [
+						{
+							kind: "update-track",
+							trackId: trackId("main-track"),
+							patch: { name: "must reject" },
+						},
+					],
+				}),
+			).rejects.toMatchObject({ code: "corrupt" });
+			expect(fixture.getSaveCount()).toBe(saves);
+			const unchanged = await fixture.store.load({ id: TEST_PROJECT_ID });
+			expect(
+				(unchanged!.data as { settings: { background: unknown } }).settings
+					.background,
+			).toEqual({ type: "color", color: "#654321" });
+			await facade.dispose();
+		});
+	}
+
+	test("legacy save keeps completed command history and background through undo redo", async () => {
+		const { commandHarness } = await import("./command-test-harness");
+		const { ToggleTrackMuteCommand } =
+			await import("../../../commands/timeline/track/toggle-track-mute");
+		const h = await commandHarness();
+		await h.command.execute({
+			command: new ToggleTrackMuteCommand("main-track"),
+		});
+		const legacy = structuredClone(h.getProject());
+		legacy.settings.background = { type: "color", color: "#123456" };
+		await h.editor.persistence.saveProject({ project: legacy });
+		h.editor.project.adoptCommittedProject({ project: legacy });
+		expect(h.command.getHistoryCount()).toBe(1);
+		await h.command.undo();
+		expect(h.getScenes()[0].tracks.main.muted).toBe(false);
+		expect(h.getProject().settings.background).toEqual(
+			legacy.settings.background,
+		);
+		await h.command.redo();
+		expect(h.getScenes()[0].tracks.main.muted).toBe(true);
+		expect(h.getProject().settings.background).toEqual(
+			legacy.settings.background,
+		);
+		expect(h.command.getHistoryCount()).toBe(1);
+		expect(Number(await h.transactions.revision())).toBe(3);
+	});
 });

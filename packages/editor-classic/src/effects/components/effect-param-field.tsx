@@ -52,9 +52,11 @@ export function EffectParamField({
 	const preservesInput =
 		effect.type === "frost" || effect.type === "flame-wrap";
 	const Field = preservesInput ? FrostNumberField : PropertyParamField;
+	// Numeric parameters are animatable unless the definition explicitly opts out,
+	// matching resolveAnimationTarget's existing channel eligibility.
+	const keyframable = param.type === "number" && param.keyframable !== false;
 	const resolvedValue =
-		param.keyframable === true &&
-		(!preservesInput || typeof fallbackValue === "number")
+		keyframable && (!preservesInput || typeof fallbackValue === "number")
 			? resolveAnimationPathValueAtTime({
 					animations: element.animations,
 					propertyPath,
@@ -89,6 +91,8 @@ export function EffectParamField({
 		coerceValue: preservesInput ? ({ value }) => value : undefined,
 	});
 	const toggle = async () => {
+		if (!keyframable || hasUnsavedDraft || !isPlayheadWithinElementRange)
+			return;
 		try {
 			if (animated.keyframeIdAtTime)
 				await editor.timeline.removeKeyframes({
@@ -126,7 +130,7 @@ export function EffectParamField({
 			value={resolvedValue}
 			onPreview={(value) => {
 				if (
-					param.keyframable === true &&
+					keyframable &&
 					animated.hasAnimatedKeyframes &&
 					isPlayheadWithinElementRange &&
 					(!preservesInput || typeof value === "number")
@@ -143,7 +147,7 @@ export function EffectParamField({
 			}}
 			onCommit={commit}
 			keyframe={
-				param.keyframable === true
+				keyframable
 					? {
 							isActive: animated.isKeyframedAtTime,
 							isDisabled: hasUnsavedDraft || !isPlayheadWithinElementRange,

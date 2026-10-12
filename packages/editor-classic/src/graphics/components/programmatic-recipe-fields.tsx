@@ -4,6 +4,7 @@ import type { RecipeDraftSnapshot } from "./programmatic-recipe-draft";
 import { ProgrammaticRecipeGeneratorFields } from "./programmatic-recipe-generator-fields";
 import { ProgrammaticRecipeTransitionFields } from "./programmatic-recipe-transition-fields";
 import { ProgrammaticRecipePostFields } from "./programmatic-recipe-post-fields";
+import { ProgrammaticRecipePostCollectionFields } from "./programmatic-recipe-post-collection-fields";
 
 export function ProgrammaticRecipeFields({
 	id,
@@ -17,6 +18,7 @@ export function ProgrammaticRecipeFields({
 	sceneParameters = {},
 	transitionParameters = {},
 	finishing = {},
+	postStages = {},
 }: {
 	id: string;
 	state: RecipeDraftSnapshot;
@@ -29,6 +31,7 @@ export function ProgrammaticRecipeFields({
 	sceneParameters?: Record<string, unknown>;
 	transitionParameters?: Record<string, unknown>;
 	finishing?: Record<string, unknown>;
+	postStages?: Record<string, unknown>;
 }) {
 	return (
 		<div className="flex min-w-0 flex-col gap-3 text-sm">
@@ -53,6 +56,15 @@ export function ProgrammaticRecipeFields({
 				text={state.text}
 				durationFrames={state.baseline.durationFrames}
 				finishing={finishing}
+				disabled={!!readOnly || state.pending || conflict}
+				onEdit={onEdit}
+			/>
+			<ProgrammaticRecipePostCollectionFields
+				id={id}
+				text={state.text}
+				finishing={finishing}
+				postStages={postStages}
+				sceneParameters={sceneParameters}
 				disabled={!!readOnly || state.pending || conflict}
 				onEdit={onEdit}
 			/>

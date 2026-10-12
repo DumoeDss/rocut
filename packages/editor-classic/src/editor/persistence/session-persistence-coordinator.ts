@@ -18,7 +18,10 @@ type MutationListener = (event: {
 	readonly key: string;
 }) => void;
 
-type ProjectRecordListener = (record: ProjectRecord) => void;
+type ProjectRecordListener = (
+	record: ProjectRecord,
+	publication?: { readonly legacySave: true },
+) => void;
 
 interface DurableLibraryArbitration {
 	readonly pending: Map<string, Promise<void>>;
@@ -203,7 +206,7 @@ export class SessionPersistenceCoordinator {
 						// No observable session success is published before the durable call.
 						this.projectSnapshots.set(id, cloneOpaque(data));
 						this.projectCache.set(id, decodeProject(data));
-						this.emitProjectRecord(record);
+						this.emitProjectRecord(record, { legacySave: true });
 						this.emit({ kind: "project", key: id });
 					},
 				}),
@@ -674,13 +677,16 @@ export class SessionPersistenceCoordinator {
 
 	private emitProjectRecord(
 		record: ProjectRecord,
-		options?: { takeOwnership?: true },
+		options?: { takeOwnership?: true; legacySave?: true },
 	): void {
 		// Owned records cannot be changed by an external source during delivery.
 		// Default callers still need a snapshot before invoking any observer.
 		const snapshot = options?.takeOwnership ? record : cloneOpaque(record);
 		this.projectRecordListeners.forEach((listener) =>
-			listener(cloneOpaque(snapshot)),
+			listener(
+				cloneOpaque(snapshot),
+				options?.legacySave ? { legacySave: true } : undefined,
+			),
 		);
 	}
 

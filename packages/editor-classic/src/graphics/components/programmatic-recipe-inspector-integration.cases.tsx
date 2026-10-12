@@ -171,7 +171,13 @@ function source() {
 	} as const;
 	return fixture satisfies ProgrammaticSource;
 }
-async function mount(durationFrames = 24) {
+export async function mount(
+	durationFrames = 24,
+	collections: {
+		postStages?: Record<string, unknown>;
+		sceneParameters?: Record<string, unknown>;
+	} = {},
+) {
 	const original = { ...source(), durationFrames },
 		draft = new ProgrammaticRecipeDraft(original),
 		container = document.createElement("div");
@@ -191,7 +197,8 @@ async function mount(durationFrames = 24) {
 				readOnly={readOnly}
 				conflict={conflict}
 				generators={{}}
-				sceneParameters={{}}
+				sceneParameters={collections.sceneParameters ?? {}}
+				postStages={collections.postStages ?? {}}
 				transitionParameters={transitionParameters}
 				finishing={finishing}
 				onEdit={(text) => draft.edit(text)}
@@ -240,14 +247,14 @@ async function mount(durationFrames = 24) {
 		},
 	};
 }
-function control(container: HTMLElement, id: string) {
+export function control(container: HTMLElement, id: string) {
 	const element = container.querySelector<HTMLInputElement | HTMLSelectElement>(
 		`#${id}`,
 	);
 	if (!element) throw Error(`Missing mounted control ${id}`);
 	return element;
 }
-async function change(
+export async function change(
 	element: HTMLInputElement | HTMLSelectElement,
 	value: string,
 ) {
@@ -267,7 +274,7 @@ async function change(
 		);
 	});
 }
-async function click(container: HTMLElement, label: string) {
+export async function click(container: HTMLElement, label: string) {
 	const button = container.querySelector<HTMLButtonElement>(
 		`button[aria-label="${label}"]`,
 	);
@@ -448,3 +455,7 @@ test("new keyframe visible entries survive an unrelated effect draft rerender", 
 		await h.close();
 	}
 });
+
+const { registerPostCollectionCases } =
+	await import("./programmatic-recipe-post-collection.cases");
+registerPostCollectionCases({ mount, control, change, click });

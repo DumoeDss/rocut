@@ -21,6 +21,20 @@ grade, palette, vignette, grain, line boil, glitch, chromatic aberration, zoom b
 bloom, light leak, invert, flash, fade, letterbox and quantization dither.
 Post stage, roles, effect order and audio bindings are preserved.
 
+**Post groups and effect order** can create a group, add effects, move groups or
+effects, and remove them. Choose the stage explicitly: a `role` group requires
+explicit role selections; a `composite` group has no role targets. A new group
+must start with a complete effect. Select an effect from the Rust catalog and
+fill its required parameters; optional parameters are not filled automatically.
+All collection operations change the retained draft, not the saved source.
+
+Moving an effect remaps existing amount curves and audio bindings to its new
+index. **Remove effect and bindings** removes that effect and its bindings;
+removing a group removes the whole group. The last effect cannot be removed
+individually: remove its group instead. Ambiguous, duplicate or invalid binding
+indices disable effect reordering and removal rather than silently repairing the
+recipe.
+
 For an amount-bearing effect, explicitly fill **Frame**, **Value** and **Easing**,
 then choose **Add amount curve**. Existing curves support adding/removing keys,
 editing each key and removing the curve. Grade and palette do not have an amount
@@ -33,7 +47,7 @@ strictly increasing order, and values must be within the effect's published
 amount bounds. Controls do not sort, clamp, infer beats or insert defaults.
 Curve amounts are evaluated before any existing reviewed audio response.
 
-Creating new scene nodes, post groups/effects, or audio bindings remains an
+Creating new scene nodes or audio bindings remains an
 advanced JSON/agent authoring operation. Invalid or unsupported fields are retained
 in JSON, not silently repaired. Rust performs final admission on Apply.
 

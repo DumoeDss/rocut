@@ -52,7 +52,8 @@ import {
 
 interface ActiveOpenCutRouter {
 	readonly projectId: PortProjectId;
-	readonly engine: TransactionEngine;
+	engine: TransactionEngine;
+	pendingLegacyRecord: ProjectRecord | null;
 	readonly adapter: ReturnType<typeof createOpenCutTransactionDocumentAdapter>;
 	engineUnsubscribe: (() => void) | null;
 	disposed: boolean;
@@ -92,11 +93,14 @@ export class SessionOpenCutTransactions {
 		},
 	) {
 		this.unsubscribeProjectRecords =
-			options.persistence.subscribeProjectRecords((record) => {
+			options.persistence.subscribeProjectRecords((record, publication) => {
 				const active = this.active;
 				if (active && !active.disposed && active.projectId === record.id) {
 					// The subscription gives this callback its own isolated record.
 					active.adapter.adoptCommittedRecord(record, { takeOwnership: true });
+					// Every publication invalidates the prior pending rebase. A later
+					// external load must never resurrect an older local saved record.
+					active.pendingLegacyRecord = publication?.legacySave ? record : null;
 				}
 			});
 	}
@@ -133,6 +137,7 @@ export class SessionOpenCutTransactions {
 				const active: ActiveOpenCutRouter = {
 					projectId: portProjectId,
 					engine,
+					pendingLegacyRecord: null,
 					adapter,
 					engineUnsubscribe: null,
 					disposed: false,
@@ -168,6 +173,7 @@ export class SessionOpenCutTransactions {
 			projectId: active.projectId,
 			operation: async () => {
 				this.assertCurrent(active);
+				await this.synchronizeLegacySave(active);
 				const revision = await active.engine.revision();
 				if (
 					options.expectedRevision !== undefined &&
@@ -244,6 +250,7 @@ export class SessionOpenCutTransactions {
 			projectId: active.projectId,
 			operation: async () => {
 				this.assertCurrent(active);
+				await this.synchronizeLegacySave(active);
 				try {
 					const result = await active.engine.apply(batch);
 					const receipt = active.adapter.consumeReceipt();
@@ -268,7 +275,10 @@ export class SessionOpenCutTransactions {
 		const active = this.requireActive();
 		return this.options.arbiter.run({
 			projectId: active.projectId,
-			operation: () => active.engine.validate(batch),
+			operation: async () => {
+				await this.synchronizeLegacySave(active);
+				return active.engine.validate(batch);
+			},
 		});
 	}
 
@@ -276,38 +286,41 @@ export class SessionOpenCutTransactions {
 		const active = this.requireActive();
 		return this.options.arbiter.run({
 			projectId: active.projectId,
-			operation: () => active.engine.dryRun(batch),
+			operation: async () => {
+				await this.synchronizeLegacySave(active);
+				return active.engine.dryRun(batch);
+			},
 		});
 	}
 
 	tracks(): Promise<readonly Track[]> {
-		return this.requireActive().engine.tracks();
+		return this.readSynchronized((engine) => engine.tracks());
 	}
 
 	clips(filter?: { trackId: TrackId }): Promise<readonly Clip[]> {
-		return this.requireActive().engine.clips(filter);
+		return this.readSynchronized((engine) => engine.clips(filter));
 	}
 
 	assets(): Promise<readonly Asset[]> {
-		return this.requireActive().engine.assets();
+		return this.readSynchronized((engine) => engine.assets());
 	}
 
 	markers(): Promise<readonly Marker[]> {
-		return this.requireActive().engine.markers();
+		return this.readSynchronized((engine) => engine.markers());
 	}
 
 	motionTextSequences() {
-		return (
-			this.requireActive().engine.motionTextSequences?.() ?? Promise.resolve([])
+		return this.readSynchronized(
+			(engine) => engine.motionTextSequences?.() ?? Promise.resolve([]),
 		);
 	}
 
 	project(): Promise<Project | null> {
-		return this.requireActive().engine.project();
+		return this.readSynchronized((engine) => engine.project());
 	}
 
 	revision(): Promise<Revision> {
-		return this.requireActive().engine.revision();
+		return this.readSynchronized((engine) => engine.revision());
 	}
 
 	capabilities(): Promise<TransactionEngineCapabilities> {
@@ -363,6 +376,58 @@ export class SessionOpenCutTransactions {
 		// A consumed receipt is private. Transfer it when the caller requests no
 		// result draft; the default API still isolates publication from its result.
 		this.options.publish(takeDraftOwnership ? draft : cloneOpenCutDraft(draft));
+	}
+
+	private readSynchronized<T>(
+		read: (engine: TransactionEngine) => Promise<T>,
+	): Promise<T> {
+		const active = this.requireActive();
+		return this.options.arbiter.run({
+			projectId: active.projectId,
+			operation: async () => {
+				await this.synchronizeLegacySave(active);
+				return read(active.engine);
+			},
+		});
+	}
+
+	private async synchronizeLegacySave(
+		active: ActiveOpenCutRouter,
+	): Promise<void> {
+		this.assertCurrent(active);
+		const record = active.pendingLegacyRecord;
+		if (!record) return;
+		// Only a successful session-local legacy save may rebase this owner.
+		// Decode that exact durable publication, never a fresh external store read.
+		// The envelope retains revision and idempotency; command undo/redo is owned
+		// by CommandManager, not this serialization engine.
+		const store = new Proxy(this.options.persistence.store, {
+			get(target, key) {
+				if (key === "load") return async () => record;
+				const value = Reflect.get(target, key, target);
+				return typeof value === "function" ? value.bind(target) : value;
+			},
+		});
+		const engine = await openTransactionEngine({
+			store,
+			projectId: active.projectId,
+			documentAdapter: active.adapter,
+			placementPolicies: [openCutMediaPolicy, openCutEditingPolicy],
+			normalizeOperationFingerprint,
+		});
+		this.assertCurrent(active);
+		active.engineUnsubscribe?.();
+		active.engine = engine;
+		active.pendingLegacyRecord = null;
+		active.engineUnsubscribe = engine.watch((revision) => {
+			for (const watcher of [...this.watchers]) {
+				try {
+					watcher(revision);
+				} catch {
+					/* Observers cannot poison a durable commit. */
+				}
+			}
+		});
 	}
 
 	private async readDocument(
