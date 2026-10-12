@@ -104,7 +104,8 @@ onmessage = async ({data}) => {
     }
     if (canvas.width !== source.width || canvas.height !== source.height) throw Error("Source resized its canvas");
     const bitmap = canvas.transferToImageBitmap();
-    send({bitmap}, [bitmap]);
+    try { send({bitmap}, [bitmap]); }
+    catch (error) { try { bitmap.close(); } catch {} throw error; }
   } catch (error) { send({error: String(error).slice(0, 2000)}); }
   finally { if (tunnelFonts) tunnelFonts.dispose(); if (imageAssets) imageAssets.close(); if (sequenceAssets) sequenceAssets.close(); }
 };`;

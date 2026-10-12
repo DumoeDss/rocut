@@ -14,6 +14,7 @@ export const FROST_STROKE_FIELDS = [
 	"Radius",
 	"Strength",
 ] as const;
+const slotPattern = /^stroke\d+/;
 
 export function frostStrokeState({
 	params,
@@ -38,25 +39,24 @@ export function frostStrokeState({
 			issue: "Invalid stroke count. The draft has not been changed.",
 		};
 	}
+	const active = new Set(
+		Array.from({ length: count }, (_, index) =>
+			FROST_STROKE_FIELDS.map((field) => `stroke${index}${field}`),
+		).flat(),
+	);
 	for (const key of Object.keys(params)) {
-		const match =
-			/^stroke(\d+)(?:TimeTicks|FromX|FromY|ToX|ToY|Radius|Strength)$/.exec(
-				key,
-			);
-		if (match && Number(match[1]) >= count)
+		if (slotPattern.test(key) && !active.has(key))
 			return {
 				count,
 				maximum: descriptor.max,
 				issue:
-					"Inactive stroke fields are present. The draft has not been changed.",
+					"Inactive or unknown stroke fields are present. Clear strokes explicitly to start a new schedule.",
 			};
 	}
 	for (let index = 0; index < count; index++) {
 		for (const field of FROST_STROKE_FIELDS) {
 			const key = `stroke${index}${field}`;
 			if (
-				!Object.hasOwn(params, key) ||
-				params[key] === undefined ||
 				!definitions.some(
 					(param) => param.key === key && param.type === "number",
 				)
@@ -64,11 +64,23 @@ export function frostStrokeState({
 				return {
 					count,
 					maximum: descriptor.max,
-					issue: `Stroke ${index + 1} is incomplete. The draft has not been changed.`,
+					issue: `The catalog for stroke ${index + 1} is incomplete. The draft has not been changed.`,
 				};
 		}
 	}
 	return { count, maximum: descriptor.max, issue: "" };
+}
+
+export function clearFrostStrokes({
+	params,
+}: {
+	params: ParamValues;
+}): ParamValues {
+	return Object.fromEntries(
+		Object.entries({ ...params, strokeCount: 0 }).filter(
+			([key]) => !slotPattern.test(key),
+		),
+	);
 }
 
 export function appendFrostStroke({
@@ -108,8 +120,12 @@ export function removeFrostStroke({
 		throw new Error("No melt stroke exists at that index.");
 	const next: ParamValues = { ...params, strokeCount: count - 1 };
 	for (let slot = index; slot < count - 1; slot++)
-		for (const field of FROST_STROKE_FIELDS)
-			next[`stroke${slot}${field}`] = params[`stroke${slot + 1}${field}`];
+		for (const field of FROST_STROKE_FIELDS) {
+			const key = `stroke${slot}${field}`;
+			const source = `stroke${slot + 1}${field}`;
+			if (Object.hasOwn(params, source)) next[key] = params[source];
+			else delete next[key];
+		}
 	for (const field of FROST_STROKE_FIELDS)
 		delete next[`stroke${count - 1}${field}`];
 	return next;

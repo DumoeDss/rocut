@@ -229,3 +229,214 @@ test("cleanup exceptions retain cancellation identity and a successful caller-ow
 	expect(success.transport.channels[0].port2.closed).toBe(true);
 	expect(success.transport.removeCalls).toBe(1);
 });
+
+for (const kind of ["font", "image"] as const) {
+	for (const late of ["resolve", "reject"] as const) {
+		test(`${kind} preparation aborts before digest settles and absorbs its late ${late}`, async () => {
+			harness = installSandboxHarness();
+			const originalCrypto = Object.getOwnPropertyDescriptor(
+				globalThis,
+				"crypto",
+			);
+			let resolveDigest!: (value: ArrayBuffer) => void;
+			let rejectDigest!: (reason: unknown) => void;
+			let digestCalls = 0;
+			const digest = new Promise<ArrayBuffer>((resolve, reject) => {
+				resolveDigest = resolve;
+				rejectDigest = reject;
+			});
+			Object.defineProperty(globalThis, "crypto", {
+				configurable: true,
+				value: {
+					subtle: {
+						digest: () => {
+							digestCalls++;
+							return digest;
+						},
+					},
+				},
+			});
+			const resource = {
+				id: "asset",
+				kind,
+				mimeType: kind === "font" ? "font/woff2" : "image/png",
+				byteLength: 1,
+				sha256: "0".repeat(64),
+				attachmentKey: "programmatic-sha256-" + "0".repeat(64),
+				...(kind === "font"
+					? { font: { family: "Test", style: "normal" as const, weight: 400 } }
+					: {}),
+			};
+			const controller = new AbortController(),
+				reason = Error("exact preparation cancellation");
+			let outcome: unknown;
+			const result = runProgrammaticSandbox({
+				source: { ...source, resources: [resource] },
+				frame,
+				resources: [{ resource, body: new ArrayBuffer(1) }],
+				operation: "render",
+				signal: controller.signal,
+			});
+			void result.then(
+				(value) => {
+					outcome = value;
+				},
+				(error) => {
+					outcome = error;
+				},
+			);
+			try {
+				for (let i = 0; i < 12; i++) await Promise.resolve();
+				expect(digestCalls).toBe(1);
+				controller.abort(reason);
+				for (let i = 0; i < 12; i++) await Promise.resolve();
+				expect(outcome).toBe(reason);
+				expect(harness.channels).toHaveLength(0);
+				expect(harness.deadlines).toHaveLength(0);
+				if (late === "resolve") resolveDigest(new ArrayBuffer(32));
+				else rejectDigest(Error("late digest rejection must be handled"));
+				for (let i = 0; i < 12; i++) await Promise.resolve();
+				expect(outcome).toBe(reason);
+				expect(harness.channels).toHaveLength(0);
+			} finally {
+				rejectDigest(Error("test teardown"));
+				await result.catch(() => {});
+				if (originalCrypto)
+					Object.defineProperty(globalThis, "crypto", originalCrypto);
+				else Reflect.deleteProperty(globalThis, "crypto");
+			}
+		});
+	}
+}
+
+test("an uncancelled preparation failure returns the original digest error without a realm", async () => {
+	harness = installSandboxHarness();
+	const originalCrypto = Object.getOwnPropertyDescriptor(globalThis, "crypto");
+	const reason = Error("real digest failure");
+	Object.defineProperty(globalThis, "crypto", {
+		configurable: true,
+		value: {
+			subtle: { digest: () => Promise.reject(reason) },
+		},
+	});
+	const resource = {
+		id: "font",
+		kind: "font" as const,
+		mimeType: "font/woff2",
+		byteLength: 1,
+		sha256: "0".repeat(64),
+		attachmentKey: "programmatic-sha256-" + "0".repeat(64),
+		font: { family: "Test", style: "normal" as const, weight: 400 },
+	};
+	try {
+		await expect(
+			runProgrammaticSandbox({
+				source: { ...source, resources: [resource] },
+				frame,
+				resources: [{ resource, body: new ArrayBuffer(1) }],
+				operation: "render",
+				signal: new AbortController().signal,
+			}),
+		).rejects.toBe(reason);
+		expect(harness.channels).toHaveLength(0);
+	} finally {
+		if (originalCrypto)
+			Object.defineProperty(globalThis, "crypto", originalCrypto);
+		else Reflect.deleteProperty(globalThis, "crypto");
+	}
+});
+
+test("a synchronous sandbox document assignment failure releases its timer and private ports", async () => {
+	harness = installSandboxHarness();
+	const reason = Error("host rejected sandbox srcdoc assignment");
+	Object.defineProperty(harness.iframe, "srcdoc", {
+		set() {
+			throw reason;
+		},
+	});
+	await expect(
+		runProgrammaticSandbox({
+			source,
+			frame,
+			resources: [],
+			operation: "render",
+		}),
+	).rejects.toBe(reason);
+	expect(harness.channels).toHaveLength(1);
+	expect(harness.disposed).toBe(true);
+});
+
+test("pre-aborted preparation handoff releases its listener before the digest settles", async () => {
+	harness = installSandboxHarness();
+	const originalCrypto = Object.getOwnPropertyDescriptor(globalThis, "crypto");
+	const controller = new AbortController(),
+		reason = Error("synchronous digest-start cancellation");
+	const listeners = new Set<EventListenerOrEventListenerObject>();
+	const add = controller.signal.addEventListener.bind(controller.signal);
+	const remove = controller.signal.removeEventListener.bind(controller.signal);
+	Object.defineProperties(controller.signal, {
+		addEventListener: {
+			value(
+				type: string,
+				listener: EventListenerOrEventListenerObject,
+				options?: AddEventListenerOptions,
+			) {
+				if (type === "abort") listeners.add(listener);
+				add(type, listener, options);
+			},
+		},
+		removeEventListener: {
+			value(
+				type: string,
+				listener: EventListenerOrEventListenerObject,
+				options?: EventListenerOptions,
+			) {
+				if (type === "abort") listeners.delete(listener);
+				remove(type, listener, options);
+			},
+		},
+	});
+	let rejectDigest!: (reason: unknown) => void;
+	const digest = new Promise<ArrayBuffer>((_, reject) => {
+		rejectDigest = reject;
+	});
+	Object.defineProperty(globalThis, "crypto", {
+		configurable: true,
+		value: {
+			subtle: {
+				digest: () => {
+					controller.abort(reason);
+					return digest;
+				},
+			},
+		},
+	});
+	const resource = {
+		id: "font",
+		kind: "font" as const,
+		mimeType: "font/woff2",
+		byteLength: 1,
+		sha256: "0".repeat(64),
+		attachmentKey: "programmatic-sha256-" + "0".repeat(64),
+		font: { family: "Test", style: "normal" as const, weight: 400 },
+	};
+	try {
+		await expect(
+			runProgrammaticSandbox({
+				source: { ...source, resources: [resource] },
+				frame,
+				resources: [{ resource, body: new ArrayBuffer(1) }],
+				operation: "render",
+				signal: controller.signal,
+			}),
+		).rejects.toBe(reason);
+		expect(listeners.size).toBe(0);
+		expect(harness.channels).toHaveLength(0);
+	} finally {
+		rejectDigest(Error("late digest rejection"));
+		for (let i = 0; i < 12; i++) await Promise.resolve();
+		if (originalCrypto)
+			Object.defineProperty(globalThis, "crypto", originalCrypto);
+		else Reflect.deleteProperty(globalThis, "crypto");
+	}
+});

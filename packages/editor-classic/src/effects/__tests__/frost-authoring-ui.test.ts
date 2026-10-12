@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 import type { ParamDefinition, ParamValues } from "../../params";
 import {
 	appendFrostStroke,
+	clearFrostStrokes,
 	removeFrostStroke,
 	frostStrokeState,
 	frostFieldGroups,
@@ -179,10 +180,16 @@ test("incomplete drafts, inactive slots and invalid counts are never normalized"
 			definitions,
 		});
 		delete params[`stroke0${field}`];
-		expect(() => appendFrostStroke({ params, definitions })).toThrow();
-		expect(() =>
-			removeFrostStroke({ params, definitions, index: 0 }),
-		).toThrow();
+		expect(frostStrokeState({ params, definitions }).issue).toBe("");
+		expect(
+			Object.hasOwn(
+				appendFrostStroke({ params, definitions }),
+				`stroke0${field}`,
+			),
+		).toBe(false);
+		expect(removeFrostStroke({ params, definitions, index: 0 })).toEqual({
+			strokeCount: 0,
+		});
 	}
 	expect(() =>
 		appendFrostStroke({
@@ -198,6 +205,47 @@ test("incomplete drafts, inactive slots and invalid counts are never normalized"
 				index,
 			}),
 		).toThrow();
+});
+
+test("explicit clear removes malformed slots but preserves recovery, optics and siblings", () => {
+	const params: ParamValues = {
+		strokeCount: "bad",
+		stroke0Unknown: 9,
+		stroke12Radius: 0.2,
+		seed: 17,
+		holdTicks: 3,
+		recoveryTicks: 123456,
+		amount: 0.125,
+		opaque: "keep",
+	};
+	const before = structuredClone(params);
+	expect(clearFrostStrokes({ params })).toEqual({
+		strokeCount: 0,
+		seed: 17,
+		holdTicks: 3,
+		recoveryTicks: 123456,
+		amount: 0.125,
+		opaque: "keep",
+	});
+	expect(params).toEqual(before);
+	expect(
+		frostStrokeState({
+			params: { strokeCount: 1, stroke0Unknown: 9 },
+			definitions,
+		}).issue,
+	).not.toBe("");
+	let incomplete = appendFrostStroke({
+		params: { strokeCount: 0 },
+		definitions,
+	});
+	incomplete = appendFrostStroke({ params: incomplete, definitions });
+	delete incomplete.stroke1Radius;
+	const survivor = removeFrostStroke({
+		params: incomplete,
+		definitions,
+		index: 0,
+	});
+	expect(Object.hasOwn(survivor, "stroke0Radius")).toBe(false);
 });
 
 test("typed finite values are exact and invalid text remains text, not zero/default/expression", () => {

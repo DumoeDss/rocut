@@ -32,6 +32,34 @@ interface SandboxRequest {
 	operation: ProgrammaticSandboxOperation;
 }
 
+/** Digests cannot be interrupted, but a cancelled preparation must not retain
+ * the caller or advance into a new realm when its late result arrives. */
+function awaitPreparation<T>(
+	pending: Promise<T>,
+	signal?: AbortSignal,
+): Promise<T> {
+	if (!signal) return pending;
+	return new Promise((resolve, reject) => {
+		const abort = () => {
+			signal.removeEventListener("abort", abort);
+			reject(signal.reason);
+		};
+		signal.addEventListener("abort", abort, { once: true });
+		void pending.then(
+			(value) => {
+				signal.removeEventListener("abort", abort);
+				if (signal.aborted) reject(signal.reason);
+				else resolve(value);
+			},
+			(error) => {
+				signal.removeEventListener("abort", abort);
+				reject(signal.aborted ? signal.reason : error);
+			},
+		);
+		if (signal.aborted) abort();
+	});
+}
+
 /** One private realm per operation, with the same cancellation and watchdog
  * rules for glyph measurement and rendering. The caller owns result bitmaps.
  */
@@ -64,22 +92,28 @@ export async function runProgrammaticSandbox({
 		resources: snapshotImageResources(request.resources),
 		sequenceImages: snapshotImageResources(request.sequenceImages ?? []),
 	};
-	const imageAdmissions = await prepareImageAdmissions({
-		...request,
-		operation:
-			request.operation === "measure-tunnel-fonts"
-				? "measure-fonts"
-				: request.operation,
-		sequenceImages: request.sequenceImages ?? [],
+	const imageAdmissions = await awaitPreparation(
+		prepareImageAdmissions({
+			...request,
+			operation:
+				request.operation === "measure-tunnel-fonts"
+					? "measure-fonts"
+					: request.operation,
+			sequenceImages: request.sequenceImages ?? [],
+			signal,
+		}),
 		signal,
-	});
+	);
 	request = {
 		...request,
 		imageAdmissions,
-		resources: await verifyProgrammaticFontResources({
-			resources: request.resources,
+		resources: await awaitPreparation(
+			verifyProgrammaticFontResources({
+				resources: request.resources,
+				signal,
+			}),
 			signal,
-		}),
+		),
 	};
 	return new Promise((resolve, reject) => {
 		if (request.source.runtime !== "canvas-worker") {
@@ -239,8 +273,8 @@ export async function runProgrammaticSandbox({
 				fail(failure("Programmatic sandbox connection failed"));
 			}
 		};
-		iframe.srcdoc = PROGRAMMATIC_SANDBOX_DOCUMENT;
 		try {
+			iframe.srcdoc = PROGRAMMATIC_SANDBOX_DOCUMENT;
 			document.body.appendChild(iframe);
 		} catch (error) {
 			fail(error);

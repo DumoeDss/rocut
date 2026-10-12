@@ -54,6 +54,10 @@ test("resource measurement releases all decoded images before publishing facts a
 		},
 		postMessage(message: unknown) {
 			expect(live).toBe(0);
+			if (message && typeof message === "object" && "sandboxStage" in message) {
+				expect(message).toEqual({ sandboxStage: "worker-started" });
+				return;
+			}
 			expect(message).toMatchObject({
 				fontMetrics: [],
 				imageDimensions: resources.map(({ resource }) => ({

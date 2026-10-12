@@ -139,7 +139,11 @@ export function EffectFields({
 							<FrostNumberField
 								key={param.key}
 								param={param}
-								value={displayed[param.key] ?? param.default}
+								value={
+									effect.type === "frost" && param.required !== false
+										? displayed[param.key]
+										: (displayed[param.key] ?? param.default)
+								}
 								onPreview={(value) =>
 									preview({ ...displayed, [param.key]: value })
 								}

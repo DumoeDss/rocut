@@ -15,13 +15,13 @@ export function FrostNumberField({
 	keyframe,
 }: {
 	param: ParamDefinition;
-	value: ParamValue;
+	value: ParamValue | undefined;
 	onPreview: (value: ParamValue) => void;
 	onCommit: () => void;
 	keyframe?: ComponentProps<typeof PropertyParamField>["keyframe"];
 }) {
 	const draft = usePropertyDraft<ParamValue>({
-		displayValue: String(value),
+		displayValue: value === undefined ? "" : String(value),
 		parse: (input) => frostTypedValue({ input }),
 		onPreview,
 		onCommit,
@@ -31,12 +31,17 @@ export function FrostNumberField({
 		return (
 			<PropertyParamField
 				param={param}
-				value={value}
+				value={value ?? param.default}
 				onPreview={onPreview}
 				onCommit={onCommit}
 				keyframe={keyframe}
 			/>
 		);
+	const invalid =
+		typeof value !== "number" ||
+		!Number.isFinite(value) ||
+		value < param.min ||
+		(param.max !== undefined && value > param.max);
 	return (
 		<SectionField
 			label={param.label}
@@ -53,6 +58,7 @@ export function FrostNumberField({
 		>
 			<NumberField
 				aria-label={param.label}
+				aria-invalid={invalid}
 				data-testid={`effect-frost-input-${param.key}`}
 				value={draft.displayValue}
 				isDefault={value === param.default}

@@ -191,6 +191,85 @@ mock.module("../components/canvas-number-field", () => ({
 	CanvasNumberField: () => null,
 }));
 const { EffectFields } = await import("../components/effect-fields");
+const { FrostStrokeFields } = await import("../components/frost-stroke-fields");
+
+test("real DOM incomplete strokes stay blank and structural clear requires an explicit click", async () => {
+	const container = document.createElement("div");
+	document.body.appendChild(container);
+	const root = createRoot(container);
+	let params: ParamValues = {
+		strokeCount: 1,
+		seed: 17,
+		holdTicks: 3,
+		recoveryTicks: 120000,
+		amount: 0.125,
+	};
+	const updates: ParamValues[] = [];
+	const render = () =>
+		root.render(
+			<FrostStrokeFields
+				definitions={definitions}
+				params={params}
+				preview={(next) => {
+					params = next;
+					updates.push(next);
+					render();
+				}}
+				commit={() => {}}
+			/>,
+		);
+	try {
+		await act(async () => {
+			render();
+		});
+		const node = container.querySelector<HTMLInputElement>(
+			'[data-testid="effect-frost-input-stroke0Radius"]',
+		);
+		expect(node?.value).toBe("");
+		expect(node?.getAttribute("aria-invalid")).toBe("true");
+		expect(updates).toHaveLength(0);
+		await act(async () => {
+			node!.focus();
+			Object.getOwnPropertyDescriptor(
+				dom.window.HTMLInputElement.prototype,
+				"value",
+			)!.set!.call(node, "0.0123456789012345");
+			node!.dispatchEvent(new dom.window.Event("input", { bubbles: true }));
+		});
+		await act(async () => {
+			node!.blur();
+		});
+		expect(updates.at(-1)?.stroke0Radius).toBe(0.0123456789012345);
+		expect(Object.hasOwn(params, "stroke0TimeTicks")).toBe(false);
+		params = { ...params, stroke0Unknown: 7 };
+		await act(async () => {
+			render();
+		});
+		const before = updates.length;
+		expect(container.querySelector('[role="alert"]')?.textContent).toContain(
+			"unknown",
+		);
+		expect(updates).toHaveLength(before);
+		await act(async () => {
+			container
+				.querySelector<HTMLButtonElement>('[data-testid="effect-frost-clear"]')!
+				.click();
+		});
+		expect(updates).toHaveLength(before + 1);
+		expect(params).toEqual({
+			strokeCount: 0,
+			seed: 17,
+			holdTicks: 3,
+			recoveryTicks: 120000,
+			amount: 0.125,
+		});
+	} finally {
+		await act(async () => {
+			root.unmount();
+		});
+		container.remove();
+	}
+});
 
 test("real DOM Frost preserves optics/stroke precision and failed drafts; toggle emits exact transport", async () => {
 	const initial: ParamValues = Object.fromEntries(
@@ -198,6 +277,7 @@ test("real DOM Frost preserves optics/stroke precision and failed drafts; toggle
 			.filter((param) => param.required !== false)
 			.map((param) => [param.key, param.default]),
 	);
+	for (const key of ["holdTicks", "recoveryTicks", "seed"]) delete initial[key];
 	let published = initial;
 	let draft = initial;
 	let succeeds = true;
@@ -280,6 +360,21 @@ test("real DOM Frost preserves optics/stroke precision and failed drafts; toggle
 			renderPanel();
 		});
 		expect(container.querySelectorAll("input")).toHaveLength(12);
+		for (const key of ["holdTicks", "recoveryTicks", "seed"]) {
+			expect(input(key).value).toBe("");
+			expect(input(key).getAttribute("aria-invalid")).toBe("true");
+		}
+		expect(attempts).toHaveLength(0);
+		await edit({ key: "holdTicks", text: "7" });
+		expect(Object.hasOwn(attempts.at(-1)!, "recoveryTicks")).toBe(false);
+		expect(Object.hasOwn(attempts.at(-1)!, "seed")).toBe(false);
+		await edit({ key: "recoveryTicks", text: "120000" });
+		await edit({ key: "seed", text: "17" });
+		expect(attempts.at(-1)).toMatchObject({
+			holdTicks: 7,
+			recoveryTicks: 120000,
+			seed: 17,
+		});
 		expect(container.querySelectorAll('button[title^="Toggle"]')).toHaveLength(
 			9,
 		);

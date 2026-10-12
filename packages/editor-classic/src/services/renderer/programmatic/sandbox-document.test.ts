@@ -219,3 +219,50 @@ test("generated Worker request messageerror publishes a failure without starting
 		{ error: "Programmatic Worker request deserialization failed" },
 	]);
 });
+
+for (const transferFails of [false, true])
+	test(`generated Worker bitmap transfer ${transferFails ? "failure closes ownership" : "success preserves caller ownership"}`, async () => {
+		const transport = broker();
+		const messages: unknown[] = [];
+		const bitmap = new SandboxBitmap();
+		const onmessage = runInNewContext(
+			(await transport.blobs[0].text()) + "\n;onmessage",
+			{
+				self: {},
+				OffscreenCanvas: class {
+					constructor(
+						public width: number,
+						public height: number,
+					) {}
+					transferToImageBitmap() {
+						return bitmap;
+					}
+				},
+				postMessage(data: { bitmap?: unknown }) {
+					if (transferFails && data.bitmap)
+						throw Error("Worker bitmap transfer failed");
+					messages.push(data);
+				},
+			},
+		);
+		await onmessage({
+			data: {
+				source: { width: 64, height: 48, resources: [], code: "" },
+				frame: {
+					seed: 1,
+					imageDecodeLimits: {
+						maxDimension: 8192,
+						maxDecodedBytes: 128 * 1024 * 1024,
+					},
+				},
+				resources: [],
+			},
+		});
+		expect(messages).toEqual([
+			{ sandboxStage: "worker-started" },
+			transferFails
+				? { error: "Error: Worker bitmap transfer failed" }
+				: { bitmap },
+		]);
+		expect(bitmap.closed).toBe(transferFails);
+	});
