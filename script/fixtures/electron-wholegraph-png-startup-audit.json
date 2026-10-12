@@ -1,0 +1,36 @@
+{
+  "scope": "Final bounded read-only startup audit; no additional launch or mutation of binary/dependencies",
+  "status": "startup-unverified",
+  "eventWindowUtc": ["2026-10-12T09:11:12.3620486Z", "2026-10-12T09:21:12.3620486Z"],
+  "windowsEvents": { "log": "Application", "ids": [1000, 1001], "boundedTotalEvents": 0, "matchingElectronEvents": 0 },
+  "binary": {
+    "path": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/elftia/elftia/node_modules/electron/dist/electron.exe",
+    "bytes": 213362176,
+    "sha256": "0ace564d2033e3576aee5933c3bc3d927dc443fa7c43e58c36931ba8146ce1bc",
+    "authenticodeStatus": "NotSigned",
+    "signer": null
+  },
+  "existingCompanionFiles": {
+    "ffmpeg.dll": 3090432,
+    "libEGL.dll": 515072,
+    "libGLESv2.dll": 8012288,
+    "d3dcompiler_47.dll": 4741480,
+    "vk_swiftshader.dll": 5630976,
+    "vk_swiftshader_icd.json": 106,
+    "vulkan-1.dll": 959488,
+    "icudtl.dat": 10822192,
+    "resources.pak": 6377355,
+    "snapshot_blob.bin": 339863,
+    "v8_context_snapshot.bin": 713034,
+    "chrome_100_percent.pak": 114781,
+    "chrome_200_percent.pak": 186658,
+    "resources/default_app.asar": 109371,
+    "locales/en-US.pak": 550193
+  },
+  "preservedAttempts": [
+    { "receipt": "C:/tmps/electron-wholegraph-png-typed-selected-20261012/receipt-launch-failure.json", "sha256": "ba883f099b325e9c8dc636aa6dda8a01074f9b02086ccbb7941bbd07728ad83e" },
+    { "receipt": "C:/tmps/electron-wholegraph-png-typed-diagnostic-20261012/receipt.json", "sha256": "35201c9444367b9cbe7a7d7855bef716aa94c06a5f01402b2402178ae4b6539b" },
+    { "receipt": "C:/tmps/electron-wholegraph-png-typed-direct-20261012/receipt.json", "sha256": "833e47e1af1b8d8a888295654706a87ec5a7fca847733d4b383b6c52a8ded810" }
+  ],
+  "conclusion": "No fault-module/status event or missing selected companion file established the startup cause. NotSigned does not establish a failure cause. No evidence attributes the failure to Windows security software. Selected Electron wholegraph PNG compatibility remains unverified before page/render, not a PNG mismatch or platform-unavailable result. No further startup attempts."
+}
