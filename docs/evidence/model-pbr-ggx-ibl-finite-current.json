@@ -1,0 +1,120 @@
+{
+  "effect": "modelThree PBR/GGX/IBL",
+  "date": "2026-10-12",
+  "status": "passed-finite-independent-numerical-subset-and-precompiled-lifecycle-control",
+  "scope": "Private finite 257x257 center-pixel numerical probe consuming production modelThree/createScene, fixed Three 0.185.1 physical shaders, real GLB texture bindings and constant HDR loaded through the fixed @elftia/three-assets loadEnvironment/readVerified resolver. This is not a full Rocut Host/export/UI or Director transport acceptance.",
+  "receipts": {
+    "aggregate": {"path": "C:/tmps/model-pbr-ggx-ibl-20261012/acceptance-receipt.json", "sha256": "78e1fb4de5868d2380e11d645e22f79b9fa453fcad298a8a1fb308148ebce2b5"},
+    "preGpuCpuContract": {"path": "C:/tmps/model-pbr-ggx-ibl-20261012/cpu-preparation-receipt.json", "sha256": "eea4225560d5c3e8f74996824664dfd55f20e37f0b100b9da1e941fd87013174"},
+    "directAndZeroSpecularRows": {"path": "C:/tmps/model-pbr-ggx-ibl-20261012/attempt-01-invalid-pmrem-size.json", "sha256": "12343a63510e88c7ba0cb53ba3d1416faf8e8e5b279d848163307df5db96b10a", "selection": "Only three non-environment direct positives and zero-specular negative control. This attempt remains failed overall because its private HDR fixture bypassed package normalization and was too small for PMREM."},
+    "sharedLoaderIblAndFirstFiveNegativeRows": {"path": "C:/tmps/model-pbr-ggx-ibl-20261012/attempt-03-shared-loader-reuse.json", "sha256": "d3a1909a657075bfe882590fde56883e94fde5360ba38277ec2d8d6ab8bcfcd8", "selection": "Three IBL positives and roughness-red, metalness-green, data-srgb, lost-authored-uv, wrong-normal-forward-transform. Later unprecompiled renderer-reuse rows remain failed."},
+    "isolatedLastThreeNegativeRowsAndRepeat": {"path": "C:/tmps/model-pbr-ggx-ibl-20261012/gpu-receipt.json", "sha256": "3e1fe6511dd3a942a5f7a6e0d1b6ac1cc3bf679b936f9185143d3c8e6940e447", "selection": "Fresh renderer/context per remaining negative control and repeat; not proof that the unprecompiled reuse path is stable."},
+    "unprecompiledNineFrameRed": {"path": "C:/tmps/model-pbr-ggx-ibl-20261012/threshold-reuse-receipt.json", "sha256": "6d2e1334f27594fc5d77e48aa27f3f546fb34193c0bdf5d368ede0aeb9aa02d6"},
+    "compileAsyncNineFrameGreen": {"path": "C:/tmps/model-pbr-ggx-ibl-20261012/threshold-precompiled-reuse-receipt.json", "sha256": "5f9a06a98da23635e88b73d6e1a884febbd540e6ebd262d6255544ed9eafb14b"}
+  },
+  "productionPins": {
+    "creatorSourceDirectory": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/elftia/elftia-plugin-creator-studio/resources/agent/skills/html-video/assets/rocut-stylized",
+    "model-feature-scene.ts": "885839a75a040f302ae03162a4bbc96e4e81e81066e64e3dd54e8fa105b8b809",
+    "model-features.mjs": "2002590d3ec7b8416ca3863a9e1c2ffd2ea0bdefc30aeb328c9d5f6e18b5e85a",
+    "fixedNodeModules": "C:/tmps/three-assets-shared-delivery-20261012/attempt-02/toolchain/node_modules",
+    "threeVersion": "0.185.1",
+    "three/build/three.module.js": "bbf5ed13fe4373f5bd38b14ea8e62e9f157327da5638edc6d3863e08b167c9c7",
+    "three/src/renderers/WebGLRenderer.js": "867948b57a6abb84d4cfd7619b38ea14fbb2c100c1b6f78d59de2383662ab7a0",
+    "environmentLoaderPins": {
+      "@elftia/three-assets/dist/environment.js": "28f67156388fa6a1de1498c5a2882a97f5ad13a568eb32ae232e348828bf4be1",
+      "@elftia/three-assets/dist/environment-pmrem.js": "4d4322838cde87dbbe75ce6255c92497e5c8a29545717431303ff9b8f9c25cec",
+      "@elftia/three-assets/dist/environment-header.js": "28b2af9a42156737b2f8091ae1353d5854c54022b731532795ec04bdbb632e9a",
+      "@elftia/three-assets/dist/ownership.js": "ea09bfe7194ce298b40cfed4296b51ee89331e7d3959b37037f9fdf16f582bf9"
+    },
+    "existingRocutDriverCompileAsyncPins": {
+      "apps/cli/src/programmatic/engines/three-driver.ts": {"sha256": "8785ea25026813927bbe6bed7a700ab63a0d3c30c32f9c3183f4e1df1befc026", "line": 39},
+      "apps/cli/src/programmatic/engines/three-particle-driver.ts": {"sha256": "0347cc14cbe24fc9634f248c4939050a6ff56853202e72f253bfdb19b5535152", "line": 66},
+      "apps/cli/src/programmatic/engines/three-liquid-object-driver.ts": {"sha256": "0a12b75f2a6a1697f8065599b96388ed8cd9f7590ccaff6cef7549baedfd7797", "line": 127}
+    }
+  },
+  "independentOracle": {
+    "frozenBeforeFirstGpuRender": true,
+    "expectedValuesDerivedFromGpuOutput": false,
+    "method": "Independent scalar GGX distribution, correlated Smith visibility, Fresnel, direct and hemisphere lighting, and multiple-scattering energy terms. DFG coefficients independently Hammersley-integrated with 65536 samples at fixed 16x16 support locations and bilinearly interpolated; renderer LUT numerical entries are excluded from expected values and used only for a separate CPU diagnostic.",
+    "cpuDiagnosticMaxIndependentVsFixedTableByteError": 1,
+    "integration65536To131072MaxCoefficientDelta": 0.000004877778009615419,
+    "lighting": "Unmodified production white directional intensity3 at [3,5,4] and white/#303040 hemisphere intensity2; no shader or light substitutions.",
+    "output": "Three NoToneMapping, SRGB output; readPixels center [128,128] in 257x257 drawing buffer."
+  },
+  "gates": {
+    "positiveMaxRgbaByteError": 2,
+    "negativeMaxRgbSeparationMustBeGreaterThan": 5,
+    "negativePredictionMaxRgbaByteError": 2,
+    "alphaExact255": true,
+    "repeatExact": true
+  },
+  "numericalResults": {
+    "positiveMaxByteError": 1,
+    "negativeMinSeparation": 7,
+    "allAlphaExact255": true,
+    "sixPositiveCases": [
+      {"name": "dielectric-medium", "expectedRgba": [130,148,163,255], "actualRgba": [130,148,163,255]},
+      {"name": "mixed-nonuniform", "expectedRgba": [72,87,100,255], "actualRgba": [72,87,100,255]},
+      {"name": "metal-negative-scale", "expectedRgba": [54,67,77,255], "actualRgba": [54,67,77,255]},
+      {"name": "ibl-mixed-low", "expectedRgba": [75,95,115,255], "actualRgba": [75,95,115,255]},
+      {"name": "ibl-mixed-high", "expectedRgba": [82,108,141,255], "actualRgba": [82,108,141,255]},
+      {"name": "ibl-metal-rough", "expectedRgba": [60,80,105,255], "actualRgba": [60,80,106,255]}
+    ],
+    "nineNegativeControls": [
+      {"name": "roughness-red", "separation": 7, "predictionError": 0},
+      {"name": "metalness-green", "separation": 17, "predictionError": 0},
+      {"name": "data-srgb", "separation": 7, "predictionError": 0},
+      {"name": "lost-authored-uv", "separation": 39, "predictionError": 0},
+      {"name": "wrong-normal-forward-transform", "separation": 10, "predictionError": 0},
+      {"name": "metalness-factor-omitted", "separation": 12, "predictionError": 0},
+      {"name": "environment-disabled", "separation": 41, "predictionError": 0},
+      {"name": "environment-default-intensity", "separation": 11, "predictionError": 0},
+      {"name": "zero-specular", "separation": 25, "predictionError": 0}
+    ],
+    "isolatedRepeat": {"name": "ibl-mixed-high-repeat", "actualAndExpectedRgba": [82,108,141,255], "exact": true}
+  },
+  "hdrPrecisionBoundary": {
+    "analyticConstantLinearRgb": [0.125,0.25,0.5],
+    "fixedHdrLoaderDecodedLinearRgb": [0.125490203499794,0.250980406999588,0.501960813999176],
+    "relativeScaleDifference": 0.0039215686274509665,
+    "fixtureDimensions": [64,32],
+    "environmentSha256": "682257f82c26587c24e70703b27ebe307a94164ec5ab424a0596fbaa10fbccac",
+    "note": "HDR Float input is not exactly equal to the theoretical power-of-two RGB. Expectations stayed frozen; the decoding difference fits the predeclared 2byte numerical gate."
+  },
+  "rendererLifecycleControl": {
+    "sameRendererIdenticalInputMetadataAndResourceHashes": true,
+    "unprecompiled": {
+      "status": "failed-low-level-path-bypassing-formal-driver-precompile",
+      "activeTextureUnitIndicesFirstEight": [3,7,11,15,19,23,27,31],
+      "firstEightRgba": [82,108,141,255],
+      "ninthRgba": [231,181,117,255],
+      "ninthMaxByteError": 149,
+      "ninthGlError": 1280,
+      "maxFragmentTextureUnits": 16,
+      "maxCombinedTextureUnits": 32,
+      "warnings": "Texture-unit allocation warnings from index16; ninth frame activeTexture/sampler out-of-range.",
+      "sourceCause": "Fixed r185 nested PMREM rendering restores the outer render-entry texture counter after setProgram resets it, accumulating four sampler allocations per fresh environment."
+    },
+    "precompiled": {
+      "onlyAddedCall": "await renderer.compileAsync(scene,camera) before renderer.render",
+      "frames": 9,
+      "allRgba": [82,108,141,255],
+      "maxByteError": 0,
+      "allActiveTextureUnitIndices": 3,
+      "allGlErrors": 0,
+      "textureUnitWarnings": 0,
+      "remainingWarning": "Original shader precision warning retained."
+    },
+    "productAttribution": "Existing Rocut ordinary/particle/liquid drivers already await compileAsync before render. The bypassed-precompile red is not a demonstrated defect in those current formal drivers. Director consumer applicability is separate and is not established by this index.",
+    "dependencyPatchOrResetStateUsed": false
+  },
+  "limits": [
+    "Finite nonzero-specular dielectric/mixed/metallic cases only; no claim of all physical models or arbitrary glTF materials.",
+    "Constant environment validates energy/color/intensity, not directional lookup or nonconstant PMREM convolution.",
+    "Texture channel, linear data handling, authored UV transform and inverse-transpose normals are covered only by the listed finite combinations.",
+    "Selected green rows from failed batches are explicitly indexed; original failed receipts remain preserved and are not relabeled as globally passed.",
+    "No Host archive/export/UI/history acceptance, Director render-loop acceptance, or broad matrix rerun is claimed."
+  ],
+  "cleanup": {"ownedBrowserAndServerClosed": true, "rendererDisposedAndContextLost": true, "exactScopeChromeProcessesAfterFinalCapture": 0},
+  "productionCodeEdits": 0
+}

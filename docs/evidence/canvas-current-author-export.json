@@ -1,0 +1,112 @@
+{
+  "effect": "canvas",
+  "date": "2026-10-12",
+  "status": "passed-current-packaged-author-same-project-export-six-frame-preview-parity",
+  "scope": "Private current default packaged Surface/runtime: mounted author UI, unchanged same saved project formal Host reopen, attached export session and actual bundled SceneExporter through normal Host export protocol, independent default420 decode, and same project actual preview publication parity at the original six ticks.",
+  "receipts": {
+    "layeredPixel": {
+      "path": "C:/tmps/canvas-current-chain-20261012/layered-pixel-receipt.json",
+      "sha256": "e7a87e1da3edcc4b8b4021f77f748d545296c9392a1b7323ec62aecf0e653d0c"
+    },
+    "baseChain": {
+      "path": "C:/tmps/canvas-current-chain-20261012/receipt-final.json",
+      "sha256": "79c1c0b75e1d5262c423772f83dda4aa7832f41f81e3a50110a43017008afcc6"
+    },
+    "author": {
+      "path": "C:/tmps/rocut-canvas-authoring-7qKdz3/ui-receipt-1791775356338.json",
+      "sha256": "c17ecbe7ed511634901475fe91afad141b27d97011a5d33db4d7ea7da726b13e"
+    },
+    "packagedExport": {
+      "path": "C:/tmps/canvas-current-chain-20261012/export-iuiY1T/receipt-final.json",
+      "sha256": "e9d34d0363e0fc2aaad29d67ab28c1cfb3d2672de410d8bebe499ee00d2c70df"
+    },
+    "previewParity": {
+      "path": "C:/tmps/canvas-current-chain-20261012/preview-parity-SmJGJo/receipt-final.json",
+      "sha256": "7189489c452181265f08244068f6a1eb63b0bd91a214cf19a92f0180ac57b4ef"
+    }
+  },
+  "productionPins": {
+    "deliveryRoot": "C:/tmps/rocut-integration-delivery-20261012-worker-diagnostics-03",
+    "runtime": "C:/tmps/rocut-integration-delivery-20261012-worker-diagnostics-03/runtime",
+    "surface": "C:/tmps/rocut-integration-delivery-20261012-worker-diagnostics-03/runtime/surface",
+    "deliveryReceiptSha256": "ce51e4f5500b1940eda6500f2eea31a9bb1f16e4bcd2da79d3cb53ec5bd2d130",
+    "runtimeEntrySha256": "8a4986e760a19c6309b49c5c7de05a1aae3628f94938e9eeed7b6ca50db73f2d",
+    "indexSha256": "a747e3445eb2fac0d42e63660deeb9698ae18fa259786fa88006f2c34f06f8d4",
+    "actualServedExecutionChunk": "assets/surface-react-identity-probe-CFF13CXv.js",
+    "actualServedExecutionChunkSha256": "c98cdfdf1f805d9ee147616150d31272cf49a2354dfdac4ad78e98fb4a9a0a29"
+  },
+  "sameProject": {
+    "path": "C:/tmps/rocut-canvas-authoring-7qKdz3/project/project.json",
+    "sha256": "508bf45349da2731fc2d169bf2f6a478a3633156a563c37c3682b9fac3271e64",
+    "authorSavedExportBeforeAfterAndParityAfterBytesIdentical": true
+  },
+  "authorLayer": {
+    "mechanism": "Actual mounted Canvas author controls and production ProjectStore PUT record",
+    "recordWrites": 11,
+    "completeClipUndoRedo": ["add complete trajectory", "scalar relief edit", "trajectory field edit"],
+    "reloadAndHostReopen": {"completeClipRetained": true, "savedBytesIdentical": true},
+    "errors": []
+  },
+  "packagedExportLayer": {
+    "mechanism": "Same saved project formally reopened with default packaged Surface; actual served execution chunk verified; attached session executes normal Host api/export job",
+    "singleJob": "e96ab260b6786e4e",
+    "status": "completed",
+    "options": {"format": "webm", "quality": "very_high", "includeAudio": false, "range": {"startTime": 36000, "endTime": 60000}},
+    "actualWasmPolicy": {"default": true, "quantizer": 8},
+    "actualEncoderQ8Frames": 6,
+    "recordWrites": 0,
+    "compileRequests": 0,
+    "pageErrors": 0,
+    "externalRequests": 0,
+    "webm": {"path": "C:/tmps/canvas-current-chain-20261012/export-iuiY1T/production.webm", "bytes": 1572, "sha256": "4214996e73a62b228be086d1e2e55a159f7b72a80e48c2e1d468e17aa00b7c12"},
+    "independentDecode": {"tools": ["FFprobe", "FFmpeg"], "codec": "vp9", "pixelFormat": "yuv420p", "width": 192, "height": 128, "frameRate": "30/1", "frames": 6, "timestampsPassed": true, "rgbBytes": 442368, "rgbSha256": "74f86b37dd8cfce299d5aea4fa5b5fc85b6e02781ea71f2575aec555a1ee72ae"}
+  },
+  "previewParityLayer": {
+    "mechanism": "Read-only continuation against the existing independent decoded RGB; actual packaged production-presentation-boundary-copy references, not source-bundle or screenshot replacement",
+    "ticks": [36000, 40000, 44000, 48000, 52000, 56000],
+    "fixedGates": {"meanRgbMaximum": 4, "activeRgbMaximum": 6, "activePixelsMinimum": 48, "activeDeltaStrictlyGreaterThan": 16, "previewMotionMeanStrictlyGreaterThan": 0.1},
+    "negativeControl": "Browser GETrecord response disables only the enabled Canvas flag in memory; saved Host graph and project bytes remain unchanged",
+    "negativeControlResponses": 3,
+    "referenceFrames": 6,
+    "negativeControlFrames": 6,
+    "activePixels": [174, 195, 199, 207, 209, 207],
+    "maxMeanRgb": 0.10587565104166667,
+    "maxActiveRgb": 0.35384615384615387,
+    "allSixIdentifiableAndAccepted": true,
+    "maxAdjacentPreviewMeanMotion": 0.1064453125,
+    "allPublicationSerialsFresh": true,
+    "allObserverErrorsZero": true,
+    "minimumReferenceStableSamples": 8,
+    "minimumNegativeControlStableSamples": 10,
+    "originalExportRepeated": false,
+    "recordWrites": 0,
+    "compileRequests": 0,
+    "pageErrors": 0,
+    "externalRequests": 0
+  },
+  "cleanup": {
+    "authorBrowserAndHostClosed": true,
+    "exportBrowserAndHostClosed": true,
+    "exportHostPid": 40844,
+    "exportHostPidAbsentPostCleanup": true,
+    "parityBrowserAndHostClosed": true,
+    "parityHostPid": 20856,
+    "parityHostPidAbsentPostCleanup": true,
+    "gpuReleased": true
+  },
+  "preservation": {
+    "historicalEvidenceUnchanged": true,
+    "originalExportReceiptWebmAndDecodedRgbUnchanged": true,
+    "sourceBundleAuxiliaryExecuted": false,
+    "sourceBundleFallbackUsed": false,
+    "productionSourceChangedForThisClosure": false,
+    "rebuildCommitPushOrInstallPerformedForThisClosure": false
+  },
+  "notProven": [
+    "Export button click: acceptance exercised actual packaged attached export protocol, not an unperformed button interaction",
+    "Independent Canvas material optical oracle: parity compares production preview with independently decoded output",
+    "Persisted disabled-project negative control: the negative control was an in-memory browser record response variant",
+    "Full-duration, all-device/backend, installed Electron or broad GPU matrix acceptance",
+    "Every Canvas trajectory or parameter boundary beyond this authored project and six original ticks"
+  ]
+}

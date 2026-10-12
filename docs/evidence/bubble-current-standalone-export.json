@@ -1,0 +1,638 @@
+{
+  "recordedAt": "2026-10-12",
+  "status": "bounded-current-standalone-export-accepted-original-failure-preserved",
+  "scope": "Frozen delivered packaged runtime, mounted authoring and six correctly stacked standalone exports; not an installed-state or arbitrary-range claim",
+  "authoring": {
+    "accepted": true,
+    "transactions": 12,
+    "freshDuplicateTimeRejections": 5,
+    "revision": 37,
+    "fullDTOKeyboardUndoRedo": true,
+    "singleApplyRecordPUT": true,
+    "rejectionZeroRecordPUT": true,
+    "rejectionFullGraphAndDiskUnchanged": true,
+    "rejectedDraftRetained": true,
+    "wireNames": {
+      "named": "Named standalone Bubble",
+      "omitted": [
+        "bubble-independent-unnamed",
+        "bubble-independent-disabled"
+      ]
+    },
+    "saveReloadHostReopen": {
+      "completeDTOgraphRevisionBytesIdentical": true,
+      "revision": 37,
+      "projectSha256": "fe64c81480d65b2d304260a9c644bde1ede8cd82248a8dce1d884c7e3e9a734f",
+      "omittedNameRetained": true
+    },
+    "evidence": {
+      "path": "C:/tmps/bubble-author-closure-20261012/attempt-02/layered-receipt.json",
+      "sha256": "7bff41dce3c7c1d65a18bf111f7f5fe57247766bb9a1aa32e511c3a914579e11"
+    },
+    "receipts": [
+      {
+        "path": "C:/tmps/bubble-author-closure-20261012/attempt-02/live-01/receipt-final.json",
+        "sha256": "0b1c1f911ba861c34a01ab3496d04af0461f21f9edd3012d4025977db54d3601"
+      },
+      {
+        "path": "C:/tmps/bubble-author-closure-20261012/attempt-02/live-02/receipt-final.json",
+        "sha256": "017ce7c28e62d0e4e42f88a66a2429c312ff6f1eec598bd4d604d9719797f184"
+      }
+    ]
+  },
+  "originalFailure": {
+    "accepted": false,
+    "overallFalse": true,
+    "evidence": {
+      "path": "C:/tmps/bubble-author-closure-20261012/attempt-02/layered-receipt.json",
+      "sha256": "7bff41dce3c7c1d65a18bf111f7f5fe57247766bb9a1aa32e511c3a914579e11"
+    },
+    "sixTerminalJobs": [
+      {
+        "key": "default-moving",
+        "accepted": false,
+        "video": {
+          "path": "C:/tmps/bubble-author-closure-20261012/attempt-02/live-02/default-moving.webm",
+          "sha256": "b1f5c84f6387116eff06c08cc08455a68f19f8f41921e9a1fa35d1433614aea3"
+        },
+        "metrics": {
+          "path": "C:/tmps/bubble-author-closure-20261012/attempt-02/live-02/default-moving-metrics.json",
+          "sha256": "59ba32592323ed82bc2071c3e3c4ffb14ad82a86cb47789e2edae8b66a73f241"
+        }
+      },
+      {
+        "key": "default-animated",
+        "accepted": false,
+        "video": {
+          "path": "C:/tmps/bubble-author-closure-20261012/attempt-02/live-03/default-animated.webm",
+          "sha256": "9feb07252af640374d7200ca15efe05b3a0826ba26340a7281128a956cfe1c14"
+        },
+        "metrics": {
+          "path": "C:/tmps/bubble-author-closure-20261012/attempt-02/live-03/default-animated-metrics.json",
+          "sha256": "494dbaa730aad35e324f57d5d3f3ddbe1b384fb41c543139b41502e45fa7f9ee"
+        }
+      },
+      {
+        "key": "default-disabled",
+        "accepted": true,
+        "video": {
+          "path": "C:/tmps/bubble-author-closure-20261012/attempt-02/live-03/default-disabled.webm",
+          "sha256": "e8eef92d7164c1e1c5a774f13c75a8cc09a79170105e6b8acd57eeb6d7afa382"
+        },
+        "metrics": {
+          "path": "C:/tmps/bubble-author-closure-20261012/attempt-02/live-03/default-disabled-metrics.json",
+          "sha256": "3045a9250065dbe3273fa3d4b04670b5e7bd4f330359e4d8e5f07622ff56f15a"
+        }
+      },
+      {
+        "key": "444-moving",
+        "accepted": false,
+        "video": {
+          "path": "C:/tmps/bubble-author-closure-20261012/attempt-02/live-03/444-moving.webm",
+          "sha256": "c39a4fb9b1a559003a5bcaa8516f242ba41e765d37a31e0639852f2823c28b83"
+        },
+        "metrics": {
+          "path": "C:/tmps/bubble-author-closure-20261012/attempt-02/live-03/444-moving-metrics.json",
+          "sha256": "25796e0d2d1cb61cf246bcb984c95b1f5c5642ceb97852c7b4ad48cc5113578e"
+        }
+      },
+      {
+        "key": "444-animated",
+        "accepted": false,
+        "video": {
+          "path": "C:/tmps/bubble-author-closure-20261012/attempt-02/live-03/444-animated.webm",
+          "sha256": "d409d35933cd86b5451e5d43d8fdd7e5524383bfa25c96b9c70b0401ef57cc41"
+        },
+        "metrics": {
+          "path": "C:/tmps/bubble-author-closure-20261012/attempt-02/live-03/444-animated-metrics.json",
+          "sha256": "38669bedef02c7efa9b93fda08a2e0d04d21aadcff542904a0803a082ad14029"
+        }
+      },
+      {
+        "key": "444-disabled",
+        "accepted": true,
+        "video": {
+          "path": "C:/tmps/bubble-author-closure-20261012/attempt-02/live-03/444-disabled.webm",
+          "sha256": "a9a588ef74a8bf30cdd31b97f40800efebf68477c3114f7addff3e12333921be"
+        },
+        "metrics": {
+          "path": "C:/tmps/bubble-author-closure-20261012/attempt-02/live-03/444-disabled-metrics.json",
+          "sha256": "6ef689887d7a5be33a014dcd41eeac449f48aaff4b816672136df4e360fcfa22"
+        }
+      }
+    ],
+    "cause": "Private fixture listed Underlay before effect tracks in top-to-bottom overlay order; scene-builder reverses visible tracks for bottom-to-top rendering. Actual descriptor drew Bubble on opaque black before source image normal-over.",
+    "notProductionBugClaim": true,
+    "notOpticalRefractionProof": "Old black-background effect covered by source cannot establish source-image refraction; neutral refraction is byte-identical at local tick 24000.",
+    "originalProject": {
+      "path": "C:/tmps/bubble-author-closure-20261012/attempt-02/project/project.json",
+      "sha256": "fe64c81480d65b2d304260a9c644bde1ede8cd82248a8dce1d884c7e3e9a734f"
+    },
+    "authoredSnapshot": {
+      "path": "C:/tmps/bubble-author-closure-20261012/attempt-02/live-02/authored-snapshot.json",
+      "sha256": "ebcfa57effc73374b181a966049a5480252fd283bb9d4c0480b550d2cfbb14ac"
+    },
+    "artifactsRetainedReadOnly": true
+  },
+  "causalDiagnosis": {
+    "actualDescriptor": {
+      "path": "C:/tmps/bubble-author-closure-20261012/attempt-02/pass-live-01/pass-audit.json",
+      "sha256": "9f204d2967fd806c6f4de7b3b9dbd896b68a6b51a5bb1ebe9bd81dc6e0950463"
+    },
+    "descriptorOrder": [
+      "opaque black clear/color",
+      "standalone Bubble",
+      "transparent source normal-over"
+    ],
+    "width": 192,
+    "height": 128,
+    "clear": [
+      0,
+      0,
+      0,
+      1
+    ],
+    "formalNativeResolvedParams": {
+      "path": "C:/tmps/bubble-author-closure-20261012/attempt-02/resolved-cpu-receipt.json",
+      "sha256": "a22f8bd8335e393c5917a4cdd66d0a392e48e4f06c1d63cca80f7a7eb0a88b14"
+    },
+    "independentActualOrderCPU": {
+      "path": "C:/tmps/bubble-author-closure-20261012/attempt-02/order-cpu-receipt.json",
+      "sha256": "17fc7ac2202532c73d5eeaa557c816b3a7aac3f9c1f264c138de18cf0e4237bc"
+    },
+    "all12PreviewAnd24ExistingDecodeComparisonsPassOriginalGates": true,
+    "negativeControls": {
+      "path": "C:/tmps/bubble-author-closure-20261012/attempt-02/order-negative-cpu-receipt.json",
+      "sha256": "fcb7cac3fdd619972ff198b6f8faff7c8b8145475d0007b779459658ac3f83da"
+    },
+    "negativeControlRows": [
+      {
+        "segment": "moving",
+        "t": 24000,
+        "wrongStackNeutralRefractionByteIdentical": true,
+        "wrongStackRefractionSensitivity": {
+          "meanRgba": 0,
+          "activeRgb": 0,
+          "activePixels": 1744,
+          "pass": true
+        },
+        "correctStackRefractionSensitivity": {
+          "meanRgba": 1.5398661295572917,
+          "activeRgb": 16.27785265049416,
+          "activePixels": 2968,
+          "pass": false
+        },
+        "wrongVsCorrectStack": {
+          "meanRgba": 2.7457377115885415,
+          "activeRgb": 28.93519766397125,
+          "activePixels": 2968,
+          "pass": false
+        }
+      },
+      {
+        "segment": "animated",
+        "t": 24000,
+        "wrongStackNeutralRefractionByteIdentical": true,
+        "wrongStackRefractionSensitivity": {
+          "meanRgba": 0,
+          "activeRgb": 0,
+          "activePixels": 2570,
+          "pass": true
+        },
+        "correctStackRefractionSensitivity": {
+          "meanRgba": 3.1573893229166665,
+          "activeRgb": 21.48693449149475,
+          "activePixels": 4605,
+          "pass": false
+        },
+        "wrongVsCorrectStack": {
+          "meanRgba": 3.9328816731770835,
+          "activeRgb": 26.66304741223308,
+          "activePixels": 4605,
+          "pass": false
+        }
+      }
+    ],
+    "opaqueSourcePrefixStillFailed": {
+      "path": "C:/tmps/bubble-author-closure-20261012/attempt-02/boundary-cpu-receipt.json",
+      "sha256": "8bfa7f50c3b2ea9a23972c8d376323fb8e75ae828d38e9e29943619a327c3bc9"
+    },
+    "prefixPublicationAloneNotIntermediateInputProof": true,
+    "productionSourceChanges": [],
+    "observerHarness": {
+      "path": "C:/tmps/bubble-author-closure-20261012/pass-observer.mjs",
+      "sha256": "470b37478f8bda1a0c7a964293752c1b27275f98bfba59ccc52ec72c65877e44"
+    },
+    "cpuHarness": {
+      "path": "C:/tmps/bubble-author-closure-20261012/order-cpu.mjs",
+      "sha256": "ab188090a8fa74358208c82d3495ce467ffb6361c68fafce4b25aac9a5cee88d"
+    }
+  },
+  "correctedSupplement": {
+    "accepted": true,
+    "receipt": {
+      "path": "C:/tmps/bubble-author-closure-20261012/correct-stack-01/live/receipt-final.json",
+      "sha256": "b461c33ef0b878c429b32c551e44b04cc19ac0057d58aafc7211a08cbc7de73e"
+    },
+    "newDedicatedProject": {
+      "path": "C:/tmps/bubble-author-closure-20261012/correct-stack-01/project/project.json",
+      "sha256": "3c19f2e837e8afef6ce813d664c68f6b6f24adad2763daff2203b603656d6e3b"
+    },
+    "revision": 38,
+    "trackOrderAppliedByRealHost": {
+      "path": "C:/tmps/bubble-author-closure-20261012/correct-stack-01/live/track-order-transaction.json",
+      "sha256": "c4ba0eac402fc1e172ecef4ea8e5ac629633c6f9430675e0d1fe66751a73d394"
+    },
+    "authorDTOReusedWithoutReplaying12UI": true,
+    "saveReloadHostReopen": {
+      "completeDTOgraphRevisionBytesIdentical": true,
+      "revision": 38,
+      "projectSha256": "3c19f2e837e8afef6ce813d664c68f6b6f24adad2763daff2203b603656d6e3b",
+      "omittedNameRetained": true
+    },
+    "stackProof": {
+      "sourceIndex": 1,
+      "effectIndex": 2,
+      "width": 192,
+      "height": 128,
+      "clear": {
+        "color": [
+          0,
+          0,
+          0,
+          1
+        ]
+      }
+    },
+    "actualDescriptor": {
+      "path": "C:/tmps/bubble-author-closure-20261012/correct-stack-01/live/actual-pass-audit.json",
+      "sha256": "8fdf8cbf0edaad0ab61c2e67ce9e2c7e19191bd0b90e2a71b4d90c6918319da5"
+    },
+    "independentOracle": "f64 renderBubbleOracle on independently analytical opaque black-composited original source; not copied production preview",
+    "expectedFrozenBeforeAnyExport": true,
+    "expectedPins": [
+      {
+        "path": "C:/tmps/bubble-author-closure-20261012/correct-stack-01/live/oracle-moving.rgba",
+        "sha256": "e59eaf4d841d758634647016dc3e014d1c7092ebfd35370faa88d3e615f9d40a"
+      },
+      {
+        "path": "C:/tmps/bubble-author-closure-20261012/correct-stack-01/live/oracle-animated.rgba",
+        "sha256": "d6a48f4a20f97062a3e301374ce1c17bbb9b1dacf33ccb47bb227ef98bc39908"
+      },
+      {
+        "path": "C:/tmps/bubble-author-closure-20261012/correct-stack-01/live/oracle-disabled.rgba",
+        "sha256": "2cd5ad3f13edb865e5b765d3a326f4e5371c0c143943dd4129dbf4c025658ff3"
+      }
+    ],
+    "refractionNeutralNegativePins": {
+      "path": "C:/tmps/bubble-author-closure-20261012/correct-stack-01/live/refraction-neutral-negatives.json",
+      "sha256": "73721a7a09849d5ce3a6303d1d409fcb75362477b3ce5c59b8958b38da16c044"
+    },
+    "refractionNeutralNegatives": [
+      {
+        "segment": "moving",
+        "metrics": {
+          "meanRgba": 1.5398661295572917,
+          "activeRgb": 16.27785265049416,
+          "activePixels": 2968,
+          "pass": false
+        }
+      },
+      {
+        "segment": "animated",
+        "metrics": {
+          "meanRgba": 3.1573893229166665,
+          "activeRgb": 21.48693449149475,
+          "activePixels": 4605,
+          "pass": false
+        }
+      }
+    ],
+    "localTicks": [
+      12000,
+      16000,
+      20000,
+      24000,
+      28000,
+      32000
+    ],
+    "range": "segment offset + [12000,36000)",
+    "offsets": {
+      "moving": 40000,
+      "animated": 160000,
+      "disabled": 280000
+    },
+    "frameRate": {
+      "numerator": 30,
+      "denominator": 1
+    },
+    "gates": {
+      "wholeImageMeanRgbaMaximum": 10,
+      "enabledActiveRgbMaximum": 15,
+      "enabledActivePixelsMinimum": 64,
+      "activeDelta": 15,
+      "ptsMaximumSeconds": 0.0011,
+      "disabled": "whole-image mean gate only"
+    },
+    "jobs": [
+      {
+        "key": "default-moving",
+        "accepted": true,
+        "frames": 6,
+        "codec": "vp9",
+        "chroma": "yuv420p",
+        "options": {
+          "format": "webm",
+          "quality": "very_high",
+          "includeAudio": false,
+          "range": {
+            "startTime": 52000,
+            "endTime": 76000
+          }
+        },
+        "video": {
+          "path": "C:/tmps/bubble-author-closure-20261012/correct-stack-01/live/default-moving.webm",
+          "sha256": "e33b028726e1bcfb761f7fd6c85896469cacd0cd3ec671db05afa5299fb0806a"
+        },
+        "metrics": {
+          "path": "C:/tmps/bubble-author-closure-20261012/correct-stack-01/live/default-moving-metrics.json",
+          "sha256": "ccb9f96fbdef5daba20d72fec648bd8aa8b8c5bce6a3ff24c591b82b85bc1776"
+        },
+        "ffprobe": {
+          "path": "C:/tmps/bubble-author-closure-20261012/correct-stack-01/live/default-moving-ffprobe.json",
+          "sha256": "49065d7c951cea822686b598522a14ed44564e7491124c395534335115f8a5be"
+        },
+        "maxMeanRgba": 2.048919677734375,
+        "maxEnabledActiveRgb": 3.373119212962963,
+        "minimumEnabledActivePixels": 2304
+      },
+      {
+        "key": "default-animated",
+        "accepted": true,
+        "frames": 6,
+        "codec": "vp9",
+        "chroma": "yuv420p",
+        "options": {
+          "format": "webm",
+          "quality": "very_high",
+          "includeAudio": false,
+          "range": {
+            "startTime": 172000,
+            "endTime": 196000
+          }
+        },
+        "video": {
+          "path": "C:/tmps/bubble-author-closure-20261012/correct-stack-01/live/default-animated.webm",
+          "sha256": "9b14c3f08649f9fde1b5c5bce7e241566696dbca654e8bf241a73a53559be635"
+        },
+        "metrics": {
+          "path": "C:/tmps/bubble-author-closure-20261012/correct-stack-01/live/default-animated-metrics.json",
+          "sha256": "3f8282cafb86639f3d1bf3aefafc90a9f889afd9719c17c8603b1383c8a1e5c9"
+        },
+        "ffprobe": {
+          "path": "C:/tmps/bubble-author-closure-20261012/correct-stack-01/live/default-animated-ffprobe.json",
+          "sha256": "d9a45dc9777064c3548c1f18bf7299ad16c4805293fbf8f6c451fdfde868aaa8"
+        },
+        "maxMeanRgba": 2.521697998046875,
+        "maxEnabledActiveRgb": 4.551955748715923,
+        "minimumEnabledActivePixels": 1216
+      },
+      {
+        "key": "default-disabled",
+        "accepted": true,
+        "frames": 6,
+        "codec": "vp9",
+        "chroma": "yuv420p",
+        "options": {
+          "format": "webm",
+          "quality": "very_high",
+          "includeAudio": false,
+          "range": {
+            "startTime": 292000,
+            "endTime": 316000
+          }
+        },
+        "video": {
+          "path": "C:/tmps/bubble-author-closure-20261012/correct-stack-01/live/default-disabled.webm",
+          "sha256": "e8eef92d7164c1e1c5a774f13c75a8cc09a79170105e6b8acd57eeb6d7afa382"
+        },
+        "metrics": {
+          "path": "C:/tmps/bubble-author-closure-20261012/correct-stack-01/live/default-disabled-metrics.json",
+          "sha256": "3045a9250065dbe3273fa3d4b04670b5e7bd4f330359e4d8e5f07622ff56f15a"
+        },
+        "ffprobe": {
+          "path": "C:/tmps/bubble-author-closure-20261012/correct-stack-01/live/default-disabled-ffprobe.json",
+          "sha256": "3c03c2613825f411ad47d28405edd79a00a355f8348992a409daa51d12d8c6dc"
+        },
+        "maxMeanRgba": 2.041900634765625,
+        "maxEnabledActiveRgb": null,
+        "minimumEnabledActivePixels": null
+      },
+      {
+        "key": "444-moving",
+        "accepted": true,
+        "frames": 6,
+        "codec": "vp9",
+        "chroma": "yuv444p",
+        "options": {
+          "format": "webm",
+          "quality": "very_high",
+          "includeAudio": false,
+          "videoChroma": "444",
+          "range": {
+            "startTime": 52000,
+            "endTime": 76000
+          }
+        },
+        "video": {
+          "path": "C:/tmps/bubble-author-closure-20261012/correct-stack-01/live/444-moving.webm",
+          "sha256": "d33b43a46caa2b24fdc98ef3a96fe31dcf2aa7f585560813cfeb83052414d997"
+        },
+        "metrics": {
+          "path": "C:/tmps/bubble-author-closure-20261012/correct-stack-01/live/444-moving-metrics.json",
+          "sha256": "b2f90c9606c3f928cc394e3e72c56a3f06ad79338921f9faf4fc1f93d008eef3"
+        },
+        "ffprobe": {
+          "path": "C:/tmps/bubble-author-closure-20261012/correct-stack-01/live/444-moving-ffprobe.json",
+          "sha256": "d3664f24f6b1cfd228d7e67d95d8d113000df0eab292930d8a4ce5d43f0ec052"
+        },
+        "maxMeanRgba": 1.7522684733072917,
+        "maxEnabledActiveRgb": 4.973057834498126,
+        "minimumEnabledActivePixels": 2304
+      },
+      {
+        "key": "444-animated",
+        "accepted": true,
+        "frames": 6,
+        "codec": "vp9",
+        "chroma": "yuv444p",
+        "options": {
+          "format": "webm",
+          "quality": "very_high",
+          "includeAudio": false,
+          "videoChroma": "444",
+          "range": {
+            "startTime": 172000,
+            "endTime": 196000
+          }
+        },
+        "video": {
+          "path": "C:/tmps/bubble-author-closure-20261012/correct-stack-01/live/444-animated.webm",
+          "sha256": "44e791b1faff95300d2da67af82ee568006a968efdd99757088386ed4c9c2f80"
+        },
+        "metrics": {
+          "path": "C:/tmps/bubble-author-closure-20261012/correct-stack-01/live/444-animated-metrics.json",
+          "sha256": "748d7e19d9bad196ca7a82a25abf246e02a616ec955375d905b2ec2434641b1b"
+        },
+        "ffprobe": {
+          "path": "C:/tmps/bubble-author-closure-20261012/correct-stack-01/live/444-animated-ffprobe.json",
+          "sha256": "d2b4b464735d40ad2d3cbb2f7732c7332e88fbc989703b0b6416e862418e421b"
+        },
+        "maxMeanRgba": 2.525909423828125,
+        "maxEnabledActiveRgb": 5.753105930901269,
+        "minimumEnabledActivePixels": 1216
+      },
+      {
+        "key": "444-disabled",
+        "accepted": true,
+        "frames": 6,
+        "codec": "vp9",
+        "chroma": "yuv444p",
+        "options": {
+          "format": "webm",
+          "quality": "very_high",
+          "includeAudio": false,
+          "videoChroma": "444",
+          "range": {
+            "startTime": 292000,
+            "endTime": 316000
+          }
+        },
+        "video": {
+          "path": "C:/tmps/bubble-author-closure-20261012/correct-stack-01/live/444-disabled.webm",
+          "sha256": "a9a588ef74a8bf30cdd31b97f40800efebf68477c3114f7addff3e12333921be"
+        },
+        "metrics": {
+          "path": "C:/tmps/bubble-author-closure-20261012/correct-stack-01/live/444-disabled-metrics.json",
+          "sha256": "6ef689887d7a5be33a014dcd41eeac449f48aaff4b816672136df4e360fcfa22"
+        },
+        "ffprobe": {
+          "path": "C:/tmps/bubble-author-closure-20261012/correct-stack-01/live/444-disabled-ffprobe.json",
+          "sha256": "c90ab08f744967d2de257a7f264148bc3137fe1861857f7ba8a9a831b07e7860"
+        },
+        "maxMeanRgba": 0.949676513671875,
+        "maxEnabledActiveRgb": null,
+        "minimumEnabledActivePixels": null
+      }
+    ],
+    "noRecordPUTDuringBrowserOrExports": true,
+    "noCompileRequests": true,
+    "originalProjectSHAUnchanged": true,
+    "noAttachedSixExportsRepeated": true,
+    "oneNewJobPerCorrectStackTarget": true,
+    "oracleSourcePins": [
+      {
+        "path": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/_others/rocut/script/fixtures/bubble-oracle.mjs",
+        "sha256": "7cf8c2092e16352d8a9350ae7af97922845867c23683f45867e4a584f9853b15"
+      },
+      {
+        "path": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/_others/rocut/script/fixtures/bubble-oracle-time.mjs",
+        "sha256": "251b678d062314e0294091521b9eabc5af618aae23616e88846cc301ba2865e9"
+      }
+    ],
+    "originalStraightSource": {
+      "path": "C:/tmps/bubble-author-closure-20261012/attempt-02/source.rgba",
+      "sha256": "105e3e896af4840054f52e18681edadc7c125373dabb04df2414ab681f30538e"
+    },
+    "reproductionHarness": {
+      "path": "C:/tmps/bubble-author-closure-20261012/correct-stack.mjs",
+      "sha256": "de967e574b68cf2da61bd9239704b286f6eacc5676151dd9c03511bbc15b6ed1"
+    },
+    "servedAssetVerification": "Mounted Surface fetched app-CqYkUOr7.js, surface-react-identity-probe-CFF13CXv.js and opencut_wasm_bg-BIRMKiLQ.wasm from the owned Host and compared SHA256 with delivered bytes before work; full pins rechecked after exports."
+  },
+  "formalArtifactPins": [
+    {
+      "path": "C:/tmps/rocut-integration-delivery-20261012-worker-diagnostics-03/receipt-final.json",
+      "sha256": "ce51e4f5500b1940eda6500f2eea31a9bb1f16e4bcd2da79d3cb53ec5bd2d130"
+    },
+    {
+      "path": "C:/tmps/rocut-integration-delivery-20261012-worker-diagnostics-03/runtime/rocut.mjs",
+      "sha256": "8a4986e760a19c6309b49c5c7de05a1aae3628f94938e9eeed7b6ca50db73f2d"
+    },
+    {
+      "path": "C:/tmps/rocut-integration-delivery-20261012-worker-diagnostics-03/runtime/surface/index.html",
+      "sha256": "a747e3445eb2fac0d42e63660deeb9698ae18fa259786fa88006f2c34f06f8d4"
+    },
+    {
+      "path": "C:/tmps/rocut-integration-delivery-20261012-worker-diagnostics-03/runtime/surface/assets/app-CqYkUOr7.js",
+      "sha256": "0c9fa5b1113b469f82ebb0835588dfa9ff906d086bf84b9498b2b962c5e3f30d"
+    },
+    {
+      "path": "C:/tmps/rocut-integration-delivery-20261012-worker-diagnostics-03/runtime/surface/assets/surface-react-identity-probe-CFF13CXv.js",
+      "sha256": "c98cdfdf1f805d9ee147616150d31272cf49a2354dfdac4ad78e98fb4a9a0a29"
+    },
+    {
+      "path": "C:/tmps/rocut-integration-delivery-20261012-worker-diagnostics-03/runtime/opencut_wasm_bg.wasm",
+      "sha256": "91cb239afd1efd81fa36a700bea6436e3707532a8f3111b175d22ee61dfbca86"
+    },
+    {
+      "path": "C:/tmps/creator-integration-delivery-20261012-author-ui-02/producer/dist/creator-studio/agent/skills/html-video/assets/rocut-stylized/bubble.mjs",
+      "sha256": "173782832772f7ed9bad8f95c2d27556c20dce9f12815e8b3ed1d3b81f3bb814"
+    },
+    {
+      "path": "C:/tmps/creator-integration-delivery-20261012-author-ui-02/producer/dist/creator-studio/agent/skills/html-video/assets/rocut-stylized/native-effect-layer.mjs",
+      "sha256": "23c8b6674eb13c92b131d3916c0b07b7a312584694e00c3c1db236e1a2992fef"
+    },
+    {
+      "path": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/_others/rocut/script/fixtures/bubble-export-contract.mjs",
+      "sha256": "2a6cdd181facf6e0a6b8a4da1eedd9ec8bdb2675124d75df34a839bd4c017960"
+    },
+    {
+      "path": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/_others/rocut/script/fixtures/bubble-export-reference.mjs",
+      "sha256": "870fc64901a3607adb7344269eb876f94f241390fd2468b8e078761c1caa69d3"
+    },
+    {
+      "path": "C:/tmps/rocut-bubble-standalone-aVXu9O/current-browser-receipt-1791728203283.json",
+      "sha256": "757595e286c1263c34141032f8e4b9c5c6362c8b34a20926de7d017ed168383c"
+    },
+    {
+      "path": "C:/tmps/rocut-bubble-standalone-agg56S/current-browser-receipt-1791722724871.json",
+      "sha256": "3832d3b95f9266cc822fff87c59d074beabaed8435e426639b352dc1a32b9054"
+    },
+    {
+      "path": "C:/tmps/rocut-integration-delivery-20261012-worker-diagnostics-03/runtime/surface/assets/opencut_wasm_bg-BIRMKiLQ.wasm",
+      "sha256": "91cb239afd1efd81fa36a700bea6436e3707532a8f3111b175d22ee61dfbca86"
+    }
+  ],
+  "cleanup": {
+    "ownedHostsClosedAndVerifiedDead": [
+      23440,
+      25864
+    ],
+    "browserClosed": true,
+    "gpuReleased": true,
+    "liveJobs": [],
+    "evidence": [
+      {
+        "owner": "Host",
+        "pid": 23440,
+        "closed": true
+      },
+      {
+        "owner": "browser",
+        "closed": true
+      },
+      {
+        "owner": "Host",
+        "pid": 25864,
+        "closed": true
+      }
+    ]
+  },
+  "limitations": [
+    "Only six frames at the fixed local ticks per job and these literal author DTOs are accepted.",
+    "Original revision37 and its six failed-reference exports remain preserved; they are not relabeled as optical acceptance.",
+    "Correct-stack supplement changes only track order in a copied private project; no production repair was needed.",
+    "No arbitrary duration, dimension, range, installed-runtime or broader optical-coverage claim."
+  ]
+}
