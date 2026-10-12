@@ -25,6 +25,7 @@ export async function collectElectronRemotionProducedFrames({ connectionFile, wi
   let capture: Awaited<ReturnType<typeof createElectronRemotionProducedServer>> | undefined;
   let video: Awaited<ReturnType<typeof createElectronNativeVideoServer>> | undefined;
   let session: Awaited<ReturnType<typeof openElectronAudioSession>> | undefined;
+  let failed = false;
   try {
     const admittedSourceBytes = sources.reduce((sum, item) => sum + item.body.length, 0);
     capture = await createElectronRemotionProducedServer({ durationFrames,
@@ -51,10 +52,19 @@ export async function collectElectronRemotionProducedFrames({ connectionFile, wi
       return { frameIndex: index, assets: normalize(index, item.assets), produced: item.produced };
     });
     return { frames, pictures: capture.take() };
+  } catch (error) {
+    failed = true;
+    lifetime.throwIfAborted();
+    throw error;
   } finally {
     // Cancel pending evaluation/callback work before releasing the private realm.
     controller.abort();
-    try { await session?.close(); }
-    finally { try { await video?.dispose(); } finally { await capture?.dispose(); } }
+    let cleanupFailed = false;
+    let firstError: unknown;
+    for (const release of [async () => session?.close(), async () => video?.dispose(), async () => capture?.dispose()]) {
+      try { await release(); }
+      catch (error) { if (!cleanupFailed) firstError = error; cleanupFailed = true; }
+    }
+    if (!failed && cleanupFailed) throw firstError;
   }
 }

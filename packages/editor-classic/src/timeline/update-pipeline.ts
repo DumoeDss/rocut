@@ -1,4 +1,5 @@
 import { clampAnimationsToDuration } from "../animation";
+import { collectProjectAnimationAdmissionIssues } from "../animation/project-animation-admission";
 import {
 	clampRetimeRate,
 	getSourceSpanAtClipTime,
@@ -181,6 +182,17 @@ export function applyElementUpdate({
 			patch,
 			context,
 		}).element;
+	}
+
+	if (changedFields.has("duration") || changedFields.has("animations")) {
+		const issues = collectProjectAnimationAdmissionIssues({
+			elements: [nextElement],
+		});
+		for (const issue of issues) {
+			if (issue.kind === "rejected") {
+				throw new RangeError(`${issue.propertyPath}: ${issue.reason}`);
+			}
+		}
 	}
 
 	return nextElement;

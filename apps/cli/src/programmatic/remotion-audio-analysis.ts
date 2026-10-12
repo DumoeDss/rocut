@@ -93,6 +93,48 @@ export async function withRemotionAudioAnalyzer<T>({ executable, connectionFile,
 		return result.assets;
 	};
 	normalize(map(request).index, []);
+	const controller = new AbortController();
+	const lifetime = AbortSignal.any([signal, controller.signal]);
+	const consumeScoped = async (analyzer: AudioAnalyzer) => {
+		const pending = new Set<Promise<unknown>>();
+		const track = <R>(collect: () => Promise<R>) => {
+			const result = (async () => {
+				lifetime.throwIfAborted();
+				try {
+					const value = await collect();
+					lifetime.throwIfAborted();
+					return value;
+				} catch (error) {
+					lifetime.throwIfAborted();
+					throw error;
+				}
+			})();
+			pending.add(result);
+			const released = () => pending.delete(result);
+			void result.then(released, released);
+			return result;
+		};
+		try {
+			return await consume({
+				sources: analyzer.sources,
+				frame: timing => track(() => analyzer.frame(timing)),
+				producedFrames: scan => track(() => analyzer.producedFrames(scan)),
+			});
+		} finally {
+			controller.abort(Error("Remotion audio analyzer closed"));
+			await Promise.allSettled([...pending]);
+		}
+	};
+	// Release every owner independently, without replacing an operation failure.
+	const cleanup = async (failed: boolean, actions: (() => Promise<unknown>)[]) => {
+		let firstError: unknown;
+		let cleanupFailed = false;
+		for (const action of actions) {
+			try { await action(); }
+			catch (error) { if (!cleanupFailed) firstError = error; cleanupFailed = true; }
+		}
+		if (!failed && cleanupFailed) throw firstError;
+	};
 	if (connectionFile) {
 		// Admitted video bytes can be consumed by OffthreadVideo during audio
 		// inspection. Pure Audio sources retain only their independent audio grant.
@@ -100,50 +142,55 @@ export async function withRemotionAudioAnalyzer<T>({ executable, connectionFile,
 		if (needsVideo && !decoder) throw Error("Electron native audio video sources require the native decoder");
 		if (needsVideo) pinElectronAudioConnection(connectionFile, true);
 		let busy = false;
-		return consume({ sources,
+		return consumeScoped({ sources,
 			async producedFrames(scan) {
-				signal.throwIfAborted();
+				lifetime.throwIfAborted();
 				if (busy) throw Error("Native audio frames must be collected serially");
 				busy = true;
 				try {
 					return await collectElectronRemotionProducedFrames({ connectionFile, width: source.width, height: source.height,
-						durationFrames: source.durationFrames, code, resources, sources, limits, scan, decoder, normalize, signal });
+						durationFrames: source.durationFrames, code, resources, sources, limits, scan, decoder, normalize, signal: lifetime });
 				} finally { busy = false; }
 			},
 			async frame(timing) {
-				signal.throwIfAborted();
+				lifetime.throwIfAborted();
 				if (busy) throw Error("Native audio frames must be collected serially");
 				busy = true;
 				let nativeFrames: Awaited<ReturnType<typeof createElectronNativeVideoServer>> | undefined;
+				let failed = false;
 				try {
 					const mapped = map(timing);
 					if (needsVideo) nativeFrames = await createElectronNativeVideoServer({ decoder: decoder!, code, resources,
-						limits: mapped.videoLimits, signal });
-					const value = await analyzeElectronAudio({ connectionFile, width: source.width, height: source.height, signal,
+						limits: mapped.videoLimits, signal: lifetime });
+					const value = await analyzeElectronAudio({ connectionFile, width: source.width, height: source.height, signal: lifetime,
 						...(nativeFrames ? { nativeVideo: nativeFrames.callback } : {}),
 						expression: htmlAudioAnalysisExpression(code, mapped, resources, {
 							limits, engine: "remotion", sources: sources.map(({ id, src }) => ({ id, src })),
 						}, !!nativeFrames) });
 					await nativeFrames?.check();
 					return { frameIndex: mapped.index, assets: normalize(mapped.index, value) };
-				} finally { try { await nativeFrames?.dispose(); } finally { busy = false; } }
+				} catch (error) { failed = true; throw error; }
+				finally { try { await cleanup(failed, [async () => nativeFrames?.dispose()]); } finally { busy = false; } }
 			}
 		});
 	}
 	if (!executable) throw Error("No native audio browser backend configured");
-	const controller = new AbortController();
-	const lifetime = AbortSignal.any([signal, controller.signal]);
 	const startTimer = setTimeout(() => controller.abort(), 15000);
-	const browser = await launchFrameBrowser(executable, lifetime).finally(() => clearTimeout(startTimer));
+	const browser = await launchFrameBrowser(executable, lifetime).catch(error => {
+		lifetime.throwIfAborted();
+		throw error;
+	}).finally(() => clearTimeout(startTimer));
 	let busy = false;
+	let completed = false;
 	try {
-		return await consume({ sources, async producedFrames(scan) {
+		const result = await consumeScoped({ sources, async producedFrames(scan) {
 			lifetime.throwIfAborted();if(busy)throw Error("Native audio frames must be collected serially");busy=true;
 			// Full-source scan may legitimately exceed a single-frame deadline.
 			// Every native frame still owns its independent 8s driver watchdog.
 			const timer=setTimeout(()=>controller.abort(),Math.min(24*60*60*1000,30000+scan.frames.length*8000));
 			let targetId:unknown,capture:Awaited<ReturnType<typeof attachRemotionProducedCaptureBroker>>|undefined;
 			let video:Awaited<ReturnType<typeof attachOffthreadBroker>>|undefined;
+			let failed = false;
 			try {
 				const target=await browser.send("Target.createTarget",{url:"about:blank"});targetId=target.targetId;
 				const attached=await browser.send("Target.attachToTarget",{targetId,flatten:true}),session=String(attached.sessionId);
@@ -166,18 +213,14 @@ export async function withRemotionAudioAnalyzer<T>({ executable, connectionFile,
 					return {frameIndex:index,assets:normalize(index,item.assets),produced:item.produced};
 				}),pictures:capture.take()};
 			} catch(error) {
+				failed = true;
 				// A failed continuous realm must not retain pending CDP operations
 				// until the full-source deadline or be reused as a fresh frame.
-				controller.abort(error);throw error;
+				lifetime.throwIfAborted();controller.abort(error);throw error;
 			} finally {
-				try {await capture?.dispose();}
-				finally {
-					try {await video?.dispose();}
-					finally {
-						try {if(targetId && !lifetime.aborted)await browser.send("Target.closeTarget",{targetId});}
-						finally {clearTimeout(timer);busy=false;}
-					}
-				}
+				try { await cleanup(failed, [async () => capture?.dispose(), async () => video?.dispose(),
+					async () => { if(targetId && !lifetime.aborted)await browser.send("Target.closeTarget",{targetId}); }]); }
+				finally {clearTimeout(timer);busy=false;}
 			}
 		}, async frame(timing) {
 			lifetime.throwIfAborted();
@@ -186,6 +229,7 @@ export async function withRemotionAudioAnalyzer<T>({ executable, connectionFile,
 			busy = true;
 			const timer = setTimeout(() => controller.abort(), 15000);
 			let targetId: unknown;
+			let failed = false;
 			try {
 				const target = await browser.send("Target.createTarget", { url: "about:blank" });
 				targetId = target.targetId;
@@ -202,12 +246,15 @@ export async function withRemotionAudioAnalyzer<T>({ executable, connectionFile,
 				if (result.exceptionDetails) throw Error("Native audio analysis failed: " + JSON.stringify(result.exceptionDetails).slice(0, 1200));
 				lifetime.throwIfAborted();
 				return { frameIndex: mapped.index, assets: normalize(mapped.index, (result.result as { value?: unknown } | undefined)?.value) };
-			} finally {
-				try { if (targetId && !lifetime.aborted) await browser.send("Target.closeTarget", { targetId }); }
+			} catch (error) { failed = true; throw error; }
+			finally {
+				try { await cleanup(failed, [async () => { if (targetId && !lifetime.aborted) await browser.send("Target.closeTarget", { targetId }); }]); }
 				finally { clearTimeout(timer); busy = false; }
 			}
 		} });
-	} finally { await browser.close(); }
+		completed = true;
+		return result;
+	} finally { await cleanup(!completed, [() => browser.close()]); }
 }
 
 export async function analyzeRemotionAudioFrame(options: AnalysisOptions) {
