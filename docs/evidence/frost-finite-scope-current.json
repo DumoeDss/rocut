@@ -1,0 +1,578 @@
+{
+  "version": 1,
+  "date": "2026-10-12",
+  "status": "accepted-registered-finite-frost-video-subset",
+  "overallGoalComplete": false,
+  "scope": "Frost registered F+E finite input-image filter, explicit bounded capsule stamps/hold/recovery and deterministic seeking, transparent render alpha plus opaque production video; not alpha-master export or upstream equivalence.",
+  "basis": {
+    "plan": "Creator docs/canvas-ui-director-rocut-development-plan.md",
+    "section": "7.2",
+    "vDefinition": "V accepts the row-declared evidenced video subset with explicit semantic differences; not all upstream mouse interaction, live DOM or material kinds",
+    "frostRow": "Input ice/refraction/scatter/tint, explicit capsule melt strokes, hold/linear recovery, stable seed; remaining fixed-optics schedule-only render/encode negative now closed",
+    "alphaMasterCondition": "Row says alpha-master requires independent acceptance IF retained in declared scope; excluded from this accepted subset"
+  },
+  "registeredBehavior": {
+    "path": "C:/tmps/frost-native-sol-20261009/contract.json",
+    "effectType": "frost",
+    "ticksPerSecond": 120000,
+    "clock": "Frame-floor clip-local ticks on the existing rational MediaTime grid; authored stamps remain unsnapped. Validate before negative-time or neutral bypass; no source trim, wall-clock accumulation or mutable cache.",
+    "strokes": "At most sixteen immutable seven-field capsule strokes: timestamp, from/to XY, radius and strength. Inactive slots forbidden; complete safe-integer time endpoints required.",
+    "recovery": "Zero before stamp, strength during hold, then linear recovery to zero. Overlapping melt takes maximum, not sum. Capsule center has a full plateau through 0.6 radius and a smooth skirt ending at radius.",
+    "texture": "Seeded jittered neighboring crystal cells modulate true input refraction, nine-tap scatter and tint; this is not a generic color overlay or the Bubble frost parameter.",
+    "alpha": "Premultiply texels before manual bilinear sampling, transparent-black out-of-bounds, then preserve original source alpha. Neutral native no-pass retains raw input bytes; full melt is premultiplied visual identity only. Active alpha-zero output is RGBA0, including full melt. The imprecise original frozen contract wording is retained as history, not adopted as a poisoned hidden-RGB identity promise.",
+    "seed": "Spatially stable 24-bit integer seed, default 17",
+    "uniformBytes": 576,
+    "budget": {
+      "maxDimension": 8192,
+      "maxPixels": 8388608,
+      "maxCapsuleEvaluations": 64000000,
+      "maxBilinearEvaluations": 100000000,
+      "texelLoadUpperBound": "pixels + 4 * bilinear evaluations; no separate 100-million texel-load limit",
+      "note": "Actual native preflight independently admits 4K seven active capsules (58060800 evaluations) and rejects eight (66355200). 4K blur requires 74649600 bilinear evaluations, with 306892800 texel loads as an upper bound. The pixel cap implies at most 75497472 nine-tap bilinear evaluations, so the 100-million bilinear guard is currently unreachable. These are operation bounds, not GPU timings."
+    },
+    "limits": "A bounded deterministic video effect; no physical ice-growth simulation claim. None of these CPU results upgrade the ledger."
+  },
+  "requirements": [
+    {
+      "requirement": "True input refraction, nine-tap scatter/tint and stable spatial seed",
+      "evidence": [
+        "frost-effect.json",
+        "frost-optical-fixture-v2.json",
+        "frost-optical-runtime-v2.json"
+      ],
+      "acceptance": "Matching real GPU eight cases with unchanged f64 references and numeric gates; not universal physical ice realism"
+    },
+    {
+      "requirement": "Explicit unsnapped bounded capsule timestamps, hold/linear recovery, overlap max, deterministic reverse/repeat seek",
+      "evidence": [
+        "frost-effect.json",
+        "frost-optical-runtime-v2.json",
+        "frost-schedule-clock-current.json"
+      ],
+      "acceptance": "Native structural/numeric contract plus preselected stamp/recovery production render/encode and fresh seek repeat"
+    },
+    {
+      "requirement": "Creator source/effects/animation transport, mounted stroke creation/seven fields, optical keyframe edit, full history/save/reopen",
+      "evidence": [
+        "C:/tmps/frost-editor-author-20261012-hyeMad/layered-receipt.json",
+        "frost-effect.json"
+      ],
+      "acceptance": "Twelve one-Apply transactions, complete clip undo/redo, revision37 saved bytes/reopened fields retained; bounded amount animation, not every UI field/host"
+    },
+    {
+      "requirement": "Transparent render alpha, hidden RGB and straight/premultiplied correctness",
+      "evidence": [
+        "frost-optical-runtime-v2.json",
+        "frost-optical-fixture-v2.json",
+        "frost-effect.json"
+      ],
+      "acceptance": "All authored output alpha exact; 109 active transparent holes RGBA0, 459 positive-alpha full-melt pixels exact; premultiplied sampling/visual identity, straight native output, neutral bypass may retain poison hidden RGB. No transparent encoded master"
+    },
+    {
+      "requirement": "Normal same authored project opaque default output, independent decode/PTS and original image-quality gates",
+      "evidence": [
+        "C:/tmps/frost-default420-recheck-20261012/closure-receipt.json",
+        "frost-encoded-time-controls-current.json"
+      ],
+      "acceptance": "Revision37 unchanged graph/project/reference masks, 24 actual q8 encodes; all-frame mean passes and original adequate masks 12..23 pass; weak 0..11 remain unidentifiable"
+    },
+    {
+      "requirement": "Time-change discrimination without whole-output freeze substitution",
+      "evidence": [
+        "frost-encoded-time-controls-current.json",
+        "frost-schedule-clock-current.json"
+      ],
+      "acceptance": "Whole-output controls retained; new fixed-optics actual WASM schedule-only freeze with advancing native encoder timestamps rejected in both stamp/recovery render and encoded pairs"
+    }
+  ],
+  "ui": {
+    "receipt": {
+      "path": "C:/tmps/frost-editor-author-20261012-hyeMad/layered-receipt.json",
+      "byteLength": 33904,
+      "sha256": "d22b54fac579edfebdf21e7fd513f6da79bf2201845731803bd21230ba5604cf"
+    },
+    "transactions": [
+      {
+        "name": "Actual Add melt stroke",
+        "beforeRevision": 1,
+        "applyRevision": 2,
+        "undoRevision": 3,
+        "redoRevision": 4,
+        "historyBefore": 0,
+        "historyAfter": 1,
+        "singleApply": true,
+        "completeClipUndoRedo": true
+      },
+      {
+        "name": "UI stroke0TimeTicks",
+        "beforeRevision": 4,
+        "applyRevision": 5,
+        "undoRevision": 6,
+        "redoRevision": 7,
+        "historyBefore": 1,
+        "historyAfter": 2,
+        "singleApply": true,
+        "completeClipUndoRedo": true
+      },
+      {
+        "name": "UI stroke0FromX",
+        "beforeRevision": 7,
+        "applyRevision": 8,
+        "undoRevision": 9,
+        "redoRevision": 10,
+        "historyBefore": 2,
+        "historyAfter": 3,
+        "singleApply": true,
+        "completeClipUndoRedo": true
+      },
+      {
+        "name": "UI stroke0FromY",
+        "beforeRevision": 10,
+        "applyRevision": 11,
+        "undoRevision": 12,
+        "redoRevision": 13,
+        "historyBefore": 3,
+        "historyAfter": 4,
+        "singleApply": true,
+        "completeClipUndoRedo": true
+      },
+      {
+        "name": "UI stroke0ToX",
+        "beforeRevision": 13,
+        "applyRevision": 14,
+        "undoRevision": 15,
+        "redoRevision": 16,
+        "historyBefore": 4,
+        "historyAfter": 5,
+        "singleApply": true,
+        "completeClipUndoRedo": true
+      },
+      {
+        "name": "UI stroke0ToY",
+        "beforeRevision": 16,
+        "applyRevision": 17,
+        "undoRevision": 18,
+        "redoRevision": 19,
+        "historyBefore": 5,
+        "historyAfter": 6,
+        "singleApply": true,
+        "completeClipUndoRedo": true
+      },
+      {
+        "name": "UI stroke0Radius",
+        "beforeRevision": 19,
+        "applyRevision": 20,
+        "undoRevision": 21,
+        "redoRevision": 22,
+        "historyBefore": 6,
+        "historyAfter": 7,
+        "singleApply": true,
+        "completeClipUndoRedo": true
+      },
+      {
+        "name": "UI stroke0Strength",
+        "beforeRevision": 22,
+        "applyRevision": 23,
+        "undoRevision": 24,
+        "redoRevision": 25,
+        "historyBefore": 7,
+        "historyAfter": 8,
+        "singleApply": true,
+        "completeClipUndoRedo": true
+      },
+      {
+        "name": "UI optical amount base .15",
+        "beforeRevision": 25,
+        "applyRevision": 26,
+        "undoRevision": 27,
+        "redoRevision": 28,
+        "historyBefore": 8,
+        "historyAfter": 9,
+        "singleApply": true,
+        "completeClipUndoRedo": true
+      },
+      {
+        "name": "UI toggle amount keyframe at 0",
+        "beforeRevision": 28,
+        "applyRevision": 29,
+        "undoRevision": 30,
+        "redoRevision": 31,
+        "historyBefore": 9,
+        "historyAfter": 10,
+        "singleApply": true,
+        "completeClipUndoRedo": true
+      },
+      {
+        "name": "UI toggle amount keyframe at115000",
+        "beforeRevision": 31,
+        "applyRevision": 32,
+        "undoRevision": 33,
+        "redoRevision": 34,
+        "historyBefore": 10,
+        "historyAfter": 11,
+        "singleApply": true,
+        "completeClipUndoRedo": true
+      },
+      {
+        "name": "UI edit animated amount at115000 to1",
+        "beforeRevision": 34,
+        "applyRevision": 35,
+        "undoRevision": 36,
+        "redoRevision": 37,
+        "historyBefore": 11,
+        "historyAfter": 12,
+        "singleApply": true,
+        "completeClipUndoRedo": true
+      }
+    ],
+    "reopen": {
+      "completeGraphRevisionAndBytesIdentical": true,
+      "revision": 37,
+      "uiFieldsRetained": true
+    },
+    "originalPixelAcceptance": false,
+    "originalIndependentOpticalOracle": {
+      "ok": false,
+      "status": "Not this task; owned by root. ActualUI and presentation/decoded sensitivity are not independent optical correctness."
+    }
+  },
+  "opaqueVideo": {
+    "receipt": {
+      "path": "C:/tmps/frost-default420-recheck-20261012/closure-receipt.json",
+      "byteLength": 6159,
+      "sha256": "562db27000fcab8dfc55ae7bd5d52bac87dfa5ec39a4296b16778eedfd8428f0"
+    },
+    "revision": 37,
+    "actualNativeEncoderConfiguration": [
+      {
+        "codec": "vp09.00.11.08.01.01.13.01.01",
+        "width": 192,
+        "height": 128,
+        "displayWidth": 192,
+        "displayHeight": 128,
+        "bitrate": 295000,
+        "framerate": 24,
+        "alpha": "discard",
+        "bitrateMode": "quantizer",
+        "latencyMode": "quality",
+        "hardwareAcceleration": "prefer-software"
+      }
+    ],
+    "actualQ8EncodeCount": 24,
+    "pixelAcceptance": {
+      "allFrameMean": true,
+      "adequateRegion": true,
+      "allFramesIdentifiable": false,
+      "weakFrames": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "target14and15": [
+        {
+          "index": 14,
+          "ticks": 70000,
+          "meanRgb": 1.1295844184027777,
+          "activeRgb": 4.957537154989384,
+          "activePixels": 157,
+          "identifiable": true,
+          "meanGate": true,
+          "activeGate": true
+        },
+        {
+          "index": 15,
+          "ticks": 75000,
+          "meanRgb": 1.1364610460069444,
+          "activeRgb": 5.1469696969696965,
+          "activePixels": 220,
+          "identifiable": true,
+          "meanGate": true,
+          "activeGate": true
+        }
+      ],
+      "maxMean": 1.2127685546875,
+      "note": "Original reference/masks unchanged; earlyweakframes remain notidentifiable. Existingq8wiring evidence not used to presume quality."
+    },
+    "maxAdequateActiveRgb": 5.1469696969696965,
+    "recordPUT": 0,
+    "compileRequests": 0,
+    "originalGraphAndProjectBytesUnchanged": true,
+    "originalActiveMasksAll24Unchanged": true,
+    "cleanup": [
+      {
+        "owner": "browser",
+        "closed": true
+      },
+      {
+        "owner": "Host",
+        "pid": 52476,
+        "closed": true
+      }
+    ]
+  },
+  "transparentRender": {
+    "receipt": "C:/tmps/frost-reference-gpu-v2-20261012-attempt-02/audit-receipt.json",
+    "receiptSha256": "f17ccc2ad4278c4dee613622f4f0349c22a7bb9d918c81f9bf86281179ef88f3",
+    "scalarMetricsPassed": 57,
+    "hardChecksPassed": 132,
+    "rawNativeMaxRgbError": 1,
+    "rawNativeMaxMeanRgbError": 0.0005425347222222222,
+    "canonicalNativeMaxRgbError": 1,
+    "canonicalNativeMaxMeanRgbError": 0.0006510416666666666,
+    "defaultPresentationMaxRgbError": 1,
+    "defaultPresentationMaxMeanRgbError": 0.04261514501633976,
+    "allAlphaErrors": 0,
+    "originalNumericGatesUnchanged": true,
+    "canonicalPairByteIdentical": true,
+    "fullMeltPositivePixelsExact": 459,
+    "transparentHolesRgbaZero": 109
+  },
+  "scheduleClock": {
+    "canonical": {
+      "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut/docs/evidence/frost-schedule-clock-current.json",
+      "byteLength": 102046,
+      "sha256": "46641f7a0bfdf0cf58089b9204404752424238e1941f38ab3449b69b8e52a47e"
+    },
+    "jobs": [
+      {
+        "mode": "advance",
+        "id": "906402fb18eae814",
+        "renderTemporal": [
+          {
+            "id": "stamp",
+            "pixels": 327,
+            "channels": 441,
+            "expectedChangeMean": 35.33106575963719,
+            "signedChangeMean": 35.33106575963719,
+            "deltaErrorMean": 0.0045351473922902496,
+            "identifiable": true,
+            "accepted": true
+          },
+          {
+            "id": "recovery",
+            "pixels": 327,
+            "channels": 441,
+            "expectedChangeMean": 35.326530612244895,
+            "signedChangeMean": 35.32879818594105,
+            "deltaErrorMean": 0.0022675736961451248,
+            "identifiable": true,
+            "accepted": true
+          }
+        ],
+        "encodedTemporal": [
+          {
+            "id": "stamp",
+            "pixels": 327,
+            "channels": 441,
+            "expectedChangeMean": 35.33106575963719,
+            "signedChangeMean": 34.38095238095238,
+            "deltaErrorMean": 1.7891156462585034,
+            "identifiable": true,
+            "accepted": true
+          },
+          {
+            "id": "recovery",
+            "pixels": 327,
+            "channels": 441,
+            "expectedChangeMean": 35.326530612244895,
+            "signedChangeMean": 33.61224489795919,
+            "deltaErrorMean": 2.2857142857142856,
+            "identifiable": true,
+            "accepted": true
+          }
+        ],
+        "adapterRestored": true,
+        "graphAndRevisionUnchanged": true
+      },
+      {
+        "mode": "freeze",
+        "id": "4f0da9dd0217024c",
+        "renderTemporal": [
+          {
+            "id": "stamp",
+            "pixels": 327,
+            "channels": 441,
+            "expectedChangeMean": 35.33106575963719,
+            "signedChangeMean": 0,
+            "deltaErrorMean": 35.33106575963719,
+            "identifiable": true,
+            "accepted": false
+          },
+          {
+            "id": "recovery",
+            "pixels": 327,
+            "channels": 441,
+            "expectedChangeMean": 35.326530612244895,
+            "signedChangeMean": 0,
+            "deltaErrorMean": 35.326530612244895,
+            "identifiable": true,
+            "accepted": false
+          }
+        ],
+        "encodedTemporal": [
+          {
+            "id": "stamp",
+            "pixels": 327,
+            "channels": 441,
+            "expectedChangeMean": 35.33106575963719,
+            "signedChangeMean": 0.013605442176870748,
+            "deltaErrorMean": 35.317460317460316,
+            "identifiable": true,
+            "accepted": false
+          },
+          {
+            "id": "recovery",
+            "pixels": 327,
+            "channels": 441,
+            "expectedChangeMean": 35.326530612244895,
+            "signedChangeMean": 0.011337868480725623,
+            "deltaErrorMean": 35.31519274376417,
+            "identifiable": true,
+            "accepted": false
+          }
+        ],
+        "adapterRestored": true,
+        "graphAndRevisionUnchanged": true
+      }
+    ],
+    "cleanup": [
+      {
+        "mode": "freeze",
+        "hostAndContextClosed": true
+      },
+      {
+        "browserClosed": true
+      }
+    ]
+  },
+  "remainingRegisteredFiniteSubset": [],
+  "preservedLimitations": [
+    "Older frost-effect notVerified statements and layered UI pixelAcceptance=false remain unchanged historical records; newer scoped evidence is additive, not retroactive green",
+    "Original revision37 frames0..11 remain insufficient active-region evidence; no all24 active-mask claim",
+    "Earlier optical fixture loss, failed attempts and diagnostic-only stages remain historical; no restored missing bytes claim",
+    "Earlier bitrate output active errors at frames14/15 remain failures; newer q8 comparison is empirical, not universal codec/GPU causality",
+    "No alpha-master, all-input/all-parameter exhaustive coverage, hardware/WebGPU/device-loss/OOM, installed Elftia/Electron, P8 release or upstream equivalence"
+  ],
+  "audit": {
+    "type": "CPU-only existing receipt/source mapping and direct artifact rehash; no new GPU/browser/Host/export/build",
+    "directDependencyRecords": 21,
+    "allDirectHashesMatch": true,
+    "transitiveHistoricalPins": "Not claimed exhaustive; old missing external artifacts not fabricated"
+  },
+  "dependencies": [
+    {
+      "path": "C:/tmps/frost-editor-author-20261012-hyeMad/layered-receipt.json",
+      "byteLength": 33904,
+      "sha256": "d22b54fac579edfebdf21e7fd513f6da79bf2201845731803bd21230ba5604cf"
+    },
+    {
+      "path": "C:/tmps/frost-default420-recheck-20261012/closure-receipt.json",
+      "byteLength": 6159,
+      "sha256": "562db27000fcab8dfc55ae7bd5d52bac87dfa5ec39a4296b16778eedfd8428f0"
+    },
+    {
+      "path": "C:/tmps/frost-default420-recheck-20261012/receipt-final.json",
+      "byteLength": 16478,
+      "sha256": "86aa58e224548e0db8c0c6577323c5a49fb1fcf07e9560f340776ea205b245ac"
+    },
+    {
+      "path": "C:/tmps/frost-default420-recheck-20261012/production.webm",
+      "byteLength": 23714,
+      "sha256": "1b77cdd83e4583bcb31d6f7a978718466cdb6d8436606b433888db7863de5c06"
+    },
+    {
+      "path": "C:/tmps/frost-default420-recheck-20261012/decoded.rgb",
+      "byteLength": 1769472,
+      "sha256": "29fcac2f890800608ffb163bd808951c0f4350badcdd4d5ade8af5dbd4b8536b"
+    },
+    {
+      "path": "C:/tmps/frost-default420-recheck-20261012/actual-policy-encoder-observation.json",
+      "byteLength": 4136,
+      "sha256": "2f647c87b08f79013fab0b1a96600d407135202429781bf51de778e719e76e40"
+    },
+    {
+      "path": "C:/tmps/frost-default420-recheck-20261012/ffprobe.json",
+      "byteLength": 22302,
+      "sha256": "b475262d74132126b02aec89463fad9a568e50b9b1a82092f92e2e5e8e6b90db"
+    },
+    {
+      "path": "C:/tmps/frost-default420-recheck-20261012/prepared-contract.json",
+      "byteLength": 2554,
+      "sha256": "3bfeb769dd93c29a5de7a914488e59cceab83feb7921bba191e41434ab8e80b8"
+    },
+    {
+      "path": "C:/tmps/frost-editor-author-20261012-hyeMad/receipt-final.json",
+      "byteLength": 17116,
+      "sha256": "bddc3a9529db9827dd50c33156fbbbc412b574568d658dfc65587192ede91bdf"
+    },
+    {
+      "path": "C:/tmps/frost-editor-author-20261012-hyeMad/layered-receipt.json",
+      "byteLength": 33904,
+      "sha256": "d22b54fac579edfebdf21e7fd513f6da79bf2201845731803bd21230ba5604cf"
+    },
+    {
+      "path": "C:/tmps/frost-editor-author-20261012-hyeMad/references.json",
+      "byteLength": 3178511,
+      "sha256": "40fd0f92c8045b5707e14a2c559042510cc877c969c8cb4873bf23e16c24400d"
+    },
+    {
+      "path": "C:/tmps/frost-editor-author-20261012-hyeMad/production.webm",
+      "byteLength": 12642,
+      "sha256": "01ead54e44826265a2c9a6d05b823706293b70945d5c45bf2bf7010745bf2137"
+    },
+    {
+      "path": "C:/tmps/frost-editor-author-20261012-hyeMad/project/project.json",
+      "byteLength": 40577,
+      "sha256": "1451f770e9155e11aec3b3af9a4c47e6ecef73bef56dfdb0392c9f1307d3cf75"
+    },
+    {
+      "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut/docs/evidence/frost-effect.json",
+      "byteLength": 22674,
+      "sha256": "52f11a5aab892fafd5cf0197f789999917563155de73427184bda2d79aa81b92"
+    },
+    {
+      "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut/docs/evidence/frost-optical-fixture-v2.json",
+      "byteLength": 3643,
+      "sha256": "6fd897e55e84ca43ef367fc1b60b7d56fff5d9c38805a9ef983e052bfcd578d6"
+    },
+    {
+      "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut/docs/evidence/frost-optical-runtime-v2.json",
+      "byteLength": 3083,
+      "sha256": "3bcb7d4f92f3ec02ec05ec8bc571800c3538fa00e540a60d5cfd0b845cbcd394"
+    },
+    {
+      "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut/docs/evidence/frost-encoded-time-controls-current.json",
+      "byteLength": 5094,
+      "sha256": "d4e26f12cb5a8cc22ac95886151c58b2dcf38efca2ef5159358d7d3ebcfa16b0"
+    },
+    {
+      "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut/docs/evidence/frost-schedule-clock-current.json",
+      "byteLength": 102046,
+      "sha256": "46641f7a0bfdf0cf58089b9204404752424238e1941f38ab3449b69b8e52a47e"
+    },
+    {
+      "path": "C:/tmps/frost-reference-gpu-v2-20261012-attempt-02/audit-receipt.json",
+      "byteLength": 36910,
+      "sha256": "f17ccc2ad4278c4dee613622f4f0349c22a7bb9d918c81f9bf86281179ef88f3"
+    },
+    {
+      "path": "C:/tmps/frost-reference-gpu-v2-20261012-attempt-02/capture-receipt.json",
+      "byteLength": 1106456,
+      "sha256": "e6616a616d305eaf0795053635dbad7bc85734504aed8fdec7a85328d51e0049"
+    },
+    {
+      "path": "C:/tmps/frost-optical-wasm-v2-20261012/receipt-final.json",
+      "byteLength": 4176,
+      "sha256": "0fd9ab4ba399df72ccf552106b54dd158ab8d6a6ecf2f0618209ae1f36a8196e"
+    }
+  ]
+}

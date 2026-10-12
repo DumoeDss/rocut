@@ -1,0 +1,120 @@
+{
+  "version": 1,
+  "date": "2026-10-12",
+  "status": "passed-bounded-whole-output-encoded-time-controls",
+  "scope": {
+    "production": "Read-only audit of the already accepted original revision 37 project default q8 VP9 video, 192x128, 24fps, 24 frames. No new render, Host, browser, GPU, compile, apply, or project save.",
+    "negative": "Two whole-output RGB freezes at source frame indices 0 and 12, encoded as lossless VP9 yuv444p with 24 advancing PTS, then independently decoded by FFmpeg.",
+    "notClaimed": [
+      "A schedule-only Frost clock freeze while optical scalar animation remains live",
+      "Native WebCodecs q8 implementation for the negative videos",
+      "Independent optical shader oracle",
+      "Transparent alpha master",
+      "Identifiable active masks for original frames 0 through 11",
+      "New WASM/runtime, installed plugin, Electron, or hardware GPU acceptance"
+    ]
+  },
+  "receipt": {
+    "path": "C:/tmps/frost-encoded-frozen-control-20261012/attempt-6oTAhr/receipt.json",
+    "sha256": "4458969a10ee06cc2ba470db8e86512494d6aec07435a8c8ea5d58b18855e743",
+    "bytes": 19624,
+    "ok": true,
+    "pinsCheckedBeforeAndAfter": 19,
+    "inputDrift": 0
+  },
+  "source": [
+    {
+      "path": "script/fixtures/frost-encoded-time-metrics.mjs",
+      "sha256": "d18ef37f5c8a4909bd478a23803d40e38c36e43d3909106f05874ad5ee581156"
+    },
+    {
+      "path": "script/fixtures/frost-encoded-time-metrics.test.mjs",
+      "sha256": "c3d4a873f3c728da68a1821412c98be7cd10aedf0e33522c0635ee54a2db10f8"
+    },
+    {
+      "path": "C:/tmps/frost-encoded-frozen-control-20261012/audit.mjs",
+      "sha256": "e55907c59c457cab13608763d0f89abf7b66608cdb2b986bb8d651810c13c49b"
+    }
+  ],
+  "gates": {
+    "originalFrameGatesUnchanged": {
+      "meanRgb": 4,
+      "activeRgb": 6,
+      "activePixels": 48,
+      "activeDelta": 16,
+      "timestampSeconds": 0.0011
+    },
+    "additionalTemporalGate": {
+      "pairIndicesDeclaredBeforeEncodedPixelRead": [0, 23],
+      "referenceOnlyChannelMask": "abs(expectedLast - expectedFirst) > 16",
+      "minimumPixels": 48,
+      "minimumSignedChangeMean": 8,
+      "maximumDeltaErrorMean": 12,
+      "derivation": "Uses the existing visible delta 16, half that delta for a nontrivial signed change, and twice the original active RGB error 6 for a two-frame delta. No original threshold, early-frame mask, or reference is changed."
+    }
+  },
+  "production": {
+    "originalPerFrameQuality": "All 24 full-frame means pass the original gate; frames 12..23 retain adequate masks and pass the original active gate. Frames 0..11 remain unidentifiable for active-region acceptance.",
+    "temporal": {
+      "pixels": 488,
+      "channels": 499,
+      "expectedChangeMean": 20.66933867735471,
+      "signedChangeMean": 15.390781563126252,
+      "deltaErrorMean": 5.559118236472946,
+      "identifiable": true,
+      "accepted": true
+    }
+  },
+  "originalGateSensitivityFinding": {
+    "frozenReferenceIndicesWithoutAdequateFrameFailure": [9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22],
+    "meaning": "Per-frame tolerance alone can accept certain constant reference frames in the later identifiable region; this is an acceptance-oracle gap, not proof of a production frozen-time defect.",
+    "all24FrozenReferencePairsRejectedByNewTemporalGate": true
+  },
+  "encodedNegatives": [
+    {
+      "frozenIndex": 0,
+      "frames": 24,
+      "advancingPtsVerified": true,
+      "signedChangeMean": 0,
+      "deltaErrorMean": 20.66933867735471,
+      "temporalAccepted": false,
+      "adequateFrameFailuresUnderOriginalGate": 12
+    },
+    {
+      "frozenIndex": 12,
+      "frames": 24,
+      "advancingPtsVerified": true,
+      "signedChangeMean": 0,
+      "deltaErrorMean": 20.66933867735471,
+      "temporalAccepted": false,
+      "adequateFrameFailuresUnderOriginalGate": 9
+    }
+  ],
+  "focusedTests": {
+    "command": "node --test script/fixtures/frost-encoded-time-metrics.test.mjs",
+    "passed": 8,
+    "failed": 0,
+    "skipped": 0,
+    "coverage": [
+      "Correct independently specified increasing and decreasing byte expectations",
+      "Frozen nonempty middle frame",
+      "Codec-like two-level drift is not mistaken for motion",
+      "Reversed time",
+      "Reference-only region selection and weak-reference rejection",
+      "Minimum region, malformed views, dimensions, and pixel budget",
+      "Orthogonal temporal rejection without rewriting original per-frame gates"
+    ]
+  },
+  "cleanup": {
+    "browserGpuHostStarted": false,
+    "ffmpegFfprobeInvocations": "All execFileSync operations exited successfully with bounded timeouts; outputs retained in the dedicated attempt directory.",
+    "projectWrites": 0,
+    "newProductionExportJobs": 0,
+    "oldArtifactsAndFailuresRetained": true
+  },
+  "remaining": [
+    "An isolated Frost stroke schedule clock negative with optical scalar animation held constant, through a real production render/encode path",
+    "Independent alpha-master acceptance if retained in the declared release scope",
+    "Finite-scope archival and P8 installation/release"
+  ]
+}

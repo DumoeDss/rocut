@@ -1,0 +1,1335 @@
+{
+  "version": 2,
+  "date": "2026-10-12",
+  "status": "CURRENT_CPU_HOST_NATIVE_PNG_CHAIN_PASSED_ORIGINAL_CANVAS_RAW_GATE_STILL_FAILED",
+  "scope": "Retained numbered v2 numeric/Host/RAW evidence plus normal native single-effect and whole-graph PNG closure. Existing Save/Copy snapshot path is wired; actual Save and normal-size PNG outputs are proven. Not restoration of missing original artifacts, mounted author UI, full matrix or codec acceptance.",
+  "runtime": {
+    "runtimeSha256": "22b495d2f25d6bb35b7232c4eb656487a060403cfb7276f5b2809c0497c5040e",
+    "wasmSha256": "8afce2680db2514a6f0c01e2fc563506dadef2f73ab15dd0ddf47c82d01fea30",
+    "originalComparedWasmSha256": "91cb239afd1efd81fa36a700bea6436e3707532a8f3111b175d22ee61dfbca86",
+    "config": {
+      "path": "C:/tmps/rocut-integration-delivery-20261012-liquid-domain-04/blaze-runtime-config.json",
+      "sha256": "4a90f0b34aa588860199e5c0cc62dabfdda454951fb54470a5e8ee7bf8587046"
+    }
+  },
+  "history": {
+    "historicalRedPreserved": true,
+    "historicalUnresolvedPreserved": true,
+    "lineageDiscrepancy": "Retained CPU receipt records Unresolved with SHA91cb; rerun of the same mathematical serialized payload against actual pinned91cb returns Safe. Not explained by91cb to8afce binary change; historical receipt is preserved, not reclassified.",
+    "missingArtifacts": [
+      {
+        "path": "C:/tmps/rocut-stylized-f6XU4z/blaze-raster-od1jXg/raw-frames.json",
+        "exists": false
+      },
+      {
+        "path": "C:/tmps/rocut-stylized-f6XU4z/blaze-editor-export-WASVYH/evidence.json",
+        "exists": false
+      },
+      {
+        "path": "C:/tmps/rocut-stylized-f6XU4z/blaze-host-kDZbVA/fixture/evidence.json",
+        "exists": false
+      }
+    ],
+    "priorFailedHostAttempt": {
+      "path": "C:/tmps/blaze-durable-host-v2-P9d5zW/receipt.json",
+      "sha256": "e32436cde0be4e7cfd224634e511060171404d111ce87b0d2afb8a2883d1cb0c"
+    },
+    "secondHostStoppedAssertion": {
+      "path": "C:/tmps/blaze-durable-host-v2-rMm5rv/receipt.json",
+      "sha256": "f6dc863b5233236c61720ebff064d9ab0cd22d55094ed12e178282f177a29d72"
+    },
+    "historicalScalarReceipt": {
+      "path": "C:/tmps/blaze-scalar-current-20261012/receipt.json",
+      "sha256": "16afb148ad34450a87a712b160b02e5515979c605574dca2c57e7afa227e7cbb"
+    },
+    "historicalRawIndex": {
+      "path": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/_others/rocut/docs/evidence/blaze-gpu-host.json",
+      "sha256": "48dfee58db6ee684c6a4735e8698be835ca549e8081a338756f9aad993392797"
+    }
+  },
+  "host": {
+    "compatibilityPolicy": "Host editing validation is schema/value/handle validation, not a domain safety certificate. IDs added where absent and free/missing tangentMode transported as broken; mathematical time/value/handle inputs unchanged.",
+    "boundaries": [
+      {
+        "id": "original-nonconstant-amount",
+        "field": "amount",
+        "tick": 205,
+        "historicalChannel": {
+          "keys": [
+            {
+              "time": 0,
+              "value": 1,
+              "segmentToNext": "bezier",
+              "rightHandle": {
+                "dt": 40000,
+                "dv": 0
+              }
+            },
+            {
+              "time": 120000,
+              "value": 0.9999999999999999,
+              "segmentToNext": "linear",
+              "leftHandle": {
+                "dt": -40000,
+                "dv": 0
+              }
+            }
+          ],
+          "extrapolation": {
+            "before": "hold",
+            "after": "hold"
+          }
+        },
+        "numericChannel": {
+          "keys": [
+            {
+              "time": 0,
+              "value": 1,
+              "segmentToNext": "bezier",
+              "rightHandle": {
+                "dt": 40000,
+                "dv": 0
+              }
+            },
+            {
+              "time": 120000,
+              "value": 0.9999999999999999,
+              "segmentToNext": "linear",
+              "leftHandle": {
+                "dt": -40000,
+                "dv": 0
+              }
+            }
+          ],
+          "extrapolation": {
+            "before": "hold",
+            "after": "hold"
+          }
+        },
+        "hostAccepted": true,
+        "httpStatus": 200,
+        "sampled": 1,
+        "strictResolverPassed": true,
+        "passCount": 1
+      },
+      {
+        "id": "original-nonconstant-refraction",
+        "field": "refraction",
+        "tick": 2,
+        "historicalChannel": {
+          "keys": [
+            {
+              "time": 0,
+              "value": 0.08,
+              "segmentToNext": "bezier",
+              "rightHandle": {
+                "dt": 40000,
+                "dv": 0
+              }
+            },
+            {
+              "time": 120000,
+              "value": 0.07999999999999999,
+              "segmentToNext": "linear",
+              "leftHandle": {
+                "dt": -40000,
+                "dv": 0
+              }
+            }
+          ],
+          "extrapolation": {
+            "before": "hold",
+            "after": "hold"
+          }
+        },
+        "numericChannel": {
+          "keys": [
+            {
+              "time": 0,
+              "value": 0.08,
+              "segmentToNext": "bezier",
+              "rightHandle": {
+                "dt": 40000,
+                "dv": 0
+              }
+            },
+            {
+              "time": 120000,
+              "value": 0.07999999999999999,
+              "segmentToNext": "linear",
+              "leftHandle": {
+                "dt": -40000,
+                "dv": 0
+              }
+            }
+          ],
+          "extrapolation": {
+            "before": "hold",
+            "after": "hold"
+          }
+        },
+        "hostAccepted": true,
+        "httpStatus": 200,
+        "sampled": 0.08,
+        "strictResolverPassed": true,
+        "passCount": 1
+      },
+      {
+        "id": "original-nonconstant-height",
+        "field": "height",
+        "tick": 2,
+        "historicalChannel": {
+          "keys": [
+            {
+              "time": 0,
+              "value": 0.1,
+              "segmentToNext": "bezier",
+              "rightHandle": {
+                "dt": 40000,
+                "dv": 0
+              }
+            },
+            {
+              "time": 120000,
+              "value": 0.10000000000000002,
+              "segmentToNext": "linear",
+              "leftHandle": {
+                "dt": -40000,
+                "dv": 0
+              }
+            }
+          ],
+          "extrapolation": {
+            "before": "hold",
+            "after": "hold"
+          }
+        },
+        "numericChannel": {
+          "keys": [
+            {
+              "time": 0,
+              "value": 0.1,
+              "segmentToNext": "bezier",
+              "rightHandle": {
+                "dt": 40000,
+                "dv": 0
+              }
+            },
+            {
+              "time": 120000,
+              "value": 0.10000000000000002,
+              "segmentToNext": "linear",
+              "leftHandle": {
+                "dt": -40000,
+                "dv": 0
+              }
+            }
+          ],
+          "extrapolation": {
+            "before": "hold",
+            "after": "hold"
+          }
+        },
+        "hostAccepted": true,
+        "httpStatus": 200,
+        "sampled": 0.1,
+        "strictResolverPassed": true,
+        "passCount": 1
+      },
+      {
+        "id": "original-nonconstant-wind",
+        "field": "wind",
+        "tick": 205,
+        "historicalChannel": {
+          "keys": [
+            {
+              "time": 0,
+              "value": -1,
+              "segmentToNext": "bezier",
+              "rightHandle": {
+                "dt": 40000,
+                "dv": 0
+              }
+            },
+            {
+              "time": 120000,
+              "value": -0.9999999999999999,
+              "segmentToNext": "linear",
+              "leftHandle": {
+                "dt": -40000,
+                "dv": 0
+              }
+            }
+          ],
+          "extrapolation": {
+            "before": "hold",
+            "after": "hold"
+          }
+        },
+        "numericChannel": {
+          "keys": [
+            {
+              "time": 0,
+              "value": -1,
+              "segmentToNext": "bezier",
+              "rightHandle": {
+                "dt": 40000,
+                "dv": 0
+              }
+            },
+            {
+              "time": 120000,
+              "value": -0.9999999999999999,
+              "segmentToNext": "linear",
+              "leftHandle": {
+                "dt": -40000,
+                "dv": 0
+              }
+            }
+          ],
+          "extrapolation": {
+            "before": "hold",
+            "after": "hold"
+          }
+        },
+        "hostAccepted": true,
+        "httpStatus": 200,
+        "sampled": -1,
+        "strictResolverPassed": true,
+        "passCount": 1
+      }
+    ],
+    "near": {
+      "id": "original-near-unresolved",
+      "tick": 205,
+      "historicalChannel": {
+        "keys": [
+          {
+            "id": "a",
+            "time": 0,
+            "value": 0.9999999999999999,
+            "segmentToNext": "bezier",
+            "tangentMode": "free",
+            "rightHandle": {
+              "dt": 50400,
+              "dv": 0
+            }
+          },
+          {
+            "id": "b",
+            "time": 120000,
+            "value": 1,
+            "segmentToNext": "linear",
+            "tangentMode": "free",
+            "leftHandle": {
+              "dt": -50400,
+              "dv": 0
+            }
+          }
+        ]
+      },
+      "persistedHostChannel": {
+        "keys": [
+          {
+            "id": "a",
+            "time": 0,
+            "value": 0.9999999999999999,
+            "segmentToNext": "bezier",
+            "tangentMode": "broken",
+            "rightHandle": {
+              "dt": 50400,
+              "dv": 0
+            }
+          },
+          {
+            "id": "b",
+            "time": 120000,
+            "value": 1,
+            "segmentToNext": "linear",
+            "tangentMode": "broken",
+            "leftHandle": {
+              "dt": -50400,
+              "dv": 0
+            }
+          }
+        ]
+      },
+      "numericChannel": {
+        "keys": [
+          {
+            "time": 0,
+            "value": 0.9999999999999999,
+            "segmentToNext": "bezier",
+            "rightHandle": {
+              "dt": 50400,
+              "dv": 0
+            }
+          },
+          {
+            "time": 120000,
+            "value": 1,
+            "segmentToNext": "linear",
+            "leftHandle": {
+              "dt": -50400,
+              "dv": 0
+            }
+          }
+        ],
+        "extrapolation": {
+          "before": "hold",
+          "after": "hold"
+        }
+      },
+      "sampled": 0.9999999999999999,
+      "strictResolverPassed": true,
+      "passCount": 1
+    },
+    "readOnlyReopen": {
+      "receipt": {
+        "path": "C:/tmps/blaze-host-readonly-resume-Nio8gD/receipt.json",
+        "sha256": "7b2c72f1f97fab649ed2abced113150456b053fe530c15b77884a9f76dbf6dfc"
+      },
+      "status": "PASSED_READONLY_REOPEN_EXISTING_PROJECT",
+      "projectByteExact": true,
+      "historicalReceiptUnchanged": true,
+      "persistedClips": 5,
+      "contextAndClipsEqual": true,
+      "noCreateApplySaveMutation": true,
+      "hostClosed": true
+    }
+  },
+  "numeric": {
+    "receipt": {
+      "path": "C:/tmps/blaze-production-closure-20261012/blaze-numeric-compare-receipt.json",
+      "sha256": "3fda5cc74f540f72d6b1ebc428380e66f148185818c6537e5041137f413ad0b7"
+    },
+    "serialization": {
+      "removedMetadata": [
+        "id",
+        "tangentMode"
+      ],
+      "defaultExtrapolation": "hold/hold",
+      "domain": [
+        0,
+        120000
+      ],
+      "bounds": [
+        0,
+        1
+      ],
+      "fallbackValue": 1,
+      "displayMultiplier": 1
+    },
+    "exactRequestsAndCertificates": [
+      {
+        "budget": 4096,
+        "id": "domain-inspection",
+        "json": "{\"version\":1,\"numericSemantics\":\"scalar-f64-v1\",\"items\":[{\"id\":\"domain-inspection\",\"channel\":{\"keys\":[{\"time\":0,\"value\":0.9999999999999999,\"segmentToNext\":\"bezier\",\"rightHandle\":{\"dt\":50400,\"dv\":0}},{\"time\":120000,\"value\":1,\"segmentToNext\":\"linear\",\"leftHandle\":{\"dt\":-50400,\"dv\":0}}],\"extrapolation\":{\"before\":\"hold\",\"after\":\"hold\"}},\"fallbackValue\":1,\"domain\":{\"start\":0,\"end\":120000},\"bounds\":{\"min\":0,\"max\":1,\"displayMultiplier\":1},\"budget\":{\"maxNodes\":4096}}],\"budget\":{\"maxNodes\":4096}}",
+        "sha256": "08ae56eaa79026ccc7dc349a2c6ccad8edaff74a28954de1cf46f9128720f4c5",
+        "old": {
+          "kind": "batch-result",
+          "version": 1,
+          "numericSemantics": "scalar-f64-v1",
+          "budget": {
+            "maxNodes": 4096,
+            "visitedNodes": 1
+          },
+          "results": [
+            {
+              "id": "domain-inspection",
+              "status": "safe",
+              "domain": {
+                "start": 0,
+                "end": 120000
+              },
+              "values": {
+                "min": 0.9999999999999999,
+                "max": 1
+              },
+              "displayed": {
+                "min": 0.9999999999999999,
+                "max": 1
+              },
+              "visitedNodes": 1,
+              "budget": {
+                "requestedNodes": 4096,
+                "effectiveNodes": 4096
+              },
+              "numericSemantics": "scalar-f64-v1",
+              "certificateVersion": 1
+            }
+          ]
+        },
+        "current": {
+          "kind": "batch-result",
+          "version": 1,
+          "numericSemantics": "scalar-f64-v1",
+          "budget": {
+            "maxNodes": 4096,
+            "visitedNodes": 1
+          },
+          "results": [
+            {
+              "id": "domain-inspection",
+              "status": "safe",
+              "domain": {
+                "start": 0,
+                "end": 120000
+              },
+              "values": {
+                "min": 0.9999999999999999,
+                "max": 1
+              },
+              "displayed": {
+                "min": 0.9999999999999999,
+                "max": 1
+              },
+              "visitedNodes": 1,
+              "budget": {
+                "requestedNodes": 4096,
+                "effectiveNodes": 4096
+              },
+              "numericSemantics": "scalar-f64-v1",
+              "certificateVersion": 1
+            }
+          ]
+        }
+      },
+      {
+        "budget": 4096,
+        "id": "original-near-unresolved",
+        "json": "{\"version\":1,\"numericSemantics\":\"scalar-f64-v1\",\"items\":[{\"id\":\"original-near-unresolved\",\"channel\":{\"keys\":[{\"time\":0,\"value\":0.9999999999999999,\"segmentToNext\":\"bezier\",\"rightHandle\":{\"dt\":50400,\"dv\":0}},{\"time\":120000,\"value\":1,\"segmentToNext\":\"linear\",\"leftHandle\":{\"dt\":-50400,\"dv\":0}}],\"extrapolation\":{\"before\":\"hold\",\"after\":\"hold\"}},\"fallbackValue\":1,\"domain\":{\"start\":0,\"end\":120000},\"bounds\":{\"min\":0,\"max\":1,\"displayMultiplier\":1},\"budget\":{\"maxNodes\":4096}}],\"budget\":{\"maxNodes\":4096}}",
+        "sha256": "6f396fe45e19fbf04928ab1f5937f81a686e0da363fc1d1657d1e312df9b9983",
+        "old": {
+          "kind": "batch-result",
+          "version": 1,
+          "numericSemantics": "scalar-f64-v1",
+          "budget": {
+            "maxNodes": 4096,
+            "visitedNodes": 1
+          },
+          "results": [
+            {
+              "id": "original-near-unresolved",
+              "status": "safe",
+              "domain": {
+                "start": 0,
+                "end": 120000
+              },
+              "values": {
+                "min": 0.9999999999999999,
+                "max": 1
+              },
+              "displayed": {
+                "min": 0.9999999999999999,
+                "max": 1
+              },
+              "visitedNodes": 1,
+              "budget": {
+                "requestedNodes": 4096,
+                "effectiveNodes": 4096
+              },
+              "numericSemantics": "scalar-f64-v1",
+              "certificateVersion": 1
+            }
+          ]
+        },
+        "current": {
+          "kind": "batch-result",
+          "version": 1,
+          "numericSemantics": "scalar-f64-v1",
+          "budget": {
+            "maxNodes": 4096,
+            "visitedNodes": 1
+          },
+          "results": [
+            {
+              "id": "original-near-unresolved",
+              "status": "safe",
+              "domain": {
+                "start": 0,
+                "end": 120000
+              },
+              "values": {
+                "min": 0.9999999999999999,
+                "max": 1
+              },
+              "displayed": {
+                "min": 0.9999999999999999,
+                "max": 1
+              },
+              "visitedNodes": 1,
+              "budget": {
+                "requestedNodes": 4096,
+                "effectiveNodes": 4096
+              },
+              "numericSemantics": "scalar-f64-v1",
+              "certificateVersion": 1
+            }
+          ]
+        }
+      },
+      {
+        "budget": 65536,
+        "id": "domain-inspection",
+        "json": "{\"version\":1,\"numericSemantics\":\"scalar-f64-v1\",\"items\":[{\"id\":\"domain-inspection\",\"channel\":{\"keys\":[{\"time\":0,\"value\":0.9999999999999999,\"segmentToNext\":\"bezier\",\"rightHandle\":{\"dt\":50400,\"dv\":0}},{\"time\":120000,\"value\":1,\"segmentToNext\":\"linear\",\"leftHandle\":{\"dt\":-50400,\"dv\":0}}],\"extrapolation\":{\"before\":\"hold\",\"after\":\"hold\"}},\"fallbackValue\":1,\"domain\":{\"start\":0,\"end\":120000},\"bounds\":{\"min\":0,\"max\":1,\"displayMultiplier\":1},\"budget\":{\"maxNodes\":65536}}],\"budget\":{\"maxNodes\":65536}}",
+        "sha256": "20cc9847cc1dbfad310434d498994b3bb312fe6689d75c4b688ed723360e59bb",
+        "old": {
+          "kind": "batch-result",
+          "version": 1,
+          "numericSemantics": "scalar-f64-v1",
+          "budget": {
+            "maxNodes": 65536,
+            "visitedNodes": 1
+          },
+          "results": [
+            {
+              "id": "domain-inspection",
+              "status": "safe",
+              "domain": {
+                "start": 0,
+                "end": 120000
+              },
+              "values": {
+                "min": 0.9999999999999999,
+                "max": 1
+              },
+              "displayed": {
+                "min": 0.9999999999999999,
+                "max": 1
+              },
+              "visitedNodes": 1,
+              "budget": {
+                "requestedNodes": 65536,
+                "effectiveNodes": 65536
+              },
+              "numericSemantics": "scalar-f64-v1",
+              "certificateVersion": 1
+            }
+          ]
+        },
+        "current": {
+          "kind": "batch-result",
+          "version": 1,
+          "numericSemantics": "scalar-f64-v1",
+          "budget": {
+            "maxNodes": 65536,
+            "visitedNodes": 1
+          },
+          "results": [
+            {
+              "id": "domain-inspection",
+              "status": "safe",
+              "domain": {
+                "start": 0,
+                "end": 120000
+              },
+              "values": {
+                "min": 0.9999999999999999,
+                "max": 1
+              },
+              "displayed": {
+                "min": 0.9999999999999999,
+                "max": 1
+              },
+              "visitedNodes": 1,
+              "budget": {
+                "requestedNodes": 65536,
+                "effectiveNodes": 65536
+              },
+              "numericSemantics": "scalar-f64-v1",
+              "certificateVersion": 1
+            }
+          ]
+        }
+      },
+      {
+        "budget": 65536,
+        "id": "original-near-unresolved",
+        "json": "{\"version\":1,\"numericSemantics\":\"scalar-f64-v1\",\"items\":[{\"id\":\"original-near-unresolved\",\"channel\":{\"keys\":[{\"time\":0,\"value\":0.9999999999999999,\"segmentToNext\":\"bezier\",\"rightHandle\":{\"dt\":50400,\"dv\":0}},{\"time\":120000,\"value\":1,\"segmentToNext\":\"linear\",\"leftHandle\":{\"dt\":-50400,\"dv\":0}}],\"extrapolation\":{\"before\":\"hold\",\"after\":\"hold\"}},\"fallbackValue\":1,\"domain\":{\"start\":0,\"end\":120000},\"bounds\":{\"min\":0,\"max\":1,\"displayMultiplier\":1},\"budget\":{\"maxNodes\":65536}}],\"budget\":{\"maxNodes\":65536}}",
+        "sha256": "ac3578a74f749f2f406d51c3cbea92ac5493a3ffeba8c354d8bd0e0fa85b29a8",
+        "old": {
+          "kind": "batch-result",
+          "version": 1,
+          "numericSemantics": "scalar-f64-v1",
+          "budget": {
+            "maxNodes": 65536,
+            "visitedNodes": 1
+          },
+          "results": [
+            {
+              "id": "original-near-unresolved",
+              "status": "safe",
+              "domain": {
+                "start": 0,
+                "end": 120000
+              },
+              "values": {
+                "min": 0.9999999999999999,
+                "max": 1
+              },
+              "displayed": {
+                "min": 0.9999999999999999,
+                "max": 1
+              },
+              "visitedNodes": 1,
+              "budget": {
+                "requestedNodes": 65536,
+                "effectiveNodes": 65536
+              },
+              "numericSemantics": "scalar-f64-v1",
+              "certificateVersion": 1
+            }
+          ]
+        },
+        "current": {
+          "kind": "batch-result",
+          "version": 1,
+          "numericSemantics": "scalar-f64-v1",
+          "budget": {
+            "maxNodes": 65536,
+            "visitedNodes": 1
+          },
+          "results": [
+            {
+              "id": "original-near-unresolved",
+              "status": "safe",
+              "domain": {
+                "start": 0,
+                "end": 120000
+              },
+              "values": {
+                "min": 0.9999999999999999,
+                "max": 1
+              },
+              "displayed": {
+                "min": 0.9999999999999999,
+                "max": 1
+              },
+              "visitedNodes": 1,
+              "budget": {
+                "requestedNodes": 65536,
+                "effectiveNodes": 65536
+              },
+              "numericSemantics": "scalar-f64-v1",
+              "certificateVersion": 1
+            }
+          ]
+        }
+      }
+    ],
+    "negativeControls": [
+      {
+        "name": "genuine-overshoot",
+        "json": "{\"version\":1,\"numericSemantics\":\"scalar-f64-v1\",\"items\":[{\"id\":\"domain-inspection\",\"channel\":{\"keys\":[{\"time\":0,\"value\":0,\"segmentToNext\":\"bezier\",\"rightHandle\":{\"dt\":50400,\"dv\":2}},{\"time\":120000,\"value\":1,\"segmentToNext\":\"linear\",\"leftHandle\":{\"dt\":-50400,\"dv\":0}}],\"extrapolation\":{\"before\":\"hold\",\"after\":\"hold\"}},\"fallbackValue\":1,\"domain\":{\"start\":0,\"end\":120000},\"bounds\":{\"min\":0,\"max\":1,\"displayMultiplier\":1},\"budget\":{\"maxNodes\":65536}}],\"budget\":{\"maxNodes\":65536}}",
+        "old": {
+          "kind": "batch-result",
+          "version": 1,
+          "numericSemantics": "scalar-f64-v1",
+          "budget": {
+            "maxNodes": 65536,
+            "visitedNodes": 0
+          },
+          "results": [
+            {
+              "id": "domain-inspection",
+              "status": "violation",
+              "domain": {
+                "start": 0,
+                "end": 120000
+              },
+              "time": 119999.99999999999,
+              "value": 1.0000000000006821,
+              "reason": {
+                "code": "outside-bounds",
+                "path": "$/items/0/channel/keys/0",
+                "message": "An evaluated witness is outside the displayed bounds",
+                "keyIndex": 0
+              },
+              "visitedNodes": 0,
+              "budget": {
+                "requestedNodes": 65536,
+                "effectiveNodes": 65536
+              }
+            }
+          ]
+        },
+        "current": {
+          "kind": "batch-result",
+          "version": 1,
+          "numericSemantics": "scalar-f64-v1",
+          "budget": {
+            "maxNodes": 65536,
+            "visitedNodes": 0
+          },
+          "results": [
+            {
+              "id": "domain-inspection",
+              "status": "violation",
+              "domain": {
+                "start": 0,
+                "end": 120000
+              },
+              "time": 119999.99999999999,
+              "value": 1.0000000000006821,
+              "reason": {
+                "code": "outside-bounds",
+                "path": "$/items/0/channel/keys/0",
+                "message": "An evaluated witness is outside the displayed bounds",
+                "keyIndex": 0
+              },
+              "visitedNodes": 0,
+              "budget": {
+                "requestedNodes": 65536,
+                "effectiveNodes": 65536
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "endpoint-outside-bound",
+        "json": "{\"version\":1,\"numericSemantics\":\"scalar-f64-v1\",\"items\":[{\"id\":\"domain-inspection\",\"channel\":{\"keys\":[{\"time\":0,\"value\":0.9999999999999999,\"segmentToNext\":\"bezier\",\"rightHandle\":{\"dt\":50400,\"dv\":0}},{\"time\":120000,\"value\":1,\"segmentToNext\":\"linear\",\"leftHandle\":{\"dt\":-50400,\"dv\":0}}],\"extrapolation\":{\"before\":\"hold\",\"after\":\"hold\"}},\"fallbackValue\":1,\"domain\":{\"start\":0,\"end\":120000},\"bounds\":{\"min\":0,\"max\":0.9999999999999999,\"displayMultiplier\":1},\"budget\":{\"maxNodes\":65536}}],\"budget\":{\"maxNodes\":65536}}",
+        "old": {
+          "kind": "batch-result",
+          "version": 1,
+          "numericSemantics": "scalar-f64-v1",
+          "budget": {
+            "maxNodes": 65536,
+            "visitedNodes": 0
+          },
+          "results": [
+            {
+              "id": "domain-inspection",
+              "status": "violation",
+              "domain": {
+                "start": 0,
+                "end": 120000
+              },
+              "time": 119999.99999999999,
+              "value": 1,
+              "reason": {
+                "code": "outside-bounds",
+                "path": "$/items/0/channel/keys/0",
+                "message": "An evaluated witness is outside the displayed bounds",
+                "keyIndex": 0
+              },
+              "visitedNodes": 0,
+              "budget": {
+                "requestedNodes": 65536,
+                "effectiveNodes": 65536
+              }
+            }
+          ]
+        },
+        "current": {
+          "kind": "batch-result",
+          "version": 1,
+          "numericSemantics": "scalar-f64-v1",
+          "budget": {
+            "maxNodes": 65536,
+            "visitedNodes": 0
+          },
+          "results": [
+            {
+              "id": "domain-inspection",
+              "status": "violation",
+              "domain": {
+                "start": 0,
+                "end": 120000
+              },
+              "time": 119999.99999999999,
+              "value": 1,
+              "reason": {
+                "code": "outside-bounds",
+                "path": "$/items/0/channel/keys/0",
+                "message": "An evaluated witness is outside the displayed bounds",
+                "keyIndex": 0
+              },
+              "visitedNodes": 0,
+              "budget": {
+                "requestedNodes": 65536,
+                "effectiveNodes": 65536
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "independentSupport": {
+      "controlHull": [
+        0.9999999999999999,
+        1
+      ],
+      "reason": "All four Bezier ordinates lie within this hull; bounded de Casteljau convex interpolation preserves it.",
+      "integerSamples": 120001,
+      "min": 0.9999999999999999,
+      "max": 1,
+      "samplingIsNotProof": true
+    },
+    "sourcePins": [
+      {
+        "relative": "rust/crates/editor-api/src/animation_numeric/sample.rs",
+        "oldSha256": "d188d7951dbd504e35f3fba4d11cc66fe1d93eb2577f6bb1631a59a35625c5f8",
+        "oldReceiptPin": "d188d7951dbd504e35f3fba4d11cc66fe1d93eb2577f6bb1631a59a35625c5f8",
+        "currentSha256": "d188d7951dbd504e35f3fba4d11cc66fe1d93eb2577f6bb1631a59a35625c5f8",
+        "newCompiledSnapshotSha256": "d188d7951dbd504e35f3fba4d11cc66fe1d93eb2577f6bb1631a59a35625c5f8",
+        "byteIdenticalOldNew": true
+      },
+      {
+        "relative": "rust/crates/editor-api/src/animation_numeric/domain.rs",
+        "oldSha256": "30f489f0732f85ceed28990ab4016fcb17ebc8cdcbca7f0ca874eef2899c78b6",
+        "oldReceiptPin": "30f489f0732f85ceed28990ab4016fcb17ebc8cdcbca7f0ca874eef2899c78b6",
+        "currentSha256": "30f489f0732f85ceed28990ab4016fcb17ebc8cdcbca7f0ca874eef2899c78b6",
+        "newCompiledSnapshotSha256": "30f489f0732f85ceed28990ab4016fcb17ebc8cdcbca7f0ca874eef2899c78b6",
+        "byteIdenticalOldNew": true
+      },
+      {
+        "relative": "rust/crates/editor-api/src/animation_numeric/tight.rs",
+        "oldSha256": "5b51c7e25a88064c2e3d8ff69df5bc0c927cf2119d112a3dd6fed299b129a31f",
+        "oldReceiptPin": "5b51c7e25a88064c2e3d8ff69df5bc0c927cf2119d112a3dd6fed299b129a31f",
+        "currentSha256": "5b51c7e25a88064c2e3d8ff69df5bc0c927cf2119d112a3dd6fed299b129a31f",
+        "newCompiledSnapshotSha256": "5b51c7e25a88064c2e3d8ff69df5bc0c927cf2119d112a3dd6fed299b129a31f",
+        "byteIdenticalOldNew": true
+      },
+      {
+        "relative": "rust/crates/editor-api/src/animation_numeric/interval.rs",
+        "oldSha256": "060ec9ffc34b7b87ecd2120e045db4fd02f1deccd3d6a330bc6c98b8f04c8df3",
+        "oldReceiptPin": "060ec9ffc34b7b87ecd2120e045db4fd02f1deccd3d6a330bc6c98b8f04c8df3",
+        "currentSha256": "060ec9ffc34b7b87ecd2120e045db4fd02f1deccd3d6a330bc6c98b8f04c8df3",
+        "newCompiledSnapshotSha256": "060ec9ffc34b7b87ecd2120e045db4fd02f1deccd3d6a330bc6c98b8f04c8df3",
+        "byteIdenticalOldNew": true
+      },
+      {
+        "relative": "rust/crates/editor-api/src/animation_numeric/model.rs",
+        "oldSha256": "382967a6885f81f55c103f1363f3bf5b24326efbb2578c0cf9694be8a4c10212",
+        "oldReceiptPin": "382967a6885f81f55c103f1363f3bf5b24326efbb2578c0cf9694be8a4c10212",
+        "currentSha256": "382967a6885f81f55c103f1363f3bf5b24326efbb2578c0cf9694be8a4c10212",
+        "newCompiledSnapshotSha256": "382967a6885f81f55c103f1363f3bf5b24326efbb2578c0cf9694be8a4c10212",
+        "byteIdenticalOldNew": true
+      },
+      {
+        "relative": "rust/crates/editor-api/src/animation_numeric/mod.rs",
+        "oldSha256": "524833daacd2b52f495334fb0531398afd8a4876c2ff60512021b0db9d589f46",
+        "oldReceiptPin": "524833daacd2b52f495334fb0531398afd8a4876c2ff60512021b0db9d589f46",
+        "currentSha256": "524833daacd2b52f495334fb0531398afd8a4876c2ff60512021b0db9d589f46",
+        "newCompiledSnapshotSha256": "524833daacd2b52f495334fb0531398afd8a4876c2ff60512021b0db9d589f46",
+        "byteIdenticalOldNew": true
+      }
+    ],
+    "newCompiledSourceLineage": {
+      "headAtCompile": "0602e69d988a87301db0479629453bddda38d9af",
+      "headAtDelivery": "0602e69d988a87301db0479629453bddda38d9af",
+      "exactSourceSnapshot": "C:/tmps/rocut-liquid-domain-wasm-20261012/source",
+      "rustSourcePinCount": 984,
+      "sourceDrift": [],
+      "defaultWasmPackProducer": true,
+      "sourceSnapshotValidatedByCurrentGates": true
+    },
+    "productionSerializer": {
+      "receipt": {
+        "path": "C:/tmps/blaze-production-closure-20261012/blaze-serializer-capture.json",
+        "sha256": "6abc0f386e91415e2ca7a1cd858a1323856f6bbde1e18bac471e8c5330b73695"
+      },
+      "exactRequestBytesMatch": true,
+      "rows": [
+        {
+          "maxNodes": 4096,
+          "json": "{\"version\":1,\"numericSemantics\":\"scalar-f64-v1\",\"items\":[{\"id\":\"domain-inspection\",\"channel\":{\"keys\":[{\"time\":0,\"value\":0.9999999999999999,\"segmentToNext\":\"bezier\",\"rightHandle\":{\"dt\":50400,\"dv\":0}},{\"time\":120000,\"value\":1,\"segmentToNext\":\"linear\",\"leftHandle\":{\"dt\":-50400,\"dv\":0}}],\"extrapolation\":{\"before\":\"hold\",\"after\":\"hold\"}},\"fallbackValue\":1,\"domain\":{\"start\":0,\"end\":120000},\"bounds\":{\"min\":0,\"max\":1,\"displayMultiplier\":1},\"budget\":{\"maxNodes\":4096}}],\"budget\":{\"maxNodes\":4096}}",
+          "report": {
+            "status": "safe",
+            "domain": {
+              "start": 0,
+              "end": 120000
+            },
+            "values": {
+              "min": 0.9999999999999999,
+              "max": 1
+            },
+            "displayed": {
+              "min": 0.9999999999999999,
+              "max": 1
+            }
+          }
+        },
+        {
+          "maxNodes": 65536,
+          "json": "{\"version\":1,\"numericSemantics\":\"scalar-f64-v1\",\"items\":[{\"id\":\"domain-inspection\",\"channel\":{\"keys\":[{\"time\":0,\"value\":0.9999999999999999,\"segmentToNext\":\"bezier\",\"rightHandle\":{\"dt\":50400,\"dv\":0}},{\"time\":120000,\"value\":1,\"segmentToNext\":\"linear\",\"leftHandle\":{\"dt\":-50400,\"dv\":0}}],\"extrapolation\":{\"before\":\"hold\",\"after\":\"hold\"}},\"fallbackValue\":1,\"domain\":{\"start\":0,\"end\":120000},\"bounds\":{\"min\":0,\"max\":1,\"displayMultiplier\":1},\"budget\":{\"maxNodes\":65536}}],\"budget\":{\"maxNodes\":65536}}",
+          "report": {
+            "status": "safe",
+            "domain": {
+              "start": 0,
+              "end": 120000
+            },
+            "values": {
+              "min": 0.9999999999999999,
+              "max": 1
+            },
+            "displayed": {
+              "min": 0.9999999999999999,
+              "max": 1
+            }
+          }
+        }
+      ]
+    },
+    "conclusion": "Both actual pinned91cb and8afce produce Safe with1 visited node at4096/65536. Numeric Rust lineage is byte-identical; no claim that this binary transition changed the verdict. Historical Unresolved remains a lineage discrepancy."
+  },
+  "lowAlpha": {
+    "numberedV2": true,
+    "originalRawRestored": false,
+    "receipt": {
+      "path": "C:/tmps/blaze-low-alpha-v2-KgisIX/receipt.json",
+      "sha256": "4e7b09ca2101f5dc4ca989604e8001f40c982cbce38d624f9a23e17839737829"
+    },
+    "preflightFailure": {
+      "path": "C:/tmps/blaze-production-closure-20261012/blaze-low-alpha-v2-attempt-00-preflight.json",
+      "sha256": "c3d4abed361a0d5c703fe805a6c1e3b942435e8ad34d6cf03dd9a6cb1f52771a"
+    },
+    "privateRunnerAdaptation": "Only nested pinned runtime config/glue consumption corrected after failure before browser/GPU initialization; no parameter/oracle/threshold edits and no RAW rerun.",
+    "params": {
+      "amount": 0.35,
+      "flameOpacity": 0.75,
+      "sparkOpacity": 1,
+      "smokeOpacity": 0.5,
+      "refraction": 0.065,
+      "height": 0.85,
+      "scale": 0.11,
+      "speed": 0.5,
+      "wind": 0.37,
+      "seed": 31415
+    },
+    "source": {
+      "width": 96,
+      "height": 256,
+      "kind": "transparent",
+      "pattern": "gradient"
+    },
+    "ticks": 48000,
+    "frameRate": {
+      "numerator": 30,
+      "denominator": 1
+    },
+    "thresholds": {
+      "premultipliedRgbMean": 0.5,
+      "premultipliedRgbMaximum": 4,
+      "alphaMean": 0.35,
+      "alphaMaximum": 3,
+      "straightRgbAlphaMinimum": 16,
+      "straightRgbMean": 1.5,
+      "straightRgbMaximum": 8,
+      "activeDifference": 8,
+      "minimumBroadActivePixels": 64,
+      "minimumSparkActivePixels": 8,
+      "identity": 0
+    },
+    "backend": "webgl",
+    "metrics": {
+      "premultipliedMean": 0.12296389910126576,
+      "premultipliedMaximum": 0.6431372549019608,
+      "alphaMean": 0,
+      "alphaMaximum": 0,
+      "straightMean": 1.6610118276784944,
+      "straightMaximum": 8,
+      "straightChannels": 23166,
+      "pass": false
+    },
+    "negativeControls": {
+      "noEffect": {
+        "premultipliedMean": 4.741000678700371,
+        "premultipliedMaximum": 85.88235294117646,
+        "alphaMean": 14.9130859375,
+        "alphaMaximum": 103,
+        "straightMean": 0,
+        "straightMaximum": 0,
+        "straightChannels": 0,
+        "pass": false
+      },
+      "noEffectRejected": true
+    },
+    "rawFiles": {
+      "sourceRgba": {
+        "sha256": "3a3ed164e42500a1c5b2d0093f0a813d27dc50d038f330cc100a7e70ece2e6e4",
+        "bytes": 98304,
+        "path": "C:/tmps/blaze-low-alpha-v2-KgisIX/sourceRgba.rgba"
+      },
+      "expectedRgba": {
+        "sha256": "cf9bd607fa0961a77ed75afdc4172fb5788e0c1937c53462da4a4a9fcc753077",
+        "bytes": 98304,
+        "path": "C:/tmps/blaze-low-alpha-v2-KgisIX/expectedRgba.rgba"
+      },
+      "actualRgba": {
+        "sha256": "ce99381b1ee9a66a603bad2745ecdbfb47defe0cba0a2b2123c1c49ff47f614c",
+        "bytes": 98304,
+        "path": "C:/tmps/blaze-low-alpha-v2-KgisIX/actualRgba.rgba"
+      }
+    },
+    "quantizationSupport": {
+      "receipt": {
+        "path": "C:/tmps/blaze-low-alpha-v2-KgisIX/quantization-support.json",
+        "sha256": "668ca346f537386e5fe6e7430a98082508d9c70448919fbfca24f833ac81fa41"
+      },
+      "scope": "CPU-only quantization localization of retained failed v2 RAW; simple nearest 8-bit premultiply/unpremultiply model is supporting evidence, not native-texture proof or threshold waiver.",
+      "expectedSha256": "cf9bd607fa0961a77ed75afdc4172fb5788e0c1937c53462da4a4a9fcc753077",
+      "actualSha256": "ce99381b1ee9a66a603bad2745ecdbfb47defe0cba0a2b2123c1c49ff47f614c",
+      "pixels": 24576,
+      "equalAlphaPixels": 24576,
+      "eligibleStraightChannels": 23166,
+      "observedStraightMean": 1.6610118276784944,
+      "nearestPremulQuantization": {
+        "exactChannels": 21563,
+        "exactFraction": 0.9308037641370974,
+        "meanResidual": 0.06919623586290254,
+        "maxResidual": 1
+      },
+      "alphaBins": {
+        "16-31": {
+          "channels": 7596,
+          "straightMean": 2.740916271721959,
+          "straightMax": 8
+        },
+        "32-63": {
+          "channels": 10143,
+          "straightMean": 1.3299812678694667,
+          "straightMax": 4
+        },
+        "64-127": {
+          "channels": 5427,
+          "straightMean": 0.7681960567532706,
+          "straightMax": 2
+        }
+      },
+      "conclusion": "Readback matches low-alpha quantization signature; frozen RAW gate remains failed. No new inner GPU texture observation collected."
+    },
+    "errors": [],
+    "cleanup": [
+      {
+        "name": "browser",
+        "closed": true
+      },
+      {
+        "name": "server",
+        "closed": true
+      }
+    ],
+    "conclusion": "Frozen straightMean1.5 gate failed at1.6610118276784944. Alpha is exact. Quantization supports readback localization but does not waive gate or establish new native texture correctness."
+  },
+  "productionBoundaryInvestigation": {
+    "status": "CPU_CODE_ANALYSIS_SHARED_OUTPUT_BOUNDARY_CHANGE_REQUIRED_BEFORE_IMPLEMENTATION",
+    "gpuStarted": false,
+    "historicalV2FailureRerun": false,
+    "sourcePaths": {
+      "blazeShader": "rust/crates/effects/src/shaders/blaze.wgsl",
+      "effectCanvasExport": "rust/wasm/src/effects.rs",
+      "surfaceCanvasConversion": "rust/crates/gpu/src/context.rs",
+      "surfacePremultiply": "rust/crates/gpu/src/shaders/surface_presentation.wgsl",
+      "productionPreviewConsumer": "packages/editor-classic/src/services/renderer/gpu-renderer.ts",
+      "diagnosticNativeReadback": "rust/wasm/src/effects_readback.rs"
+    },
+    "trace": [
+      "Blaze performs premultiplied internal composition and divides once to straight RGBA shader output; no duplicate premultiply/unpremultiply found in Blaze.",
+      "applyEffectPasses returns an OffscreenCanvas, not native straight pixels or a retained texture.",
+      "WebGL production output presents the native straight texture to a premultiplied surface, then drawImage copies it to a Canvas2D output.",
+      "The fixture readBlaze copies that canvas again before getImageData. Removing only this observer copy cannot recover straight precision already lost at the production Canvas boundary.",
+      "Current Rust source contains diagnostic applyEffectPassesReadback/RgbaReadback, but the frozen8afce package does not expose these APIs. Diagnostic-only replacement would not establish a production quality fix."
+    ],
+    "cpuRepresentationEvidence": {
+      "receipt": "C:/tmps/blaze-low-alpha-v2-KgisIX/quantization-support-lattice.json",
+      "eligibleChannels": 23166,
+      "exactAlphaNearestRoundLatticeMinimumMean": 1.6655443322109988,
+      "exactAlphaFloorLatticeMinimumMean": 1.6822498489165156,
+      "exactAlphaCeilLatticeMinimumMean": 1.6695156695156694,
+      "optimisticUnionOfRoundingConventionsMinimumMean": 1.2801519468186136,
+      "observedChannelsOutsideUnion": 0,
+      "gate": 1.5,
+      "qualification": "Conditional fixed-rounding lattice bounds exceed the gate, but the optimistic union is below it. This does not prove universal8bit impossibility; browser unpremultiply conventions and conversion path still matter. Alpha or RGB semantic changes to exploit rounding are not an acceptable quality repair."
+    },
+    "proposedProductionRepair": "Carry native straight RGBA or a retained GPU texture separately from the display Canvas through the actual effect output/export boundary. Display presentation may remain premultiplied, but production raw/export consumers must not reconstruct straight pixels from displayCanvas.getImageData. This requires shared boundary ownership approval; no shared renderer/compositor source was edited.",
+    "candidateVerification": "Minimal tests must demonstrate native raw retention into a real consumer/export path, with original oracle and1.5 gate, plus a control proving Canvas roundtrip still fails. A standalone diagnostic readback green is insufficient."
+  },
+  "nativePngProductionRepair": {
+    "status": "NORMAL_NATIVE_PNG_PIXELS_AND_CANCELLATION_PASSED_TIMELINE_CODEC_UNFINISHED",
+    "nativeGpuAttempts": {
+      "status": "ACTUAL_ATTEMPTS_FAILED_NO_NATIVE_PIXEL_ACCEPTANCE",
+      "boundedStageProbe": {
+        "progress": { "path": "C:/tmps/blaze-native-staged-MszeVz/progress.json", "sha256": "c3aea4e3a404128c2810f1cc362817ee0e486a3b393b048f2c40b3a1c6996946" },
+        "watchdogReceipt": { "path": "C:/tmps/blaze-native-staged-MszeVz/watchdog-receipt.json", "sha256": "6c917ce5e361cb92aafb960fa297abe20d2e3e9ec17d3b3a5a5996fd73e2709f" },
+        "treeCleanup": { "path": "C:/tmps/blaze-native-staged-MszeVz/watchdog-kill.json", "sha256": "7a01fe3c2c3a0e07e71c45fa538ea36996a4d4037be55b8938b2283f57888454" },
+        "completedAcknowledgedStages": ["initialized", "raw-complete", "png-complete", "budget-complete"],
+        "lastSubstantiveStage": "cancel-call",
+        "error": "RuntimeError: unreachable",
+        "browserHeartbeatsContinued": true,
+        "watchdogExpired": true,
+        "exactOwnedTreeTerminationExit": 0,
+        "qualification": "Actual normal native RGBA and real service PNG calls completed, but bytes and gate metrics were not retained before later cancellation panic. Not pixel acceptance. Heartbeats exclude a continuously blocked browser main thread; initial initialization, native mapping and PNG encode returned. Cancellation panic and unsettled Promise remain to diagnose."
+      },
+      "bootstrapFailure": { "path": "C:/tmps/blaze-native-gpu-ixvuFC/receipt.json", "sha256": "8c76b5f6f88b103c55a741f0e507b19fc4e4e4c472d0d97cfd516a3b785dee7e", "reason": "Private harness omitted ordinary registerDefaultEffects bootstrap; corrected private harness only." },
+      "nonterminalFailure": { "path": "C:/tmps/blaze-native-gpu-RQBxPE/receipt.json", "sha256": "96cd412ff7aec7c18dd13d2c6dc46128cfa632f8f497aa3315b6cd63be769469", "reason": "Corrected actual browser evaluation did not return after more than two minutes; no stage or pixels established." },
+      "cleanup": "Validated own runner PID27412 and descendants terminated; own browser/server process cleanup terminal, graceful WASM disposal unproven. GPU lease released.",
+      "qualification": "No successful native RGBA, independent PNG decode, cancellation/disposal or budget actual-render acceptance. Normal CPU/API gates remain separate from failed GPU attempts."
+    },
+    "captureRetirementCorrection": {
+      "status": "CAUSE_CONFIRMED_RED_GREEN_CPU_NORMAL_PRODUCER_AND_GPU_REGRESSION_PASSED",
+      "panicProbe": { "path": "C:/tmps/blaze-native-staged-3hSqFA/progress.json", "sha256": "2639737687c182345e25b0555c27068ade3f1c6f46921ad7f82d8542d5babb82" },
+      "probeWatchdog": { "path": "C:/tmps/blaze-native-staged-3hSqFA/watchdog-receipt.json", "sha256": "cba67cfe892faf638616b8764fa123aaf64d5918c64e6c81c416440bbaa88804" },
+      "lastSubstantiveStage": "cancel-overlap-settled",
+      "rootCause": "Same-turn cancellation before MapWait::start drops a never-mapped CaptureBuffer. Unconditional Drop unmap produces wgpu validation Buffer is not mapped, panics and strands the native first Promise. Browser heartbeats continue; overlap Promise rejects, native first Promise never settles.",
+      "panic": "wgpu29.0.1 backend/wgpu_core.rs2262: Validation Error In Buffer::buffer_unmap Buffer is not mapped",
+      "fixSource": ["rust/wasm/src/canvas_capture_readback.rs", "rust/wasm/src/capture_buffer_retirement.rs"],
+      "fix": "Actual shared CaptureBuffer Drop calls destroy only. wgpu-core29.0.1 Global::buffer_destroy performs backend unmap ignoring Idle NotMapped then buffer destruction; pending/active cleanup remains. This avoids a mapStarted boolean that would still mishandle failed maps returning to Idle.",
+      "backendSource": "C:/Users/Sayo/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/wgpu-core-29.0.1/src/device/global.rs240-259",
+      "redGreen": { "path": "C:/tmps/blaze-native-output-normal-20261012/capture-retirement-red-green.json", "sha256": "24afef33f12b29725aaf76be1f822239ecd8c201826a1b493bdb0cd1295f8c92" },
+      "cpuReceipt": { "path": "C:/tmps/blaze-native-output-retirement-normal-20261012/cpu-check-receipt.json", "sha256": "b7d99370764a0032e4423ef00ec2688108a5630861c14c41915ec88697bc1243" },
+      "newNormalProducerRoot": "C:/tmps/blaze-native-output-retirement-normal-20261012",
+      "oldF611Preserved": true,
+      "qualification": "Version-specific local backend-source evidence, pure cleanup red/green tests and actual new normal WASM same-turn cancellation now establish the core fix. No timeout/guard/identity/budget/shader/clock changes. Full timeline/codec and target dimensions remain unfinished."
+    },
+    "correctedNormalProducer": {
+      "wasmSha256": "059af347959a3eeea20a3ebc33c3a076443fd41a2cf0bfb63d418fd55360f5aa",
+      "pkg": "C:/tmps/blaze-native-output-retirement-normal-20261012/pkg",
+      "producerReceipt": { "path": "C:/tmps/blaze-native-output-retirement-normal-20261012/receipt-normal-producer.json", "sha256": "8e015e77d3574eb3e08eaf35e1da16ba1abd2307df483d3c150e0c5ab1fdd0ab" },
+      "surfaceReview": { "path": "C:/tmps/blaze-native-output-retirement-normal-20261012/surface-review.json", "sha256": "477811586b2f71b29543b299c4898f3e0f4324915313ad333f48c37875b184cb" },
+      "gateReceipt": { "path": "C:/tmps/blaze-native-output-retirement-normal-20261012/gate-receipt.json", "sha256": "311f3a2d7224ec2b0704dad2f1f5d38646190ee6370f984ff2b67e636c579667" },
+      "exitCode": 0,
+      "frozenSourcePins": 993,
+      "ownedSourceDrift": [],
+      "oldPackageDrift": [],
+      "defaultFeatures": true,
+      "diagnosticReadbackAbiAbsent": true,
+      "wrapperAndStableApiAdditionsOrRemovalsSinceF611": 0,
+      "counts": { "wrapper": 137, "stable": 230, "shapeMatchedTrampolines": 4, "imports": 631 },
+      "currentMetadataUnchanged": true,
+      "qualification": "Export ordering changed but sorted API sets and exact reviewed signatures/hashes remained identical. Existing API gates and five actual d.ts negative controls passed;37 delivered JSON comparisons preserved the previously declared VP9 exception only."
+    },
+    "actualNativePngAcceptance": {
+      "receipt": { "path": "C:/tmps/blaze-native-staged-H8GbJG/receipt.json", "sha256": "95a4b2d4b1af23b37b1a277a23221fc835f555b83750845b0effab9bebee6c79" },
+      "independentDecode": { "path": "C:/tmps/blaze-native-staged-H8GbJG/png-decode-receipt.json", "sha256": "da69264ea87edd087dc22ed9fd6bb4ba4c7b02e6863b0bdab8489e1cdf9c0297" },
+      "watchdog": { "path": "C:/tmps/blaze-native-staged-H8GbJG/watchdog-receipt.json", "sha256": "9908798065f3a49a80008e92a393252c242957544b8f596f4d96dd9d5840b7d5" },
+      "backend": "webgl",
+      "consumer": "Actual EffectPreviewService.exportEffectPng and normal BlazeOutputOwner.render",
+      "sameFrozenParamsOracleThresholds": true,
+      "sourceAndExpectedByteIdentity": true,
+      "dimensions": { "width": 96, "height": 256 },
+      "metadata": { "requestId": 1, "generation": 1, "format": "rgba8unorm", "alphaMode": "straight", "colorSpace": "srgb", "peakBytes": 1344514 },
+      "nativeRgba": { "path": "C:/tmps/blaze-native-staged-H8GbJG/nativeRgba.rgba", "sha256": "cf9bd607fa0961a77ed75afdc4172fb5788e0c1937c53462da4a4a9fcc753077", "bytes": 98304 },
+      "nativePng": { "path": "C:/tmps/blaze-native-staged-H8GbJG/nativePng.png", "sha256": "ebe96602944040e448793506d80ffaaa808a7347234e3f3cbfe9a2ec33dcccaa", "bytes": 98646 },
+      "metrics": { "premultipliedMean": 0, "premultipliedMaximum": 0, "alphaMean": 0, "alphaMaximum": 0, "straightMean": 0, "straightMaximum": 0, "straightChannels": 23166, "pass": true },
+      "pngLosslessDecode": "Independent Node zlib, PNG framing/CRC/filter0; sRGB tagged and all RGBA bytes including hidden RGB exactly match native output. No Canvas inverse readback.",
+      "controls": { "noEffectRejected": true, "exact1080pJointBudgetRejected": true, "preAbortRejected": true, "sameTurnOverlapRejected": true, "sameTurnCancelAbortErrorSettled": true, "sameTurnDisposeAbortErrorSettled": true, "sourceDisposed": true, "nativePendingFalse": true, "serviceNativeFreed": true },
+      "cleanup": { "finallyClean": true, "gpuDisposed": true, "browserClosed": true, "serverClosed": true, "watchdogExpired": false, "exitCode": 0 },
+      "retainedCanvasRed": "Unchanged retained8afce Canvas straightMean1.6610118276784944 exceeds original1.5 gate; not rerun or reclassified.",
+      "qualification": "Native single-effect production PNG and its owner cancellation/retirement passed. Not ordinary timeline render graph, full Blaze matrix, durable Host video/codec export, or target-size acceptance.1080p remains explicitly rejected by64MiB aggregate budget."
+    },
+    "sharedNormalCanvasCaptureRegression": {
+      "receipt": { "path": "C:/tmps/blaze-canvas-capture-MqmcfW/receipt.json", "sha256": "492694744901f427dbd4228cd79dce5642d634448901fca5e16111be21376e86" },
+      "watchdog": { "path": "C:/tmps/blaze-native-staged-jqglzR/watchdog-receipt.json", "sha256": "5e0896bebd70d3061006f4663d087498e8c5e50f6475cb576b9fed3a68c87618" },
+      "consumer": "Normal beginRenderFrameForHandle/advance/commit Canvas weave capture",
+      "fixture": "Existing exact32x24 canvas-material-reference weave fixture; original source and byteMax2/mean0.35/alpha/hole gates unchanged",
+      "metrics": { "max": 1, "mean": 0.0546875, "alphaMismatch": 0, "holeNonzero": 0 },
+      "pass": true,
+      "cleanup": { "compositorDisposed": true, "gpuDisposed": true, "browserClosed": true, "serverClosed": true, "watchdogExpired": false, "exitCode": 0 },
+      "qualification": "One normal shared capture positive regression, not a rerun of the Canvas author/export matrix."
+    },
+    "normalProductionArtifact": {
+      "wasmSha256": "f61102e8068e347cc155c5e404212cf02ef037b473a6cdeed18ff4d12a0de0c0",
+      "pkg": "C:/tmps/blaze-native-output-normal-20261012/pkg",
+      "producerReceipt": { "path": "C:/tmps/blaze-native-output-normal-20261012/receipt-normal-producer.json", "sha256": "b4cbe960655946df07e95c4c5cbaab7550fdc98facfd5121337fd0dcc3262754" },
+      "surfaceReview": { "path": "C:/tmps/blaze-native-output-normal-20261012/surface-review.json", "sha256": "d4b52576b99a3fb801a6faee68da7a60c4360f440710f3be6f3036561b728a74" },
+      "gateReceipt": { "path": "C:/tmps/blaze-native-output-normal-20261012/gate-receipt.json", "sha256": "32001436d2d49ca3b5cae6e0d9038c29679585fa06a1470427206754076e81a2" },
+      "producerExitCode": 0,
+      "defaultFeatureProducer": true,
+      "wrapperAddedOnly": "BlazeOutputOwner",
+      "wrapperRemovals": 0,
+      "newStableFunctions": 7,
+      "wrapperExports": 137,
+      "stableBinaryExports": 230,
+      "shapeMatchedTrampolines": 4,
+      "imports": 631,
+      "diagnosticReadbackAbiAbsent": true,
+      "gatesPassed": ["paths-selected", "api", "api-controls", "current-type-controls", "initialization-selected", "delivered37"],
+      "newActualDtsNegativeControlsRejected": 5,
+      "newTypeControlReceipt": { "path": "C:/tmps/blaze-native-output-normal-20261012/native-type-controls.json", "sha256": "3a358d8c28df79822185cfd5eb2c08c123ad7331700d0d2714c6a54bb49bd5fd" },
+      "deliveredComparisonReceipt": { "path": "C:/tmps/blaze-native-output-normal-20261012/delivered-baseline-comparison.json", "sha256": "d7458a82fa661ec05c442a0728656a789865bfe3f69ac04f8cdf6371596ff42e" },
+      "deliveredExactJsonComparisons": 37,
+      "comparisonQualification": "Preserves the already declared absent-quantizer VP9 very_high444 encoder-plan change; no new semantic change claimed.",
+      "frozenSourceDrift": [],
+      "oldPackageDrift": [],
+      "actualOwnerCpuInvalidInputsRejected": 3,
+      "gpuInitialized": false,
+      "qualification": "New normal artifact is distinct from retained8afce Host/RAW runtime. Actual production export consumer GPU pixels, cancellation/drain and PNG decoding remain pending; old Canvas RAW remains red."
+    },
+    "sourceReceipt": "C:/tmps/blaze-production-closure-20261012/blaze-output-source-receipt.json",
+    "normalWasm32Check": {
+      "receipt": "C:/tmps/blaze-production-closure-20261012/blaze-output-wasm32-check.json",
+      "command": "cargo check --offline --locked --target wasm32-unknown-unknown -p opencut-wasm",
+      "exitCode": 0,
+      "diagnosticReadbackFeatureEnabled": false,
+      "normalArtifactGenerated": false,
+      "warningsPresent": true
+    },
+    "normalAbi": "BlazeOutputOwner.render/renderPng/cancel/dispose/pending; exported via effects.rs on ordinary wasm32, not browser-readback-tests",
+    "productionConsumer": "EffectPreviewService.exportEffectPng -> gpuRenderer.createBlazeOutputOwner -> BlazeNativeOutput -> normal Rust native texture capture -> Rust PNG",
+    "output": "Native straight RGBA8 retained directly into lossless PNG, sRGB tagged, alpha/hidden RGB unchanged. No displayCanvas.getImageData, no shader/alpha compensation, no JS encoder.",
+    "lifetime": "Increasing requestId plus Rust owner generation; stale/abort/dispose do not publish. Rust pending RAII remains through actual mapping drain; TS retirement awaits settled promise before free and source disposal. Existing production readback guard prevents disposeGpu during staging.",
+    "jointBudget": "64MiB aggregate conservative charge8*RGBA +2*paddedStaging +3*exactPNG including source/import/GPU/native/JS/consumer allocations. Streaming PNG uses one allocation; large standalone1920x1080 output is explicitly rejected, not silently over budget.",
+    "ordinaryOutputSizes": [
+      { "width": 1280, "height": 720, "peakBytes": 47926443, "admitted": true },
+      { "width": 1440, "height": 810, "peakBytes": 60863898, "admitted": true },
+      { "width": 1536, "height": 864, "peakBytes": 69013458, "admitted": false },
+      { "width": 1920, "height": 1080, "peakBytes": 107832573, "admitted": false }
+    ],
+    "cpuChecks": { "rustOwner": 2, "rustPng": 3, "tsOwnerServiceAndExistingOwnership": 7, "targetTypeDiagnostics": 0, "diffCheck": true, "strictUtf8NoBom": true },
+    "qualification": "Corrected059af normal producer, exact API gates, actual native pixels/real PNG consumer, independent lossless decode, same-turn cancellation/disposal and one normal shared Canvas capture passed. Frozen8afce artifact does not expose this new ABI. Original low-alpha Canvas RAW stays red; full timeline/codec integration and target-size support remain unfinished."
+  },
+  "wholeGraphNativePng": {
+    "status": "NORMAL_FULL_GRAPH_NATIVE_PNG_REAL_SAVE_AND_NORMAL_DIMENSIONS_PASSED",
+    "finalTypedAndFrozenBlazeEvidence": "docs/evidence/native-frame-png-current.json",
+    "finalEvidenceQualification": "Typed normal package has the same1b66 executable core, fixes the generated double-Promise declaration, and passes actual signature/type controls. Frozen96x256 original Blaze graph and real ImageNode/Blaze Save both pass original pixel gates. Default Save retains existing opaque-black background; full graph clears zero-alpha hidden RGB as before. Original Canvas RAW remains red.",
+    "wasmSha256": "1b6671bdecfe6d6ad488a4bdf4583dc4d06a81229e2ce0aeffd274660c27a9f2",
+    "producerReceipt": "C:/tmps/rocut-wholegraph-png-normal-20261012/receipt-normal-producer.json",
+    "normalProducer": { "exitCode": 0, "sourceFiles": 998, "sourceDrift": [], "oldPackageDrift": [], "offlineLocked": true, "diagnosticReadbackFeature": false },
+    "abi": "commitRenderFramePngForHandle(handle, request): Promise<NativeFramePng>; consumes the same prepared frame reservation; owner/generation are decimal strings.",
+    "consumer": "Existing RendererManager.saveSnapshot/copySnapshot -> createSnapshot -> CanvasRenderer.renderSnapshotPng -> same resolve/build/upload pipeline -> WasmCompositor.renderPngAsync -> Rust full immutable graph final texture -> shared native readback -> shared Rust PNG encoder -> browser Blob/download or clipboard.",
+    "budget": {
+      "limitBytes": 1073741824,
+      "policy": "Independent bounded native frame output plus actual resident uploaded/pooled RGBA GPU textures (including idle pool); conservative8*RGBA+2*paddedStaging+3*PNG base. Not a universal process RSS cap; unrelated CPU raster caches retain existing policies. Base preflight precedes graph allocation; actual resident charge precedes staging allocation.",
+      "existingStagingLimitBytes": 67108864,
+      "existingCanvasFrameAndGroupTargetLimitBytes": 268435456,
+      "singleEffectLimitUnchangedBytes": 67108864,
+      "normalDimensions": [
+        { "width": 1280, "height": 720, "actualPeakBytes": 51637427, "pngBytes": 3687481, "decodedPixelsExact": true },
+        { "width": 1920, "height": 1080, "actualPeakBytes": 119837957, "pngBytes": 8296191, "decodedPixelsExact": true },
+        { "width": 3840, "height": 2160, "actualPeakBytes": 476506097, "pngBytes": 33182371, "decodedPixelsExact": true }
+      ]
+    },
+    "probe": {
+      "receipt": "C:/tmps/wholegraph-png-probe-vDgjP8/receipt.json",
+      "receiptSha256": "0f58478158c8bff539a63c570866e6f773d224064bad3dbb5a0cacbd852900c6",
+      "nestedGroupLowAlphaOracle": { "max": 1, "mean": 0.125, "gateMax": 1, "gateMean": 0.35, "passed": true },
+      "independentDecode": "Node CRC32 + zlib + PNG framing/filter0, sRGB verified; no Canvas decode.",
+      "actualSave": "Production RendererManager.saveSnapshot and renderer pipeline, scoped host inputs; HTMLCanvasElement.toBlob throws throughout Save to reject display PNG fallback; PNG independently decoded against expected composited pixels.",
+      "controls": { "nativeCancel": true, "realSave": true, "closeAbort": true, "handleReleased": true, "noCanvasFallback": true },
+      "cleanup": { "gpuDisposed": true, "browserClosed": true, "serverClosed": true, "watchdogExpired": false, "terminalExitCode": 0 }
+    },
+    "cpuChecks": { "requestAndExistingOwnershipTestsPassed": 9, "pngAndIndependentFrameBudgetTestsPassed": 4, "normalWasm32CheckPassed": true, "strictUtf8NoBom": true, "diffCheck": true },
+    "qualification": "Save caller is production with host/session inputs doubled, not a mounted author UI. Copy shares createSnapshot but browser clipboard permission was not exercised. Simple full-size GPU output is proven, not arbitrary complex4K graphs or codecs. Original Canvas RAW low-alpha failure remains unchanged."
+  },
+  "notCovered": [
+    "Mounted packaged author UI",
+    "Missing original project/RAW restoration",
+    "Full Blaze matrix",
+    "Durable Host render/export or codec acceptance",
+    "Full timeline video codec integration of native straight Blaze output",
+    "Browser clipboard permission and mounted Copy UI interaction",
+    "Arbitrary complex4K graph admission and output"
+  ],
+  "cleanup": {
+    "ownHostClosed": true,
+    "ownBrowserClosed": true,
+    "ownGpuDisposed": true,
+    "noProductionOrGateEditsDuringRetainedV2RawObservation": true,
+    "noBuildInstallCommitPushDuringRetainedV2RawObservation": true,
+    "nativeRepairNormalBuildPerformed": true,
+    "noInstallCommitPush": true
+  }
+}

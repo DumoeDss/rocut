@@ -1,0 +1,538 @@
+{
+  "version": 1,
+  "date": "2026-10-12",
+  "status": "private-current-core-surface-runtime-creator-consumption-passed",
+  "overallGoalComplete": false,
+  "scope": "Current normal whole-graph PNG core and matched private artifacts. Not installed acceptance, clean canonical workspace closure or release.",
+  "renderEvidence": {
+    "path": "native-frame-png-current.json",
+    "sha256": "a88675da67318969c9b7438c19d833703dc81b109e6bcdef34553bd16206d737"
+  },
+  "jointDelivery": {
+    "path": "C:/tmps/creator-integration-delivery-20261012-current-04/joint-delivery-index.json",
+    "sha256": "e0e7d1be9ab3752609a13f0e1579618d39daedc653f8e2c47694293812d8fcf0",
+    "rootRehashedDirectPackageAndReceiptPins": 13,
+    "allDirectHashesMatch": true,
+    "coreSha256": "1b6671bdecfe6d6ad488a4bdf4583dc4d06a81229e2ce0aeffd274660c27a9f2",
+    "surface": "C:/tmps/rocut-private-surface-consumption-03YmFG/surface",
+    "runtime": "C:/tmps/rocut-private-runtime-consumption-64IS41/runtime",
+    "creator": "C:/tmps/creator-integration-delivery-20261012-current-04/producer/dist/creator-studio",
+    "surfaceFiles": 352,
+    "runtimeFiles": 364,
+    "creatorFiles": 257,
+    "creatorAgentFilesByteExact": 250,
+    "creatorVersionUnchanged": "0.1.5",
+    "creatorMandatoryProducerStepsPassed": 6,
+    "surfaceBrowserActualProductionCoreObserved": true,
+    "surfaceBrowserMountedEditorClaim": false,
+    "privatePlainNodeRuntimeConsumptionPassed": true,
+    "allowDirty": true,
+    "determinismExecuted": false,
+    "legacySmokeExecuted": false,
+    "canonicalWasmUnchanged": true,
+    "ownedBrowserServerAndHostClosed": true
+  },
+  "rootGates": {
+    "reviewedExactMetadata": {
+      "path": "script/wasm-api-current-contract.mjs",
+      "sha256": "b6ecdb5bb26ebb1eca1676ba6d0d0eaafe08b0ecbf5ba44f5e85db691bf0a158",
+      "policy": "Hand-updated only reviewed additive PNG signatures; no dynamic observed-package acceptance."
+    },
+    "selectedPackage": "C:/tmps/rocut-wholegraph-png-typed-normal-20261012/pkg",
+    "exactApi": {
+      "command": "node script/check-wasm-api-surface.mjs --pkg-dir C:/tmps/rocut-wholegraph-png-typed-normal-20261012/pkg",
+      "exitCode": 0,
+      "publicExports": 138,
+      "stableBinaryExports": 231,
+      "closureTrampolines": 4,
+      "imports": 631,
+      "lowLevelDeclarationLines": 237,
+      "negativeControlsPassed": 27,
+      "positiveControlsPassed": 2
+    },
+    "exactTypeReviewPassed": 13,
+    "selectedBinaryPathGateExitCode": 0,
+    "actualSyncInitialization": [
+      { "runtime": "node v24.14.0", "exitCode": 0, "exports": 138, "transitionGraphChecks": 14 },
+      { "runtime": "bun 1.4.2", "exitCode": 0, "exports": 138, "transitionGraphChecks": 14 }
+    ],
+    "canonicalSourceClosure": {
+      "command": "node script/check-wasm-source.mjs",
+      "exitCode": 1,
+      "status": "failed-canonical-and-shared-dependencies-not-synchronized",
+      "sharedConsumers": ["root", "apps/web", "packages/editor-classic"],
+      "mismatchingFilesPerConsumer": ["opencut_wasm_bg.js", "opencut_wasm_bg.wasm", "opencut_wasm_bg.wasm.d.ts"],
+      "canonicalOutputOlderThanRustInputs": true,
+      "notBypassed": true
+    }
+  },
+  "supplementalFullRuntimePack": {
+    "status": "passed-current-private-determinism-and-smoke",
+    "runtime": "C:/tmps/rocut-private-full-pack-20261012/runtime",
+    "receipt": {
+      "path": "C:/tmps/rocut-private-full-pack-20261012/receipt.json",
+      "sha256": "dfe0e6d980e6a7c0c0f3e47e6be71375143429bb50ceb2e397bdcc36296becb2"
+    },
+    "manifest": {
+      "path": "C:/tmps/rocut-private-full-pack-20261012/pack-manifest.json",
+      "sha256": "5c2b17c76d29cb7cdcd85226089a2e7bbe8868cdf1b5c12022b0d76c4a9a5f3e"
+    },
+    "runtimeFiles": 364,
+    "surfaceFiles": 352,
+    "coreSha256": "1b6671bdecfe6d6ad488a4bdf4583dc4d06a81229e2ce0aeffd274660c27a9f2",
+    "determinismExercised": true,
+    "buildOutputHashesReproduced": true,
+    "divergences": [],
+    "plainNodeTargetListExitCode": 0,
+    "plainNodeHostEnsureStates": ["started", "reused"],
+    "soleOwnedDaemonIdentityVerifiedBeforeTermination": true,
+    "ownedDaemonGone": true,
+    "allElevenCleanupTargetsRestrictedToOwnedOutDirWithoutSymlinks": true,
+    "oldSkippedChecksReceiptNotRewritten": true,
+    "allowDirty": true,
+    "releaseAccepted": false,
+    "qualification": "Determinism covers two local runtime build outputs, not Surface/cross-platform reproducibility. New independently executed smoke does not retroactively change the earlier skipped record."
+  },
+  "director": {
+    "sourceAndLockfileThree": "0.185.1",
+    "sourceVersionAuditExitCode": 0,
+    "installedVersionAuditExitCode": 1,
+    "observedInstalledRuntimeAndTypes": "0.170.0",
+    "consumers": 6,
+    "sharedDependencySyncNotPerformed": true
+  },
+  "creatorCurrentSourceGates": {
+    "status": "passed-current-working-tree-not-release",
+    "receipt": {
+      "path": "C:/tmps/creator-current-source-gates-20261012/receipt.json",
+      "sha256": "372ca5a399b38e61cdf0a401f5013cf26d4fc9549455eba9de44fc524707e411"
+    },
+    "head": "e964877e54fd739c4be1e47e1c84b8afd9ec1f15",
+    "headAndSourceStatusStableDuringChecks": true,
+    "rootRehashedReceiptAndAllThreeLogs": true,
+    "results": [
+      {
+        "command": "npm run typecheck",
+        "exitCode": 0,
+        "log": "C:/tmps/creator-current-source-gates-20261012/typecheck.log",
+        "sha256": "8362e7011582aecb675b4c948d12902cc2bebaca00f3846e67dbc4cf2438781d"
+      },
+      {
+        "command": "npm test",
+        "exitCode": 0,
+        "testFilesPassed": 14,
+        "testsPassed": 112,
+        "log": "C:/tmps/creator-current-source-gates-20261012/tests.log",
+        "sha256": "0b5c66e0006f60cbc5bda1da147578c877d92415c4746cf82ee2606e6c68df17"
+      },
+      {
+        "command": "npm run test:runtime-abi",
+        "exitCode": 0,
+        "testsPassed": 10,
+        "testsFailed": 0,
+        "testsSkipped": 0,
+        "log": "C:/tmps/creator-current-source-gates-20261012/runtime-abi.log",
+        "sha256": "c7dd1b94d50882b653629e9493a9b31313c1242b9bf9dbc270b3d1ab1c30c180"
+      }
+    ],
+    "scope": "Read-only source gates. No build, release, dependency replacement or plugin installation. Subsequent documentation updates are not part of the checked snapshot."
+  },
+  "electron": {
+    "selectedBinary": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/elftia/elftia/node_modules/electron/dist/electron.exe",
+    "version": "40.1.0",
+    "sha256": "0ace564d2033e3576aee5933c3bc3d927dc443fa7c43e58c36931ba8146ce1bc",
+    "status": "startup-unverified-no-page-or-png-created",
+    "boundedStartupAudit": {
+      "path": "script/fixtures/electron-wholegraph-png-startup-audit.json",
+      "sha256": "bb635a8781318d83c12b40098573c62bd32317ca9484c25bec6d59be9e24e6f9",
+      "matchingApplication1000Or1001Events": 0,
+      "requiredFilesPresent": 15,
+      "noFurtherLaunchPerformed": true
+    },
+    "directSpawnDiagnostic": {
+      "path": "C:/tmps/electron-wholegraph-png-typed-direct-20261012/receipt.json",
+      "sha256": "833e47e1af1b8d8a888295654706a87ec5a7fca847733d4b383b6c52a8ded810",
+      "shell": false,
+      "windowsHide": true,
+      "exitCode": 4294967295,
+      "stdoutAndStderrEmpty": true,
+      "ownedProcessGone": true,
+      "ownedHttpServerClosed": true,
+      "profileCreated": false
+    },
+    "causeNotEstablished": true,
+    "compatibilityPassed": false,
+    "priorLaunchFailuresRetained": true
+  },
+  "environmentDeviation": {
+    "event": "Earlier inspection requiring Rocut electron package triggered its automatic install fallback.",
+    "observedNewFiles": 76,
+    "observedBytes": 364284132,
+    "observedVersion": "43.4.0",
+    "binarySha256": "bab31519ee1bc5b490caf7844e2b1dbcd4f7bb49a13039103952ab381c02ade4",
+    "usedForAcceptance": false,
+    "beforePinsAvailable": false,
+    "sharedFilesNotDeletedOrRolledBack": true,
+    "furtherPackageRequireOrInstallationStopped": true
+  },
+  "notClaimed": [
+    "Blaze missing historical author/video execution artifacts restored",
+    "Electron whole-graph rendering compatibility",
+    "Canonical shared dependency/source closure",
+    "Installed Elftia, offline reopen, upgrade/rollback or release",
+    "Commit, push, version bump or plugin installation"
+  ],
+  "laterHostFallbackAndEngineClosure20261012": {
+    "overallGoalComplete": false,
+    "historicalFailuresRetained": true,
+    "selectedWholegraph": {
+      "receipt": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/elftia/elftia/.artifacts/electron-wholegraph-png-host-fallback-20261012/receipt.json",
+      "receiptSha256": "c3f71e3f3f9c8bcedecb19760146099b622a98a3f0d9605722606d2a8ac1b53d",
+      "passed": true,
+      "actualOriginalQueryBackend": "webgl",
+      "semantics": "fallback-capability-limited",
+      "policy": "Only fresh isolated WASM import table limits exact unique GPU getter to undefined; original Rust GL fallback, no navigator/global Host switch/glue/core/browser/oracle/query mutation",
+      "getterCalls": 3,
+      "transparentOracle": { "maximum": 1, "mean": 0.125, "gateMaximum": 1, "gateMean": 0.35 },
+      "opaqueOracle": { "maximum": 0, "mean": 0 },
+      "nativeCancelDrained": true,
+      "sameHandleRecoveryPngBytesExact": true,
+      "handleReleasedOnce": true,
+      "gpuDisposed": true,
+      "ownedWindowSessionInterceptorAndServerCleanupPassed": true,
+      "originalHostWindowsUnchanged": true,
+      "defaultWebGpuCovered": false,
+      "standaloneStartupCauseEstablished": false,
+      "priorDefaultCapabilityHostFailure": "Selected WebGL path required before PNG output; actual query value not retained, not transparent pixel failure"
+    },
+    "threeEngineClosure": {
+      "packages": 68,
+      "files": 5300,
+      "sourceResolveAndLoadAllReady": true,
+      "probeReceipt": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/elftia/elftia/.artifacts/engine-toolchain-notices-20261012/composed-source-probe-receipt.json",
+      "probeReceiptSha256": "01052b6b90c57bd2ab2ceaa80c75f9d86517f231d90d843ba60284d1aa2e24ef",
+      "scope": "CPU structural metadata/provenance admission only, not comprehensive legal clearance",
+      "actualSourceCompiler": {
+        "receipt": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/elftia/elftia/.artifacts/engine-compile-smoke-20261012/receipt.json",
+        "sha256": "8b21e3c49f43a009d21e2a4d1205711d094ac66aa3f7c5e5c93ccf10d50f0ad4",
+        "engines": ["hyperframes", "remotion", "three"],
+        "actualCompilerChildPassed": true,
+        "authorSourceDeletedArchiveOnlyRebuildPassed": true,
+        "pixelsExecuted": false,
+        "packedCliExecuted": false,
+        "workRemoved": true
+      },
+      "installedNoPrivateEnvDiscovery": "Still advanced by Root; not claimed here",
+      "producerProjection": "In progress: existing SDK prebuilds/win32-x64/toolchain, explicit local win32-x64 candidate, remove declarations/maps only while preserving runtime/license and closure/projection evidence; no new pack pass claimed",
+      "latestOfficialSdkVerify": {
+        "receipt": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/elftia/elftia/.artifacts/full-engine-delivery-20261012/run-hvxaCd/sdk-verify.json",
+        "sha256": "38a0d8c15d98de6f45249fb61f9d85ed3aa6658df63ed8f89b11957195a7e9be",
+        "exitCode": 2,
+        "files": 5664,
+        "maximumArchiveEntries": 4096,
+        "packPassed": false
+      },
+      "newThreeEnginePackageInstalled": false
+    },
+    "temporaryCleanup": {
+      "deletedOwnedDirectories": 62,
+      "deletedBytes": 7271026839,
+      "approximateGiB": 6.77,
+      "receiptsDirectory": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/elftia/elftia/.artifacts/temp-cleanup-20261012",
+      "receipts": ["deleted-caches.json", "deleted-agent-tests.json", "deleted-agent-junctions.json", "deleted-editor-caches.json"],
+      "otherSessionTwoCDependencySourcesAnd14GbReleasePreserved": true,
+      "permanentFreeSpaceClaim": false
+    },
+    "commitOrPushPerformed": false,
+    "versionBumpPerformed": false
+  },
+  "laterPackedCandidateAndInstallGuard20261012": {
+    "packagePreparation": {
+      "receipt": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/elftia/elftia/.artifacts/full-engine-delivery-20261012/prebuild-HwwXtL/receipt.json",
+      "receiptSha256": "7cf3a2d1c5be0508828a3456e02c10e12448b1d5885adaeb925b2fc9ddd5d14d",
+      "ok": true, "files": 3679, "sdkVerifyAndPackExitCodes": [0, 0], "sourceDrift": 0,
+      "packageSha256": "6affca341a78e57a15abfb2137f9779dde7769f53f4e66cbde6e9ae3322141ce",
+      "supportedPlatforms": ["win32-x64"], "historicalFileCountFailureRetained": true,
+      "surfaceHintBuildCandidatePreparedNotInstalled": true
+    },
+    "packedCpu": {
+      "receipt": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/elftia/elftia/.artifacts/engine-compile-smoke-20261012/final-packed/receipt.json",
+      "sha256": "76f188911eb61e811e0efd486b9d906c22cbc893f098a9848fa3bef4d8fd9687",
+      "privateToolchainEnvAbsent": true, "defaultDiscoverySource": "bundled", "allThreeReady": true,
+      "compileExitCodes": [0, 0, 0], "archiveOnlyRebuildExitCodes": [0, 0, 0], "ownedDaemonStoppedAndWorkRemoved": true,
+      "gpuOrUiExecuted": false,
+      "projectionV2SourceCompilerReceiptSha256": "de44e4c5c3c4d0277be7b2fd4437eb583e3ab63192accf17c54cc24bc4720593",
+      "projectionV2OutputsMatchFullClosure": true
+    },
+    "actualInstall": {
+      "receipt": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/elftia/elftia/.artifacts/full-engine-delivery-20261012/prebuild-HwwXtL/installed-receipt.json",
+      "sha256": "ba325e40f04b2424d10fa0561ef83f6848003f3ffb4bd68f564d8e6579bf5daa",
+      "status": "failed", "declaredExpandedBytes": 291423893, "maximumExpandedBytes": 268435456,
+      "originalPluginUnchanged": true, "backupFiles": 364,
+      "backupTreeHash": "da76c1bdeb77b6e1c9631b9958e306753425030eced8d6f021d723a4f5745d44",
+      "backupVerified": true, "retainedBackups": [], "newPackageInstalled": false,
+      "nextScope": "Audit actual Hyperframes compiler closure and reduce necessary delivery bytes without raising guardrails"
+    },
+    "lifecycle": {
+      "host7GracefulExitCode": 0, "host7SupervisorDrained": true,
+      "host8": { "pid": 51704, "aliveObservedByRoot": true, "launchReceiptMutable": true,
+        "launchReceipt": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/elftia/elftia/.artifacts/full-engine-delivery-20261012/prebuild-HwwXtL/host-launch-8/receipt.json",
+        "restoredUiPassed": true, "restoredUiReceiptSha256": "bab8b573a83bf89a2f4e32dcea9c80b88ff1d9a74640a49fca1f8eb664ed53b8",
+        "nativeProjectReopenPassed": true, "nativeProjectReceiptSha256": "c28827b9a631e0065cc7ac632ff493a207855fa15d37e99d09e448ec6d9e7098",
+        "projectRevision": 3, "projectDocumentUnchanged": true, "oldMainMatchesVerifiedBackup": true,
+        "installedScope": "original-private-Three-only; new candidate NOT installed", "reusedCProfile7": true, "newCProfile": false }
+    },
+    "separateECopyCleanup": {
+      "receipt": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/elftia/elftia/.artifacts/full-engine-delivery-20261012/run-hvxaCd/cleanup-failed-copies.json",
+      "sha256": "5390225efd96d799e7110d7a886fddc16c3b33c0f18547139a50f917381b2602",
+      "ownedDirectories": 2, "deletedBytes": 809512047, "includedInPriorCCleanupOrCFree": false,
+      "surfaceSourcesAndReportsPreserved": true
+    },
+    "overallGoalComplete": false, "commitPushOrVersionBump": false
+  },
+  "laterOwnedFailedPluginSourceCleanup20261012": {
+    "receipt": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/elftia/elftia/.artifacts/full-engine-delivery-20261012/cleanup-owned-plugin-sources.json",
+    "sha256": "b7932a22e41b180f5dc8e7b779f30e44691d34677b7edf04855c45f75cd31e29",
+    "exactTargets": ["prebuild-HwwXtL/plugin-source", "prebuild-OSNRNW/plugin-source"],
+    "deletedBytes": 1165699060, "deletedFiles": 14722, "postStates": ["absent", "absent"],
+    "ordinaryRealpathDevInoReparseAndNoLinksValidated": true,
+    "identityRevalidatedAdjacentToDeletion": true,
+    "protectedSiblingsVerified": 19,
+    "parentRootsBackupHost8LogsReleaseRuntimeSurfaceReportsPreserved": true,
+    "applicationOrInstalledPluginTouched": false,
+    "includedInCFree": false,
+    "recoverability": "Disposable failed candidate copies deleted permanently; source repositories and release artifacts retained, v3 to fresh repack",
+    "newPackageInstalled": false
+  },
+  "laterInstalledV3CompilerConsumer20261012": {
+    "installedReceipt": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/elftia/elftia/.artifacts/full-engine-delivery-20261012/prebuild-sHWC89/installed-receipt.json",
+    "installedReceiptSha256": "c801fbce22a3417cff7f00ae3d56ad0cf628871d38a67f02e71205b1e8ca670b",
+    "status": "installed-full-tree-parity",
+    "packageSha256": "d2cf2607b54c9cd633c5137717b047a28034018be84ddcc6fd2bba195fcd95b9",
+    "files": 3076, "expandedBytes": 267514120, "defaultCoreCap": 268435456, "headroomBytes": 921336,
+    "officialSdkVerifyPackAndRealCoreDefaultExtractionPassed": true,
+    "creatorAndOtherPluginTreesAndUnrelatedStateUnchanged": true,
+    "eBackupFiles": 364, "eBackupVerified": true, "coreReplacementBackupRetained": true,
+    "profile": { "id": "rocut-three-engine-compiler-v1", "sourcePackages": 68, "retainedPackages": 57, "omittedPackages": 11, "packageClosureComplete": false },
+    "actualInstalledCompilerReceipt": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/elftia/elftia/.artifacts/engine-compile-smoke-20261012/installed-host9-v2/receipt.json",
+    "actualInstalledCompilerReceiptSha256": "7f9bd0dac79158814063f7864640dced9abe5d2e9b79593de0899de723be50e3",
+    "actualElectronIpcAllThreeCompileAndArchiveOnlyRebuildPassed": true,
+    "defaultDiscovery": "bundled", "privateOverrideAbsent": true, "ownedCompilerDaemonStoppedAndWorkRemoved": true,
+    "remotionSnapshot": { "tick": 0, "width": 64, "height": 64, "bytes": 1447, "sha256": "01e2371d9d8d33c7d406bf3c44796d25aa94ea7046ec30e99a316e001f792274", "scope": "actual PNG transport/IHDR only; not independent pixel oracle/full export" },
+    "host9": { "pid": 35260, "readyObservedByRoot": true, "launchReceiptMutable": true,
+      "reopenNativeProjectReceipt": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/elftia/elftia/.artifacts/full-engine-delivery-20261012/prebuild-sHWC89/host-launch-9/reopen-native-project.json",
+      "reopenReceiptSha256": "1c965f9e7ce3527433285633da76ac2b6e5cbef6c43ae9366747d14f306c085f",
+      "projectBytesSha256": "b24d32e53c5a1387a6e9d7f74aad1f0ed23fcfb94e25e3aaa9788af2d740224e", "projectDocumentUnchanged": true, "nativeProjectDaemonPid": 43196 },
+    "consumedCopyCleanup": { "receipt": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/elftia/elftia/.artifacts/full-engine-delivery-20261012/cleanup-v3-consumed-copies.json", "sha256": "5f20276fb8da7b84e090b56d4524b199fb82a64ff7c36b76b879326f3cbdb684", "exactTargets": ["prebuild-sHWC89/plugin-source", "prebuild-sHWC89/runtime"], "deletedBytes": 731067509, "deletedFiles": 6516, "postStates": ["absent", "absent"], "ordinaryIdentityReparseNoLinksAndAdjacentIdentityValidated": true, "releaseBackupLiveHost9LogsSurfaceOriginalToolchainOtherRootsAndCPreserved": true, "applicationTouched": false, "includedInCFree": false },
+    "producerCommit": "5ebca90", "pushPerformed": false,
+    "historicalStandalonePackAndInstallFailuresRetained": true,
+    "optionalLiquidDriver": "native-params fixture missing; no broad pass claim",
+    "overallGoalComplete": false
+  },
+  "authorizedClosureRound20261012": {
+    "status": "canonical-dependencies-packages-and-disk-install-verified-renderer-ui-pending-root",
+    "overallGoalComplete": false,
+    "historicalSectionsRetained": "Earlier director installedVersionAuditExitCode=1, canonicalSourceClosure exit1, notClaimed and Electron failures describe their original stages; this additive round records later authorized closure without rewriting those failures or Creator source gates.",
+    "finiteLedger": { "verified": 35, "notVerified": 0, "scope": "Only the declared finite video subsets; not all-feature parity or overall completion." },
+    "hashVerification": {
+      "receiptsRehashed": 9,
+      "creatorStampedTreeFiles": 257,
+      "creatorPackageSidecarAndLogs": 5,
+      "rocutArtifacts": 3,
+      "canonicalWasmFileCopies": 44,
+      "wasmGateLogs": 7,
+      "directorCanonicalGateLogs": 3,
+      "directorLifecyclePins": 7,
+      "allSelectedHashesMatch": true
+    },
+    "directorCurrentSource": {
+      "cpuReceipt": { "path": "C:/tmps/director-three-upgrade-5hBPIz/.artifacts/cpu-regression/receipt-final-cpu.json", "sha256": "c22cadf85d787898b7cf78ef8ceadf9099d9a2efacd0b9a867c9be91b3e17808" },
+      "initialOfflineCacheFailurePreserved": true,
+      "initialDefaultRootSvgHostFailurePreserved": true,
+      "testHostFix": "SVG tests alone install and restore a real jsdom DOMParser; no product SVG change, runScripts or resources option.",
+      "jsdom26Stage": { "defaultRootTestExitCode": 0, "licenseExitCode": 1, "licenseFailure": "Unapproved transitive MIT-0; allowlist not weakened." },
+      "finalJsdom22Stage": { "version": "22.1.0", "sharedDefaultTestExitCode": 0, "testsPassed": 58, "testsFailed": 0, "threeExitCode": 0, "licenseExitCode": 0, "fullDefaultRootTestRerun": false },
+      "priorCurrentSourceTypecheckExitCode": 0,
+      "priorCurrentSourceBuildExitCode": 0,
+      "defaultConcurrencyNotOverridden": true,
+      "notClaimed": "The 26-stage root pass and final 22-stage local pass are not a newly executed complete 22-stage root npm test."
+    },
+    "directorSelectedLifecycle": {
+      "receipt": { "path": "C:/tmps/director-three-upgrade-5hBPIz/.artifacts/director-assets-lifecycle/run-JdEG1a/receipt-selected-lifecycle.json", "sha256": "a5b7c59604b31ccc59d2a7222baa85a0422bac0735d856763d1b9521494d3143" },
+      "exitCode": 0,
+      "scope": "Current GLB consumption by real React StrictMode and shared RuntimeAssetCache, not SVG/animation/codecs support matrix or installed Director UI.",
+      "sourceFiles": 842,
+      "sourceSnapshotSha256": "5bbb6f26e247b967bc5b6d480e69d2494728680cbedb90164b546d55706dce39",
+      "covered": ["StrictMode replay", "remove and restore", "pending cancellation", "integrity failure cannot publish", "retry", "final retained-resource release"],
+      "finalCounts": { "retains": 6, "releases": 6, "sources": 3, "sourceDisposals": 3, "instances": 12, "instanceDisposals": 12 },
+      "ownedBrowserAndServerClosed": true,
+      "gpuLeaseReleased": true
+    },
+    "directorCanonicalDependencyInstall": {
+      "receipt": { "path": "C:/tmps/director-canonical-install-20261012/receipt.json", "sha256": "572eb9ccab5a47efbfddbb018ae8b78c68b7443b18f0434dcd02c85377b56f8a" },
+      "command": "npm ci --ignore-scripts --no-audit --no-fund",
+      "exitCode": 0,
+      "installedThreeAndTypes": "0.185.1",
+      "installedJsdom": "22.1.0",
+      "sharedPackage": "0.1.1",
+      "threeGateExitCode": 0,
+      "licenseGateExitCode": 0,
+      "sharedDefaultTests": { "exitCode": 0, "passed": 58, "failed": 0 },
+      "backupRoot": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/_others/director/.artifacts/dependency-backup-20261012",
+      "backedUpTrees": 5,
+      "beforeFileAndLinkRecordsVerified": 11906,
+      "backupsRetained": true,
+      "workspaceLinksRetainedWithinDirector": true,
+      "sourceLockAndMeshoptWipUnchanged": true,
+      "electronBrowserOrModelDownloaded": false,
+      "qualification": "Authorized dependency installation, separate from plugin installation and UI acceptance. Receipt metadata finalizer corrections are retained; actual gates were not rerun."
+    },
+    "rocutCanonicalWasmClosure": {
+      "syncReceipt": { "path": "C:/tmps/rocut-wasm-canonical-sync-20261012/sync-receipt.json", "sha256": "620d15357154c330cb98b017c43f8623e19f83e9c2a95bdb81c0ea0a3f4b2859" },
+      "gateReceipt": { "path": "C:/tmps/rocut-wasm-canonical-sync-20261012/gate-receipt.json", "sha256": "a331ee096882fd5719a1a108f3a133a11d74cb5395d15714fb1119b8645eeeb7" },
+      "state": "committed-four-package-byte-closure",
+      "sourceInputHashParity": true,
+      "coreSha256": "1b6671bdecfe6d6ad488a4bdf4583dc4d06a81229e2ce0aeffd274660c27a9f2",
+      "stepsExitCode0": ["source", "paths", "api", "init", "api-controls", "typed-controls", "init-launch-controls"],
+      "backupsRetained": true,
+      "cleanWorkingTreeOrReleaseClaim": false
+    },
+    "officialPrivateInstallPackages": {
+      "creator": {
+        "receipt": { "path": "C:/tmps/creator-local-install-package-20261012/receipt.json", "sha256": "63cc652a5ab0abae80062dc186bad75460dbf3d3e3b584e27e387a75f8bcbb6e" },
+        "epkg": { "path": "C:/tmps/creator-local-install-package-20261012/packages/creator-studio.epkg", "sha256": "d6c4484ee34e084f83ff50b9cba758f6888bdf0d809af09fe04d5f7de31ff6c8" },
+        "version": "0.1.5",
+        "files": 257,
+        "canonicalAgentFilesByteExact": 250,
+        "officialStampVerifyPackExitCodes": [0, 0, 0],
+        "unsigned": true,
+        "installedAcceptanceAtPackagePreparation": false
+      },
+      "rocut": {
+        "receipt": { "path": "C:/tmps/rocut-official-source-parity-epkg-20261012/receipt.json", "sha256": "9bc22fbaa70103deaa83279fa3f8519141237c2fbd91063c6d641f001d0d0c37" },
+        "epkg": { "path": "C:/tmps/rocut-official-source-parity-epkg-20261012/release/rocut.epkg", "sha256": "5f5444321049c9c0d25245042f9acdbd2157d0b4c589500df9dccd550feb5ed4" },
+        "version": "0.5.0",
+        "files": 364,
+        "canonicalManifestMainBytesExact": true,
+        "archiveEntryHashesMatch": true,
+        "officialVerifyPackExitCodes": [0, 0],
+        "staleMainChecksumFailurePreserved": true,
+        "installedAcceptanceAtPackagePreparation": false
+      }
+    },
+    "electronFinalBoundedStartupControls": {
+      "tightenedReceipt": { "path": "C:/tmps/electron-wholegraph-png-tightened-20261012/receipt.json", "sha256": "47d999bde2175f44adfb4c511e70ec8bd7ca4ba28376547ba64509755d654cd5" },
+      "standaloneReceipt": { "path": "C:/tmps/electron-wholegraph-png-standalone-20261012/receipt.json", "sha256": "0340a956f6221c8b8466151308c69db8af483979d07c390eedc7a2594f6ca0d5" },
+      "sameExistingBinary": "40.1.0",
+      "bothExitCodes": [4294967295, 4294967295],
+      "bothBeforeMainEntry": true,
+      "stdoutAndStderrEmpty": true,
+      "standaloneWithoutDebugFlags": true,
+      "status": "startup-unverified-no-page-or-png",
+      "compatibilityPassed": false,
+      "causeNotEstablished": true,
+      "securitySoftwareCauseNotClaimed": true,
+      "furtherStartupAttemptsStopped": true,
+      "nativeTransparentInterfaceVersusDefaultUserPng": "Native graph PNG may preserve alpha; production default user snapshot remains opaque timeline black. No transparent UI save claim."
+    },
+    "rootOwnedInstallationAndLaunch": {
+      "status": "installed-opaque-cli-and-normal-gui-png-mixed-chain-passed-original-selected-fixture-startup-unverified",
+      "authorized": true,
+      "owner": "Root",
+      "installReceipt": { "path": "C:/tmps/creator-rocut-installed-acceptance-20261012/install-receipt.json", "sha256": "dfba7c0df6b7a6c87f3abd8633499eaaadd40adcf78aaeda944bf72d39bcca96" },
+      "diskPluginInstallPassed": true,
+      "installer": "Real Core Installer, official local packages, trusted unsigned; not a signature or release claim.",
+      "installedTrees": [
+        { "id": "rocut", "version": "0.5.0", "files": 364, "bytes": 196246934, "treeHash": "8a14df2830be6392812a1d7b5ae26210e52dc27d4f2064e2b4d0ea2e4bbe12f1", "stagedAndInstalledParity": true },
+        { "id": "creator-studio", "version": "0.1.5", "files": 257, "bytes": 1598704, "treeHash": "8a69fb787a8bbdd678a1385c4bb1d77b6197cf231df9592c7dd33cf992b57a20", "stagedAndInstalledParity": true }
+      ],
+      "oldPluginAndStateBackups": { "root": "C:/tmps/creator-rocut-installed-acceptance-20261012/backup", "retained": true, "verified": true, "rollbackExecutionClaim": false },
+      "hostObservation": { "mainPid": 12436, "launch": "launch2", "state": "gracefully-exited-after-earlier-ready-observation", "mainReadyReportedByRoot": true, "rendererActiveAcceptance": false, "exitCode": 0, "signal": null, "exitedAt": "2026-10-12T11:05:53.861Z", "finalReceiptSha256": "aa5751fa9e3762156de2a5eaac71913a72e012e8f721676ae353c534cf01f368" },
+      "selectedInstalledReopen": {
+        "newDaemonPid": 59516, "reused": false, "revision": 1,
+        "counts": { "tracks": 2, "clips": 1, "assets": 0, "markers": 0, "motionTextSequences": 1 },
+        "frameIndex": 45, "frameDigest": "1276bf6af7c23edb662260ad3d4fbb6d1a48fa380b2aae4fab8a1077e5cc09b5",
+        "revisionCountsAndFrameDigestPreserved": true, "rawEntitiesParity": false,
+        "targetedHydrationFollowup": "Resolved by read-only source diagnosis: selected scene main identity and ordered overlay/audio lanes unchanged; native reload re-enumerates overlay/main/audio and adds exact default editing projection. Raw deepEqual remains false; no multi-overlay order claim.",
+        "hydrationDiagnosisReceipt": "C:/tmps/creator-rocut-installed-acceptance-20261012/hydration-readonly-diagnosis.json",
+        "hydrationDiagnosisReceiptSha256": "f60c2252f6b9bc02f10a0ca8c54a00a93f083af6ced1b7a028d835bbc0e8483a",
+        "openReceiptSha256": "3040547cd4e6dac3de01388ee35e226b6e7fdf430498e64af82b5a9cd9f5ddc6",
+        "readReceiptSha256": "98bd012da080bd1d14ebadc67a9f5a9b3986979f14ae76d1264ecf7b1cb5a132",
+        "verifyReceiptSha256": "1e2754bb199367b247b797561472a9ce5e1f9f3766731f8722dea78bc39841fc",
+        "daemonStopped": true, "stopReceiptSha256": "48f0162e415f3f1ac1a416e133367f8a9ff9a62dfddb2d38b3aa4edb5499a6a3"
+      },
+      "offlineNegativeControl": {
+        "status": "failed-control-not-established", "receiptSha256": "71413908fbea408d49c886bf874fa1efac0dafb32c3c918915fe842f5b10ef75",
+        "scope": "Renderer HTTP/WS remote-deny only, not main or OS offline.",
+        "syntheticFetchRejected": true, "interceptorBlockedRequests": 0, "targetRuntimeWorkExecuted": false, "boundaryRemoved": true,
+        "usageOnlyContinuedReadNotVerification": true
+      },
+      "creatorRendererRejection": {
+        "receiptSha256": "b4ec3d0c4a3ba82d1db30d64303f62eaed22c9a5da2fe3e438ddab57ccf06e65",
+        "cause": "Built Host templateSourceStore unconditionally binds optional renderCard; current Host source already uses optional binding.",
+        "minimumScope": "Host renderer-only rebuild and installed reload; no Creator fake callback or SDK fix established.",
+        "focusedTestsReportedByRoot": "9/9", "rendererRebuildAndUiAcceptancePending": true
+      },
+      "selectedInstalledRocutCli": {
+        "scope": "Actual installed vendor/run/rocut.mjs on a dedicated private acceptance project; not renderer UI or a complete installed feature matrix.",
+        "catalog": { "receipt": { "path": "C:/tmps/creator-rocut-installed-acceptance-20261012/installed-motion-catalog.json", "sha256": "608294f27aa2e8e22be322039fda0b10d1beeaaccb0e57710606b8f99ba3e5c1" }, "exitCode": 0, "entries": 889 },
+        "create": { "receipt": { "path": "C:/tmps/creator-rocut-installed-acceptance-20261012/installed-motion-create.json", "sha256": "94a316b85f12736488877b5dc842915c55e468af60e5e14e28f794133367f596" }, "exitCode": 0, "accepted": true, "projectRevision": 1 },
+        "verify": { "receipt": { "path": "C:/tmps/creator-rocut-installed-acceptance-20261012/installed-frame-verify.json", "sha256": "c7067c15082463f29dd32baa144eb14cd4b7296b0440cba5dad22c4a6dafe577" }, "exitCode": 0, "revision": 1, "frameIndex": 45, "digest": "1276bf6af7c23edb662260ad3d4fbb6d1a48fa380b2aae4fab8a1077e5cc09b5" }
+      },
+      "laterInstalledScopeClosure": {
+        "rollbackReceiptSha256": "090916a7b0f61900a7a0e1499c7fa156609e4fafd2c1282d5e86feb49641c99a",
+        "reinstallReceiptSha256": "a2fb715e367505c59bb46e777255f2d38d0f25e33a3d87ec0838555b2b43cb1d",
+        "bothPhasesPassed": true, "fullTreeAndFinalArchiveParity": true, "unrelatedPluginStatePreserved": true, "replacementBackupsRetained": true,
+        "rendererReceiptSha256": "e515b411a3a35cf44cd6a8d6f2c22c15e27d70508c00603464e605fd314cd111",
+        "rendererOnlyBuildPassed": true, "mainPreloadUnchanged": true, "optionalCompiledGuardReportedByRoot": true,
+        "round3": { "status": "pre-spawn-driver-path-error", "pid": null, "applicationSpawned": false, "receiptSha256": "98f0c09ef5decbffbca0cbeb99a3a27350589ae8e5fde70a9b028a468050e6fe" },
+        "round4": { "pid": 40304, "state": "alive-at-observation-not-final-shutdown", "receiptMutable": true, "rendererIndexSha256": "5204070146e56cf9a2b5e94345fb8be7612604e8724e6e78f730bad8e09a329a" },
+        "creatorHome": { "passed": true, "projectGrid": true, "projectError": false, "backupDismissedWithoutRestore": true, "receiptSha256": "c4e3bba35512e1f3657ded4c5802acd818c4c8d0de75e5779bc026cf6e3e890d" },
+        "installedPane": { "previewPresent": true, "deadOverlay": false, "canvas": "1920x1080", "errors": 0, "receiptSha256": "781887639e37681042eb18331e53c34432fa9a8281d65258b771b1926a2db06a" },
+        "scopedOffline": { "passed": true, "scope": "Pane renderer HTTP(S) only; loopback preserved, not main/OS offline", "negativeControlIntercepted": 1, "remoteDenied": 1, "loopbackAllowed": 30, "reloadCanvasAndTimelinePresent": true, "interceptorRemoved": true, "receiptSha256": "f1a08c104ac77c1d1ca781277e482d47d1e1efa4e46e7d99536546f813bf9bc8" },
+        "creatorCardSessionReportedByRoot": { "initializeOnlyAgent": true, "id": "7b2fd15b-286d-4e3b-93a7-ed6f4b4e2b1b", "workspaceSelectionAndDaemonUiReopenPassed": true, "earlierDedicatedMistakenChatSessionRetained": true },
+        "installedDelivery": { "receiptSha256": "04df4c56453999c51afe2c94120aa9830df5f90c962c8a719153e7e7a4b5d546", "containerAndFullDecodePassed": true, "codec": "H264 High", "size": "1920x1080", "fps": 30, "seconds": 3, "frames": 90, "fullDecodeExitCode": 0, "decodeErrors": 0, "visualPassed": false, "visualObservation": "Frame 15 extremely dark crimson outlined text; frame 45 near black. Semantic diagnosis pending, not selected wholegraph PNG acceptance." },
+        "backupRelocation": { "receipt": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/elftia/elftia/.artifacts/creator-rocut-acceptance-20261012/relocated-backups-receipt.json", "sha256": "21d096528df6c69822347827c8b1ace7203df03ba4aedd136d1b55ed68ac6fc1", "passed": true, "trees": 4, "bytes": 392873169, "destinationRoot": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/elftia/elftia/.artifacts/creator-rocut-acceptance-20261012/relocated-backups", "originalCPathsRetiredAfterVerification": true, "initialBackupsAndCurrentPluginsUntouched": true },
+        "laterLowContrastExplanationReportedByRoot": { "accent": "#140509", "treatment": "outline uses accent, not fill", "frame15DominantRgb": [18, 4, 8], "frame45": "new cut at pop entry start", "shaderColorUnitsOrAlphaDefectEstablished": false, "sourceFixRequired": false, "selectedPresetExplained": true, "highVisibilityWhiteTextVisualGatePassed": false },
+        "latestInstalledPngSave": { "receipt": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/elftia/elftia/.artifacts/native-png-installed-acceptance-20261012/ui-save-correct-trigger-receipt.json", "sha256": "97cfa4e0e8816a21a65a9db1bc8df7df648d33017428192f726245822f4e2117", "scope": "Opaque production Save snapshot only, not transparent/nested/cancel selected fixture", "normalSaveMenuClicked": true, "downloadTriggeredReportedByRoot": true, "status": "failed-download-saveAs-canceled", "pngBytesObtained": false, "pngOraclePassed": false, "downloadBehaviorRestored": true },
+        "snapshotDevelopmentReportedByRoot": { "owner": "creator_committed_producer_sol", "status": "in-progress-not-complete", "scope": "Formal rocut snapshot CLI and attached-editor output transport" },
+        "laterInstalledOpaqueSnapshot": { "status": "pass", "receipt": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/elftia/elftia/.artifacts/snapshot-delivery-20261012/run-OneLCa/png-acceptance.json", "receiptSha256": "774571ee4ca34d3f23c724d524c0784762093bc8bb6723f414fe46b27cc1ea96", "scope": "Actual installed CLI opaque two-image native snapshot only", "bytes": 3177, "pngSha256": "c86780d3bca359bb1c20d6fe1d095d62abb96d843ea1524b8b27fa0ba02a1f7c", "width": 32, "height": 24, "exactPixels": 768, "crcValidated": true, "zlibValidated": true, "sourceRevision": 3, "projectBytesUnchanged": true, "installReceiptSha256": "beaa494d1471c1d4568a397caa22b506d1d24402d323b4b7399859642c48dd39", "installedPackageSha256": "0fcdfcfb3151770081c1d223e9e2e21f8ebb39211fcb9fce591aab271323d918", "installedFiles": 364, "creatorTreeAndUnrelatedStateUnchanged": true, "guiSaveCanceledFailureRetained": true, "transparentNestedCancelFixturePassClaim": false },
+        "compilerRuntimeUpdatePrepared": { "status": "private-package-prepared-not-installed", "fixReportedByRoot": "compiler-process.ts Electron Node compiler child environment only; focused real 70KB JSON isolation tests 5/5", "package": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/elftia/elftia/.artifacts/snapshot-delivery-20261012/runtime-update-Qn65ka/release/rocut.epkg", "packageSha256": "ced39b83b6112955025736ce80aa20e10e4c0a8900e0b4ab4010cd3ce2c6514b", "receiptSha256": "e342d46874cb8ee06f3903f066038b8bc5e8cd025cf398dcc2d81c0f8931ab0a", "zipInventorySha256": "6bd6e871ee25f9590542711e422b2058720ac3bc3c995b8cb6230c962b443953", "files": 364, "archiveExact": true, "sdkVerifyPackExitCodes": [0, 0], "sourceDrift": 0, "surfaceRebuilt": false, "wasmRebuilt": false },
+        "threeToolchainReadiness": { "receiptSha256": "92e1e94a432aebf91ffa6a89442e482f1b1d67cbcc87186bbd0a4a48a6d381c8", "threeOnly": true, "requiredManifestLockVersionsPassed": true, "historicalSharedDistPinsPassed": 108, "singleThreeRuntime": true, "esbuildWin32Callable": true, "hyperframesReady": false, "remotionReady": false, "persistentEnvironmentChanged": false, "actualInstalledCompilerAdmissionPassed": false },
+        "laterInstalledSelectedMixedAcceptance": {
+          "runtimeInstallReceiptSha256": "b6df38f117167638c90216dbcb143ce7eb590baba4718d8092de8ccbdb8d0a06", "installedFiles": 364, "creatorAndUnrelatedStateUnchanged": true,
+          "authorReceipt": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/elftia/elftia/.artifacts/installed-mixed-authoring-20261012/author-run-3/receipt.json", "authorReceiptSha256": "af00515a61713fff4ecf6ad0ebfaf89bba79f12baace97fa7b24b940ff7aec4e", "revisionBefore": 2, "revisionAfter": 5,
+          "actualInstalledThreeCompilePassed": true, "nativeImages": 2, "nativeJizuraLyricsImported": true, "asciiCellSizeChanged": "6 to 8", "crossDissolveFrames": 18, "lyricsFirstLayerOrder": true,
+          "snapshotReceiptSha256": "37f1e0f90966be316a625a0ba8ceb2b07eeadc627184de44c61087ab0deb01fe", "snapshotTick": 300000, "snapshotCanvas": "640x360", "rootObservedLyricsAscii3dAndBackground": true, "fullPixelOracleClaim": false,
+          "videoReceiptSha256": "c5768b6780c42a4a695cd57cfda76e55b143aeba9fdcb1d17f4bfedb589a625e", "video": { "seconds": 6, "frames": 180, "fps": 30, "codec": "H264", "canvas": "640x360", "pixelFormat": "yuv420p", "fullDecodePassed": true, "audio": false, "explicitTickRange": [0, 720000], "lyricsDurationSeconds": 8.5, "reviewFramesObservedByRoot": [75, 99, 165], "snapshotFrame75RgbMae": 1.7612369791666667, "snapshotFrame75RgbMaxError": 75, "comparisonIsMeasurementNotExactOracle": true },
+          "offlineReceiptSha256": "8a7e3e5b79db1a2879136e1ae23d580e2994610ca08587ba9dcd4a3aaf38669c", "scopedRendererRemoteDenyNegativeControlPassed": true, "localRequests": 33, "osOfflineClaim": false,
+          "reopenReceiptSha256": "b018e38400d6044ec491c6e13677a84c373c2caeeb40bd85da9b5893ed69e0c0", "oldDaemonStopped": true, "newDaemonReused": false, "fullReadDeepEqual": true, "revision": 5, "sameTickPngBytesExact": true,
+          "paneReceiptSha256": "6cc6a3673c92ca0032f63bf02d7ae19ecde0c1fb0e195edceea8756482819c1c", "visibleClips": 4, "deadOverlay": false, "inspectorSelectableAndAuthorShownReportedByRoot": true, "allGuiParameterApplyClaim": false,
+          "remainingDevelopment": "No additional source defect established by this selected mixed acceptance; do not infer broad engine support.",
+          "remainingAcceptance": [ "Execute prepared original transparent/nested/cancel selected wholegraph fixture under isolated GPU", "GUI download saveAs completion remains separate from successful CLI snapshot", "Full product completion assessment beyond this selected six-second no-audio mixed project, without matrix expansion" ],
+          "historicalFailuresRetained": true, "overallGoalComplete": false
+        },
+        "latestGuiAndSelectedScopeFinalization": {
+          "normalGuiSave": { "receipt": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/elftia/elftia/.artifacts/gui-png-delivery-20261012/host7-normal-save-1/receipt.json", "sha256": "4134c92a9070cf10ad9fb06c6d77c27c149ef0884c596bdf4b99f97e6e0e284b", "passed": true, "route": "Actual preview contextmenu Save snapshot, CDP completed download", "pngBytes": 3177, "pngSha256": "c86780d3bca359bb1c20d6fe1d095d62abb96d843ea1524b8b27fa0ba02a1f7c", "exactPixels": 768, "maximumPixelError": 0, "meanPixelError": 0, "revision": 3, "projectBytesUnchangedReportedByRoot": true, "cdpDefaultsRestoredAndDetached": true, "oldPlaywrightSaveAsCanceledRetained": true, "historicalCancelCauseEstablished": false, "productionFixRequiredEstablished": false },
+          "originalSelectedFixture": { "result": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/elftia/elftia/.artifacts/electron-wholegraph-png-selected-explicit-profile-20261012/selected-scope-result.json", "sha256": "b39309791096635e2c695c4163ece42ef878ffe982256f723ba4969ee532ffd3", "status": "startup-failed-selected-render-scopes-not-executed", "freshIsolatedAttempts": 3, "allExitCodes": "0xFFFFFFFF", "earlyDiagnosticMarkerReached": false, "pngProduced": false, "originalOracleUnchanged": true, "launcherTestsPassed": 5, "ownedChildrenOrServersRemaining": false, "pixelMismatchEstablished": false, "platformUnavailableEstablished": false, "rootCauseEstablished": false, "nextScope": "Separately planned bootstrap/app-loading investigation, no further blind argv enumeration this round" },
+          "mixedSummarySha256": "fac50463803618f161bef32e1652bcba0f49c37dc22fca2d08af009f49363042", "historicalMixedSummaryGuiPendingSupersededOnlyHere": true,
+          "laterThreeHintSourceOnlyReportedByRoot": { "change": "Remove outdated CLI-only text in programmatic-source-draft.ts", "focusedTestsPassed": 19, "existingUiCanCompileAndProviderReviseBuildSupport": true, "guardOrApiExpanded": false, "installedSurfaceRebuiltForThisTextChange": false },
+          "hostLifecycleReportedByRoot": { "host6": "daemon stopped and graceful exit0", "host7": "Restored normal nativePNG project use; startup receipt mutable, no final exit pin" },
+          "currentRemaining": [ "Original transparent/nested/cancel selected fixture requires separate bootstrap investigation before GPU/pixel acceptance", "Source-only Three hint not yet rebuilt into installed Surface", "Private Three toolchain not automatic complete-engine provisioning", "Bounded completion assessment beyond selected opaque GUI and mixed pass" ],
+          "overallGoalComplete": false, "commitOrPushPerformed": false
+        },
+        "remainingDevelopment": [ "Formal rocut snapshot CLI and attached-editor output transport implementation and integration" ],
+        "remainingAcceptance": [ "Obtain actual installed opaque Save snapshot PNG bytes and compare the declared oracle", "Validate new formal snapshot CLI and attached-editor output transport after implementation", "Same-project mixed native/lyrics/stylized3D/effects/transitions editable authoring, composition/export and cleanup acceptance", "Selected wholegraph PNG behavior evidence within original transparent/nested/cancel scope only" ],
+        "remaining": [ "Formal snapshot CLI and attached-editor output transport development", "Installed opaque PNG bytes/oracle and new transport behavior acceptance", "Same-project mixed media acceptance", "Original selected wholegraph PNG acceptance" ],
+        "wholeGoalComplete": false, "commitPushOrVersionBump": false
+      },
+      "installedCreatorUiPassed": true,
+      "offlineReopenPassedThisRound": true,
+      "offlinePassScope": "Pane renderer HTTP(S) remote-deny/reload only, not main/OS offline",
+      "upgradeRollbackPassedThisRound": true,
+      "releaseAccepted": false,
+      "commitOrPushPerformed": false,
+      "awaitingRootFinalReceipt": true
+    }
+  }
+}

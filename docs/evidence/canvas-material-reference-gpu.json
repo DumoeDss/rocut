@@ -1,0 +1,152 @@
+{
+  "schemaVersion": 1,
+  "status": "accepted-bounded-independent-material-reference",
+  "scope": "Three finite independently prepared f64 material/raster cases compared with current normal production WASM real ordered capture request on WebGL SwiftShader. Not hardware/WebGPU, authoring, codec export, exhaustive admission, optical realism, or universal fake-overlay proof.",
+  "wasmSha256": "91cb239afd1efd81fa36a700bea6436e3707532a8f3111b175d22ee61dfbca86",
+  "fixtureSha256": "527a6aec6e7f6891bf254af7959940c47dbf79015cfddb1e5b556aaa4baabc18",
+  "gates": {
+    "gpuByteMax": 2,
+    "gpuByteMean": 0.35,
+    "alphaExact": true,
+    "holeExactZero": true,
+    "negativeMeanMinimum": 0.2,
+    "negativeChangedPixelsMinimum": 8,
+    "changedByteThreshold": 2
+  },
+  "cases": [
+    {
+      "name": "weave",
+      "tick": 0,
+      "metrics": {
+        "max": 1,
+        "mean": 0.0546875,
+        "alphaMismatch": 0,
+        "holeNonzero": 0
+      },
+      "sha256": "6540f54d0dc3d8a230377af9877abe5f271842e83b8c30fda1d2a7ba944c3509",
+      "ok": true
+    },
+    {
+      "name": "brush-wet",
+      "tick": 36000,
+      "metrics": {
+        "max": 1,
+        "mean": 0.050455729166666664,
+        "alphaMismatch": 0,
+        "holeNonzero": 0
+      },
+      "sha256": "712de26369180688842623b9081808a3307b0777dad370f9c2fa6ccf51a2d8b2",
+      "ok": true
+    },
+    {
+      "name": "brush-dried",
+      "tick": 120000,
+      "metrics": {
+        "max": 1,
+        "mean": 0.054036458333333336,
+        "alphaMismatch": 0,
+        "holeNonzero": 0
+      },
+      "sha256": "7c522f92087e028ffd162e2329f7903142749c906b3a48f41211b122c66215f4",
+      "ok": true
+    }
+  ],
+  "negativeControls": "Nine pre-GPU no-weave/flat-normal/wrong-light/no-deposition/no-shine/no-drying controls pass frozen CPU discrimination thresholds.",
+  "fixtureCorrection": {
+    "originalPreserved": "C:/tmps/canvas-material-reference-20261012/canvas-material-reference-fixture.json",
+    "originalSha256": "3d8c15fcd39343ae746b25a89fe31be1129719087a56d7c1efb51b57b0fe66b3",
+    "reason": "Original byte encoder treated premultiplied linear RGB as straight. Corrected to encode_srgb(color/alpha), plus exact Canvas2D partial-alpha gray source. Mathematical quantities, opaque pixels, holes, config, strokes, ticks and gates unchanged; no production fix.",
+    "frozenBeforeGpu": true
+  },
+  "attempts": {
+    "first": "Missing required version DTO field; fixture error before rendering.",
+    "second": "applyEffectPasses rejects Canvas because ordered capture is required; expected interface behavior.",
+    "final": "Real beginRenderFrameForHandle / advanceRenderFrameForHandle / commitRenderFrameForHandle with uploaded full-resolution source, single layer and resolved Canvas pass."
+  },
+  "cleanup": {
+    "sourceCanvasZeroed": true,
+    "compositorDisposed": true,
+    "gpuDisposed": true,
+    "browserAndServer": [
+      {
+        "name": "browser",
+        "closed": true
+      },
+      {
+        "name": "server",
+        "closed": true
+      }
+    ]
+  },
+  "reusableEntrypoints": [
+    "C:/tmps/canvas-material-reference-20261012/canvas-material-reference-supplement.mjs",
+    "C:/tmps/canvas-material-reference-20261012/canvas-material-reference-gpu.mjs"
+  ],
+  "artifacts": [
+    {
+      "path": "C:/tmps/canvas-material-reference-20261012/straight-srgb-01/canvas-material-reference-brush-dried-gpu.rgba",
+      "sha256": "7c522f92087e028ffd162e2329f7903142749c906b3a48f41211b122c66215f4",
+      "bytes": 3072
+    },
+    {
+      "path": "C:/tmps/canvas-material-reference-20261012/straight-srgb-01/canvas-material-reference-brush-dried.rgba",
+      "sha256": "f0aa4b3d970eb78aa465670607a3b41a01dabaa74a5c88d4d610c597f6812085",
+      "bytes": 3072
+    },
+    {
+      "path": "C:/tmps/canvas-material-reference-20261012/straight-srgb-01/canvas-material-reference-brush-wet-gpu.rgba",
+      "sha256": "712de26369180688842623b9081808a3307b0777dad370f9c2fa6ccf51a2d8b2",
+      "bytes": 3072
+    },
+    {
+      "path": "C:/tmps/canvas-material-reference-20261012/straight-srgb-01/canvas-material-reference-brush-wet.rgba",
+      "sha256": "97302a8f516a4a38b0fcfab5b1e0879199e875184785c22f288150cfbba7421e",
+      "bytes": 3072
+    },
+    {
+      "path": "C:/tmps/canvas-material-reference-20261012/straight-srgb-01/canvas-material-reference-fixture.json",
+      "sha256": "527a6aec6e7f6891bf254af7959940c47dbf79015cfddb1e5b556aaa4baabc18",
+      "bytes": 442014
+    },
+    {
+      "path": "C:/tmps/canvas-material-reference-20261012/straight-srgb-01/canvas-material-reference-gpu-attempt-01.json",
+      "sha256": "c283f7800f37bf63215d0a014290bbd62e3e37a9d28aaa5a10579f7073cbaaa7",
+      "bytes": 846
+    },
+    {
+      "path": "C:/tmps/canvas-material-reference-20261012/straight-srgb-01/canvas-material-reference-gpu-attempt-02.json",
+      "sha256": "09196e451d3d9474ea2ae57f01836a85aaa02949621eacb637f1a1acaad54218",
+      "bytes": 755
+    },
+    {
+      "path": "C:/tmps/canvas-material-reference-20261012/straight-srgb-01/canvas-material-reference-gpu-receipt.json",
+      "sha256": "e4cc3f84233417652bc54bef63d200459471c025ada26bc811055bcfdfeceff8",
+      "bytes": 11871
+    },
+    {
+      "path": "C:/tmps/canvas-material-reference-20261012/straight-srgb-01/canvas-material-reference-pre-gpu-freeze.json",
+      "sha256": "96957f2917dde939e29e99a808fbe41bf9abde5add3f46abe0d31ff533700193",
+      "bytes": 726
+    },
+    {
+      "path": "C:/tmps/canvas-material-reference-20261012/straight-srgb-01/canvas-material-reference-prepare.mjs",
+      "sha256": "0f99251ceff2492d2fe112a5d8c661eae696c0975a3b9f8e9bb2feecf392d6c2",
+      "bytes": 8052
+    },
+    {
+      "path": "C:/tmps/canvas-material-reference-20261012/straight-srgb-01/canvas-material-reference-receipt.json",
+      "sha256": "2b0d7c8d5bd931fbc07742f2973a4d2c751e4c4121e6b56e15653a31d186d6d9",
+      "bytes": 2801
+    },
+    {
+      "path": "C:/tmps/canvas-material-reference-20261012/straight-srgb-01/canvas-material-reference-weave-gpu.rgba",
+      "sha256": "6540f54d0dc3d8a230377af9877abe5f271842e83b8c30fda1d2a7ba944c3509",
+      "bytes": 3072
+    },
+    {
+      "path": "C:/tmps/canvas-material-reference-20261012/straight-srgb-01/canvas-material-reference-weave.rgba",
+      "sha256": "ef3bdad0806a4e274de86c2fb96544fbe60aafa7f91e1e55f658bc12e6c3a570",
+      "bytes": 3072
+    }
+  ]
+}

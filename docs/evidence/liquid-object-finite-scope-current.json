@@ -1,0 +1,912 @@
+{
+  "version": 1,
+  "date": "2026-10-12",
+  "overallGoalComplete": false,
+  "basis": {
+    "creatorPlan": "docs/canvas-ui-director-rocut-development-plan.md",
+    "sections": [
+      "7.2",
+      "8.11",
+      "2026-10-12 author closure continuation"
+    ],
+    "vDefinition": "Evidenced registered finite video subset with explicit semantic differences, not arbitrary models, every host, installed state or upstream equivalence"
+  },
+  "audit": {
+    "kind": "CPU-only retained evidence mapping and artifact rehash; no new render/export/compile/build/install",
+    "runtimePinsVerified": 364
+  },
+  "remainingRegisteredFiniteSubset": [],
+  "notClaimed": [
+    "Arbitrary models/materials or cross-product of every combination",
+    "New UI history for the added finite model/material cases; author/history evidenced separately on their own saved static project",
+    "Default420 on new dynamic/shared-domain cases; their outputs explicitly opt-in444 q8",
+    "Hardware/WebGPU, installation/Electron/P8 or release",
+    "Historical missing original execution bytes restored or re-executed"
+  ],
+  "status": "accepted-registered-finite-liquid-object-subset",
+  "scope": "Static Float32 xyz GLB analytic rest-space wave/twist deformation, original Object author rev4/full61 video plus finite shared-root two-mesh/two textured normal-mapped PBR material domain with formal Host frames and19-frame444 q8.",
+  "registeredParameters": [
+    "enabled",
+    "amount",
+    "frequency",
+    "speed",
+    "twist",
+    "seed from immutable mapped frame"
+  ],
+  "explicitRejections": [
+    "skinned mesh",
+    "morph targets",
+    "instanced mesh",
+    "malformed/non-Float32/interleaved positions"
+  ],
+  "unchangedPolicy": {
+    "version": 1,
+    "maxControlJsonBytes": 8192,
+    "maxVerticesPerRequest": 100000,
+    "maxRequestJsonBytes": 12000000,
+    "maxResponseJsonBytes": 12000000,
+    "maxRequestEnvelopeBytes": 24004096,
+    "maxResponseEnvelopeBytes": 24004096,
+    "maxMeshesPerFrame": 32,
+    "maxVerticesPerFrame": 200000,
+    "maxRequestsPerFrame": 64,
+    "maxEncodedBytesPerFrame": 48000000,
+    "maxRetainedPayloadBytesPerFrame": 96000000,
+    "maxInFlight": 1,
+    "requestTimeoutMs": 15000,
+    "frameTimeoutMs": 30000,
+    "cleanupTimeoutMs": 5000,
+    "initTimeoutMs": 5000,
+    "terminationTimeoutMs": 5000
+  },
+  "requirements": [
+    {
+      "requirement": "Rust rest-space analytic wave/twist at absolute time/seed; disabled/zero exact original geometry normals/bounds; maps/materials retained",
+      "evidence": [
+        "liquid-object-implementation.json",
+        "liquid-object-shared-domain-current.json"
+      ],
+      "boundary": "Not background Liquid, accumulated simulation, fluid solver or dispersion; original payload/budgets/rejections preserved"
+    },
+    {
+      "requirement": "Liquid Object dedicated real author Apply/history/save/reopen and same edited project full output",
+      "evidence": [
+        "C:/tmps/liquid-object-author-history-20261012-Rw1CXT/closure-receipt.json"
+      ],
+      "boundary": "Mounted Object amount .45 to .8, single Apply/compile, complete clip undo/redo and rev4 reopen; full61 same saved project independently decoded vs read-only formal PNG refs. Background viscosity/refraction/event0Radius UI receipt not counted"
+    },
+    {
+      "requirement": "Finite static material/multi-mesh and host consumer combinations",
+      "evidence": [
+        "liquid-object-shared-domain-current.json"
+      ],
+      "boundary": "Common root-space seamless deformation, two textured/normal-mapped PBR static meshes, negative/nonuniform transforms CPU, real fixed worker/browser and frozen packaged Host frame parity;19-frame explicit444 Surface export. No animated/skinned/morph/instanced expansion"
+    }
+  ],
+  "author": {
+    "closure": {
+      "path": "C:/tmps/liquid-object-author-history-20261012-Rw1CXT/closure-receipt.json",
+      "byteLength": 3303,
+      "sha256": "339bea4b24d17096e99843cc79e25aa6bee5fedc900ab8108f125e0cd4ea5660"
+    },
+    "author": {
+      "path": "C:/tmps/liquid-object-author-history-20261012-Rw1CXT/receipt-final.json",
+      "sha256": "76b67ed22292d3260b145b4126903ba144c4714cf4ee68ae4b0c82a717c651f4"
+    },
+    "sameProjectExport": {
+      "path": "C:/tmps/liquid-object-author-history-20261012-Rw1CXT/attempt-02-export/receipt-final.json",
+      "sha256": "4855278cfed6977d45ae3ab8ad75f829a8d9f291eba55bb7a6bb2cc668d3721a",
+      "overallOk": false,
+      "productExportStatus": "completed",
+      "postExportFixtureFailure": "Empty Playwright response-body reference buffer; preserved without pretending product export failed."
+    },
+    "independentReferenceVerification": {
+      "path": "C:/tmps/liquid-object-author-history-20261012-Rw1CXT/attempt-03-existing-video-verification/receipt-final.json",
+      "sha256": "ba5aff96f1a882e296ca82f48064b83edf406fecacd2d8a9d46094084698921b",
+      "referencePids": [
+        {
+          "pid": 49368,
+          "closed": true,
+          "alive": false
+        }
+      ]
+    },
+    "revisions": {
+      "before": 1,
+      "afterApply": 2,
+      "afterUndo": 3,
+      "afterRedo": 4,
+      "reopened": 4
+    },
+    "draftChangedOnly": "inputProps.liquid.amount .45 -> .8",
+    "sourceClockAndInputResourcesPreserved": true,
+    "decoded": {
+      "frameCount": 61,
+      "width": 192,
+      "height": 128,
+      "frameRate": "30/1",
+      "codec": "vp9",
+      "allFrameMeanMax": 1.1036376953125,
+      "allFrameActiveMeanMax": 1.1714663327768504,
+      "amountSensitivity": {
+        "mean": 4.474012586805555,
+        "activeMean": 8.074384673075611
+      },
+      "frameMotion": {
+        "mean": 12.81826443142361,
+        "changedPixels": 4781,
+        "totalPixels": 24576
+      }
+    },
+    "boundary": "Actual dedicated Liquid Object mounted UI/history, same persisted engineering full61 attached production export, independent FFmpeg decode vs separate read-only same-project formal Host PNG references all61. Not independent analytic geometry oracle, animatedObject, Electron/installed acceptance, or background Liquid. No canonical source edits.",
+    "priorAttempt": {
+      "overallOk": false,
+      "observerDeadlineSeconds": 90,
+      "lastStatus": "running",
+      "lastProgress": 0.4426229508196721,
+      "classification": "Test observer deadline expired while product job was still running; harness finally closed its Host/browser, interrupting the job. Not a product export failure.",
+      "closedPids": [
+        {
+          "pid": 50112,
+          "closed": true,
+          "alive": false
+        },
+        {
+          "pid": 22696,
+          "closed": true,
+          "alive": false
+        },
+        {
+          "pid": 51688,
+          "closed": true,
+          "alive": false
+        }
+      ]
+    }
+  },
+  "currentFiniteCases": {
+    "canonical": {
+      "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut/docs/evidence/liquid-object-shared-domain-current.json",
+      "byteLength": 64263,
+      "sha256": "73fb0338ac575ab840a03d1326c7bd550b9086bff4c4a5715c63a45ab62dc174"
+    },
+    "formalHost": {
+      "receipt": {
+        "path": "C:/tmps/liquid-shared-domain-browser-20261012/formal-host-wE6dFU/frame-receipt.json",
+        "sha256": "9a61031ae5f7a51f759bd5059eed34f9bd0fe23308a13f708f32abcabed8be1e"
+      },
+      "comparisons": {
+        "time": {
+          "mean": 8.507188585069445,
+          "changedPixels": 1923,
+          "totalPixels": 24576
+        },
+        "reverseSeek": {
+          "mean": 0,
+          "changedPixels": 0,
+          "totalPixels": 24576
+        },
+        "disabled": {
+          "mean": 7.983045789930555,
+          "changedPixels": 6896,
+          "totalPixels": 24576
+        }
+      },
+      "privateParity": [
+        {
+          "formal": "formal-enabled23",
+          "private": "enabled-23",
+          "comparison": {
+            "mean": 0,
+            "changedPixels": 0,
+            "totalPixels": 24576
+          }
+        },
+        {
+          "formal": "formal-enabled41",
+          "private": "enabled-41",
+          "comparison": {
+            "mean": 0,
+            "changedPixels": 0,
+            "totalPixels": 24576
+          }
+        },
+        {
+          "formal": "formal-enabled23-repeat",
+          "private": "enabled-23-repeat",
+          "comparison": {
+            "mean": 0,
+            "changedPixels": 0,
+            "totalPixels": 24576
+          }
+        },
+        {
+          "formal": "formal-disabled23",
+          "private": "disabled-23",
+          "comparison": {
+            "mean": 0,
+            "changedPixels": 0,
+            "totalPixels": 24576
+          }
+        }
+      ]
+    },
+    "formalVideo": {
+      "status": "Unique formal packaged Surface/Host export and independently decoded 19-frame finite video closure passed; GPU lease released",
+      "review": {
+        "path": "C:/tmps/liquid-shared-domain-browser-20261012/video-Zv6DTW/review-final.json",
+        "sha256": "83cebda25017538b29a7f4e6c53ed933aeb474d00ae08d7b42e40dc569493024"
+      },
+      "ok": true,
+      "receipt": {
+        "path": "C:/tmps/liquid-shared-domain-browser-20261012/video-Zv6DTW/video-receipt.json",
+        "sha256": "35a20bd4c9f0cbedbdc8ffea9f6f0d8d69f081f59ee5320dfefb5395e27d43f4"
+      },
+      "contract": {
+        "path": "C:/tmps/liquid-shared-domain-browser-20261012/video-Zv6DTW/contract.json",
+        "sha256": "05a62481b39268548ad54446840c29a0886bef26f5ccdb9d07f08f27cefd879a"
+      },
+      "jobId": "e1fce82e442c5b60",
+      "job": {
+        "id": "e1fce82e442c5b60",
+        "status": "completed",
+        "progress": 1
+      },
+      "options": {
+        "format": "webm",
+        "quality": "very_high",
+        "videoChroma": "444",
+        "includeAudio": false,
+        "range": {
+          "startTime": 92000,
+          "endTime": 168000
+        }
+      },
+      "gates": {
+        "width": 192,
+        "height": 128,
+        "frames": 19,
+        "fps": "30/1",
+        "codec": "vp9",
+        "pixelFormat": "yuv444p",
+        "fullRgbMae": 3,
+        "activeRgbMae": 6,
+        "roi": [
+          35,
+          157,
+          10,
+          118
+        ],
+        "ptsError": 0.001
+      },
+      "video": {
+        "path": "C:/tmps/liquid-shared-domain-browser-20261012/video-Zv6DTW/production-444.webm",
+        "bytes": 60389,
+        "sha256": "c5fc71a063b65fbfc2443af4336eae966801087e7e214c23163256182b8cb1a3"
+      },
+      "decoded": {
+        "path": "C:/tmps/liquid-shared-domain-browser-20261012/video-Zv6DTW/decoded.rgba",
+        "sha256": "6b38c105e256ba6e86783d7509d67bc8e06698a760e9e8549d8b070506087a18",
+        "bytes": 1867776
+      },
+      "frames": 19,
+      "sourceIndices": [
+        23,
+        41
+      ],
+      "maxFullMae": 0.7500135633680556,
+      "maxActiveMae": 0.8213165351143493,
+      "maxPtsError": 0.00033333333333335213,
+      "originalAllFilesUnchanged": true,
+      "cloneNonProjectFilesUnchanged": true,
+      "cloneSurfaceBaseline": "14c3803dfb3bcd8e66380759a6ca541a549d62191bc0a3f2697329d8deca8dc8",
+      "cloneAfter": "14c3803dfb3bcd8e66380759a6ca541a549d62191bc0a3f2697329d8deca8dc8",
+      "cloneExportStageBytesUnchanged": true,
+      "referenceEndpointPinsAt23And41Exact": true,
+      "cleanup": [
+        "attached Surface Browser closed before formal reference requests",
+        "owned Host closed"
+      ],
+      "hostClose": {
+        "code": null,
+        "signal": "SIGTERM"
+      },
+      "httpFailures": [
+        {
+          "path": "/api/library/graph-editor-presets/user-presets",
+          "status": 404
+        }
+      ],
+      "pageErrors": [],
+      "limitations": [
+        "Explicit opt-in 444 very_high VP9 q8, not a default420 claim.",
+        "Dedicated HTTP-authored project; byte-exact cloned project/attachments for isolation. Original physical directory was not written. Normal Surface thumbnail/view-state bookkeeping before baseline is not authoring or history proof.",
+        "One unique production Host export task, real packaged Surface/SceneExporter, native WebCodecs and independent FFmpeg/FFprobe.",
+        "Finite two static planar meshes/two textured normal-mapped PBR materials over source frames23..41 only; no broad asset/material/video matrix.",
+        "SwiftShader/ANGLE configured browser; no discrete hardware GPU claim, UI history or installed-state certification.",
+        "Private child Browser/worker descendant PIDs not independently enumerated; awaited production cleanup and owned Surface Browser/Host closures recorded."
+      ],
+      "redaction": "HTTP failure observer path stripped Host authentication prefix after run; measurement/job/PNG/video bytes unchanged. Only /api/... path retained, no editor URL/token copied into this receipt.",
+      "runtimePinsBeforeAfterCount": 364
+    },
+    "compatibility": {
+      "legacyExact": true,
+      "sharedDomainSeamsExact": true,
+      "fullRootReferenceExact": true,
+      "missingDomainNegativeDistinguished": true,
+      "invalidDomainRejectedIncludingDisabled": true,
+      "two60000VertexRequests": true,
+      "perRequest100001Rejected": true,
+      "budgetScope": "Real Rust per-request budget only; frame/request/mesh transport quotas are not proven by direct ABI calls."
+    },
+    "creatorDomainChecks": [
+      "GLTF same-node material primitives and different-node common root field, sync and phase",
+      "negative/nonuniform transforms and shared seam continuity",
+      "single-mesh exact legacy payload and actual Rust Float32 result",
+      "material/map/normalMap/UV/index/groups preservation",
+      "bounds containment, tangent removal, reverse seek, disabled/dispose exact original geometry",
+      "second chunk malformed result atomicity",
+      "await disposal rejects late publication",
+      "later mesh normal preparation failure atomicity",
+      "120000 total vertices with original two 60000-vertex requests"
+    ]
+  },
+  "executionIdentity": {
+    "runtimeConfig": {
+      "path": "C:/tmps/rocut-integration-delivery-20261012-liquid-domain-04/glass-runtime-config.json",
+      "byteLength": 78433,
+      "sha256": "8d1684cdc059e489bfca927a5d594bee15511853f83adb3a251aeb8d532e08dd"
+    },
+    "runtimePinsVerified": 364,
+    "creatorFinalReceipt": {
+      "path": "C:/tmps/creator-integration-delivery-20261012-liquid-domain-03/verification-final.json",
+      "byteLength": 167908,
+      "sha256": "945558aa10809da9c0c6d5e5ffbc69980a1f4767fb702591f7f88cbe9fb166c1"
+    },
+    "finalSourcePins": [
+      {
+        "path": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/elftia/elftia-plugin-creator-studio/resources/agent/skills/html-video/assets/rocut-stylized/liquid-object-geometry.mjs",
+        "byteLength": 12322,
+        "sha256": "cf25afcb2ab8289b0905eaea9edaae851d0e05f1b3fce8b9a7c211e386ebf612"
+      },
+      {
+        "path": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/elftia/elftia-plugin-creator-studio/scripts/tests/liquid-object-domain.test.mjs",
+        "byteLength": 14365,
+        "sha256": "329c9b81db703da2f5f23bb12507063b417941b1f8196fc810ce5b583c7d7b46"
+      }
+    ],
+    "frozenAgentCopy": {
+      "path": "C:\\tmps\\creator-integration-delivery-20261012-liquid-domain-03\\producer\\dist\\creator-studio/agent/skills/html-video/assets/rocut-stylized/liquid-object-geometry.mjs",
+      "byteLength": 12322,
+      "sha256": "cf25afcb2ab8289b0905eaea9edaae851d0e05f1b3fce8b9a7c211e386ebf612"
+    },
+    "historicalStageDifferences": [
+      {
+        "location": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/elftia/elftia-plugin-creator-studio/resources/agent/skills/html-video/assets/rocut-stylized/liquid-object-geometry.mjs",
+        "expectedSha256": "f5862e6c0b9b65ff0c7c297708a44fe3f75887a5a01c7ed2e86bf6b00ff1d5a5",
+        "currentArtifact": {
+          "path": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/elftia/elftia-plugin-creator-studio/resources/agent/skills/html-video/assets/rocut-stylized/liquid-object-geometry.mjs",
+          "byteLength": 12322,
+          "sha256": "cf25afcb2ab8289b0905eaea9edaae851d0e05f1b3fce8b9a7c211e386ebf612"
+        },
+        "status": "current-bytes-differ-from-historical-pin"
+      },
+      {
+        "location": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/elftia/elftia-plugin-creator-studio/scripts/tests/liquid-object-domain.test.mjs",
+        "expectedSha256": "99ea56fcab4c141132677cd10990e700d04bccb443ecb96526b26543ea85f8e3",
+        "currentArtifact": {
+          "path": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/elftia/elftia-plugin-creator-studio/scripts/tests/liquid-object-domain.test.mjs",
+          "byteLength": 14365,
+          "sha256": "329c9b81db703da2f5f23bb12507063b417941b1f8196fc810ce5b583c7d7b46"
+        },
+        "status": "current-bytes-differ-from-historical-pin"
+      }
+    ],
+    "meaning": "Two stale historical creatorRegression.historicalPins differ from live. Final formalDeliveries.creator.sourcePins match current live and copied frozen geometry; earlier hash bytes are preserved as historical, not asserted equal. Runtime archive/compiled execution identities remain frozen."
+  },
+  "historyNotRelabeled": {
+    "oldRawArtifacts": [
+      {
+        "location": "C:/tmps/liquid-native-409f2f2c/native-final.exe",
+        "expectedSha256": "b189535094d6ca1927b8c67bcd8926b6b3032958c79d2fc32a1132caf0f5190d",
+        "status": "missing-original-artifact"
+      },
+      {
+        "location": "C:/tmps/liquid-native-409f2f2c/tests-final.exe",
+        "expectedSha256": "2ee03de80e731a89903d72b4595666064419dc5969f49c64180bb7e23a5580e2",
+        "status": "missing-original-artifact"
+      },
+      {
+        "location": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/elftia/elftia-plugin-creator-studio/scripts/tests/liquid-object-native.test.mjs",
+        "expectedSha256": "1cfdedc4353cf97240472ae58ca1d5e3e788cea0e6fce40ef8bac51f13c429f3",
+        "currentArtifact": {
+          "path": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/elftia/elftia-plugin-creator-studio/scripts/tests/liquid-object-native.test.mjs",
+          "byteLength": 12137,
+          "sha256": "dc77297f9b88d97ddbab36a4399492712205d222087b166d44a6603023be07ab"
+        },
+        "status": "current-bytes-differ-from-historical-pin"
+      },
+      {
+        "location": "C:/tmps/liquid-transport-ceb80c11/transport-final-receipt.json",
+        "expectedSha256": "03cc09e53a7cb116c07665eb4923782e99f6c437cb6ede0bdcc7cac1929d4bf6",
+        "status": "missing-original-artifact"
+      }
+    ],
+    "unretainedExecutionReceipt": "Old reported native7/Three4 execution without original receipts remains unretained; new actual CPU/WASM/worker and formal execution is separate evidence",
+    "oldBakedFull61": "liquid-object-editor-export-full.json is baked/new-project, not Object UI-history evidence; Rw1CXT closure supplies actual edited project chain",
+    "priorFailures": "Observer cleanup interruption, empty PNG body and preparation errors remain false historical receipts; completed existing video was verified without reauthoring/reexport",
+    "noBackgroundLiquidReuse": true
+  },
+  "dependencies": [
+    {
+      "path": "C:/tmps/liquid-object-author-history-20261012-Rw1CXT/closure-receipt.json",
+      "byteLength": 3303,
+      "sha256": "339bea4b24d17096e99843cc79e25aa6bee5fedc900ab8108f125e0cd4ea5660"
+    },
+    {
+      "path": "C:/tmps/liquid-shared-domain-browser-20261012/video-Zv6DTW/review-final.json",
+      "byteLength": 113803,
+      "sha256": "83cebda25017538b29a7f4e6c53ed933aeb474d00ae08d7b42e40dc569493024"
+    },
+    {
+      "path": "C:/tmps/liquid-shared-domain-browser-20261012/video-Zv6DTW/video-receipt.json",
+      "byteLength": 45671,
+      "sha256": "35a20bd4c9f0cbedbdc8ffea9f6f0d8d69f081f59ee5320dfefb5395e27d43f4"
+    },
+    {
+      "path": "C:/tmps/liquid-shared-domain-browser-20261012/video-Zv6DTW/contract.json",
+      "byteLength": 7022,
+      "sha256": "05a62481b39268548ad54446840c29a0886bef26f5ccdb9d07f08f27cefd879a"
+    },
+    {
+      "path": "C:/tmps/liquid-shared-domain-browser-20261012/video-Zv6DTW/production-444.webm",
+      "byteLength": 60389,
+      "sha256": "c5fc71a063b65fbfc2443af4336eae966801087e7e214c23163256182b8cb1a3"
+    },
+    {
+      "path": "C:/tmps/liquid-shared-domain-browser-20261012/video-Zv6DTW/decoded.rgba",
+      "byteLength": 1867776,
+      "sha256": "6b38c105e256ba6e86783d7509d67bc8e06698a760e9e8549d8b070506087a18"
+    },
+    {
+      "path": "C:/tmps/liquid-shared-domain-browser-20261012/formal-host-wE6dFU/review-final.json",
+      "byteLength": 6181,
+      "sha256": "bdacf8e0ee669f3b306faa5fe93c8ee08f30247f49c1f7df59f7687fd38d8841"
+    },
+    {
+      "path": "C:/tmps/liquid-shared-domain-browser-20261012/formal-host-wE6dFU/frame-receipt.json",
+      "byteLength": 1669,
+      "sha256": "9a61031ae5f7a51f759bd5059eed34f9bd0fe23308a13f708f32abcabed8be1e"
+    },
+    {
+      "path": "C:/tmps/liquid-shared-domain-browser-20261012/formal-host-wE6dFU/preparation-receipt.json",
+      "byteLength": 7750,
+      "sha256": "3701a3b4ff03f0b01a50082bdf11e3ecfed579dac0088186de9d322561a3e726"
+    },
+    {
+      "path": "C:/tmps/liquid-shared-domain-browser-20261012/formal-host-wE6dFU/formal-enabled23.png",
+      "byteLength": 2516,
+      "sha256": "0b74c744fefebd0fd19d3e15479d519cdd57004327e72ea9ef20be031e4a790a"
+    },
+    {
+      "path": "C:/tmps/liquid-shared-domain-browser-20261012/formal-host-wE6dFU/formal-enabled41.png",
+      "byteLength": 2487,
+      "sha256": "aed82e12313fa3e21971617df7cc6e45dfb016d494e60f183c895ab2b73eef8c"
+    },
+    {
+      "path": "C:/tmps/liquid-shared-domain-browser-20261012/formal-host-wE6dFU/formal-enabled23-repeat.png",
+      "byteLength": 2516,
+      "sha256": "0b74c744fefebd0fd19d3e15479d519cdd57004327e72ea9ef20be031e4a790a"
+    },
+    {
+      "path": "C:/tmps/liquid-shared-domain-browser-20261012/formal-host-wE6dFU/formal-disabled23.png",
+      "byteLength": 1471,
+      "sha256": "466831522b1217ff25b246a8244d39d8025491fa46b812af9b884f1850e9cc27"
+    },
+    {
+      "path": "C:/tmps/liquid-shared-domain-browser-20261012/formal-host-wE6dFU/project/attachments/programmatic-sha256-6945c54b2960a27bdf9c5d3b865997bcec828a7a2d07a66d35d1f79f3581fa11/body.bin",
+      "byteLength": 2132705,
+      "sha256": "6945c54b2960a27bdf9c5d3b865997bcec828a7a2d07a66d35d1f79f3581fa11"
+    },
+    {
+      "path": "C:/tmps/liquid-shared-domain-browser-20261012/formal-host-wE6dFU/project/attachments/programmatic-sha256-ceca707c1eaa4f230af6bc84881f4395d610e2c6d4881949e881f59cb6943494/body.bin",
+      "byteLength": 2400,
+      "sha256": "ceca707c1eaa4f230af6bc84881f4395d610e2c6d4881949e881f59cb6943494"
+    },
+    {
+      "path": "C:/tmps/liquid-shared-domain-browser-20261012/formal-host-wE6dFU/project/attachments/programmatic-source-sha256-cf25afcb2ab8289b0905eaea9edaae851d0e05f1b3fce8b9a7c211e386ebf612/body.bin",
+      "byteLength": 12322,
+      "sha256": "cf25afcb2ab8289b0905eaea9edaae851d0e05f1b3fce8b9a7c211e386ebf612"
+    },
+    {
+      "path": "C:/tmps/liquid-shared-domain-browser-20261012/formal-host-wE6dFU/project/attachments/programmatic-source-sha256-bcd09371e911d359aafcd5e02eba95a8cee24a64ea9bf474e780cfd455bb7339/body.bin",
+      "byteLength": 2663,
+      "sha256": "bcd09371e911d359aafcd5e02eba95a8cee24a64ea9bf474e780cfd455bb7339"
+    },
+    {
+      "path": "C:/tmps/liquid-shared-domain-browser-20261012/formal-host-wE6dFU/project/attachments/programmatic-source-sha256-7e9a39b18768272919afdb537ea4faae5cba5d34bb76d5c4c24c60ec2f5335a7/body.bin",
+      "byteLength": 9527,
+      "sha256": "7e9a39b18768272919afdb537ea4faae5cba5d34bb76d5c4c24c60ec2f5335a7"
+    },
+    {
+      "path": "C:/tmps/liquid-shared-domain-browser-20261012/formal-host-wE6dFU/project/attachments/programmatic-sha256-2eb531d4f1e367bb58f741b839f39983878e5afaf119e896671bf67e7190babf/body.bin",
+      "byteLength": 2132706,
+      "sha256": "2eb531d4f1e367bb58f741b839f39983878e5afaf119e896671bf67e7190babf"
+    },
+    {
+      "path": "C:/tmps/liquid-shared-domain-browser-20261012/attempt-rXxCiV/receipt.json",
+      "byteLength": 68808,
+      "sha256": "beea5c463f1b37f86a88a8917dc4e01baddde2abfb432d012278db99cd9849d3"
+    },
+    {
+      "path": "C:/tmps/liquid-shared-domain-browser-20261012/attempt-rXxCiV/review-final.json",
+      "byteLength": 48459,
+      "sha256": "35ecbfbd05f4f8ea57a04532e52ab10e04113b2e4639f96fafc4284373af6312"
+    },
+    {
+      "path": "C:/tmps/liquid-shared-domain-browser-20261012/attempt-rXxCiV/prepared-state.json",
+      "byteLength": 10046809,
+      "sha256": "f757a3af763afe8d7bce0da195a47dab60c9587bd8c7acfd525949b1700af7f6"
+    },
+    {
+      "path": "C:/tmps/liquid-shared-domain-browser-20261012/attempt-0H0JQG/receipt.json",
+      "byteLength": 67196,
+      "sha256": "8360ca04867879e17a4aae2229f819569a269d68f68b42b2d25cf34161374d6e"
+    },
+    {
+      "path": "C:/tmps/liquid-shared-domain-browser-20261012/attempt-iuTFTB/receipt.json",
+      "byteLength": 33714,
+      "sha256": "30cd9f982d080920f8e090cac9cd989705bc8ac3134ae7d8bc8e4b8fa51acd57"
+    },
+    {
+      "path": "C:/tmps/rocut-liquid-domain-wasm-20261012/delivered-baseline-comparison.json",
+      "byteLength": 1162,
+      "sha256": "62d11c85c28a6d8a1b758c14ce5daab4d244a6b575e102cc5334d32335fb5c63"
+    },
+    {
+      "path": "C:/tmps/liquid-static-matrix-20261012/domain-fix-receipt.json",
+      "byteLength": 5655,
+      "sha256": "e457168093776912029f39da8e471f2c681f857e5ca3fa68f4d73e0a8c2bf672"
+    },
+    {
+      "path": "C:/tmps/liquid-static-matrix-20261012/staging-cleanup-closure.json",
+      "byteLength": 1767,
+      "sha256": "52c8f33fa54a9924550882ee1ef6557712e705187509aa3450cc183570251dec"
+    },
+    {
+      "path": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/elftia/elftia-plugin-creator-studio/resources/agent/skills/html-video/references/rocut-liquid-object.md",
+      "byteLength": 10730,
+      "sha256": "4e6e4292df5344c3007234e87e4f4ebaa74a95266e0a6aaebbbe1af5f19a16d7"
+    },
+    {
+      "path": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/_others/rocut/rust/crates/effects/src/liquid_object.rs",
+      "byteLength": 5061,
+      "sha256": "6f22e72c3ffd3f0f365d0baad6c49d1d1ca90b13f6a22005429e70c07b0ca4cf"
+    },
+    {
+      "path": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/_others/rocut/rust/crates/editor-api/src/liquid_object_params.rs",
+      "byteLength": 4724,
+      "sha256": "0adf81eebce8f457e85d9fc4cc60eee1e923367d99d0023dc040b657a50f47c4"
+    },
+    {
+      "path": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/_others/rocut/rust/crates/editor-api/src/liquid_object_transport_policy.rs",
+      "byteLength": 2333,
+      "sha256": "5aa1f21ccc1d0b86ef197491197ac338aecd086ebb2bee087a341fbb65531efd"
+    },
+    {
+      "path": "C:/tmps/rocut-liquid-domain-native-20261012/src/lib.rs",
+      "byteLength": 321,
+      "sha256": "1cb758ae9b92de41a9e47dd78102d3aba6f3dec309f05d46573fdf2840d70826"
+    },
+    {
+      "path": "C:/tmps/rocut-liquid-domain-native-20261012/src/main.rs",
+      "byteLength": 439,
+      "sha256": "af0e51baa53522326ade40a0771b84b165c18811be391e9506b343da6dc834b1"
+    },
+    {
+      "path": "C:/tmps/rocut-liquid-domain-native-20261012/Cargo.toml",
+      "byteLength": 187,
+      "sha256": "b93a2fddc539ac37b63ed9dd423907fa3b1c0d1aa8909ba581c7054af4258d59"
+    },
+    {
+      "path": "C:/tmps/rocut-liquid-domain-native-20261012/Cargo.lock",
+      "byteLength": 2679,
+      "sha256": "364e3c165f8bfa142283729e628197ce6d3e7d86845c15e7129b090e3c67f350"
+    },
+    {
+      "path": "C:/tmps/rocut-liquid-domain-native-20261012/target/debug/liquid-domain-native.exe",
+      "byteLength": 605696,
+      "sha256": "1180240454d9e91965d88fbdb57a3ffe86c5f3b3c9c891841a4f6d6d9a553faf"
+    },
+    {
+      "path": "C:/tmps/rocut-three-pinned-features-ZvqmB9/toolchain/node_modules/three/package.json",
+      "byteLength": 3826,
+      "sha256": "1d5c438acdc1fe5a52fb8ede2e417afd91fec91d22275c40f7b739591b24e4df"
+    },
+    {
+      "path": "C:/tmps/rocut-three-pinned-features-ZvqmB9/toolchain/node_modules/three/build/three.module.js",
+      "byteLength": 650153,
+      "sha256": "bbf5ed13fe4373f5bd38b14ea8e62e9f157327da5638edc6d3863e08b167c9c7"
+    },
+    {
+      "path": "C:/tmps/rocut-three-pinned-features-ZvqmB9/toolchain/node_modules/three/build/three.core.js",
+      "byteLength": 1443056,
+      "sha256": "3718df126d69c125362a03340913204470d8c50238605150e57f808840fb7759"
+    },
+    {
+      "path": "C:/tmps/rocut-three-pinned-features-ZvqmB9/toolchain/node_modules/three/examples/jsm/loaders/GLTFLoader.js",
+      "byteLength": 114959,
+      "sha256": "97642d720f16cc9a0c9844934198e4d0c023bea8e89576d0f7545d03b2d103d2"
+    },
+    {
+      "path": "C:/tmps/liquid-static-matrix-20261012/pre-fix-receipt.json",
+      "byteLength": 2129,
+      "sha256": "d4aff07ccfcf98b8cb10bc6ab402400fa7d2d7f7532b2dd05d9220ac3250fefa"
+    },
+    {
+      "path": "C:/tmps/liquid-static-matrix-20261012/post-fix-native-receipt.json",
+      "byteLength": 24086,
+      "sha256": "638a60650b8a1a9404bfda233adb9d8ab73969e4b2fae07aabd05a38a5c94d40"
+    },
+    {
+      "path": "C:/tmps/liquid-static-matrix-20261012/post-fix-native-02-receipt.json",
+      "byteLength": 1068,
+      "sha256": "7bad90a01136b26d39c9657ccfe17515bacd885d19405c0d77cf4d7476ed4a82"
+    },
+    {
+      "path": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/elftia/elftia-plugin-creator-studio/resources/agent/skills/html-video/assets/rocut-stylized/liquid-object-geometry.mjs",
+      "byteLength": 12322,
+      "sha256": "cf25afcb2ab8289b0905eaea9edaae851d0e05f1b3fce8b9a7c211e386ebf612"
+    },
+    {
+      "path": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/elftia/elftia-plugin-creator-studio/scripts/tests/liquid-object-domain.test.mjs",
+      "byteLength": 14365,
+      "sha256": "329c9b81db703da2f5f23bb12507063b417941b1f8196fc810ce5b583c7d7b46"
+    },
+    {
+      "path": "C:/tmps/liquid-static-matrix-20261012/staging-cleanup-11-receipt.json",
+      "byteLength": 1259,
+      "sha256": "7450e51cc5a456af00a75896689c85251b8820961d36d90406f39f54f140e0ba"
+    },
+    {
+      "path": "C:/tmps/rocut-liquid-domain-wasm-20261012/receipt-normal-producer.json",
+      "byteLength": 126135,
+      "sha256": "70a21948acfff09871ee626c4ea9d9d250b57acb34b6ab5f4dfa78803a00f1d6"
+    },
+    {
+      "path": "C:/tmps/rocut-liquid-domain-wasm-20261012/gate-receipt-final.json",
+      "byteLength": 2283,
+      "sha256": "2c23015aba80f2681b8ace8c6df16363f66366f0b5238dc6bb7889cdb4e1bbb8"
+    },
+    {
+      "path": "C:/tmps/creator-integration-delivery-20261012-liquid-domain-03/verification-final.json",
+      "byteLength": 167908,
+      "sha256": "945558aa10809da9c0c6d5e5ffbc69980a1f4767fb702591f7f88cbe9fb166c1"
+    },
+    {
+      "path": "C:/tmps/rocut-integration-delivery-20261012-liquid-domain-04/integration-receipt.json",
+      "byteLength": 204235,
+      "sha256": "6b541c39044c147488a3df503208ca5bfd4297d55cf979c3816e103d975aa3bf"
+    },
+    {
+      "path": "C:/tmps/liquid-domain-worker-integration-20261012/receipt.json",
+      "byteLength": 26828,
+      "sha256": "9cf40c67e5a96fa839e4e57ff0e58be4f74a9d6be1a824904b4f48f4417f22f7"
+    },
+    {
+      "path": "C:/tmps/liquid-domain-worker-integration-20261012/verification-final.json",
+      "byteLength": 9235,
+      "sha256": "ad46af61da88ac005d7095a5f898ab3a8c35e2b412c812188d2dd758134e4057"
+    },
+    {
+      "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\apps\\cli\\src\\programmatic\\liquid-object-worker.ts",
+      "byteLength": 2537,
+      "sha256": "0591328a02fd75ad1ad054bcc7eb8891561c1030763a0989f048d66e8ec6d5f7"
+    },
+    {
+      "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\apps\\cli\\src\\programmatic\\liquid-object-worker-source.ts",
+      "byteLength": 6220,
+      "sha256": "477f9b50c6d92ce4e95479a51b71b049f3f3cbd33ef95722360d613057956bc9"
+    },
+    {
+      "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\apps\\cli\\src\\programmatic\\liquid-object-worker-process.ts",
+      "byteLength": 5270,
+      "sha256": "e77ac2e93af5d683d20cca30686e5e3454e8d2f9d5cec3e152bd18cf572ed3a4"
+    },
+    {
+      "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\apps\\cli\\src\\programmatic\\liquid-object-worker-bootstrap.ts",
+      "byteLength": 4087,
+      "sha256": "6fb90d1fcbc3f7b81010cf9a597dae211d6018a1285e8ca9bca140bd0722c43a"
+    },
+    {
+      "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\apps\\cli\\src\\programmatic\\liquid-object-worker-entry.mjs",
+      "byteLength": 6756,
+      "sha256": "ec8f9c4655eebda649ecbe0ff61b9651d351e612708859175c6f61361b5bb243"
+    },
+    {
+      "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\apps\\cli\\src\\programmatic\\liquid-object-broker.ts",
+      "byteLength": 6446,
+      "sha256": "d09d3822035e0338f469335f1451f34be56211f327be73d43b00685aebdd5751"
+    },
+    {
+      "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\apps\\cli\\src\\programmatic\\liquid-object-broker-codec.ts",
+      "byteLength": 2289,
+      "sha256": "3b84d37f8f2a56103e57644f26ada37eb61b4e140d15cbdd8b42347f5e75a9a3"
+    },
+    {
+      "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\apps\\cli\\src\\programmatic\\engines\\three-liquid-object-transport.ts",
+      "byteLength": 5989,
+      "sha256": "2c06355f1faf770360b197b09fba8afb77141c4449b30f0c52a83156bb19215a"
+    },
+    {
+      "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\apps\\cli\\src\\programmatic\\engines\\three-liquid-object-transport-wire.ts",
+      "byteLength": 4680,
+      "sha256": "2a3981fd6a18768af19392eb0f3f412890d95446a95ecfb8f200d14a9cf5f001"
+    },
+    {
+      "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\apps\\cli\\src\\programmatic\\engines\\three-liquid-object-transport-publication.ts",
+      "byteLength": 4456,
+      "sha256": "ceb78db9b6aef6cf04a8d37ac2140f8a0e73fbe095d7d7364500af843d60dfda"
+    },
+    {
+      "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\apps\\cli\\src\\programmatic\\engines\\three-liquid-object-transport-termination.ts",
+      "byteLength": 1014,
+      "sha256": "88d9489bc68d8dc7d5514e05aca3cd52f39dbfc6a1a5f480e9fa372403d093ae"
+    },
+    {
+      "path": "C:/tmps/creator-integration-delivery-20261012-liquid-domain-03/producer/dist/creator-studio/agent/skills/html-video/assets/rocut-stylized/liquid-object-geometry.mjs",
+      "byteLength": 12322,
+      "sha256": "cf25afcb2ab8289b0905eaea9edaae851d0e05f1b3fce8b9a7c211e386ebf612"
+    },
+    {
+      "path": "C:\\tmps\\liquid-domain-worker-integration-20261012\\api.ts",
+      "byteLength": 487,
+      "sha256": "0d4b7052c68d8d52706dde0db40d5c61ee2095ab9e3504b2e40056e451b93e61"
+    },
+    {
+      "path": "C:\\tmps\\liquid-domain-worker-integration-20261012\\run.mjs",
+      "byteLength": 13973,
+      "sha256": "af860e2b3f4ef41b77e74184619ffc5297c918e6251bf51b724dc92c2beb9659"
+    },
+    {
+      "path": "C:\\tmps\\rocut-integration-delivery-20261012-liquid-domain-04\\integration-receipt.json",
+      "byteLength": 204235,
+      "sha256": "6b541c39044c147488a3df503208ca5bfd4297d55cf979c3816e103d975aa3bf"
+    },
+    {
+      "path": "C:\\tmps\\rocut-integration-delivery-20261012-liquid-domain-04\\runtime\\liquid-object-wasm.mjs",
+      "byteLength": 231238,
+      "sha256": "ffdc8f243ad642225c1f20eae0764b942e6e5fdfdc56e140edcd136bc84ae7fd"
+    },
+    {
+      "path": "C:\\tmps\\liquid-domain-worker-integration-20261012\\liquid-object-wasm.mjs",
+      "byteLength": 231238,
+      "sha256": "ffdc8f243ad642225c1f20eae0764b942e6e5fdfdc56e140edcd136bc84ae7fd"
+    },
+    {
+      "path": "C:\\tmps\\rocut-integration-delivery-20261012-liquid-domain-04\\runtime\\liquid-object-worker-entry.mjs",
+      "byteLength": 6756,
+      "sha256": "ec8f9c4655eebda649ecbe0ff61b9651d351e612708859175c6f61361b5bb243"
+    },
+    {
+      "path": "C:\\tmps\\liquid-domain-worker-integration-20261012\\liquid-object-worker-entry.mjs",
+      "byteLength": 6756,
+      "sha256": "ec8f9c4655eebda649ecbe0ff61b9651d351e612708859175c6f61361b5bb243"
+    },
+    {
+      "path": "C:\\tmps\\rocut-integration-delivery-20261012-liquid-domain-04\\runtime\\opencut_wasm_bg.wasm",
+      "byteLength": 15230137,
+      "sha256": "8afce2680db2514a6f0c01e2fc563506dadef2f73ab15dd0ddf47c82d01fea30"
+    },
+    {
+      "path": "C:\\tmps\\liquid-domain-worker-integration-20261012\\opencut_wasm_bg.wasm",
+      "byteLength": 15230137,
+      "sha256": "8afce2680db2514a6f0c01e2fc563506dadef2f73ab15dd0ddf47c82d01fea30"
+    },
+    {
+      "path": "C:\\tmps\\liquid-domain-worker-integration-20261012\\api.mjs",
+      "byteLength": 42123,
+      "sha256": "17cfcb620d60edf3a14f4c57087cd892f35d74b049154b06c4a81994d345c21b"
+    },
+    {
+      "path": "C:\\tmps\\liquid-domain-worker-integration-20261012\\api-metafile.json",
+      "byteLength": 13370,
+      "sha256": "6c2d7d2f534e3d523b212d6c457b0cf66a9c01e38816f72b8621132a6bcb1f8e"
+    },
+    {
+      "path": "C:\\tmps\\three-assets-shared-delivery-20261012\\attempt-02\\toolchain\\node_modules\\three\\package.json",
+      "byteLength": 3826,
+      "sha256": "1d5c438acdc1fe5a52fb8ede2e417afd91fec91d22275c40f7b739591b24e4df"
+    },
+    {
+      "path": "C:\\tmps\\three-assets-shared-delivery-20261012\\attempt-02\\toolchain\\node_modules\\three\\build\\three.module.js",
+      "byteLength": 650153,
+      "sha256": "bbf5ed13fe4373f5bd38b14ea8e62e9f157327da5638edc6d3863e08b167c9c7"
+    },
+    {
+      "path": "C:\\tmps\\three-assets-shared-delivery-20261012\\attempt-02\\toolchain\\node_modules\\three\\build\\three.core.js",
+      "byteLength": 1443056,
+      "sha256": "3718df126d69c125362a03340913204470d8c50238605150e57f808840fb7759"
+    },
+    {
+      "path": "C:/tmps/liquid-domain-worker-integration-20261012/native-unit-evidence.json",
+      "byteLength": 2346,
+      "sha256": "69d2ccdd1cd0d594bb16deb5f22f2b9e649e69433b83e6760866a2a6c317080e"
+    },
+    {
+      "path": "C:/tmps/rocut-liquid-domain-native-20261012/target/debug/deps/liquid_domain_native-4746d7a7dc00394c.exe",
+      "byteLength": 1334272,
+      "sha256": "d744aefa3899922eb53074fe7ba691036126655aa05d791b601c9e3a0545fa0e"
+    },
+    {
+      "path": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/_others/rocut/rust/crates/effects/src/liquid_object_tests.rs",
+      "byteLength": 2088,
+      "sha256": "4b4016bcf6beebecfb48d1007e9b4eb7db416fbad1c6151a4b83868ef9c63411"
+    },
+    {
+      "path": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/_others/rocut/rust/crates/effects/src/liquid_object_domain_tests.rs",
+      "byteLength": 3851,
+      "sha256": "a493d24fc973c47f6b8b26dd38bbe07170b8d36e41a68906a4f747f71a34062c"
+    },
+    {
+      "path": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/_others/rocut/rust/crates/editor-api/src/liquid_object_params_tests.rs",
+      "byteLength": 2670,
+      "sha256": "5fa2425e531bf0687f654dcb6e836109885e786cbad09d4eafb14777cb0ed66c"
+    },
+    {
+      "path": "C:/tmps/liquid-domain-worker-integration-20261012/native-unit-evidence.log",
+      "byteLength": 1091,
+      "sha256": "387df09d01e92addb7daa0cfc33d3ff5615b0229d2c60ff796f381ff37449f26"
+    },
+    {
+      "path": "C:/tmps/liquid-object-author-history-20261012-Rw1CXT/receipt-final.json",
+      "byteLength": 6463,
+      "sha256": "76b67ed22292d3260b145b4126903ba144c4714cf4ee68ae4b0c82a717c651f4"
+    },
+    {
+      "path": "C:/tmps/liquid-object-author-history-20261012-Rw1CXT/attempt-02-export/receipt-final.json",
+      "byteLength": 5704,
+      "sha256": "4855278cfed6977d45ae3ab8ad75f829a8d9f291eba55bb7a6bb2cc668d3721a"
+    },
+    {
+      "path": "C:/tmps/liquid-object-author-history-20261012-Rw1CXT/attempt-03-existing-video-verification/receipt-final.json",
+      "byteLength": 13552,
+      "sha256": "ba5aff96f1a882e296ca82f48064b83edf406fecacd2d8a9d46094084698921b"
+    },
+    {
+      "path": "C:\\tmps\\creator-integration-delivery-20261012-liquid-domain-03\\producer\\dist\\creator-studio/agent/skills/html-video/assets/rocut-stylized/liquid-object-geometry.mjs",
+      "byteLength": 12322,
+      "sha256": "cf25afcb2ab8289b0905eaea9edaae851d0e05f1b3fce8b9a7c211e386ebf612"
+    },
+    {
+      "path": "C:/tmps/rocut-integration-delivery-20261012-liquid-domain-04/glass-runtime-config.json",
+      "byteLength": 78433,
+      "sha256": "8d1684cdc059e489bfca927a5d594bee15511853f83adb3a251aeb8d532e08dd"
+    },
+    {
+      "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut/docs/evidence/liquid-object-implementation.json",
+      "byteLength": 16164,
+      "sha256": "67d00fd9733d9a6b382876285765eb0d88a9d565a8b4622151d999dc5b353fc1"
+    },
+    {
+      "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut/docs/evidence/liquid-object-chromium-capture.json",
+      "byteLength": 2791,
+      "sha256": "bd3b3dbb6b0e4e13d9058653e74a4525dec1e58aeef7b19f4466d57b65b4f9e0"
+    },
+    {
+      "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut/docs/evidence/liquid-object-editor-export.json",
+      "byteLength": 2432,
+      "sha256": "0289d050870dcbe2c045dd05e88970a835c263cf51c5621ca9579db21ea6d662"
+    },
+    {
+      "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut/docs/evidence/liquid-object-editor-export-full.json",
+      "byteLength": 2777,
+      "sha256": "3ee2286b2269f2ec4479285ec7020010c29e37e840cd7669c3716ae222f72808"
+    },
+    {
+      "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut/docs/evidence/liquid-object-shared-domain-current.json",
+      "byteLength": 64263,
+      "sha256": "73fb0338ac575ab840a03d1326c7bd550b9086bff4c4a5715c63a45ab62dc174"
+    }
+  ]
+}

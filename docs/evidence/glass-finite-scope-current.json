@@ -1,0 +1,99 @@
+{
+  "version": 1,
+  "status": "declared-finite-glass-scope-evidence-complete",
+  "ok": true,
+  "planSection": "Creator canvas-ui-director-rocut-development-plan.md §7.2 Glass Object, with §8.10 historical authoring/export evidence",
+  "catalogNameBaselineCommit": "a04a99b235299ee79a123a16ccb2e6cf9da74b6b",
+  "scope": "Finite video-semantic Glass Object subset on controlled Three archived self-contained GLB/optional HDR/PNG resources, actual MeshPhysicalMaterial optics and explicit mapped-frame transforms; not upstream interactive equivalence or a general-model certification. This is an evidence registry, not a production capability advertisement or a Root ledger edit.",
+  "mapping": [
+    {
+      "requirement": "Rust-only complete version1 optical DTO and author helper",
+      "closed": true,
+      "evidence": "glass-physical-current.json",
+      "coverage": "Actual 8afce WASM resolveGlassObjectParamsJson -> glassObjectThree -> normalized transmission/ior/thickness/roughness/dispersion fields; invalid finite values reject before spec. Prior native authoring receipt remains separate."
+    },
+    {
+      "requirement": "Transmission/ior/thickness/roughness/dispersion true optical behavior",
+      "closed": true,
+      "evidence": "glass-physical-current.json",
+      "coverage": "Two predeclared Standard/Physical GLBs through actual r185 physical shader; each field has a changed-value negative control. All 10 field controls pass fixed pixel/MAE sensitivity; dispersion minimum observed mean0.081543 is above predeclared0.05. No shader substitution or threshold fitting."
+    },
+    {
+      "requirement": "Color/attenuationDistance/environmentIntensity narrow declared behavior",
+      "closed": true,
+      "evidence": "C:/tmps/object-declared-param-oracles-glass-color-20261012/receipt.json",
+      "coverage": "Reuse already-passed exact archived receipt: color/attenuation/env intensity center ROI means77.158/37.130/255, repeat/white absorption/absent-env negatives exact. Env intensity is extreme-value behavior only, not intermediate-value quantitative calibration. Not rerun."
+    },
+    {
+      "requirement": "Controlled GLB/environment/background import and archived compile/save/reopen",
+      "closed": true,
+      "evidence": ["glass-object-host.json", "glass-object-gpu.json", "glass-physical-current.json"],
+      "coverage": "Historical GLB/HDR/PNG Host import and original-input-unavailable reopen; historical corrected-source curved GLB/HDR/background actual optical GPU; current two self-contained embedded-map GLBs/PNG formal normal Host import/compile/apply/exact reopen plus verified archived resources and no sourceDirectory in compiled consumption. Historical/current packages are not conflated."
+    },
+    {
+      "requirement": "Borrowed PBR normal/color/roughness maps, Physical volume maps, material groups/multiple meshes/negative nonuniform model transforms",
+      "closed": true,
+      "evidence": "glass-physical-current.json",
+      "coverage": "Actual Three185 CPU proves map identity, UV1/normalScale, Standard-to-Physical intrinsic defines, Physical transmission/thickness-map retention, shared material deduplication and exact local transform preservation; current normal Host/GPU two finite sphere/group/multimesh combinations prove normalMap and negativeTransform sensitivity. Owned resources dispose once, borrowed resources/static driver leases remain untouched and original materials restore."
+    },
+    {
+      "requirement": "Finite dynamic skin/morph current bounds and negative transform",
+      "closed": true,
+      "evidence": "glass-dynamic-bounds-current.json",
+      "coverage": "Reuse skin-negative-parent and morph-negative-node analytic CPU/current production GPU checks; current vertex bounds/backdrop agrees with analytic expectation, stale rest-time/hidden-surface controls rejected, borrowed cached bounds preserved. Two saved projects have26 current normal444 decoded frames under original3/6/.001 gates. Ordinary capture creates a fresh scene per frame; same-instance unordered seek is CPU-only. Not rerun."
+    },
+    {
+      "requirement": "Real authoring editor history and same edited project full-duration output",
+      "closed": true,
+      "evidence": ["glass-editor-ui-history.json", "glass-object-editor-export-full.json"],
+      "coverage": "Historical actual Input props transmission edit0.9->0.35, recompile-apply, undo/redo, reload and Host reopen; same persisted edited project all49 frames decoded against original fixed references. This is historical authoring/49-frame acceptance, not a claim these histories were rerun on current8afce or that installation was tested."
+    },
+    {
+      "requirement": "Current finite physical combinations normal444 output quality",
+      "closed": true,
+      "evidence": "glass-physical-current.json",
+      "coverage": "One normal packaged Surface very_high explicit444 defaultq8 job per original finite project clone,13frames each;26 formal PNG references and independent FFmpeg decodes pass unchanged3/6/PTS.001. Overall maximum fullMAE0.884088, fixedROI MAE0.914842,PTS error0.000333334. Original project/source/runtime hashes unchanged; all owned processes closed."
+    }
+  ],
+  "encodingBoundary": {
+    "currentAccepted": "Explicit444 current defaultq8 policy, finite dynamic26frame plus new physical26frame sets; not default420 or alpha master",
+    "historicalFull49": "Historical edited author project complete49frame acceptance bound to its original5dbd6c3 package, not rerun or relabeled current",
+    "preservedDefault420Failure": {
+      "evidence": "glass-dynamic-bounds-current.json",
+      "videoSha256": "8d42d11e962f585e628b175774b139ca0ef322d481541ac75676450d0f497676",
+      "firstFrameFullRgbMean": 7.490424262152778,
+      "firstFrameActiveRgbMean": 11.90625,
+      "status": "failed-preserved-not-turned-green"
+    },
+    "preservedOld444Failure": {
+      "videoSha256": "b0c6b66a951b3f67b20fde2beaa8ae9d20b90c2165b47e78074a3f09f6e75918",
+      "frame2FullRgbMean": 4.999620225694445,
+      "diagnosis": "Retained encoder-input RGB matched original fresh reference exactly and failed video bytes were independently reproduced; mismatch was post-input encoding, not a Glass shader/bounds failure. Current444q8 acceptance does not erase the old failure."
+    }
+  },
+  "remaining": {
+    "declaredFiniteGlassMaterialModelTransformAcceptance": [],
+    "wholeProductDelivery": [
+      "Root-owned unified user-facing product integration and applicable release/consumer gates",
+      "Installed Elftia, Electron/cross-host, offline reopen, upgrade/rollback, artifact/version consistency and authorized distribution"
+    ],
+    "explicitlyNotClaimed": [
+      "Arbitrary models/materials/topologies/UV sets/animations, every GLB extension, every optical value combination or hardware GPU/device",
+      "Direct source support for all unlit/BLEND variants or arbitrary external glTF asset trees from these finite physical fixtures",
+      "Current-worktree/HEAD build consistency, installed capability advertisement or package deployment",
+      "Current normal default420 saturated-checker pressure quality",
+      "Glass-specific adversarial sync-loop/timeout/cancellation/watchdog/429 certification: successful bounded renders and cleanup here do not certify watchdog interruption or replace separate ordinary-Three/Liquid/Director lifecycle evidence"
+    ]
+  },
+  "evidencePins": [
+    { "path": "glass-physical-current.json", "sha256": "1d45184f951a823fba802e71202d631f5d21c527d0ac90c0c9b704efabb66c1c" },
+    { "path": "glass-dynamic-bounds-current.json", "sha256": "ddb7d081bcdfa5c213028b21f6ec13c7604dff9c005e4a6717477942d09a2aa9" },
+    { "path": "glass-object-editor-export-full.json", "sha256": "12bb849c9fd98b5e57e4bbbf6f9d963bb868ceeaad5fe1784904249dea52ef31" },
+    { "path": "glass-editor-ui-history.json", "sha256": "f0e264adbe88da2799a16b4ae7a1f5da53f37d4ed292f24efa69e5fb883b2799" },
+    { "path": "glass-object-host.json", "sha256": "9fb23e48cbec56bd3912740b441e1be17ec49c9da1fdeab528ac7a468116de12" },
+    { "path": "glass-object-gpu.json", "sha256": "b72990760757b2b9fe078d4aa94b1afabc909389d665ed3d8235c39891ee3e5e" },
+    { "path": "C:/tmps/object-declared-param-oracles-glass-color-20261012/receipt.json", "sha256": "a99b2a689d338b815d3ee6a4d2f3c19b78b533466a9a5046b3618076b3403393" }
+  ],
+  "gpuWork": "Complete and released; no additional GPU/history/export invocation for this registry",
+  "ledgerOwnership": "Root decides §7.2 status registration; this agent did not modify plan or audit scripts"
+}

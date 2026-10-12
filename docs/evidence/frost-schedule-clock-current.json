@@ -1,0 +1,3108 @@
+{
+  "version": "frost-schedule-clock-current-v1",
+  "ok": true,
+  "scope": "Finite opaque Frost isolated schedule-clock normal production render and two normal SceneExporter jobs; test-only negative DTO serialization adapter",
+  "contract": {
+    "version": "frost-schedule-opaque-clock-v1",
+    "width": 64,
+    "height": 48,
+    "frameRate": {
+      "numerator": 30,
+      "denominator": 1
+    },
+    "parameters": {
+      "amount": 0.8,
+      "coverage": 0.9,
+      "scale": 7,
+      "blur": 0.025,
+      "refraction": 0.035,
+      "tintR": 0.7,
+      "tintG": 0.82,
+      "tintB": 1,
+      "tintStrength": 0.35,
+      "seed": 17,
+      "holdTicks": 8000,
+      "recoveryTicks": 16000,
+      "strokeCount": 1,
+      "stroke0TimeTicks": 12001,
+      "stroke0FromX": 0.2,
+      "stroke0FromY": 0.5,
+      "stroke0ToX": 0.8,
+      "stroke0ToY": 0.5,
+      "stroke0Radius": 0.2,
+      "stroke0Strength": 1
+    },
+    "sourceSha256": "b859d5a468e5c1a7bb1f8a816ba6d52c5548ca380ab743e9ec0504915132437c",
+    "alpha": {
+      "all255": true,
+      "opaquePixels": 3072
+    },
+    "gates": {
+      "meanRgb": 4,
+      "activeRgb": 6,
+      "activePixels": 48,
+      "activeDelta": 16,
+      "timestamp": 0.0011,
+      "minimumPixels": 48,
+      "visibleDelta": 16,
+      "minimumSignedChange": 8,
+      "maximumDeltaError": 12
+    },
+    "frames": [
+      {
+        "index": 0,
+        "ticks": 0,
+        "sha256": "cf556d2a0adf47b7392a742a13d38857d0cb1a04ab0b3c1e3a1e50697f47f8b2"
+      },
+      {
+        "index": 1,
+        "ticks": 4000,
+        "sha256": "cf556d2a0adf47b7392a742a13d38857d0cb1a04ab0b3c1e3a1e50697f47f8b2"
+      },
+      {
+        "index": 2,
+        "ticks": 8000,
+        "sha256": "cf556d2a0adf47b7392a742a13d38857d0cb1a04ab0b3c1e3a1e50697f47f8b2"
+      },
+      {
+        "index": 3,
+        "ticks": 12000,
+        "sha256": "cf556d2a0adf47b7392a742a13d38857d0cb1a04ab0b3c1e3a1e50697f47f8b2"
+      },
+      {
+        "index": 4,
+        "ticks": 16000,
+        "sha256": "9e65f9e03ee4227fa75cdf5f1674174533f35dc7ba11c4ef46d983910a7e5ca3"
+      },
+      {
+        "index": 5,
+        "ticks": 20000,
+        "sha256": "9e65f9e03ee4227fa75cdf5f1674174533f35dc7ba11c4ef46d983910a7e5ca3"
+      },
+      {
+        "index": 6,
+        "ticks": 24000,
+        "sha256": "565570c95d4050f1f074b79f8499a9e84ab32fd69c430cf6892e27d17d5d0bf8"
+      },
+      {
+        "index": 7,
+        "ticks": 28000,
+        "sha256": "95b8c037e3aaf6352f16623016b885c94d26cdcd847da9f658b36df26bce0684"
+      },
+      {
+        "index": 8,
+        "ticks": 32000,
+        "sha256": "3728cab3aeb74634d613bde326be04b456e1a8a182d4a453fb1b65ea20973a42"
+      },
+      {
+        "index": 9,
+        "ticks": 36000,
+        "sha256": "4ada3575fbf507c9cf6f6d7e5b09337d72d03d8c7a2fc2c56f97ff157a176d9d"
+      },
+      {
+        "index": 10,
+        "ticks": 40000,
+        "sha256": "cf556d2a0adf47b7392a742a13d38857d0cb1a04ab0b3c1e3a1e50697f47f8b2"
+      },
+      {
+        "index": 11,
+        "ticks": 44000,
+        "sha256": "cf556d2a0adf47b7392a742a13d38857d0cb1a04ab0b3c1e3a1e50697f47f8b2"
+      },
+      {
+        "index": 12,
+        "ticks": 48000,
+        "sha256": "cf556d2a0adf47b7392a742a13d38857d0cb1a04ab0b3c1e3a1e50697f47f8b2"
+      }
+    ],
+    "pairs": [
+      {
+        "id": "stamp",
+        "first": 3,
+        "last": 4,
+        "firstTicks": 12000,
+        "lastTicks": 16000,
+        "identity": {
+          "pixels": 327,
+          "channels": 441,
+          "expectedChangeMean": 35.33106575963719,
+          "signedChangeMean": 35.33106575963719,
+          "deltaErrorMean": 0,
+          "identifiable": true,
+          "accepted": true
+        },
+        "freeze": {
+          "pixels": 327,
+          "channels": 441,
+          "expectedChangeMean": 35.33106575963719,
+          "signedChangeMean": 0,
+          "deltaErrorMean": 35.33106575963719,
+          "identifiable": true,
+          "accepted": false
+        }
+      },
+      {
+        "id": "recovery",
+        "first": 5,
+        "last": 9,
+        "firstTicks": 20000,
+        "lastTicks": 36000,
+        "identity": {
+          "pixels": 327,
+          "channels": 441,
+          "expectedChangeMean": 35.326530612244895,
+          "signedChangeMean": 35.326530612244895,
+          "deltaErrorMean": 0,
+          "identifiable": true,
+          "accepted": true
+        },
+        "freeze": {
+          "pixels": 327,
+          "channels": 441,
+          "expectedChangeMean": 35.326530612244895,
+          "signedChangeMean": 0,
+          "deltaErrorMean": 35.326530612244895,
+          "identifiable": true,
+          "accepted": false
+        }
+      }
+    ],
+    "seekTicks": [
+      48000,
+      16000,
+      12000,
+      28000,
+      0,
+      36000,
+      16000,
+      48000
+    ]
+  },
+  "sourceFormula": {
+    "red": "(31+3*x+7*y)%256",
+    "green": "(97+11*x+2*y)%256",
+    "blue": "(53+5*x+13*y)%256",
+    "alpha": 255,
+    "oldTransparentFixtureUnchanged": true
+  },
+  "seam": {
+    "target": "Four-key production resolveStylizedEffectJson DTO with exact fixed Frost parameters and 30/1 rate",
+    "negativeMutation": "Only DTO.localTime temporarily zeroed during JSON serialization, restored in finally",
+    "rawWasmObservation": "Read-only returned WebAssembly instance facade; no memory writes, substituted return passes, or raw ABI ownership interference",
+    "encoderObservation": "Native VideoEncoder constructor/instance observer; no encoder prototype edits",
+    "isolatedRealm": true,
+    "productionEdits": false
+  },
+  "runtime": {
+    "config": {
+      "path": "C:/tmps/rocut-integration-delivery-20261012-liquid-domain-04/glass-runtime-config.json",
+      "byteLength": 78433,
+      "sha256": "8d1684cdc059e489bfca927a5d594bee15511853f83adb3a251aeb8d532e08dd"
+    },
+    "pinsVerified": 364,
+    "binary": {
+      "path": "C:/tmps/rocut-liquid-domain-wasm-20261012/pkg/opencut_wasm_bg.wasm",
+      "byteLength": 15230137,
+      "sha256": "8afce2680db2514a6f0c01e2fc563506dadef2f73ab15dd0ddf47c82d01fea30"
+    }
+  },
+  "cpu": {
+    "receipt": {
+      "path": "C:/tmps/frost-schedule-clock-20261012/cpu-receipt.json",
+      "byteLength": 4297,
+      "sha256": "8a8fd817cc217b325f4b0acd88f12be0c346e19e076a9e7397e428bd2c27fdef"
+    },
+    "ok": true,
+    "limitation": "CPU and unit/fake ABI checks do not establish GPU or codec behavior; actual consumer receipt supplies that evidence"
+  },
+  "thresholds": {
+    "meanRgb": 4,
+    "activeRgb": 6,
+    "activePixels": 48,
+    "activeDelta": 16,
+    "timestamp": 0.0011
+  },
+  "temporalThresholds": {
+    "minimumPixels": 48,
+    "visibleDelta": 16,
+    "minimumSignedChange": 8,
+    "maximumDeltaError": 12
+  },
+  "pairSelection": [
+    {
+      "id": "stamp",
+      "first": 3,
+      "last": 4,
+      "firstTicks": 12000,
+      "lastTicks": 16000,
+      "identity": {
+        "pixels": 327,
+        "channels": 441,
+        "expectedChangeMean": 35.33106575963719,
+        "signedChangeMean": 35.33106575963719,
+        "deltaErrorMean": 0,
+        "identifiable": true,
+        "accepted": true
+      },
+      "freeze": {
+        "pixels": 327,
+        "channels": 441,
+        "expectedChangeMean": 35.33106575963719,
+        "signedChangeMean": 0,
+        "deltaErrorMean": 35.33106575963719,
+        "identifiable": true,
+        "accepted": false
+      }
+    },
+    {
+      "id": "recovery",
+      "first": 5,
+      "last": 9,
+      "firstTicks": 20000,
+      "lastTicks": 36000,
+      "identity": {
+        "pixels": 327,
+        "channels": 441,
+        "expectedChangeMean": 35.326530612244895,
+        "signedChangeMean": 35.326530612244895,
+        "deltaErrorMean": 0,
+        "identifiable": true,
+        "accepted": true
+      },
+      "freeze": {
+        "pixels": 327,
+        "channels": 441,
+        "expectedChangeMean": 35.326530612244895,
+        "signedChangeMean": 0,
+        "deltaErrorMean": 35.326530612244895,
+        "identifiable": true,
+        "accepted": false
+      }
+    }
+  ],
+  "variants": [
+    {
+      "mode": "advance",
+      "job": {
+        "id": "906402fb18eae814",
+        "options": {
+          "format": "webm",
+          "quality": "very_high",
+          "videoChroma": "444",
+          "includeAudio": false,
+          "range": {
+            "startTime": 0,
+            "endTime": 52000
+          }
+        },
+        "startedAt": 1791792270693,
+        "status": "completed",
+        "progress": 1,
+        "cancelRequested": false,
+        "updatedAt": 1791792272934,
+        "outputPath": "C:\\tmps\\frost-schedule-clock-20261012\\project\\exports\\906402fb18eae814.webm"
+      },
+      "referenceCapture": {
+        "scope": "Reused first-attempt actual fresh production boundary PNG/RGBA, same immutable source/optics/oracle; independent gates rechecked before new producer job",
+        "receipt": "C:/tmps/frost-schedule-clock-20261012/actual-consumer/receipt.json",
+        "receiptSha256": "83800d88de7d380ba1508333306476a081a9c0d2c70e25ff1d0f7714380a681b"
+      },
+      "reusedCompletedProducer": {
+        "receipt": "C:/tmps/frost-schedule-clock-20261012/actual-consumer-seek-fresh-02/receipt.json",
+        "receiptSha256": "98b0651c5fee948b1a5c59e2bbad0ce2a24aa07980d60972c03ead2d559e7a4d",
+        "scope": "Unique completed positive job reused without new capture, render or export"
+      },
+      "referenceFrames": [
+        {
+          "index": 0,
+          "ticks": 0,
+          "rgbaSha256": "549fdbe2f4e951d7d65aa8c6e1fc186fc9244732ac48efca4e5008d82e6cb4df",
+          "pngSha256": "3ff7d3caa0f97d009b8e8c9ab7ba5ed13012d2823c501773dff517a128eeac18",
+          "publicationSerial": 6,
+          "metric": {
+            "meanRgb": 0.0005425347222222222,
+            "activeRgb": 0.0011120378092855157,
+            "activePixels": 1199
+          },
+          "accepted": true
+        },
+        {
+          "index": 1,
+          "ticks": 4000,
+          "rgbaSha256": "549fdbe2f4e951d7d65aa8c6e1fc186fc9244732ac48efca4e5008d82e6cb4df",
+          "pngSha256": "3ff7d3caa0f97d009b8e8c9ab7ba5ed13012d2823c501773dff517a128eeac18",
+          "publicationSerial": 8,
+          "metric": {
+            "meanRgb": 0.0005425347222222222,
+            "activeRgb": 0.0011120378092855157,
+            "activePixels": 1199
+          },
+          "accepted": true
+        },
+        {
+          "index": 2,
+          "ticks": 8000,
+          "rgbaSha256": "549fdbe2f4e951d7d65aa8c6e1fc186fc9244732ac48efca4e5008d82e6cb4df",
+          "pngSha256": "3ff7d3caa0f97d009b8e8c9ab7ba5ed13012d2823c501773dff517a128eeac18",
+          "publicationSerial": 10,
+          "metric": {
+            "meanRgb": 0.0005425347222222222,
+            "activeRgb": 0.0011120378092855157,
+            "activePixels": 1199
+          },
+          "accepted": true
+        },
+        {
+          "index": 3,
+          "ticks": 12000,
+          "rgbaSha256": "549fdbe2f4e951d7d65aa8c6e1fc186fc9244732ac48efca4e5008d82e6cb4df",
+          "pngSha256": "3ff7d3caa0f97d009b8e8c9ab7ba5ed13012d2823c501773dff517a128eeac18",
+          "publicationSerial": 12,
+          "metric": {
+            "meanRgb": 0.0005425347222222222,
+            "activeRgb": 0.0011120378092855157,
+            "activePixels": 1199
+          },
+          "accepted": true
+        },
+        {
+          "index": 4,
+          "ticks": 16000,
+          "rgbaSha256": "35aad70b62fcc57a94c300e80a8045a36d40688745e191e12c83f92230d1d768",
+          "pngSha256": "1a0b61e071984ac98ccc04c48f6bffdac8d57498da6596295eaa6c088924913b",
+          "publicationSerial": 14,
+          "metric": {
+            "meanRgb": 0.00021701388888888888,
+            "activeRgb": 0.00039872408293460925,
+            "activePixels": 836
+          },
+          "accepted": true
+        },
+        {
+          "index": 5,
+          "ticks": 20000,
+          "rgbaSha256": "35aad70b62fcc57a94c300e80a8045a36d40688745e191e12c83f92230d1d768",
+          "pngSha256": "1a0b61e071984ac98ccc04c48f6bffdac8d57498da6596295eaa6c088924913b",
+          "publicationSerial": 16,
+          "metric": {
+            "meanRgb": 0.00021701388888888888,
+            "activeRgb": 0.00039872408293460925,
+            "activePixels": 836
+          },
+          "accepted": true
+        },
+        {
+          "index": 6,
+          "ticks": 24000,
+          "rgbaSha256": "7bf7b3671c2c8f3be18778cb1bc2e815e4e15811c51c185e28c37c6ebfc608fd",
+          "pngSha256": "26f6813653d65bce4cbb735f7dcfae33d6005be1ec231c0d6a77ea709e2ac693",
+          "publicationSerial": 18,
+          "metric": {
+            "meanRgb": 0.0003255208333333333,
+            "activeRgb": 0.0007366482504604051,
+            "activePixels": 905
+          },
+          "accepted": true
+        },
+        {
+          "index": 7,
+          "ticks": 28000,
+          "rgbaSha256": "2367e651121f33f3ce3808b20e62b0577a12ddeb14ebc00071b479be1b41f29a",
+          "pngSha256": "f5d8a99b3e5d993a5cf9f47ccfd320e12952459f14fc70a731c533e6e442e185",
+          "publicationSerial": 20,
+          "metric": {
+            "meanRgb": 0.00043402777777777775,
+            "activeRgb": 0.0003360215053763441,
+            "activePixels": 992
+          },
+          "accepted": true
+        },
+        {
+          "index": 8,
+          "ticks": 32000,
+          "rgbaSha256": "593e619eed104e147dea401f63080e379925227910912c8c1150479e7c84d4f8",
+          "pngSha256": "aa5011fab8f5fe66a203c3a51f8c95fcf0cb205accc97fb585b8b2eb88e9ffd1",
+          "publicationSerial": 22,
+          "metric": {
+            "meanRgb": 0.00043402777777777775,
+            "activeRgb": 0.0009057971014492754,
+            "activePixels": 1104
+          },
+          "accepted": true
+        },
+        {
+          "index": 9,
+          "ticks": 36000,
+          "rgbaSha256": "187106b28587c08aaf4aedd6acf0b310e0e00f4a8db4c6e4f9fbd44ed7336661",
+          "pngSha256": "fb2ee6dc2e8571d3ca0a124d7c7c0c638dcbc2b584c93f56a6307cbc459c178d",
+          "publicationSerial": 24,
+          "metric": {
+            "meanRgb": 0.00043402777777777775,
+            "activeRgb": 0.0008340283569641367,
+            "activePixels": 1199
+          },
+          "accepted": true
+        },
+        {
+          "index": 10,
+          "ticks": 40000,
+          "rgbaSha256": "549fdbe2f4e951d7d65aa8c6e1fc186fc9244732ac48efca4e5008d82e6cb4df",
+          "pngSha256": "3ff7d3caa0f97d009b8e8c9ab7ba5ed13012d2823c501773dff517a128eeac18",
+          "publicationSerial": 26,
+          "metric": {
+            "meanRgb": 0.0005425347222222222,
+            "activeRgb": 0.0011120378092855157,
+            "activePixels": 1199
+          },
+          "accepted": true
+        },
+        {
+          "index": 11,
+          "ticks": 44000,
+          "rgbaSha256": "549fdbe2f4e951d7d65aa8c6e1fc186fc9244732ac48efca4e5008d82e6cb4df",
+          "pngSha256": "3ff7d3caa0f97d009b8e8c9ab7ba5ed13012d2823c501773dff517a128eeac18",
+          "publicationSerial": 28,
+          "metric": {
+            "meanRgb": 0.0005425347222222222,
+            "activeRgb": 0.0011120378092855157,
+            "activePixels": 1199
+          },
+          "accepted": true
+        },
+        {
+          "index": 12,
+          "ticks": 48000,
+          "rgbaSha256": "549fdbe2f4e951d7d65aa8c6e1fc186fc9244732ac48efca4e5008d82e6cb4df",
+          "pngSha256": "3ff7d3caa0f97d009b8e8c9ab7ba5ed13012d2823c501773dff517a128eeac18",
+          "publicationSerial": 30,
+          "metric": {
+            "meanRgb": 0.0005425347222222222,
+            "activeRgb": 0.0011120378092855157,
+            "activePixels": 1199
+          },
+          "accepted": true
+        }
+      ],
+      "renderTemporal": [
+        {
+          "id": "stamp",
+          "pixels": 327,
+          "channels": 441,
+          "expectedChangeMean": 35.33106575963719,
+          "signedChangeMean": 35.33106575963719,
+          "deltaErrorMean": 0.0045351473922902496,
+          "identifiable": true,
+          "accepted": true
+        },
+        {
+          "id": "recovery",
+          "pixels": 327,
+          "channels": 441,
+          "expectedChangeMean": 35.326530612244895,
+          "signedChangeMean": 35.32879818594105,
+          "deltaErrorMean": 0.0022675736961451248,
+          "identifiable": true,
+          "accepted": true
+        }
+      ],
+      "video": {
+        "byteLength": 13120,
+        "sha256": "92708232c8882378f408cbe99f40d490800bc4f104cb10c254da187b76a8464b"
+      },
+      "decodedFrames": [
+        {
+          "index": 0,
+          "ticks": 0,
+          "pts": 0,
+          "independent": {
+            "meanRgb": 1.0575086805555556,
+            "activeRgb": 1.0964692799555185,
+            "activePixels": 1199
+          },
+          "accepted": true,
+          "freshFormalPngParity": {
+            "meanRgb": 1.0571831597222223,
+            "activeRgb": 1.0959132610508757,
+            "activePixels": 1199
+          }
+        },
+        {
+          "index": 1,
+          "ticks": 4000,
+          "pts": 0.033,
+          "independent": {
+            "meanRgb": 1.0564236111111112,
+            "activeRgb": 1.098415346121768,
+            "activePixels": 1199
+          },
+          "accepted": true,
+          "freshFormalPngParity": {
+            "meanRgb": 1.0560980902777777,
+            "activeRgb": 1.0978593272171253,
+            "activePixels": 1199
+          }
+        },
+        {
+          "index": 2,
+          "ticks": 8000,
+          "pts": 0.067,
+          "independent": {
+            "meanRgb": 1.0559895833333333,
+            "activeRgb": 1.1006394217403392,
+            "activePixels": 1199
+          },
+          "accepted": true,
+          "freshFormalPngParity": {
+            "meanRgb": 1.0556640625,
+            "activeRgb": 1.1000834028356965,
+            "activePixels": 1199
+          }
+        },
+        {
+          "index": 3,
+          "ticks": 12000,
+          "pts": 0.1,
+          "independent": {
+            "meanRgb": 1.0559895833333333,
+            "activeRgb": 1.0981373366694467,
+            "activePixels": 1199
+          },
+          "accepted": true,
+          "freshFormalPngParity": {
+            "meanRgb": 1.0556640625,
+            "activeRgb": 1.097581317764804,
+            "activePixels": 1199
+          }
+        },
+        {
+          "index": 4,
+          "ticks": 16000,
+          "pts": 0.133,
+          "independent": {
+            "meanRgb": 1.1062282986111112,
+            "activeRgb": 1.1291866028708133,
+            "activePixels": 836
+          },
+          "accepted": true,
+          "freshFormalPngParity": {
+            "meanRgb": 1.1062282986111112,
+            "activeRgb": 1.128787878787879,
+            "activePixels": 836
+          }
+        },
+        {
+          "index": 5,
+          "ticks": 20000,
+          "pts": 0.167,
+          "independent": {
+            "meanRgb": 1.0890842013888888,
+            "activeRgb": 1.108054226475279,
+            "activePixels": 836
+          },
+          "accepted": true,
+          "freshFormalPngParity": {
+            "meanRgb": 1.0890842013888888,
+            "activeRgb": 1.1076555023923444,
+            "activePixels": 836
+          }
+        },
+        {
+          "index": 6,
+          "ticks": 24000,
+          "pts": 0.2,
+          "independent": {
+            "meanRgb": 1.0899522569444444,
+            "activeRgb": 1.1226519337016574,
+            "activePixels": 905
+          },
+          "accepted": true,
+          "freshFormalPngParity": {
+            "meanRgb": 1.0900607638888888,
+            "activeRgb": 1.1226519337016574,
+            "activePixels": 905
+          }
+        },
+        {
+          "index": 7,
+          "ticks": 28000,
+          "pts": 0.233,
+          "independent": {
+            "meanRgb": 1.1004774305555556,
+            "activeRgb": 1.1340725806451613,
+            "activePixels": 992
+          },
+          "accepted": true,
+          "freshFormalPngParity": {
+            "meanRgb": 1.1004774305555556,
+            "activeRgb": 1.133736559139785,
+            "activePixels": 992
+          }
+        },
+        {
+          "index": 8,
+          "ticks": 32000,
+          "pts": 0.267,
+          "independent": {
+            "meanRgb": 1.1041666666666667,
+            "activeRgb": 1.179951690821256,
+            "activePixels": 1104
+          },
+          "accepted": true,
+          "freshFormalPngParity": {
+            "meanRgb": 1.1041666666666667,
+            "activeRgb": 1.1796497584541064,
+            "activePixels": 1104
+          }
+        },
+        {
+          "index": 9,
+          "ticks": 36000,
+          "pts": 0.3,
+          "independent": {
+            "meanRgb": 1.1044921875,
+            "activeRgb": 1.1690297470113984,
+            "activePixels": 1199
+          },
+          "accepted": true,
+          "freshFormalPngParity": {
+            "meanRgb": 1.1040581597222223,
+            "activeRgb": 1.1681957186544343,
+            "activePixels": 1199
+          }
+        },
+        {
+          "index": 10,
+          "ticks": 40000,
+          "pts": 0.333,
+          "independent": {
+            "meanRgb": 1.0902777777777777,
+            "activeRgb": 1.1395607450653322,
+            "activePixels": 1199
+          },
+          "accepted": true,
+          "freshFormalPngParity": {
+            "meanRgb": 1.0901692708333333,
+            "activeRgb": 1.1390047261606895,
+            "activePixels": 1199
+          }
+        },
+        {
+          "index": 11,
+          "ticks": 44000,
+          "pts": 0.367,
+          "independent": {
+            "meanRgb": 1.0873480902777777,
+            "activeRgb": 1.1326105087572977,
+            "activePixels": 1199
+          },
+          "accepted": true,
+          "freshFormalPngParity": {
+            "meanRgb": 1.0872395833333333,
+            "activeRgb": 1.132054489852655,
+            "activePixels": 1199
+          }
+        },
+        {
+          "index": 12,
+          "ticks": 48000,
+          "pts": 0.4,
+          "independent": {
+            "meanRgb": 1.0863715277777777,
+            "activeRgb": 1.1242702251876564,
+            "activePixels": 1199
+          },
+          "accepted": true,
+          "freshFormalPngParity": {
+            "meanRgb": 1.0862630208333333,
+            "activeRgb": 1.1237142062830137,
+            "activePixels": 1199
+          }
+        }
+      ],
+      "encodedTemporal": [
+        {
+          "id": "stamp",
+          "pixels": 327,
+          "channels": 441,
+          "expectedChangeMean": 35.33106575963719,
+          "signedChangeMean": 34.38095238095238,
+          "deltaErrorMean": 1.7891156462585034,
+          "identifiable": true,
+          "accepted": true
+        },
+        {
+          "id": "recovery",
+          "pixels": 327,
+          "channels": 441,
+          "expectedChangeMean": 35.326530612244895,
+          "signedChangeMean": 33.61224489795919,
+          "deltaErrorMean": 2.2857142857142856,
+          "identifiable": true,
+          "accepted": true
+        }
+      ],
+      "seek": [
+        {
+          "ticks": 48000,
+          "rgbaSha256": "549fdbe2f4e951d7d65aa8c6e1fc186fc9244732ac48efca4e5008d82e6cb4df"
+        },
+        {
+          "ticks": 16000,
+          "rgbaSha256": "35aad70b62fcc57a94c300e80a8045a36d40688745e191e12c83f92230d1d768"
+        },
+        {
+          "ticks": 12000,
+          "rgbaSha256": "549fdbe2f4e951d7d65aa8c6e1fc186fc9244732ac48efca4e5008d82e6cb4df"
+        },
+        {
+          "ticks": 28000,
+          "rgbaSha256": "2367e651121f33f3ce3808b20e62b0577a12ddeb14ebc00071b479be1b41f29a"
+        },
+        {
+          "ticks": 0,
+          "rgbaSha256": "549fdbe2f4e951d7d65aa8c6e1fc186fc9244732ac48efca4e5008d82e6cb4df"
+        },
+        {
+          "ticks": 36000,
+          "rgbaSha256": "187106b28587c08aaf4aedd6acf0b310e0e00f4a8db4c6e4f9fbd44ed7336661"
+        },
+        {
+          "ticks": 16000,
+          "rgbaSha256": "35aad70b62fcc57a94c300e80a8045a36d40688745e191e12c83f92230d1d768"
+        },
+        {
+          "ticks": 48000,
+          "rgbaSha256": "549fdbe2f4e951d7d65aa8c6e1fc186fc9244732ac48efca4e5008d82e6cb4df"
+        }
+      ],
+      "graphAndRevisionUnchanged": true,
+      "adapterRestored": true,
+      "auditReceipt": {
+        "path": "C:/tmps/frost-schedule-clock-20261012/actual-consumer-freeze-export-03/receipt.json",
+        "byteLength": 339935,
+        "sha256": "8d6e5c6c8fbfe433ef43ff0fa0936f3dc03b6c5cf4b0f9cb524864f212365aa8"
+      },
+      "auditCounts": {
+        "serializations": 23,
+        "wasmCalls": 23,
+        "encodeOptions": 13
+      },
+      "encoderConfigurations": [
+        {
+          "codec": "vp09.01.10.08.03.01.13.01.01",
+          "width": 64,
+          "height": 48,
+          "displayWidth": 64,
+          "displayHeight": 48,
+          "bitrate": 47000,
+          "framerate": 30,
+          "alpha": "discard",
+          "bitrateMode": "quantizer",
+          "latencyMode": "quality",
+          "hardwareAcceleration": "prefer-software"
+        }
+      ],
+      "actualExportClockProof": {
+        "mode": "advance",
+        "serializations": [
+          {
+            "originalTicks": 0,
+            "serializedTicks": 0,
+            "dtoRestored": true,
+            "mutatedOnlyLocalTime": true
+          },
+          {
+            "originalTicks": 4000,
+            "serializedTicks": 4000,
+            "dtoRestored": true,
+            "mutatedOnlyLocalTime": true
+          },
+          {
+            "originalTicks": 8000,
+            "serializedTicks": 8000,
+            "dtoRestored": true,
+            "mutatedOnlyLocalTime": true
+          },
+          {
+            "originalTicks": 12000,
+            "serializedTicks": 12000,
+            "dtoRestored": true,
+            "mutatedOnlyLocalTime": true
+          },
+          {
+            "originalTicks": 16000,
+            "serializedTicks": 16000,
+            "dtoRestored": true,
+            "mutatedOnlyLocalTime": true
+          },
+          {
+            "originalTicks": 20000,
+            "serializedTicks": 20000,
+            "dtoRestored": true,
+            "mutatedOnlyLocalTime": true
+          },
+          {
+            "originalTicks": 24000,
+            "serializedTicks": 24000,
+            "dtoRestored": true,
+            "mutatedOnlyLocalTime": true
+          },
+          {
+            "originalTicks": 28000,
+            "serializedTicks": 28000,
+            "dtoRestored": true,
+            "mutatedOnlyLocalTime": true
+          },
+          {
+            "originalTicks": 32000,
+            "serializedTicks": 32000,
+            "dtoRestored": true,
+            "mutatedOnlyLocalTime": true
+          },
+          {
+            "originalTicks": 36000,
+            "serializedTicks": 36000,
+            "dtoRestored": true,
+            "mutatedOnlyLocalTime": true
+          },
+          {
+            "originalTicks": 40000,
+            "serializedTicks": 40000,
+            "dtoRestored": true,
+            "mutatedOnlyLocalTime": true
+          },
+          {
+            "originalTicks": 44000,
+            "serializedTicks": 44000,
+            "dtoRestored": true,
+            "mutatedOnlyLocalTime": true
+          },
+          {
+            "originalTicks": 48000,
+            "serializedTicks": 48000,
+            "dtoRestored": true,
+            "mutatedOnlyLocalTime": true
+          },
+          {
+            "originalTicks": 48000,
+            "serializedTicks": 48000,
+            "dtoRestored": true,
+            "mutatedOnlyLocalTime": true
+          }
+        ],
+        "wasm": [
+          {
+            "localTime": 0,
+            "response": {
+              "frameIndex": 0,
+              "passes": [
+                {
+                  "shader": "frost",
+                  "uniforms": {
+                    "amount": 0.8,
+                    "blur": 0.025,
+                    "coverage": 0.9,
+                    "refraction": 0.035,
+                    "scale": 7,
+                    "seed": 17,
+                    "strokeCount": 0,
+                    "tintB": 1,
+                    "tintG": 0.82,
+                    "tintR": 0.7,
+                    "tintStrength": 0.35
+                  }
+                }
+              ],
+              "version": 1
+            }
+          },
+          {
+            "localTime": 4000,
+            "response": {
+              "frameIndex": 1,
+              "passes": [
+                {
+                  "shader": "frost",
+                  "uniforms": {
+                    "amount": 0.8,
+                    "blur": 0.025,
+                    "coverage": 0.9,
+                    "refraction": 0.035,
+                    "scale": 7,
+                    "seed": 17,
+                    "strokeCount": 0,
+                    "tintB": 1,
+                    "tintG": 0.82,
+                    "tintR": 0.7,
+                    "tintStrength": 0.35
+                  }
+                }
+              ],
+              "version": 1
+            }
+          },
+          {
+            "localTime": 8000,
+            "response": {
+              "frameIndex": 2,
+              "passes": [
+                {
+                  "shader": "frost",
+                  "uniforms": {
+                    "amount": 0.8,
+                    "blur": 0.025,
+                    "coverage": 0.9,
+                    "refraction": 0.035,
+                    "scale": 7,
+                    "seed": 17,
+                    "strokeCount": 0,
+                    "tintB": 1,
+                    "tintG": 0.82,
+                    "tintR": 0.7,
+                    "tintStrength": 0.35
+                  }
+                }
+              ],
+              "version": 1
+            }
+          },
+          {
+            "localTime": 12000,
+            "response": {
+              "frameIndex": 3,
+              "passes": [
+                {
+                  "shader": "frost",
+                  "uniforms": {
+                    "amount": 0.8,
+                    "blur": 0.025,
+                    "coverage": 0.9,
+                    "refraction": 0.035,
+                    "scale": 7,
+                    "seed": 17,
+                    "strokeCount": 0,
+                    "tintB": 1,
+                    "tintG": 0.82,
+                    "tintR": 0.7,
+                    "tintStrength": 0.35
+                  }
+                }
+              ],
+              "version": 1
+            }
+          },
+          {
+            "localTime": 16000,
+            "response": {
+              "frameIndex": 4,
+              "passes": [
+                {
+                  "shader": "frost",
+                  "uniforms": {
+                    "amount": 0.8,
+                    "blur": 0.025,
+                    "coverage": 0.9,
+                    "refraction": 0.035,
+                    "scale": 7,
+                    "seed": 17,
+                    "stroke0FromX": 0.2,
+                    "stroke0FromY": 0.5,
+                    "stroke0Radius": 0.2,
+                    "stroke0Strength": 1,
+                    "stroke0ToX": 0.8,
+                    "stroke0ToY": 0.5,
+                    "strokeCount": 1,
+                    "tintB": 1,
+                    "tintG": 0.82,
+                    "tintR": 0.7,
+                    "tintStrength": 0.35
+                  }
+                }
+              ],
+              "version": 1
+            }
+          },
+          {
+            "localTime": 20000,
+            "response": {
+              "frameIndex": 5,
+              "passes": [
+                {
+                  "shader": "frost",
+                  "uniforms": {
+                    "amount": 0.8,
+                    "blur": 0.025,
+                    "coverage": 0.9,
+                    "refraction": 0.035,
+                    "scale": 7,
+                    "seed": 17,
+                    "stroke0FromX": 0.2,
+                    "stroke0FromY": 0.5,
+                    "stroke0Radius": 0.2,
+                    "stroke0Strength": 1,
+                    "stroke0ToX": 0.8,
+                    "stroke0ToY": 0.5,
+                    "strokeCount": 1,
+                    "tintB": 1,
+                    "tintG": 0.82,
+                    "tintR": 0.7,
+                    "tintStrength": 0.35
+                  }
+                }
+              ],
+              "version": 1
+            }
+          },
+          {
+            "localTime": 24000,
+            "response": {
+              "frameIndex": 6,
+              "passes": [
+                {
+                  "shader": "frost",
+                  "uniforms": {
+                    "amount": 0.8,
+                    "blur": 0.025,
+                    "coverage": 0.9,
+                    "refraction": 0.035,
+                    "scale": 7,
+                    "seed": 17,
+                    "stroke0FromX": 0.2,
+                    "stroke0FromY": 0.5,
+                    "stroke0Radius": 0.2,
+                    "stroke0Strength": 0.7500625,
+                    "stroke0ToX": 0.8,
+                    "stroke0ToY": 0.5,
+                    "strokeCount": 1,
+                    "tintB": 1,
+                    "tintG": 0.82,
+                    "tintR": 0.7,
+                    "tintStrength": 0.35
+                  }
+                }
+              ],
+              "version": 1
+            }
+          },
+          {
+            "localTime": 28000,
+            "response": {
+              "frameIndex": 7,
+              "passes": [
+                {
+                  "shader": "frost",
+                  "uniforms": {
+                    "amount": 0.8,
+                    "blur": 0.025,
+                    "coverage": 0.9,
+                    "refraction": 0.035,
+                    "scale": 7,
+                    "seed": 17,
+                    "stroke0FromX": 0.2,
+                    "stroke0FromY": 0.5,
+                    "stroke0Radius": 0.2,
+                    "stroke0Strength": 0.5000625000000001,
+                    "stroke0ToX": 0.8,
+                    "stroke0ToY": 0.5,
+                    "strokeCount": 1,
+                    "tintB": 1,
+                    "tintG": 0.82,
+                    "tintR": 0.7,
+                    "tintStrength": 0.35
+                  }
+                }
+              ],
+              "version": 1
+            }
+          },
+          {
+            "localTime": 32000,
+            "response": {
+              "frameIndex": 8,
+              "passes": [
+                {
+                  "shader": "frost",
+                  "uniforms": {
+                    "amount": 0.8,
+                    "blur": 0.025,
+                    "coverage": 0.9,
+                    "refraction": 0.035,
+                    "scale": 7,
+                    "seed": 17,
+                    "stroke0FromX": 0.2,
+                    "stroke0FromY": 0.5,
+                    "stroke0Radius": 0.2,
+                    "stroke0Strength": 0.25006249999999997,
+                    "stroke0ToX": 0.8,
+                    "stroke0ToY": 0.5,
+                    "strokeCount": 1,
+                    "tintB": 1,
+                    "tintG": 0.82,
+                    "tintR": 0.7,
+                    "tintStrength": 0.35
+                  }
+                }
+              ],
+              "version": 1
+            }
+          },
+          {
+            "localTime": 36000,
+            "response": {
+              "frameIndex": 9,
+              "passes": [
+                {
+                  "shader": "frost",
+                  "uniforms": {
+                    "amount": 0.8,
+                    "blur": 0.025,
+                    "coverage": 0.9,
+                    "refraction": 0.035,
+                    "scale": 7,
+                    "seed": 17,
+                    "stroke0FromX": 0.2,
+                    "stroke0FromY": 0.5,
+                    "stroke0Radius": 0.2,
+                    "stroke0Strength": 0.00006249999999996536,
+                    "stroke0ToX": 0.8,
+                    "stroke0ToY": 0.5,
+                    "strokeCount": 1,
+                    "tintB": 1,
+                    "tintG": 0.82,
+                    "tintR": 0.7,
+                    "tintStrength": 0.35
+                  }
+                }
+              ],
+              "version": 1
+            }
+          },
+          {
+            "localTime": 40000,
+            "response": {
+              "frameIndex": 10,
+              "passes": [
+                {
+                  "shader": "frost",
+                  "uniforms": {
+                    "amount": 0.8,
+                    "blur": 0.025,
+                    "coverage": 0.9,
+                    "refraction": 0.035,
+                    "scale": 7,
+                    "seed": 17,
+                    "strokeCount": 0,
+                    "tintB": 1,
+                    "tintG": 0.82,
+                    "tintR": 0.7,
+                    "tintStrength": 0.35
+                  }
+                }
+              ],
+              "version": 1
+            }
+          },
+          {
+            "localTime": 44000,
+            "response": {
+              "frameIndex": 11,
+              "passes": [
+                {
+                  "shader": "frost",
+                  "uniforms": {
+                    "amount": 0.8,
+                    "blur": 0.025,
+                    "coverage": 0.9,
+                    "refraction": 0.035,
+                    "scale": 7,
+                    "seed": 17,
+                    "strokeCount": 0,
+                    "tintB": 1,
+                    "tintG": 0.82,
+                    "tintR": 0.7,
+                    "tintStrength": 0.35
+                  }
+                }
+              ],
+              "version": 1
+            }
+          },
+          {
+            "localTime": 48000,
+            "response": {
+              "frameIndex": 12,
+              "passes": [
+                {
+                  "shader": "frost",
+                  "uniforms": {
+                    "amount": 0.8,
+                    "blur": 0.025,
+                    "coverage": 0.9,
+                    "refraction": 0.035,
+                    "scale": 7,
+                    "seed": 17,
+                    "strokeCount": 0,
+                    "tintB": 1,
+                    "tintG": 0.82,
+                    "tintR": 0.7,
+                    "tintStrength": 0.35
+                  }
+                }
+              ],
+              "version": 1
+            }
+          },
+          {
+            "localTime": 48000,
+            "response": {
+              "frameIndex": 12,
+              "passes": [
+                {
+                  "shader": "frost",
+                  "uniforms": {
+                    "amount": 0.8,
+                    "blur": 0.025,
+                    "coverage": 0.9,
+                    "refraction": 0.035,
+                    "scale": 7,
+                    "seed": 17,
+                    "strokeCount": 0,
+                    "tintB": 1,
+                    "tintG": 0.82,
+                    "tintR": 0.7,
+                    "tintStrength": 0.35
+                  }
+                }
+              ],
+              "version": 1
+            }
+          }
+        ],
+        "nativeEncode": [
+          {
+            "timestamp": 0,
+            "duration": 33333,
+            "options": {
+              "keyFrame": true,
+              "vp9": {
+                "quantizer": 8
+              }
+            }
+          },
+          {
+            "timestamp": 33333,
+            "duration": 33333,
+            "options": {
+              "keyFrame": false,
+              "vp9": {
+                "quantizer": 8
+              }
+            }
+          },
+          {
+            "timestamp": 66666,
+            "duration": 33333,
+            "options": {
+              "keyFrame": false,
+              "vp9": {
+                "quantizer": 8
+              }
+            }
+          },
+          {
+            "timestamp": 100000,
+            "duration": 33333,
+            "options": {
+              "keyFrame": false,
+              "vp9": {
+                "quantizer": 8
+              }
+            }
+          },
+          {
+            "timestamp": 133333,
+            "duration": 33333,
+            "options": {
+              "keyFrame": false,
+              "vp9": {
+                "quantizer": 8
+              }
+            }
+          },
+          {
+            "timestamp": 166666,
+            "duration": 33333,
+            "options": {
+              "keyFrame": false,
+              "vp9": {
+                "quantizer": 8
+              }
+            }
+          },
+          {
+            "timestamp": 200000,
+            "duration": 33333,
+            "options": {
+              "keyFrame": false,
+              "vp9": {
+                "quantizer": 8
+              }
+            }
+          },
+          {
+            "timestamp": 233333,
+            "duration": 33333,
+            "options": {
+              "keyFrame": false,
+              "vp9": {
+                "quantizer": 8
+              }
+            }
+          },
+          {
+            "timestamp": 266666,
+            "duration": 33333,
+            "options": {
+              "keyFrame": false,
+              "vp9": {
+                "quantizer": 8
+              }
+            }
+          },
+          {
+            "timestamp": 300000,
+            "duration": 33333,
+            "options": {
+              "keyFrame": false,
+              "vp9": {
+                "quantizer": 8
+              }
+            }
+          },
+          {
+            "timestamp": 333333,
+            "duration": 33333,
+            "options": {
+              "keyFrame": false,
+              "vp9": {
+                "quantizer": 8
+              }
+            }
+          },
+          {
+            "timestamp": 366666,
+            "duration": 33333,
+            "options": {
+              "keyFrame": false,
+              "vp9": {
+                "quantizer": 8
+              }
+            }
+          },
+          {
+            "timestamp": 400000,
+            "duration": 33333,
+            "options": {
+              "keyFrame": false,
+              "vp9": {
+                "quantizer": 8
+              }
+            }
+          }
+        ],
+        "errors": []
+      }
+    },
+    {
+      "mode": "freeze",
+      "job": {
+        "id": "4f0da9dd0217024c",
+        "options": {
+          "format": "webm",
+          "quality": "very_high",
+          "videoChroma": "444",
+          "includeAudio": false,
+          "range": {
+            "startTime": 0,
+            "endTime": 52000
+          }
+        },
+        "startedAt": 1791792898376,
+        "status": "completed",
+        "progress": 1,
+        "cancelRequested": false,
+        "updatedAt": 1791792900834,
+        "outputPath": "C:\\tmps\\frost-schedule-clock-20261012\\project\\exports\\4f0da9dd0217024c.webm"
+      },
+      "referenceCapture": {
+        "scope": "Reused preserved actual fresh production boundary PNG/RGBA, same immutable source/optics/oracle; independent gates rechecked before new producer job",
+        "receipt": "C:/tmps/frost-schedule-clock-20261012/actual-consumer-seek-fresh-02/receipt.json",
+        "receiptSha256": "98b0651c5fee948b1a5c59e2bbad0ce2a24aa07980d60972c03ead2d559e7a4d"
+      },
+      "referenceFrames": [
+        {
+          "index": 0,
+          "ticks": 0,
+          "rgbaSha256": "549fdbe2f4e951d7d65aa8c6e1fc186fc9244732ac48efca4e5008d82e6cb4df",
+          "pngSha256": "3ff7d3caa0f97d009b8e8c9ab7ba5ed13012d2823c501773dff517a128eeac18",
+          "publicationSerial": 3,
+          "metric": {
+            "meanRgb": 0.0005425347222222222,
+            "activeRgb": 0.0011120378092855157,
+            "activePixels": 1199
+          },
+          "accepted": true
+        },
+        {
+          "index": 1,
+          "ticks": 4000,
+          "rgbaSha256": "549fdbe2f4e951d7d65aa8c6e1fc186fc9244732ac48efca4e5008d82e6cb4df",
+          "pngSha256": "3ff7d3caa0f97d009b8e8c9ab7ba5ed13012d2823c501773dff517a128eeac18",
+          "publicationSerial": 5,
+          "metric": {
+            "meanRgb": 0.0005425347222222222,
+            "activeRgb": 0.0011120378092855157,
+            "activePixels": 1199
+          },
+          "accepted": true
+        },
+        {
+          "index": 2,
+          "ticks": 8000,
+          "rgbaSha256": "549fdbe2f4e951d7d65aa8c6e1fc186fc9244732ac48efca4e5008d82e6cb4df",
+          "pngSha256": "3ff7d3caa0f97d009b8e8c9ab7ba5ed13012d2823c501773dff517a128eeac18",
+          "publicationSerial": 7,
+          "metric": {
+            "meanRgb": 0.0005425347222222222,
+            "activeRgb": 0.0011120378092855157,
+            "activePixels": 1199
+          },
+          "accepted": true
+        },
+        {
+          "index": 3,
+          "ticks": 12000,
+          "rgbaSha256": "549fdbe2f4e951d7d65aa8c6e1fc186fc9244732ac48efca4e5008d82e6cb4df",
+          "pngSha256": "3ff7d3caa0f97d009b8e8c9ab7ba5ed13012d2823c501773dff517a128eeac18",
+          "publicationSerial": 9,
+          "metric": {
+            "meanRgb": 0.0005425347222222222,
+            "activeRgb": 0.0011120378092855157,
+            "activePixels": 1199
+          },
+          "accepted": true
+        },
+        {
+          "index": 4,
+          "ticks": 16000,
+          "rgbaSha256": "549fdbe2f4e951d7d65aa8c6e1fc186fc9244732ac48efca4e5008d82e6cb4df",
+          "pngSha256": "3ff7d3caa0f97d009b8e8c9ab7ba5ed13012d2823c501773dff517a128eeac18",
+          "publicationSerial": 11,
+          "metric": {
+            "meanRgb": 3.296875,
+            "activeRgb": 0.6140350877192983,
+            "activePixels": 836
+          },
+          "accepted": true
+        },
+        {
+          "index": 5,
+          "ticks": 20000,
+          "rgbaSha256": "549fdbe2f4e951d7d65aa8c6e1fc186fc9244732ac48efca4e5008d82e6cb4df",
+          "pngSha256": "3ff7d3caa0f97d009b8e8c9ab7ba5ed13012d2823c501773dff517a128eeac18",
+          "publicationSerial": 13,
+          "metric": {
+            "meanRgb": 3.296875,
+            "activeRgb": 0.6140350877192983,
+            "activePixels": 836
+          },
+          "accepted": true
+        },
+        {
+          "index": 6,
+          "ticks": 24000,
+          "rgbaSha256": "549fdbe2f4e951d7d65aa8c6e1fc186fc9244732ac48efca4e5008d82e6cb4df",
+          "pngSha256": "3ff7d3caa0f97d009b8e8c9ab7ba5ed13012d2823c501773dff517a128eeac18",
+          "publicationSerial": 15,
+          "metric": {
+            "meanRgb": 2.4434678819444446,
+            "activeRgb": 2.216574585635359,
+            "activePixels": 905
+          },
+          "accepted": true
+        },
+        {
+          "index": 7,
+          "ticks": 28000,
+          "rgbaSha256": "549fdbe2f4e951d7d65aa8c6e1fc186fc9244732ac48efca4e5008d82e6cb4df",
+          "pngSha256": "3ff7d3caa0f97d009b8e8c9ab7ba5ed13012d2823c501773dff517a128eeac18",
+          "publicationSerial": 17,
+          "metric": {
+            "meanRgb": 1.6089409722222223,
+            "activeRgb": 2.108198924731183,
+            "activePixels": 992
+          },
+          "accepted": true
+        },
+        {
+          "index": 8,
+          "ticks": 32000,
+          "rgbaSha256": "549fdbe2f4e951d7d65aa8c6e1fc186fc9244732ac48efca4e5008d82e6cb4df",
+          "pngSha256": "3ff7d3caa0f97d009b8e8c9ab7ba5ed13012d2823c501773dff517a128eeac18",
+          "publicationSerial": 19,
+          "metric": {
+            "meanRgb": 0.7923177083333334,
+            "activeRgb": 1.2823067632850242,
+            "activePixels": 1104
+          },
+          "accepted": true
+        },
+        {
+          "index": 9,
+          "ticks": 36000,
+          "rgbaSha256": "549fdbe2f4e951d7d65aa8c6e1fc186fc9244732ac48efca4e5008d82e6cb4df",
+          "pngSha256": "3ff7d3caa0f97d009b8e8c9ab7ba5ed13012d2823c501773dff517a128eeac18",
+          "publicationSerial": 21,
+          "metric": {
+            "meanRgb": 0.0006510416666666666,
+            "activeRgb": 0.0013900472616068947,
+            "activePixels": 1199
+          },
+          "accepted": true
+        },
+        {
+          "index": 10,
+          "ticks": 40000,
+          "rgbaSha256": "549fdbe2f4e951d7d65aa8c6e1fc186fc9244732ac48efca4e5008d82e6cb4df",
+          "pngSha256": "3ff7d3caa0f97d009b8e8c9ab7ba5ed13012d2823c501773dff517a128eeac18",
+          "publicationSerial": 23,
+          "metric": {
+            "meanRgb": 0.0005425347222222222,
+            "activeRgb": 0.0011120378092855157,
+            "activePixels": 1199
+          },
+          "accepted": true
+        },
+        {
+          "index": 11,
+          "ticks": 44000,
+          "rgbaSha256": "549fdbe2f4e951d7d65aa8c6e1fc186fc9244732ac48efca4e5008d82e6cb4df",
+          "pngSha256": "3ff7d3caa0f97d009b8e8c9ab7ba5ed13012d2823c501773dff517a128eeac18",
+          "publicationSerial": 25,
+          "metric": {
+            "meanRgb": 0.0005425347222222222,
+            "activeRgb": 0.0011120378092855157,
+            "activePixels": 1199
+          },
+          "accepted": true
+        },
+        {
+          "index": 12,
+          "ticks": 48000,
+          "rgbaSha256": "549fdbe2f4e951d7d65aa8c6e1fc186fc9244732ac48efca4e5008d82e6cb4df",
+          "pngSha256": "3ff7d3caa0f97d009b8e8c9ab7ba5ed13012d2823c501773dff517a128eeac18",
+          "publicationSerial": 27,
+          "metric": {
+            "meanRgb": 0.0005425347222222222,
+            "activeRgb": 0.0011120378092855157,
+            "activePixels": 1199
+          },
+          "accepted": true
+        }
+      ],
+      "renderTemporal": [
+        {
+          "id": "stamp",
+          "pixels": 327,
+          "channels": 441,
+          "expectedChangeMean": 35.33106575963719,
+          "signedChangeMean": 0,
+          "deltaErrorMean": 35.33106575963719,
+          "identifiable": true,
+          "accepted": false
+        },
+        {
+          "id": "recovery",
+          "pixels": 327,
+          "channels": 441,
+          "expectedChangeMean": 35.326530612244895,
+          "signedChangeMean": 0,
+          "deltaErrorMean": 35.326530612244895,
+          "identifiable": true,
+          "accepted": false
+        }
+      ],
+      "video": {
+        "byteLength": 8450,
+        "sha256": "4a38de00832dea953fc025f6cda814a73a20c5c8c8f199cce84996cff90c543e"
+      },
+      "decodedFrames": [
+        {
+          "index": 0,
+          "ticks": 0,
+          "pts": 0,
+          "independent": {
+            "meanRgb": 1.0575086805555556,
+            "activeRgb": 1.0964692799555185,
+            "activePixels": 1199
+          },
+          "accepted": true,
+          "freshFormalPngParity": {
+            "meanRgb": 1.0571831597222223,
+            "activeRgb": 1.0959132610508757,
+            "activePixels": 1199
+          }
+        },
+        {
+          "index": 1,
+          "ticks": 4000,
+          "pts": 0.033,
+          "independent": {
+            "meanRgb": 1.0564236111111112,
+            "activeRgb": 1.098415346121768,
+            "activePixels": 1199
+          },
+          "accepted": true,
+          "freshFormalPngParity": {
+            "meanRgb": 1.0560980902777777,
+            "activeRgb": 1.0978593272171253,
+            "activePixels": 1199
+          }
+        },
+        {
+          "index": 2,
+          "ticks": 8000,
+          "pts": 0.067,
+          "independent": {
+            "meanRgb": 1.0559895833333333,
+            "activeRgb": 1.1006394217403392,
+            "activePixels": 1199
+          },
+          "accepted": true,
+          "freshFormalPngParity": {
+            "meanRgb": 1.0556640625,
+            "activeRgb": 1.1000834028356965,
+            "activePixels": 1199
+          }
+        },
+        {
+          "index": 3,
+          "ticks": 12000,
+          "pts": 0.1,
+          "independent": {
+            "meanRgb": 1.0559895833333333,
+            "activeRgb": 1.0981373366694467,
+            "activePixels": 1199
+          },
+          "accepted": true,
+          "freshFormalPngParity": {
+            "meanRgb": 1.0556640625,
+            "activeRgb": 1.097581317764804,
+            "activePixels": 1199
+          }
+        },
+        {
+          "index": 4,
+          "ticks": 16000,
+          "pts": 0.133,
+          "independent": {
+            "meanRgb": 3.969943576388889,
+            "activeRgb": 1.6311802232854864,
+            "activePixels": 836
+          },
+          "accepted": true,
+          "freshFormalPngParity": {
+            "meanRgb": 1.0565321180555556,
+            "activeRgb": 1.1003614122880179,
+            "activePixels": 1199
+          }
+        },
+        {
+          "index": 5,
+          "ticks": 20000,
+          "pts": 0.167,
+          "independent": {
+            "meanRgb": 3.969943576388889,
+            "activeRgb": 1.6279904306220097,
+            "activePixels": 836
+          },
+          "accepted": true,
+          "freshFormalPngParity": {
+            "meanRgb": 1.0552300347222223,
+            "activeRgb": 1.0934111759799834,
+            "activePixels": 1199
+          }
+        },
+        {
+          "index": 6,
+          "ticks": 24000,
+          "pts": 0.2,
+          "independent": {
+            "meanRgb": 3.1265190972222223,
+            "activeRgb": 3.1348066298342543,
+            "activePixels": 905
+          },
+          "accepted": true,
+          "freshFormalPngParity": {
+            "meanRgb": 1.0524088541666667,
+            "activeRgb": 1.0856269113149848,
+            "activePixels": 1199
+          }
+        },
+        {
+          "index": 7,
+          "ticks": 28000,
+          "pts": 0.233,
+          "independent": {
+            "meanRgb": 2.310546875,
+            "activeRgb": 2.946236559139785,
+            "activePixels": 992
+          },
+          "accepted": true,
+          "freshFormalPngParity": {
+            "meanRgb": 1.0538194444444444,
+            "activeRgb": 1.0911871003614122,
+            "activePixels": 1199
+          }
+        },
+        {
+          "index": 8,
+          "ticks": 32000,
+          "pts": 0.267,
+          "independent": {
+            "meanRgb": 1.5455729166666667,
+            "activeRgb": 2.0528381642512077,
+            "activePixels": 1104
+          },
+          "accepted": true,
+          "freshFormalPngParity": {
+            "meanRgb": 1.0512152777777777,
+            "activeRgb": 1.089519043647484,
+            "activePixels": 1199
+          }
+        },
+        {
+          "index": 9,
+          "ticks": 36000,
+          "pts": 0.3,
+          "independent": {
+            "meanRgb": 1.0530598958333333,
+            "activeRgb": 1.091743119266055,
+            "activePixels": 1199
+          },
+          "accepted": true,
+          "freshFormalPngParity": {
+            "meanRgb": 1.0526258680555556,
+            "activeRgb": 1.0909090909090908,
+            "activePixels": 1199
+          }
+        },
+        {
+          "index": 10,
+          "ticks": 40000,
+          "pts": 0.333,
+          "independent": {
+            "meanRgb": 1.0531684027777777,
+            "activeRgb": 1.091743119266055,
+            "activePixels": 1199
+          },
+          "accepted": true,
+          "freshFormalPngParity": {
+            "meanRgb": 1.0528428819444444,
+            "activeRgb": 1.0911871003614122,
+            "activePixels": 1199
+          }
+        },
+        {
+          "index": 11,
+          "ticks": 44000,
+          "pts": 0.367,
+          "independent": {
+            "meanRgb": 1.0516493055555556,
+            "activeRgb": 1.0897970530998053,
+            "activePixels": 1199
+          },
+          "accepted": true,
+          "freshFormalPngParity": {
+            "meanRgb": 1.0513237847222223,
+            "activeRgb": 1.0892410341951626,
+            "activePixels": 1199
+          }
+        },
+        {
+          "index": 12,
+          "ticks": 48000,
+          "pts": 0.4,
+          "independent": {
+            "meanRgb": 1.0511067708333333,
+            "activeRgb": 1.090353072004448,
+            "activePixels": 1199
+          },
+          "accepted": true,
+          "freshFormalPngParity": {
+            "meanRgb": 1.05078125,
+            "activeRgb": 1.0897970530998053,
+            "activePixels": 1199
+          }
+        }
+      ],
+      "encodedTemporal": [
+        {
+          "id": "stamp",
+          "pixels": 327,
+          "channels": 441,
+          "expectedChangeMean": 35.33106575963719,
+          "signedChangeMean": 0.013605442176870748,
+          "deltaErrorMean": 35.317460317460316,
+          "identifiable": true,
+          "accepted": false
+        },
+        {
+          "id": "recovery",
+          "pixels": 327,
+          "channels": 441,
+          "expectedChangeMean": 35.326530612244895,
+          "signedChangeMean": 0.011337868480725623,
+          "deltaErrorMean": 35.31519274376417,
+          "identifiable": true,
+          "accepted": false
+        }
+      ],
+      "seek": [
+        {
+          "ticks": 48000,
+          "rgbaSha256": "549fdbe2f4e951d7d65aa8c6e1fc186fc9244732ac48efca4e5008d82e6cb4df",
+          "publicationSerial": 31
+        },
+        {
+          "ticks": 16000,
+          "rgbaSha256": "549fdbe2f4e951d7d65aa8c6e1fc186fc9244732ac48efca4e5008d82e6cb4df",
+          "publicationSerial": 33
+        },
+        {
+          "ticks": 12000,
+          "rgbaSha256": "549fdbe2f4e951d7d65aa8c6e1fc186fc9244732ac48efca4e5008d82e6cb4df",
+          "publicationSerial": 35
+        },
+        {
+          "ticks": 28000,
+          "rgbaSha256": "549fdbe2f4e951d7d65aa8c6e1fc186fc9244732ac48efca4e5008d82e6cb4df",
+          "publicationSerial": 37
+        },
+        {
+          "ticks": 0,
+          "rgbaSha256": "549fdbe2f4e951d7d65aa8c6e1fc186fc9244732ac48efca4e5008d82e6cb4df",
+          "publicationSerial": 39
+        },
+        {
+          "ticks": 36000,
+          "rgbaSha256": "549fdbe2f4e951d7d65aa8c6e1fc186fc9244732ac48efca4e5008d82e6cb4df",
+          "publicationSerial": 41
+        },
+        {
+          "ticks": 16000,
+          "rgbaSha256": "549fdbe2f4e951d7d65aa8c6e1fc186fc9244732ac48efca4e5008d82e6cb4df",
+          "publicationSerial": 43
+        },
+        {
+          "ticks": 48000,
+          "rgbaSha256": "549fdbe2f4e951d7d65aa8c6e1fc186fc9244732ac48efca4e5008d82e6cb4df",
+          "publicationSerial": 45
+        },
+        {
+          "ticks": 48000,
+          "rgbaSha256": "549fdbe2f4e951d7d65aa8c6e1fc186fc9244732ac48efca4e5008d82e6cb4df",
+          "publicationSerial": 49,
+          "refreshHop": {
+            "ticks": 0,
+            "rgbaSha256": "549fdbe2f4e951d7d65aa8c6e1fc186fc9244732ac48efca4e5008d82e6cb4df",
+            "publicationSerial": 47,
+            "minimumSerial": 45,
+            "stableSamples": 9
+          }
+        }
+      ],
+      "pipelineCompletedBeforeSupplementalSeek": true,
+      "graphAndRevisionUnchanged": true,
+      "adapterRestored": true,
+      "auditReceipt": {
+        "path": "C:/tmps/frost-schedule-clock-20261012/actual-consumer-freeze-export-03/receipt.json",
+        "byteLength": 339935,
+        "sha256": "8d6e5c6c8fbfe433ef43ff0fa0936f3dc03b6c5cf4b0f9cb524864f212365aa8"
+      },
+      "auditCounts": {
+        "serializations": 14,
+        "wasmCalls": 14,
+        "encodeOptions": 13
+      },
+      "encoderConfigurations": [
+        {
+          "codec": "vp09.01.10.08.03.01.13.01.01",
+          "width": 64,
+          "height": 48,
+          "displayWidth": 64,
+          "displayHeight": 48,
+          "bitrate": 47000,
+          "framerate": 30,
+          "alpha": "discard",
+          "bitrateMode": "quantizer",
+          "latencyMode": "quality",
+          "hardwareAcceleration": "prefer-software"
+        }
+      ],
+      "actualExportClockProof": {
+        "mode": "freeze",
+        "serializations": [
+          {
+            "originalTicks": 0,
+            "serializedTicks": 0,
+            "dtoRestored": true,
+            "mutatedOnlyLocalTime": true
+          },
+          {
+            "originalTicks": 4000,
+            "serializedTicks": 0,
+            "dtoRestored": true,
+            "mutatedOnlyLocalTime": true
+          },
+          {
+            "originalTicks": 8000,
+            "serializedTicks": 0,
+            "dtoRestored": true,
+            "mutatedOnlyLocalTime": true
+          },
+          {
+            "originalTicks": 12000,
+            "serializedTicks": 0,
+            "dtoRestored": true,
+            "mutatedOnlyLocalTime": true
+          },
+          {
+            "originalTicks": 16000,
+            "serializedTicks": 0,
+            "dtoRestored": true,
+            "mutatedOnlyLocalTime": true
+          },
+          {
+            "originalTicks": 20000,
+            "serializedTicks": 0,
+            "dtoRestored": true,
+            "mutatedOnlyLocalTime": true
+          },
+          {
+            "originalTicks": 24000,
+            "serializedTicks": 0,
+            "dtoRestored": true,
+            "mutatedOnlyLocalTime": true
+          },
+          {
+            "originalTicks": 28000,
+            "serializedTicks": 0,
+            "dtoRestored": true,
+            "mutatedOnlyLocalTime": true
+          },
+          {
+            "originalTicks": 32000,
+            "serializedTicks": 0,
+            "dtoRestored": true,
+            "mutatedOnlyLocalTime": true
+          },
+          {
+            "originalTicks": 36000,
+            "serializedTicks": 0,
+            "dtoRestored": true,
+            "mutatedOnlyLocalTime": true
+          },
+          {
+            "originalTicks": 40000,
+            "serializedTicks": 0,
+            "dtoRestored": true,
+            "mutatedOnlyLocalTime": true
+          },
+          {
+            "originalTicks": 44000,
+            "serializedTicks": 0,
+            "dtoRestored": true,
+            "mutatedOnlyLocalTime": true
+          },
+          {
+            "originalTicks": 48000,
+            "serializedTicks": 0,
+            "dtoRestored": true,
+            "mutatedOnlyLocalTime": true
+          }
+        ],
+        "wasm": [
+          {
+            "localTime": 0,
+            "response": {
+              "frameIndex": 0,
+              "passes": [
+                {
+                  "shader": "frost",
+                  "uniforms": {
+                    "amount": 0.8,
+                    "blur": 0.025,
+                    "coverage": 0.9,
+                    "refraction": 0.035,
+                    "scale": 7,
+                    "seed": 17,
+                    "strokeCount": 0,
+                    "tintB": 1,
+                    "tintG": 0.82,
+                    "tintR": 0.7,
+                    "tintStrength": 0.35
+                  }
+                }
+              ],
+              "version": 1
+            }
+          },
+          {
+            "localTime": 0,
+            "response": {
+              "frameIndex": 0,
+              "passes": [
+                {
+                  "shader": "frost",
+                  "uniforms": {
+                    "amount": 0.8,
+                    "blur": 0.025,
+                    "coverage": 0.9,
+                    "refraction": 0.035,
+                    "scale": 7,
+                    "seed": 17,
+                    "strokeCount": 0,
+                    "tintB": 1,
+                    "tintG": 0.82,
+                    "tintR": 0.7,
+                    "tintStrength": 0.35
+                  }
+                }
+              ],
+              "version": 1
+            }
+          },
+          {
+            "localTime": 0,
+            "response": {
+              "frameIndex": 0,
+              "passes": [
+                {
+                  "shader": "frost",
+                  "uniforms": {
+                    "amount": 0.8,
+                    "blur": 0.025,
+                    "coverage": 0.9,
+                    "refraction": 0.035,
+                    "scale": 7,
+                    "seed": 17,
+                    "strokeCount": 0,
+                    "tintB": 1,
+                    "tintG": 0.82,
+                    "tintR": 0.7,
+                    "tintStrength": 0.35
+                  }
+                }
+              ],
+              "version": 1
+            }
+          },
+          {
+            "localTime": 0,
+            "response": {
+              "frameIndex": 0,
+              "passes": [
+                {
+                  "shader": "frost",
+                  "uniforms": {
+                    "amount": 0.8,
+                    "blur": 0.025,
+                    "coverage": 0.9,
+                    "refraction": 0.035,
+                    "scale": 7,
+                    "seed": 17,
+                    "strokeCount": 0,
+                    "tintB": 1,
+                    "tintG": 0.82,
+                    "tintR": 0.7,
+                    "tintStrength": 0.35
+                  }
+                }
+              ],
+              "version": 1
+            }
+          },
+          {
+            "localTime": 0,
+            "response": {
+              "frameIndex": 0,
+              "passes": [
+                {
+                  "shader": "frost",
+                  "uniforms": {
+                    "amount": 0.8,
+                    "blur": 0.025,
+                    "coverage": 0.9,
+                    "refraction": 0.035,
+                    "scale": 7,
+                    "seed": 17,
+                    "strokeCount": 0,
+                    "tintB": 1,
+                    "tintG": 0.82,
+                    "tintR": 0.7,
+                    "tintStrength": 0.35
+                  }
+                }
+              ],
+              "version": 1
+            }
+          },
+          {
+            "localTime": 0,
+            "response": {
+              "frameIndex": 0,
+              "passes": [
+                {
+                  "shader": "frost",
+                  "uniforms": {
+                    "amount": 0.8,
+                    "blur": 0.025,
+                    "coverage": 0.9,
+                    "refraction": 0.035,
+                    "scale": 7,
+                    "seed": 17,
+                    "strokeCount": 0,
+                    "tintB": 1,
+                    "tintG": 0.82,
+                    "tintR": 0.7,
+                    "tintStrength": 0.35
+                  }
+                }
+              ],
+              "version": 1
+            }
+          },
+          {
+            "localTime": 0,
+            "response": {
+              "frameIndex": 0,
+              "passes": [
+                {
+                  "shader": "frost",
+                  "uniforms": {
+                    "amount": 0.8,
+                    "blur": 0.025,
+                    "coverage": 0.9,
+                    "refraction": 0.035,
+                    "scale": 7,
+                    "seed": 17,
+                    "strokeCount": 0,
+                    "tintB": 1,
+                    "tintG": 0.82,
+                    "tintR": 0.7,
+                    "tintStrength": 0.35
+                  }
+                }
+              ],
+              "version": 1
+            }
+          },
+          {
+            "localTime": 0,
+            "response": {
+              "frameIndex": 0,
+              "passes": [
+                {
+                  "shader": "frost",
+                  "uniforms": {
+                    "amount": 0.8,
+                    "blur": 0.025,
+                    "coverage": 0.9,
+                    "refraction": 0.035,
+                    "scale": 7,
+                    "seed": 17,
+                    "strokeCount": 0,
+                    "tintB": 1,
+                    "tintG": 0.82,
+                    "tintR": 0.7,
+                    "tintStrength": 0.35
+                  }
+                }
+              ],
+              "version": 1
+            }
+          },
+          {
+            "localTime": 0,
+            "response": {
+              "frameIndex": 0,
+              "passes": [
+                {
+                  "shader": "frost",
+                  "uniforms": {
+                    "amount": 0.8,
+                    "blur": 0.025,
+                    "coverage": 0.9,
+                    "refraction": 0.035,
+                    "scale": 7,
+                    "seed": 17,
+                    "strokeCount": 0,
+                    "tintB": 1,
+                    "tintG": 0.82,
+                    "tintR": 0.7,
+                    "tintStrength": 0.35
+                  }
+                }
+              ],
+              "version": 1
+            }
+          },
+          {
+            "localTime": 0,
+            "response": {
+              "frameIndex": 0,
+              "passes": [
+                {
+                  "shader": "frost",
+                  "uniforms": {
+                    "amount": 0.8,
+                    "blur": 0.025,
+                    "coverage": 0.9,
+                    "refraction": 0.035,
+                    "scale": 7,
+                    "seed": 17,
+                    "strokeCount": 0,
+                    "tintB": 1,
+                    "tintG": 0.82,
+                    "tintR": 0.7,
+                    "tintStrength": 0.35
+                  }
+                }
+              ],
+              "version": 1
+            }
+          },
+          {
+            "localTime": 0,
+            "response": {
+              "frameIndex": 0,
+              "passes": [
+                {
+                  "shader": "frost",
+                  "uniforms": {
+                    "amount": 0.8,
+                    "blur": 0.025,
+                    "coverage": 0.9,
+                    "refraction": 0.035,
+                    "scale": 7,
+                    "seed": 17,
+                    "strokeCount": 0,
+                    "tintB": 1,
+                    "tintG": 0.82,
+                    "tintR": 0.7,
+                    "tintStrength": 0.35
+                  }
+                }
+              ],
+              "version": 1
+            }
+          },
+          {
+            "localTime": 0,
+            "response": {
+              "frameIndex": 0,
+              "passes": [
+                {
+                  "shader": "frost",
+                  "uniforms": {
+                    "amount": 0.8,
+                    "blur": 0.025,
+                    "coverage": 0.9,
+                    "refraction": 0.035,
+                    "scale": 7,
+                    "seed": 17,
+                    "strokeCount": 0,
+                    "tintB": 1,
+                    "tintG": 0.82,
+                    "tintR": 0.7,
+                    "tintStrength": 0.35
+                  }
+                }
+              ],
+              "version": 1
+            }
+          },
+          {
+            "localTime": 0,
+            "response": {
+              "frameIndex": 0,
+              "passes": [
+                {
+                  "shader": "frost",
+                  "uniforms": {
+                    "amount": 0.8,
+                    "blur": 0.025,
+                    "coverage": 0.9,
+                    "refraction": 0.035,
+                    "scale": 7,
+                    "seed": 17,
+                    "strokeCount": 0,
+                    "tintB": 1,
+                    "tintG": 0.82,
+                    "tintR": 0.7,
+                    "tintStrength": 0.35
+                  }
+                }
+              ],
+              "version": 1
+            }
+          }
+        ],
+        "nativeEncode": [
+          {
+            "timestamp": 0,
+            "duration": 33333,
+            "options": {
+              "keyFrame": true,
+              "vp9": {
+                "quantizer": 8
+              }
+            }
+          },
+          {
+            "timestamp": 33333,
+            "duration": 33333,
+            "options": {
+              "keyFrame": false,
+              "vp9": {
+                "quantizer": 8
+              }
+            }
+          },
+          {
+            "timestamp": 66666,
+            "duration": 33333,
+            "options": {
+              "keyFrame": false,
+              "vp9": {
+                "quantizer": 8
+              }
+            }
+          },
+          {
+            "timestamp": 100000,
+            "duration": 33333,
+            "options": {
+              "keyFrame": false,
+              "vp9": {
+                "quantizer": 8
+              }
+            }
+          },
+          {
+            "timestamp": 133333,
+            "duration": 33333,
+            "options": {
+              "keyFrame": false,
+              "vp9": {
+                "quantizer": 8
+              }
+            }
+          },
+          {
+            "timestamp": 166666,
+            "duration": 33333,
+            "options": {
+              "keyFrame": false,
+              "vp9": {
+                "quantizer": 8
+              }
+            }
+          },
+          {
+            "timestamp": 200000,
+            "duration": 33333,
+            "options": {
+              "keyFrame": false,
+              "vp9": {
+                "quantizer": 8
+              }
+            }
+          },
+          {
+            "timestamp": 233333,
+            "duration": 33333,
+            "options": {
+              "keyFrame": false,
+              "vp9": {
+                "quantizer": 8
+              }
+            }
+          },
+          {
+            "timestamp": 266666,
+            "duration": 33333,
+            "options": {
+              "keyFrame": false,
+              "vp9": {
+                "quantizer": 8
+              }
+            }
+          },
+          {
+            "timestamp": 300000,
+            "duration": 33333,
+            "options": {
+              "keyFrame": false,
+              "vp9": {
+                "quantizer": 8
+              }
+            }
+          },
+          {
+            "timestamp": 333333,
+            "duration": 33333,
+            "options": {
+              "keyFrame": false,
+              "vp9": {
+                "quantizer": 8
+              }
+            }
+          },
+          {
+            "timestamp": 366666,
+            "duration": 33333,
+            "options": {
+              "keyFrame": false,
+              "vp9": {
+                "quantizer": 8
+              }
+            }
+          },
+          {
+            "timestamp": 400000,
+            "duration": 33333,
+            "options": {
+              "keyFrame": false,
+              "vp9": {
+                "quantizer": 8
+              }
+            }
+          }
+        ],
+        "errors": []
+      }
+    }
+  ],
+  "lineage": {
+    "positive": "Unique completed job 906402fb18eae814 from attempt 02 reused byte-for-byte; positive renders originally from attempt 01",
+    "negative": "Unique first negative export 4f0da9dd0217024c from attempt 03; thirteen negative reference renders reused and revalidated from attempt 02; new disabled baseline and supplemental seeks",
+    "priorFailures": [
+      {
+        "receipt": {
+          "path": "C:/tmps/frost-schedule-clock-20261012/actual-consumer/receipt.json",
+          "byteLength": 2007423,
+          "sha256": "83800d88de7d380ba1508333306476a081a9c0d2c70e25ff1d0f7714380a681b"
+        },
+        "reason": "Same-position seek produced no fresh publication; no export submitted"
+      },
+      {
+        "receipt": {
+          "path": "C:/tmps/frost-schedule-clock-20261012/actual-consumer-seek-fresh-02/receipt.json",
+          "byteLength": 2140368,
+          "sha256": "98b0651c5fee948b1a5c59e2bbad0ce2a24aa07980d60972c03ead2d559e7a4d"
+        },
+        "reason": "Supplemental negative seek coalesced after UI-only hop; completed positive export retained; no negative export submitted"
+      }
+    ]
+  },
+  "cleanup": [
+    {
+      "mode": "freeze",
+      "hostAndContextClosed": true
+    },
+    {
+      "browserClosed": true
+    }
+  ],
+  "pageErrors": [],
+  "externalRequests": [],
+  "limitations": [
+    "Finite 64x48 opaque source, fixed optics and one stroke; not all models, devices, UI history, installation, or Electron coverage",
+    "Supplemental positive seek lineage is attempt 02; negative repeat uses actual stable new production hop publication",
+    "Original reference math and quality/temporal gates unchanged"
+  ],
+  "dependencies": [
+    {
+      "path": "C:/tmps/rocut-integration-delivery-20261012-liquid-domain-04/glass-runtime-config.json",
+      "byteLength": 78433,
+      "sha256": "8d1684cdc059e489bfca927a5d594bee15511853f83adb3a251aeb8d532e08dd"
+    },
+    {
+      "path": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/elftia/elftia-plugin-creator-studio/resources/agent/skills/html-video/assets/rocut-stylized/frost.mjs",
+      "byteLength": 5137,
+      "sha256": "53a522db63daec9ede9dc9325b58c592ce78eb1c0e70b3c2c5ed12dacb9f8c19"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/cpu-receipt.json",
+      "byteLength": 4297,
+      "sha256": "8a8fd817cc217b325f4b0acd88f12be0c346e19e076a9e7397e428bd2c27fdef"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/fixture-contract.json",
+      "byteLength": 4178,
+      "sha256": "a9c8ed88fc97fc699ec435257c264032bbf1c6aae6d1c6fe4a2439ca2b5dcda9"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/opaque-source.rgba",
+      "byteLength": 12288,
+      "sha256": "b859d5a468e5c1a7bb1f8a816ba6d52c5548ca380ab743e9ec0504915132437c"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/opaque-source.png",
+      "byteLength": 10666,
+      "sha256": "55e2eb1f4ee9701340297f464738de9b5e7b0b1df3aa8b087aa3ff0ea53e6c80"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/actual-wasm-advance.json",
+      "byteLength": 65093,
+      "sha256": "8bf4a7f31f7f0420b1cf6dfdf55ea29bdccf9ac38b92829fa4542054b465a540"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/actual-wasm-freeze.json",
+      "byteLength": 62251,
+      "sha256": "9ea3c089692b68aefe8953069478a1098cf52009dd238c29408c411304c8ff42"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/actual-consumer/receipt.json",
+      "byteLength": 2007423,
+      "sha256": "83800d88de7d380ba1508333306476a081a9c0d2c70e25ff1d0f7714380a681b"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/actual-consumer-seek-fresh-02/receipt.json",
+      "byteLength": 2140368,
+      "sha256": "98b0651c5fee948b1a5c59e2bbad0ce2a24aa07980d60972c03ead2d559e7a4d"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/actual-consumer-freeze-export-03/advance-decoded.rgb",
+      "byteLength": 119808,
+      "sha256": "1b5c2de1387d24b7990a0fdb2964fbf492634a7621a01058672421af2644c1d1"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/actual-consumer-freeze-export-03/advance-ffprobe.json",
+      "byteLength": 12437,
+      "sha256": "e91fa6fe54a0104f1c829329ccb1c375765d63ac4533a7c417b34e731e53f9b4"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/actual-consumer-freeze-export-03/advance-fresh-0.png",
+      "byteLength": 10432,
+      "sha256": "3ff7d3caa0f97d009b8e8c9ab7ba5ed13012d2823c501773dff517a128eeac18"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/actual-consumer-freeze-export-03/advance-fresh-1.png",
+      "byteLength": 10432,
+      "sha256": "3ff7d3caa0f97d009b8e8c9ab7ba5ed13012d2823c501773dff517a128eeac18"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/actual-consumer-freeze-export-03/advance-fresh-10.png",
+      "byteLength": 10432,
+      "sha256": "3ff7d3caa0f97d009b8e8c9ab7ba5ed13012d2823c501773dff517a128eeac18"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/actual-consumer-freeze-export-03/advance-fresh-11.png",
+      "byteLength": 10432,
+      "sha256": "3ff7d3caa0f97d009b8e8c9ab7ba5ed13012d2823c501773dff517a128eeac18"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/actual-consumer-freeze-export-03/advance-fresh-12.png",
+      "byteLength": 10432,
+      "sha256": "3ff7d3caa0f97d009b8e8c9ab7ba5ed13012d2823c501773dff517a128eeac18"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/actual-consumer-freeze-export-03/advance-fresh-2.png",
+      "byteLength": 10432,
+      "sha256": "3ff7d3caa0f97d009b8e8c9ab7ba5ed13012d2823c501773dff517a128eeac18"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/actual-consumer-freeze-export-03/advance-fresh-3.png",
+      "byteLength": 10432,
+      "sha256": "3ff7d3caa0f97d009b8e8c9ab7ba5ed13012d2823c501773dff517a128eeac18"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/actual-consumer-freeze-export-03/advance-fresh-4.png",
+      "byteLength": 10572,
+      "sha256": "1a0b61e071984ac98ccc04c48f6bffdac8d57498da6596295eaa6c088924913b"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/actual-consumer-freeze-export-03/advance-fresh-5.png",
+      "byteLength": 10572,
+      "sha256": "1a0b61e071984ac98ccc04c48f6bffdac8d57498da6596295eaa6c088924913b"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/actual-consumer-freeze-export-03/advance-fresh-6.png",
+      "byteLength": 10518,
+      "sha256": "26f6813653d65bce4cbb735f7dcfae33d6005be1ec231c0d6a77ea709e2ac693"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/actual-consumer-freeze-export-03/advance-fresh-7.png",
+      "byteLength": 10473,
+      "sha256": "f5d8a99b3e5d993a5cf9f47ccfd320e12952459f14fc70a731c533e6e442e185"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/actual-consumer-freeze-export-03/advance-fresh-8.png",
+      "byteLength": 10444,
+      "sha256": "aa5011fab8f5fe66a203c3a51f8c95fcf0cb205accc97fb585b8b2eb88e9ffd1"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/actual-consumer-freeze-export-03/advance-fresh-9.png",
+      "byteLength": 10432,
+      "sha256": "fb2ee6dc2e8571d3ca0a124d7c7c0c638dcbc2b584c93f56a6307cbc459c178d"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/actual-consumer-freeze-export-03/advance.webm",
+      "byteLength": 13120,
+      "sha256": "92708232c8882378f408cbe99f40d490800bc4f104cb10c254da187b76a8464b"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/actual-consumer-freeze-export-03/flame-wrap-editor-advance-fresh-0.rgba",
+      "byteLength": 12288,
+      "sha256": "549fdbe2f4e951d7d65aa8c6e1fc186fc9244732ac48efca4e5008d82e6cb4df"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/actual-consumer-freeze-export-03/flame-wrap-editor-advance-fresh-1.rgba",
+      "byteLength": 12288,
+      "sha256": "549fdbe2f4e951d7d65aa8c6e1fc186fc9244732ac48efca4e5008d82e6cb4df"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/actual-consumer-freeze-export-03/flame-wrap-editor-advance-fresh-10.rgba",
+      "byteLength": 12288,
+      "sha256": "549fdbe2f4e951d7d65aa8c6e1fc186fc9244732ac48efca4e5008d82e6cb4df"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/actual-consumer-freeze-export-03/flame-wrap-editor-advance-fresh-11.rgba",
+      "byteLength": 12288,
+      "sha256": "549fdbe2f4e951d7d65aa8c6e1fc186fc9244732ac48efca4e5008d82e6cb4df"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/actual-consumer-freeze-export-03/flame-wrap-editor-advance-fresh-12.rgba",
+      "byteLength": 12288,
+      "sha256": "549fdbe2f4e951d7d65aa8c6e1fc186fc9244732ac48efca4e5008d82e6cb4df"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/actual-consumer-freeze-export-03/flame-wrap-editor-advance-fresh-2.rgba",
+      "byteLength": 12288,
+      "sha256": "549fdbe2f4e951d7d65aa8c6e1fc186fc9244732ac48efca4e5008d82e6cb4df"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/actual-consumer-freeze-export-03/flame-wrap-editor-advance-fresh-3.rgba",
+      "byteLength": 12288,
+      "sha256": "549fdbe2f4e951d7d65aa8c6e1fc186fc9244732ac48efca4e5008d82e6cb4df"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/actual-consumer-freeze-export-03/flame-wrap-editor-advance-fresh-4.rgba",
+      "byteLength": 12288,
+      "sha256": "35aad70b62fcc57a94c300e80a8045a36d40688745e191e12c83f92230d1d768"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/actual-consumer-freeze-export-03/flame-wrap-editor-advance-fresh-5.rgba",
+      "byteLength": 12288,
+      "sha256": "35aad70b62fcc57a94c300e80a8045a36d40688745e191e12c83f92230d1d768"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/actual-consumer-freeze-export-03/flame-wrap-editor-advance-fresh-6.rgba",
+      "byteLength": 12288,
+      "sha256": "7bf7b3671c2c8f3be18778cb1bc2e815e4e15811c51c185e28c37c6ebfc608fd"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/actual-consumer-freeze-export-03/flame-wrap-editor-advance-fresh-7.rgba",
+      "byteLength": 12288,
+      "sha256": "2367e651121f33f3ce3808b20e62b0577a12ddeb14ebc00071b479be1b41f29a"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/actual-consumer-freeze-export-03/flame-wrap-editor-advance-fresh-8.rgba",
+      "byteLength": 12288,
+      "sha256": "593e619eed104e147dea401f63080e379925227910912c8c1150479e7c84d4f8"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/actual-consumer-freeze-export-03/flame-wrap-editor-advance-fresh-9.rgba",
+      "byteLength": 12288,
+      "sha256": "187106b28587c08aaf4aedd6acf0b310e0e00f4a8db4c6e4f9fbd44ed7336661"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/actual-consumer-freeze-export-03/flame-wrap-editor-freeze-disabled.rgba",
+      "byteLength": 12288,
+      "sha256": "b859d5a468e5c1a7bb1f8a816ba6d52c5548ca380ab743e9ec0504915132437c"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/actual-consumer-freeze-export-03/flame-wrap-editor-freeze-fresh-0.rgba",
+      "byteLength": 12288,
+      "sha256": "549fdbe2f4e951d7d65aa8c6e1fc186fc9244732ac48efca4e5008d82e6cb4df"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/actual-consumer-freeze-export-03/flame-wrap-editor-freeze-fresh-1.rgba",
+      "byteLength": 12288,
+      "sha256": "549fdbe2f4e951d7d65aa8c6e1fc186fc9244732ac48efca4e5008d82e6cb4df"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/actual-consumer-freeze-export-03/flame-wrap-editor-freeze-fresh-10.rgba",
+      "byteLength": 12288,
+      "sha256": "549fdbe2f4e951d7d65aa8c6e1fc186fc9244732ac48efca4e5008d82e6cb4df"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/actual-consumer-freeze-export-03/flame-wrap-editor-freeze-fresh-11.rgba",
+      "byteLength": 12288,
+      "sha256": "549fdbe2f4e951d7d65aa8c6e1fc186fc9244732ac48efca4e5008d82e6cb4df"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/actual-consumer-freeze-export-03/flame-wrap-editor-freeze-fresh-12.rgba",
+      "byteLength": 12288,
+      "sha256": "549fdbe2f4e951d7d65aa8c6e1fc186fc9244732ac48efca4e5008d82e6cb4df"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/actual-consumer-freeze-export-03/flame-wrap-editor-freeze-fresh-2.rgba",
+      "byteLength": 12288,
+      "sha256": "549fdbe2f4e951d7d65aa8c6e1fc186fc9244732ac48efca4e5008d82e6cb4df"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/actual-consumer-freeze-export-03/flame-wrap-editor-freeze-fresh-3.rgba",
+      "byteLength": 12288,
+      "sha256": "549fdbe2f4e951d7d65aa8c6e1fc186fc9244732ac48efca4e5008d82e6cb4df"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/actual-consumer-freeze-export-03/flame-wrap-editor-freeze-fresh-4.rgba",
+      "byteLength": 12288,
+      "sha256": "549fdbe2f4e951d7d65aa8c6e1fc186fc9244732ac48efca4e5008d82e6cb4df"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/actual-consumer-freeze-export-03/flame-wrap-editor-freeze-fresh-5.rgba",
+      "byteLength": 12288,
+      "sha256": "549fdbe2f4e951d7d65aa8c6e1fc186fc9244732ac48efca4e5008d82e6cb4df"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/actual-consumer-freeze-export-03/flame-wrap-editor-freeze-fresh-6.rgba",
+      "byteLength": 12288,
+      "sha256": "549fdbe2f4e951d7d65aa8c6e1fc186fc9244732ac48efca4e5008d82e6cb4df"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/actual-consumer-freeze-export-03/flame-wrap-editor-freeze-fresh-7.rgba",
+      "byteLength": 12288,
+      "sha256": "549fdbe2f4e951d7d65aa8c6e1fc186fc9244732ac48efca4e5008d82e6cb4df"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/actual-consumer-freeze-export-03/flame-wrap-editor-freeze-fresh-8.rgba",
+      "byteLength": 12288,
+      "sha256": "549fdbe2f4e951d7d65aa8c6e1fc186fc9244732ac48efca4e5008d82e6cb4df"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/actual-consumer-freeze-export-03/flame-wrap-editor-freeze-fresh-9.rgba",
+      "byteLength": 12288,
+      "sha256": "549fdbe2f4e951d7d65aa8c6e1fc186fc9244732ac48efca4e5008d82e6cb4df"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/actual-consumer-freeze-export-03/flame-wrap-editor-freeze-seek-0.rgba",
+      "byteLength": 12288,
+      "sha256": "549fdbe2f4e951d7d65aa8c6e1fc186fc9244732ac48efca4e5008d82e6cb4df"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/actual-consumer-freeze-export-03/flame-wrap-editor-freeze-seek-1.rgba",
+      "byteLength": 12288,
+      "sha256": "549fdbe2f4e951d7d65aa8c6e1fc186fc9244732ac48efca4e5008d82e6cb4df"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/actual-consumer-freeze-export-03/flame-wrap-editor-freeze-seek-2.rgba",
+      "byteLength": 12288,
+      "sha256": "549fdbe2f4e951d7d65aa8c6e1fc186fc9244732ac48efca4e5008d82e6cb4df"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/actual-consumer-freeze-export-03/flame-wrap-editor-freeze-seek-3.rgba",
+      "byteLength": 12288,
+      "sha256": "549fdbe2f4e951d7d65aa8c6e1fc186fc9244732ac48efca4e5008d82e6cb4df"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/actual-consumer-freeze-export-03/flame-wrap-editor-freeze-seek-4.rgba",
+      "byteLength": 12288,
+      "sha256": "549fdbe2f4e951d7d65aa8c6e1fc186fc9244732ac48efca4e5008d82e6cb4df"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/actual-consumer-freeze-export-03/flame-wrap-editor-freeze-seek-5.rgba",
+      "byteLength": 12288,
+      "sha256": "549fdbe2f4e951d7d65aa8c6e1fc186fc9244732ac48efca4e5008d82e6cb4df"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/actual-consumer-freeze-export-03/flame-wrap-editor-freeze-seek-6.rgba",
+      "byteLength": 12288,
+      "sha256": "549fdbe2f4e951d7d65aa8c6e1fc186fc9244732ac48efca4e5008d82e6cb4df"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/actual-consumer-freeze-export-03/flame-wrap-editor-freeze-seek-7.rgba",
+      "byteLength": 12288,
+      "sha256": "549fdbe2f4e951d7d65aa8c6e1fc186fc9244732ac48efca4e5008d82e6cb4df"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/actual-consumer-freeze-export-03/flame-wrap-editor-freeze-seek-8-refresh-hop.rgba",
+      "byteLength": 12288,
+      "sha256": "549fdbe2f4e951d7d65aa8c6e1fc186fc9244732ac48efca4e5008d82e6cb4df"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/actual-consumer-freeze-export-03/flame-wrap-editor-freeze-seek-8.rgba",
+      "byteLength": 12288,
+      "sha256": "549fdbe2f4e951d7d65aa8c6e1fc186fc9244732ac48efca4e5008d82e6cb4df"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/actual-consumer-freeze-export-03/freeze-decoded.rgb",
+      "byteLength": 119808,
+      "sha256": "ffd340b9c164c3fc7dce9da3f9051eb4780f625ea4775c57cd6cd575d9bdd168"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/actual-consumer-freeze-export-03/freeze-disabled.png",
+      "byteLength": 10666,
+      "sha256": "55e2eb1f4ee9701340297f464738de9b5e7b0b1df3aa8b087aa3ff0ea53e6c80"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/actual-consumer-freeze-export-03/freeze-ffprobe.json",
+      "byteLength": 12429,
+      "sha256": "1c11676f2b0b8f8a288174d68ea67676ed9fee1f0cb6c999cdfd9bcdcf612746"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/actual-consumer-freeze-export-03/freeze-fresh-0.png",
+      "byteLength": 10432,
+      "sha256": "3ff7d3caa0f97d009b8e8c9ab7ba5ed13012d2823c501773dff517a128eeac18"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/actual-consumer-freeze-export-03/freeze-fresh-1.png",
+      "byteLength": 10432,
+      "sha256": "3ff7d3caa0f97d009b8e8c9ab7ba5ed13012d2823c501773dff517a128eeac18"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/actual-consumer-freeze-export-03/freeze-fresh-10.png",
+      "byteLength": 10432,
+      "sha256": "3ff7d3caa0f97d009b8e8c9ab7ba5ed13012d2823c501773dff517a128eeac18"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/actual-consumer-freeze-export-03/freeze-fresh-11.png",
+      "byteLength": 10432,
+      "sha256": "3ff7d3caa0f97d009b8e8c9ab7ba5ed13012d2823c501773dff517a128eeac18"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/actual-consumer-freeze-export-03/freeze-fresh-12.png",
+      "byteLength": 10432,
+      "sha256": "3ff7d3caa0f97d009b8e8c9ab7ba5ed13012d2823c501773dff517a128eeac18"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/actual-consumer-freeze-export-03/freeze-fresh-2.png",
+      "byteLength": 10432,
+      "sha256": "3ff7d3caa0f97d009b8e8c9ab7ba5ed13012d2823c501773dff517a128eeac18"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/actual-consumer-freeze-export-03/freeze-fresh-3.png",
+      "byteLength": 10432,
+      "sha256": "3ff7d3caa0f97d009b8e8c9ab7ba5ed13012d2823c501773dff517a128eeac18"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/actual-consumer-freeze-export-03/freeze-fresh-4.png",
+      "byteLength": 10432,
+      "sha256": "3ff7d3caa0f97d009b8e8c9ab7ba5ed13012d2823c501773dff517a128eeac18"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/actual-consumer-freeze-export-03/freeze-fresh-5.png",
+      "byteLength": 10432,
+      "sha256": "3ff7d3caa0f97d009b8e8c9ab7ba5ed13012d2823c501773dff517a128eeac18"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/actual-consumer-freeze-export-03/freeze-fresh-6.png",
+      "byteLength": 10432,
+      "sha256": "3ff7d3caa0f97d009b8e8c9ab7ba5ed13012d2823c501773dff517a128eeac18"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/actual-consumer-freeze-export-03/freeze-fresh-7.png",
+      "byteLength": 10432,
+      "sha256": "3ff7d3caa0f97d009b8e8c9ab7ba5ed13012d2823c501773dff517a128eeac18"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/actual-consumer-freeze-export-03/freeze-fresh-8.png",
+      "byteLength": 10432,
+      "sha256": "3ff7d3caa0f97d009b8e8c9ab7ba5ed13012d2823c501773dff517a128eeac18"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/actual-consumer-freeze-export-03/freeze-fresh-9.png",
+      "byteLength": 10432,
+      "sha256": "3ff7d3caa0f97d009b8e8c9ab7ba5ed13012d2823c501773dff517a128eeac18"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/actual-consumer-freeze-export-03/freeze-seek-0.png",
+      "byteLength": 10432,
+      "sha256": "3ff7d3caa0f97d009b8e8c9ab7ba5ed13012d2823c501773dff517a128eeac18"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/actual-consumer-freeze-export-03/freeze-seek-1.png",
+      "byteLength": 10432,
+      "sha256": "3ff7d3caa0f97d009b8e8c9ab7ba5ed13012d2823c501773dff517a128eeac18"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/actual-consumer-freeze-export-03/freeze-seek-2.png",
+      "byteLength": 10432,
+      "sha256": "3ff7d3caa0f97d009b8e8c9ab7ba5ed13012d2823c501773dff517a128eeac18"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/actual-consumer-freeze-export-03/freeze-seek-3.png",
+      "byteLength": 10432,
+      "sha256": "3ff7d3caa0f97d009b8e8c9ab7ba5ed13012d2823c501773dff517a128eeac18"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/actual-consumer-freeze-export-03/freeze-seek-4.png",
+      "byteLength": 10432,
+      "sha256": "3ff7d3caa0f97d009b8e8c9ab7ba5ed13012d2823c501773dff517a128eeac18"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/actual-consumer-freeze-export-03/freeze-seek-5.png",
+      "byteLength": 10432,
+      "sha256": "3ff7d3caa0f97d009b8e8c9ab7ba5ed13012d2823c501773dff517a128eeac18"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/actual-consumer-freeze-export-03/freeze-seek-6.png",
+      "byteLength": 10432,
+      "sha256": "3ff7d3caa0f97d009b8e8c9ab7ba5ed13012d2823c501773dff517a128eeac18"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/actual-consumer-freeze-export-03/freeze-seek-7.png",
+      "byteLength": 10432,
+      "sha256": "3ff7d3caa0f97d009b8e8c9ab7ba5ed13012d2823c501773dff517a128eeac18"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/actual-consumer-freeze-export-03/freeze-seek-8.png",
+      "byteLength": 10432,
+      "sha256": "3ff7d3caa0f97d009b8e8c9ab7ba5ed13012d2823c501773dff517a128eeac18"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/actual-consumer-freeze-export-03/freeze.webm",
+      "byteLength": 8450,
+      "sha256": "4a38de00832dea953fc025f6cda814a73a20c5c8c8f199cce84996cff90c543e"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/actual-consumer-freeze-export-03/receipt.json",
+      "byteLength": 339935,
+      "sha256": "8d6e5c6c8fbfe433ef43ff0fa0936f3dc03b6c5cf4b0f9cb524864f212365aa8"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/independent-0.rgba",
+      "byteLength": 12288,
+      "sha256": "cf556d2a0adf47b7392a742a13d38857d0cb1a04ab0b3c1e3a1e50697f47f8b2"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/independent-1.rgba",
+      "byteLength": 12288,
+      "sha256": "cf556d2a0adf47b7392a742a13d38857d0cb1a04ab0b3c1e3a1e50697f47f8b2"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/independent-2.rgba",
+      "byteLength": 12288,
+      "sha256": "cf556d2a0adf47b7392a742a13d38857d0cb1a04ab0b3c1e3a1e50697f47f8b2"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/independent-3.rgba",
+      "byteLength": 12288,
+      "sha256": "cf556d2a0adf47b7392a742a13d38857d0cb1a04ab0b3c1e3a1e50697f47f8b2"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/independent-4.rgba",
+      "byteLength": 12288,
+      "sha256": "9e65f9e03ee4227fa75cdf5f1674174533f35dc7ba11c4ef46d983910a7e5ca3"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/independent-5.rgba",
+      "byteLength": 12288,
+      "sha256": "9e65f9e03ee4227fa75cdf5f1674174533f35dc7ba11c4ef46d983910a7e5ca3"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/independent-6.rgba",
+      "byteLength": 12288,
+      "sha256": "565570c95d4050f1f074b79f8499a9e84ab32fd69c430cf6892e27d17d5d0bf8"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/independent-7.rgba",
+      "byteLength": 12288,
+      "sha256": "95b8c037e3aaf6352f16623016b885c94d26cdcd847da9f658b36df26bce0684"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/independent-8.rgba",
+      "byteLength": 12288,
+      "sha256": "3728cab3aeb74634d613bde326be04b456e1a8a182d4a453fb1b65ea20973a42"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/independent-9.rgba",
+      "byteLength": 12288,
+      "sha256": "4ada3575fbf507c9cf6f6d7e5b09337d72d03d8c7a2fc2c56f97ff157a176d9d"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/independent-10.rgba",
+      "byteLength": 12288,
+      "sha256": "cf556d2a0adf47b7392a742a13d38857d0cb1a04ab0b3c1e3a1e50697f47f8b2"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/independent-11.rgba",
+      "byteLength": 12288,
+      "sha256": "cf556d2a0adf47b7392a742a13d38857d0cb1a04ab0b3c1e3a1e50697f47f8b2"
+    },
+    {
+      "path": "C:/tmps/frost-schedule-clock-20261012/independent-12.rgba",
+      "byteLength": 12288,
+      "sha256": "cf556d2a0adf47b7392a742a13d38857d0cb1a04ab0b3c1e3a1e50697f47f8b2"
+    },
+    {
+      "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut/script/fixtures/frost-schedule-clock-adapter.mjs",
+      "byteLength": 7459,
+      "sha256": "f449c4ea8d857a7454f4f524792eca7381c0c8e8e5fbe3b170f387593e5c6ee0"
+    },
+    {
+      "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut/script/fixtures/frost-schedule-clock-adapter.test.mjs",
+      "byteLength": 5558,
+      "sha256": "64c2484f202c0223e9d9361d5e51019107ce6f8f7eab3cb5a218acde4cad7368"
+    },
+    {
+      "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut/script/fixtures/frost-schedule-fixture.mjs",
+      "byteLength": 3032,
+      "sha256": "441643ac719c768f5a7d3b60c706875e2fdf33c63d0e211b8d6d998c0dd794b5"
+    },
+    {
+      "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut/script/fixtures/frost-schedule-fixture.test.mjs",
+      "byteLength": 2308,
+      "sha256": "a530e9b3eecd24e9394a0eea87869274397bf8c4ee901817d33045f1e3642dad"
+    },
+    {
+      "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut/script/fixtures/frost-schedule-host.mjs",
+      "byteLength": 1719,
+      "sha256": "e316610328c58f2a764a8fa08fdb19617838f9574fab5886049f6876c8a39b08"
+    },
+    {
+      "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut/script/fixtures/frost-schedule-prepare.mjs",
+      "byteLength": 5492,
+      "sha256": "8a1c4a2775a5b322e647b1545a1002d281f480d98a598269f9288aa2dd413888"
+    },
+    {
+      "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut/script/fixtures/frost-schedule-run.mjs",
+      "byteLength": 17467,
+      "sha256": "2fa800114c14e4ab807e0c476d17a4176e2214596d25aeac2e57ae57560b2da0"
+    },
+    {
+      "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut/script/fixtures/frost-schedule-wasm-check.mjs",
+      "byteLength": 3217,
+      "sha256": "533f76293377c6f7f58cab648a7b250f2a086c2d8f13398114b6bb1b2d5508fd"
+    },
+    {
+      "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut/script/fixtures/frost-reference-fixture.mjs",
+      "byteLength": 5031,
+      "sha256": "548a385da0c8758d2b905a1b7fa94c23e915075dc9bdd2b81b2dd1e1e29a0424"
+    },
+    {
+      "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut/script/fixtures/frost-reference-math.mjs",
+      "byteLength": 3691,
+      "sha256": "7255e89c454496aeaf9d9cb3912397ceb170803f44e125ff4c8add50d9ea58c0"
+    },
+    {
+      "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut/script/fixtures/frost-encoded-time-metrics.mjs",
+      "byteLength": 2427,
+      "sha256": "d18ef37f5c8a4909bd478a23803d40e38c36e43d3909106f05874ad5ee581156"
+    }
+  ]
+}

@@ -1,0 +1,115 @@
+{
+  "ok": true,
+  "status": "finite-current-physical-shader-and-normal444-passed",
+  "scope": "Two finite GLB optical material/map/group/multimesh/negative-nonuniform-transform combinations only; no broad model, skin/morph, installed-plugin or hardware acceptance claim. Previously accepted color/attenuation/environmentIntensity paths are not rerun.",
+  "cpu": {
+    "ok": true,
+    "receipt": {
+      "path": "C:/tmps/glass-physical-current-20261012/attempt-0zidlH/preparation-receipt.json",
+      "sha256": "d758e101a04238ba5617794ec197a53fa026cd41cfac6b5f11d169ae04c9c827"
+    },
+    "tests": { "passed": 3, "failed": 0, "skipped": 0 },
+    "threeVersion": "0.185.1",
+    "runtimePinCount": 364,
+    "allOwnedHostsClosed": true,
+    "productionSourceChanges": false,
+    "verified": [
+      "Actual current WASM/helper normalized transmission/ior/thickness/roughness/dispersion DTO",
+      "Actual Three Standard/Physical borrowed map/normalMap/roughnessMap and Physical transmissionMap/thicknessMap identity, UV1 and normalScale",
+      "Material-group deduplication, multiple meshes and negative nonuniform local transform retention",
+      "Owned material/backdrop cleanup once and original material restoration; borrowed textures/geometries/materials and static driver-owned lease not disposed",
+      "Normal formal CLI Host imported embedded-map GLBs and background, compiled eight predeclared variants per combination, applied saved production source and reopened exact bytes"
+    ]
+  },
+  "fixtures": ["standard-normal-groups", "physical-volume-multimesh"],
+  "current": {
+    "receipt": {
+      "path": "C:/tmps/glass-physical-current-20261012/gpu-R5uyht/current-receipt.json",
+      "sha256": "c48a8b5d0517e1a2b85616e4d3661f9e0b7e2de4e4b8a9483b43d73e5ee6483c"
+    },
+    "runner": {
+      "path": "C:/tmps/glass-physical-current-20261012/gpu.mjs",
+      "sha256": "90094f522f6b593388f6aa9b8d766d2b65daf740417558bb172f91d9d5da813a"
+    },
+    "cpuTest": {
+      "path": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/elftia/elftia-plugin-creator-studio/scripts/tests/glass-physical-current.test.mjs",
+      "sha256": "cc7a6cb1cf5c32fbc4bb6ec1fe88d9a74d7af7e5305f84efdb96a404eaafb3a9"
+    },
+    "rendering": "Actual Three 0.185.1 MeshPhysicalMaterial shader through formal normal Host archived programmatic PNGs and normal packaged Surface WebCodecs export; Chrome SwiftShader/ANGLE only",
+    "parameters": { "transmission": 0.9, "ior": 1.9, "thickness": 1.2, "roughness": 0.2, "dispersion": 0.7 },
+    "predeclaredControls": {
+      "transmission": 0,
+      "ior": 1,
+      "thickness": 0,
+      "roughness": 0,
+      "dispersion": 0,
+      "normalMap": "same GLB geometry/material maps with flat normal texels",
+      "negativeTransform": "same GLB with negative x scale changed to positive"
+    },
+    "controlsPassed": 14,
+    "normalImportedArchivedResourceHashesVerified": true,
+    "noSourceDirectoryInCompiledSource": true,
+    "exactRepeatedFormalPngPixels": true,
+    "shaderOpticalSensitivity": {
+      "standard-normal-groups": {
+        "transmission": { "mean": 14.804307725694445, "changedPixels": 4469 },
+        "ior": { "mean": 8.812554253472221, "changedPixels": 4459 },
+        "thickness": { "mean": 7.868231879340278, "changedPixels": 4403 },
+        "roughness": { "mean": 1.2850341796875, "changedPixels": 3576 },
+        "dispersion": { "mean": 0.1471218532986111, "changedPixels": 1146 },
+        "normalMap": { "mean": 6.142293294270833, "changedPixels": 4277 },
+        "negativeTransform": { "mean": 35.607584635416664, "changedPixels": 17472 }
+      },
+      "physical-volume-multimesh": {
+        "transmission": { "mean": 13.689629448784721, "changedPixels": 4469 },
+        "ior": { "mean": 9.3367919921875, "changedPixels": 4448 },
+        "thickness": { "mean": 8.327772352430555, "changedPixels": 4400 },
+        "roughness": { "mean": 1.2428792317708333, "changedPixels": 3182 },
+        "dispersion": { "mean": 0.08154296875, "changedPixels": 461 },
+        "normalMap": { "mean": 7.281765407986111, "changedPixels": 4405 },
+        "negativeTransform": { "mean": 36.49956597222222, "changedPixels": 17481 }
+      }
+    },
+    "options": {
+      "format": "webm", "quality": "very_high", "videoChroma": "444", "includeAudio": false,
+      "range": { "startTime": 0, "endTime": 130000 }
+    },
+    "exportScope": "Explicit normal 444 current default quantizer8 policy, not default420 or alpha master. One unique job per original saved finite project clone, no retry or recompile.",
+    "videos": [
+      {
+        "fixture": "standard-normal-groups", "jobId": "dddd3620761b6c47", "frames": 13,
+        "sha256": "3e7cd9a3ca8a739cdbfcf296a597532ffb0fe204cced1f71613668ebf835fd64",
+        "maxFullRgbMae": 0.8840874565972222, "maxRoiRgbMae": 0.9148415242165242,
+        "maxPtsError": 0.00033333333333340764
+      },
+      {
+        "fixture": "physical-volume-multimesh", "jobId": "79fbf40ef1aaa31c", "frames": 13,
+        "sha256": "61f41db8bc3ea73f1083b7d5d949458dd0c513aa8f1b80b46bbf9f118cc38382",
+        "maxFullRgbMae": 0.8784044053819444, "maxRoiRgbMae": 0.9055822649572649,
+        "maxPtsError": 0.00033333333333340764
+      }
+    ],
+    "videoMetadata": { "codec": "vp9", "pixelFormat": "yuv444p", "width": 192, "height": 128, "fps": "12/1" },
+    "independentFfprobeAndFfmpegDecode": true,
+    "decodedFormalPngFramesPassed": 26,
+    "originalProjectFilesUnchanged": true,
+    "cloneExportStageBytesUnchanged": true,
+    "runtimePinDrift": [], "sourcePinDrift": [],
+    "allOwnedHostsAndBrowsersClosed": true,
+    "gpuLeaseReleased": true,
+    "pageErrors": [],
+    "retainedDiagnostic": "Each Surface logged /api/library/graph-editor-presets/user-presets 404. No clean-console claim; no shader or programmatic preview errors recorded.",
+    "productionSourceChanges": false
+  },
+  "fixedGates": {
+    "fullRgbMae": 3,
+    "activeRgbMae": 6,
+    "ptsError": 0.001,
+    "opticalChangedChannelDelta": 2,
+    "opticalChangedPixels": 20,
+    "opticalMinMean": 0.1,
+    "dispersionChangedPixels": 10,
+    "dispersionMinMean": 0.05
+  },
+  "wasmSha256": "8afce2680db2514a6f0c01e2fc563506dadef2f73ab15dd0ddf47c82d01fea30"
+}

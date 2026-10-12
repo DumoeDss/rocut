@@ -1,0 +1,1752 @@
+{
+  "schemaVersion": 1,
+  "formalPackagedFiniteVideo": {
+    "status": "Unique formal packaged Surface/Host export and independently decoded 19-frame finite video closure passed; GPU lease released",
+    "review": {
+      "path": "C:/tmps/liquid-shared-domain-browser-20261012/video-Zv6DTW/review-final.json",
+      "sha256": "83cebda25017538b29a7f4e6c53ed933aeb474d00ae08d7b42e40dc569493024"
+    },
+    "ok": true,
+    "receipt": {
+      "path": "C:/tmps/liquid-shared-domain-browser-20261012/video-Zv6DTW/video-receipt.json",
+      "sha256": "35a20bd4c9f0cbedbdc8ffea9f6f0d8d69f081f59ee5320dfefb5395e27d43f4"
+    },
+    "contract": {
+      "path": "C:/tmps/liquid-shared-domain-browser-20261012/video-Zv6DTW/contract.json",
+      "sha256": "05a62481b39268548ad54446840c29a0886bef26f5ccdb9d07f08f27cefd879a"
+    },
+    "jobId": "e1fce82e442c5b60",
+    "job": {
+      "id": "e1fce82e442c5b60",
+      "status": "completed",
+      "progress": 1
+    },
+    "options": {
+      "format": "webm",
+      "quality": "very_high",
+      "videoChroma": "444",
+      "includeAudio": false,
+      "range": {
+        "startTime": 92000,
+        "endTime": 168000
+      }
+    },
+    "gates": {
+      "width": 192,
+      "height": 128,
+      "frames": 19,
+      "fps": "30/1",
+      "codec": "vp9",
+      "pixelFormat": "yuv444p",
+      "fullRgbMae": 3,
+      "activeRgbMae": 6,
+      "roi": [
+        35,
+        157,
+        10,
+        118
+      ],
+      "ptsError": 0.001
+    },
+    "video": {
+      "path": "C:/tmps/liquid-shared-domain-browser-20261012/video-Zv6DTW/production-444.webm",
+      "bytes": 60389,
+      "sha256": "c5fc71a063b65fbfc2443af4336eae966801087e7e214c23163256182b8cb1a3"
+    },
+    "decoded": {
+      "path": "C:/tmps/liquid-shared-domain-browser-20261012/video-Zv6DTW/decoded.rgba",
+      "sha256": "6b38c105e256ba6e86783d7509d67bc8e06698a760e9e8549d8b070506087a18",
+      "bytes": 1867776
+    },
+    "frames": 19,
+    "sourceIndices": [
+      23,
+      41
+    ],
+    "maxFullMae": 0.7500135633680556,
+    "maxActiveMae": 0.8213165351143493,
+    "maxPtsError": 0.00033333333333335213,
+    "originalAllFilesUnchanged": true,
+    "cloneNonProjectFilesUnchanged": true,
+    "cloneSurfaceBaseline": "14c3803dfb3bcd8e66380759a6ca541a549d62191bc0a3f2697329d8deca8dc8",
+    "cloneAfter": "14c3803dfb3bcd8e66380759a6ca541a549d62191bc0a3f2697329d8deca8dc8",
+    "cloneExportStageBytesUnchanged": true,
+    "referenceEndpointPinsAt23And41Exact": true,
+    "cleanup": [
+      "attached Surface Browser closed before formal reference requests",
+      "owned Host closed"
+    ],
+    "hostClose": {
+      "code": null,
+      "signal": "SIGTERM"
+    },
+    "httpFailures": [
+      {
+        "path": "/api/library/graph-editor-presets/user-presets",
+        "status": 404
+      }
+    ],
+    "pageErrors": [],
+    "limitations": [
+      "Explicit opt-in 444 very_high VP9 q8, not a default420 claim.",
+      "Dedicated HTTP-authored project; byte-exact cloned project/attachments for isolation. Original physical directory was not written. Normal Surface thumbnail/view-state bookkeeping before baseline is not authoring or history proof.",
+      "One unique production Host export task, real packaged Surface/SceneExporter, native WebCodecs and independent FFmpeg/FFprobe.",
+      "Finite two static planar meshes/two textured normal-mapped PBR materials over source frames23..41 only; no broad asset/material/video matrix.",
+      "SwiftShader/ANGLE configured browser; no discrete hardware GPU claim, UI history or installed-state certification.",
+      "Private child Browser/worker descendant PIDs not independently enumerated; awaited production cleanup and owned Surface Browser/Host closures recorded."
+    ],
+    "redaction": "HTTP failure observer path stripped Host authentication prefix after run; measurement/job/PNG/video bytes unchanged. Only /api/... path retained, no editor URL/token copied into this receipt.",
+    "runtimePinsBeforeAfterCount": 364
+  },
+  "formalPackagedHostFrames": {
+    "status": "Actual frozen packaged CLI Host HTTP four frame captures passed; GPU lease released",
+    "review": {
+      "path": "C:/tmps/liquid-shared-domain-browser-20261012/formal-host-wE6dFU/review-final.json",
+      "sha256": "bdacf8e0ee669f3b306faa5fe93c8ee08f30247f49c1f7df59f7687fd38d8841"
+    },
+    "ok": true,
+    "scope": "Actual frozen rocut.mjs packaged CLI Host HTTP programmatic/frame consuming formally compiled saved/reopened source; no compile in frame run.",
+    "receipt": {
+      "path": "C:/tmps/liquid-shared-domain-browser-20261012/formal-host-wE6dFU/frame-receipt.json",
+      "sha256": "9a61031ae5f7a51f759bd5059eed34f9bd0fe23308a13f708f32abcabed8be1e"
+    },
+    "preparation": {
+      "path": "C:/tmps/liquid-shared-domain-browser-20261012/formal-host-wE6dFU/preparation-receipt.json",
+      "sha256": "3701a3b4ff03f0b01a50082bdf11e3ecfed579dac0088186de9d322561a3e726"
+    },
+    "captures": [
+      {
+        "name": "formal-enabled23",
+        "index": 23,
+        "enabled": true,
+        "file": "C:/tmps/liquid-shared-domain-browser-20261012/formal-host-wE6dFU/formal-enabled23.png",
+        "sha256": "0b74c744fefebd0fd19d3e15479d519cdd57004327e72ea9ef20be031e4a790a",
+        "visibility": {
+          "background": [
+            32,
+            43,
+            59
+          ],
+          "changedPixels": 6536,
+          "totalPixels": 24576
+        }
+      },
+      {
+        "name": "formal-enabled41",
+        "index": 41,
+        "enabled": true,
+        "file": "C:/tmps/liquid-shared-domain-browser-20261012/formal-host-wE6dFU/formal-enabled41.png",
+        "sha256": "aed82e12313fa3e21971617df7cc6e45dfb016d494e60f183c895ab2b73eef8c",
+        "visibility": {
+          "background": [
+            32,
+            43,
+            59
+          ],
+          "changedPixels": 6534,
+          "totalPixels": 24576
+        }
+      },
+      {
+        "name": "formal-enabled23-repeat",
+        "index": 23,
+        "enabled": true,
+        "file": "C:/tmps/liquid-shared-domain-browser-20261012/formal-host-wE6dFU/formal-enabled23-repeat.png",
+        "sha256": "0b74c744fefebd0fd19d3e15479d519cdd57004327e72ea9ef20be031e4a790a",
+        "visibility": {
+          "background": [
+            32,
+            43,
+            59
+          ],
+          "changedPixels": 6536,
+          "totalPixels": 24576
+        }
+      },
+      {
+        "name": "formal-disabled23",
+        "index": 23,
+        "enabled": false,
+        "file": "C:/tmps/liquid-shared-domain-browser-20261012/formal-host-wE6dFU/formal-disabled23.png",
+        "sha256": "466831522b1217ff25b246a8244d39d8025491fa46b812af9b884f1850e9cc27",
+        "visibility": {
+          "background": [
+            32,
+            43,
+            59
+          ],
+          "changedPixels": 6528,
+          "totalPixels": 24576
+        }
+      }
+    ],
+    "comparisons": {
+      "time": {
+        "mean": 8.507188585069445,
+        "changedPixels": 1923,
+        "totalPixels": 24576
+      },
+      "reverseSeek": {
+        "mean": 0,
+        "changedPixels": 0,
+        "totalPixels": 24576
+      },
+      "disabled": {
+        "mean": 7.983045789930555,
+        "changedPixels": 6896,
+        "totalPixels": 24576
+      }
+    },
+    "privateParity": [
+      {
+        "formal": "formal-enabled23",
+        "private": "enabled-23",
+        "comparison": {
+          "mean": 0,
+          "changedPixels": 0,
+          "totalPixels": 24576
+        }
+      },
+      {
+        "formal": "formal-enabled41",
+        "private": "enabled-41",
+        "comparison": {
+          "mean": 0,
+          "changedPixels": 0,
+          "totalPixels": 24576
+        }
+      },
+      {
+        "formal": "formal-enabled23-repeat",
+        "private": "enabled-23-repeat",
+        "comparison": {
+          "mean": 0,
+          "changedPixels": 0,
+          "totalPixels": 24576
+        }
+      },
+      {
+        "formal": "formal-disabled23",
+        "private": "disabled-23",
+        "comparison": {
+          "mean": 0,
+          "changedPixels": 0,
+          "totalPixels": 24576
+        }
+      }
+    ],
+    "attachments": [
+      {
+        "path": "C:/tmps/liquid-shared-domain-browser-20261012/formal-host-wE6dFU/project/attachments/programmatic-sha256-6945c54b2960a27bdf9c5d3b865997bcec828a7a2d07a66d35d1f79f3581fa11/body.bin",
+        "sha256": "6945c54b2960a27bdf9c5d3b865997bcec828a7a2d07a66d35d1f79f3581fa11",
+        "bytes": 2132705
+      },
+      {
+        "path": "C:/tmps/liquid-shared-domain-browser-20261012/formal-host-wE6dFU/project/attachments/programmatic-sha256-ceca707c1eaa4f230af6bc84881f4395d610e2c6d4881949e881f59cb6943494/body.bin",
+        "sha256": "ceca707c1eaa4f230af6bc84881f4395d610e2c6d4881949e881f59cb6943494",
+        "bytes": 2400
+      },
+      {
+        "path": "C:/tmps/liquid-shared-domain-browser-20261012/formal-host-wE6dFU/project/attachments/programmatic-source-sha256-cf25afcb2ab8289b0905eaea9edaae851d0e05f1b3fce8b9a7c211e386ebf612/body.bin",
+        "sha256": "cf25afcb2ab8289b0905eaea9edaae851d0e05f1b3fce8b9a7c211e386ebf612",
+        "bytes": 12322
+      },
+      {
+        "path": "C:/tmps/liquid-shared-domain-browser-20261012/formal-host-wE6dFU/project/attachments/programmatic-source-sha256-bcd09371e911d359aafcd5e02eba95a8cee24a64ea9bf474e780cfd455bb7339/body.bin",
+        "sha256": "bcd09371e911d359aafcd5e02eba95a8cee24a64ea9bf474e780cfd455bb7339",
+        "bytes": 2663
+      },
+      {
+        "path": "C:/tmps/liquid-shared-domain-browser-20261012/formal-host-wE6dFU/project/attachments/programmatic-source-sha256-7e9a39b18768272919afdb537ea4faae5cba5d34bb76d5c4c24c60ec2f5335a7/body.bin",
+        "sha256": "7e9a39b18768272919afdb537ea4faae5cba5d34bb76d5c4c24c60ec2f5335a7",
+        "bytes": 9527
+      },
+      {
+        "path": "C:/tmps/liquid-shared-domain-browser-20261012/formal-host-wE6dFU/project/attachments/programmatic-sha256-2eb531d4f1e367bb58f741b839f39983878e5afaf119e896671bf67e7190babf/body.bin",
+        "sha256": "2eb531d4f1e367bb58f741b839f39983878e5afaf119e896671bf67e7190babf",
+        "bytes": 2132706
+      }
+    ],
+    "projectSha256": "61a7fef2dc1b52455b03aa26da765efde2571d52c4d28ffbe6f20fc2c00a8147",
+    "projectBytesUnchanged": true,
+    "ownedHostPid": 28400,
+    "ownedHostClose": {
+      "code": null,
+      "signal": "SIGTERM"
+    },
+    "productionCaptureReturnedAfterAwaitedPageBrokerBrowserCleanup": true,
+    "limitations": [
+      "No separate SystemInfo hardware GPU/driver diagnostics.",
+      "Capture lifecycle cleanup awaited by actual production endpoint; Browser/worker descendant PIDs were not independently logged by this formal runner.",
+      "Finite two planar static meshes and two PBR color/normal texture materials only.",
+      "Four isolated frame captures and saved project, not video/export/install or persistent scene seek acceptance."
+    ]
+  },
+  "actualPrivateBrowserWebGL": {
+    "status": "Four actual private Chromium/WebGL production captures passed; lease released",
+    "receipt": {
+      "path": "C:/tmps/liquid-shared-domain-browser-20261012/attempt-rXxCiV/receipt.json",
+      "sha256": "beea5c463f1b37f86a88a8917dc4e01baddde2abfb432d012278db99cd9849d3"
+    },
+    "review": {
+      "path": "C:/tmps/liquid-shared-domain-browser-20261012/attempt-rXxCiV/review-final.json",
+      "sha256": "35ecbfbd05f4f8ea57a04532e52ab10e04113b2e4639f96fafc4284373af6312"
+    },
+    "preparedState": {
+      "path": "C:/tmps/liquid-shared-domain-browser-20261012/attempt-rXxCiV/prepared-state.json",
+      "sha256": "f757a3af763afe8d7bce0da195a47dab60c9587bd8c7acfd525949b1700af7f6"
+    },
+    "captures": [
+      {
+        "name": "enabled-23",
+        "index": 23,
+        "sha256": "0b74c744fefebd0fd19d3e15479d519cdd57004327e72ea9ef20be031e4a790a",
+        "visibility": {
+          "background": [
+            32,
+            43,
+            59
+          ],
+          "changedPixels": 6536,
+          "totalPixels": 24576
+        }
+      },
+      {
+        "name": "enabled-41",
+        "index": 41,
+        "sha256": "aed82e12313fa3e21971617df7cc6e45dfb016d494e60f183c895ab2b73eef8c",
+        "visibility": {
+          "background": [
+            32,
+            43,
+            59
+          ],
+          "changedPixels": 6534,
+          "totalPixels": 24576
+        }
+      },
+      {
+        "name": "enabled-23-repeat",
+        "index": 23,
+        "sha256": "0b74c744fefebd0fd19d3e15479d519cdd57004327e72ea9ef20be031e4a790a",
+        "visibility": {
+          "background": [
+            32,
+            43,
+            59
+          ],
+          "changedPixels": 6536,
+          "totalPixels": 24576
+        }
+      },
+      {
+        "name": "disabled-23",
+        "index": 23,
+        "sha256": "466831522b1217ff25b246a8244d39d8025491fa46b812af9b884f1850e9cc27",
+        "visibility": {
+          "background": [
+            32,
+            43,
+            59
+          ],
+          "changedPixels": 6528,
+          "totalPixels": 24576
+        }
+      }
+    ],
+    "comparisons": {
+      "time": {
+        "mean": 8.507188585069445,
+        "changedPixels": 1923,
+        "totalPixels": 24576
+      },
+      "reverseSeek": {
+        "mean": 0,
+        "changedPixels": 0,
+        "totalPixels": 24576
+      },
+      "disabled": {
+        "mean": 7.983045789930555,
+        "changedPixels": 6896,
+        "totalPixels": 24576
+      }
+    },
+    "htmlHashes": [
+      {
+        "enabled": true,
+        "sha256": "6945c54b2960a27bdf9c5d3b865997bcec828a7a2d07a66d35d1f79f3581fa11",
+        "priorSha256": "6945c54b2960a27bdf9c5d3b865997bcec828a7a2d07a66d35d1f79f3581fa11"
+      },
+      {
+        "enabled": false,
+        "sha256": "2eb531d4f1e367bb58f741b839f39983878e5afaf119e896671bf67e7190babf",
+        "priorSha256": "2eb531d4f1e367bb58f741b839f39983878e5afaf119e896671bf67e7190babf"
+      }
+    ],
+    "limitations": [
+      "Actual private Chromium/WebGL and production capture funcs with frozen byte-exact runtime sidecars, not formal CLI/Host.",
+      "No SystemInfo GPU adapter diagnostic recorded; do not claim a particular hardware GPU or driver.",
+      "Two planar meshes / two PBR materials with embedded color and tangent-space normal textures only; not broad asset/material coverage.",
+      "Four isolated mapped-frame captures, not a persistent single-scene seek session or video/export/installation proof."
+    ],
+    "limits": {
+      "version": 1,
+      "maxControlJsonBytes": 8192,
+      "maxVerticesPerRequest": 100000,
+      "maxRequestJsonBytes": 12000000,
+      "maxResponseJsonBytes": 12000000,
+      "maxRequestEnvelopeBytes": 24004096,
+      "maxResponseEnvelopeBytes": 24004096,
+      "maxMeshesPerFrame": 32,
+      "maxVerticesPerFrame": 200000,
+      "maxRequestsPerFrame": 64,
+      "maxEncodedBytesPerFrame": 48000000,
+      "maxRetainedPayloadBytesPerFrame": 96000000,
+      "maxInFlight": 1,
+      "requestTimeoutMs": 15000,
+      "frameTimeoutMs": 30000,
+      "cleanupTimeoutMs": 5000,
+      "initTimeoutMs": 5000,
+      "terminationTimeoutMs": 5000
+    },
+    "actualBrowserProcesses": 4,
+    "actualWorkers": 6,
+    "all13ObservedOwnedProcessesClosed": true,
+    "pinsBeforeAfterCount": 138,
+    "pinDrift": [],
+    "assertions": [
+      "Actual delivered geometry adapter shared-root seam <=1e-6",
+      "Finite normals and bounds containing all deformed vertices",
+      "Two real PBR material/map/normalMap identities and UV/index contents preserved",
+      "Disabled and disposal exact original geometry/material restoration"
+    ],
+    "formalHostPreparation": {
+      "path": "C:/tmps/liquid-shared-domain-browser-20261012/formal-host-wE6dFU/preparation-receipt.json",
+      "sha256": "3701a3b4ff03f0b01a50082bdf11e3ecfed579dac0088186de9d322561a3e726",
+      "status": "Actual frozen formal CLI Host HTTP import/compile/apply/save/reopen passed; CPU-only at preparation time; subsequent formal frames separately evidenced above",
+      "bothOwnedHostsClosed": true
+    }
+  },
+  "browserGpuPreparation": {
+    "status": "CPU production compile preparation passed; Browser/GPU not started",
+    "receipt": {
+      "path": "C:/tmps/liquid-shared-domain-browser-20261012/attempt-0H0JQG/receipt.json",
+      "sha256": "8360ca04867879e17a4aae2229f819569a269d68f68b42b2d25cf34161374d6e"
+    },
+    "retainedFailure": {
+      "path": "C:/tmps/liquid-shared-domain-browser-20261012/attempt-iuTFTB/receipt.json",
+      "sha256": "30cd9f982d080920f8e090cac9cd989705bc8ac3134ae7d8bc8e4b8fa51acd57",
+      "cause": "Initial JSON glTF MIME unsupported by resource policy; fixture converted to supported GLB without policy relaxation."
+    },
+    "runtimePinsChecked": 364,
+    "compiledEnabledDisabled": true,
+    "observedOwnedProcessesClosed": 5,
+    "browserProcesses": 0,
+    "scope": "Private source bundle invoking actual compileProgrammaticProject and real WASM worker identity; preparation-level evidence only, not formal CLI/Host runtime behavior.",
+    "preparedChecks": [
+      "Two shared-edge static GLTF meshes with embedded color and normal textures",
+      "Actual delivered adapter phase seam/finite normal/bounds/surface-channel assertions",
+      "Enabled/disabled original geometry/material restore and cleanup assertions",
+      "Future production capture indices 23,41,23 and disabled23; GPU lease not yet granted"
+    ],
+    "limitations": [
+      "No Browser/GPU/Host/video acceptance from preparation.",
+      "Prepared Browser assertions not executed yet.",
+      "Skinned/morph/instanced scope not expanded."
+    ]
+  },
+  "status": "shared-domain CPU/WASM/actual-worker, finite private/formal Host Browser-WebGL frames and one explicit444 packaged Surface/Host19-frame export closure verified; broad video/UI-history/install acceptance not claimed",
+  "date": "2026-10-12",
+  "scope": "Liquid shared root-space deformation domain with unchanged per-mesh requests and budgets.",
+  "compatibility": {
+    "legacyPayloadAndFloat32": [
+      "single-mesh exact legacy payload and actual Rust Float32 result"
+    ],
+    "currentWasm": {
+      "legacyExact": true,
+      "sharedDomainSeamsExact": true,
+      "fullRootReferenceExact": true,
+      "missingDomainNegativeDistinguished": true,
+      "invalidDomainRejectedIncludingDisabled": true,
+      "two60000VertexRequests": true,
+      "perRequest100001Rejected": true,
+      "budgetScope": "Real Rust per-request budget only; frame/request/mesh transport quotas are not proven by direct ABI calls."
+    },
+    "deliveredBaseline": {
+      "path": "C:/tmps/rocut-liquid-domain-wasm-20261012/delivered-baseline-comparison.json",
+      "sha256": "62d11c85c28a6d8a1b758c14ce5daab4d244a6b575e102cc5334d32335fb5c63",
+      "ok": true,
+      "scope": "Supplemental exact-JSON comparison with last formally consumed 91cb package, not earlier normal-cache d32 baseline.",
+      "baselineSha": "91cb239afd1efd81fa36a700bea6436e3707532a8f3111b175d22ee61dfbca86",
+      "newSha": "8afce2680db2514a6f0c01e2fc563506dadef2f73ab15dd0ddf47c82d01fea30",
+      "checks": 37,
+      "expectedChange": {
+        "prior": {
+          "bitrate": 148000,
+          "fullCodecString": "vp09.01.10.08.03.01.13.01.01"
+        },
+        "current": {
+          "bitrate": 148000,
+          "default": true,
+          "fullCodecString": "vp09.01.10.08.03.01.13.01.01",
+          "keyFrameIntervalFrames": 24,
+          "kind": "vp9Quantizer",
+          "nativeConfig": {
+            "alpha": "discard",
+            "bitrate": 148000,
+            "bitrateMode": "quantizer",
+            "codec": "vp09.01.10.08.03.01.13.01.01",
+            "displayHeight": 128,
+            "displayWidth": 192,
+            "framerate": 12,
+            "hardwareAcceleration": "prefer-software",
+            "height": 128,
+            "latencyMode": "quality",
+            "width": 192
+          },
+          "quantizer": 8
+        },
+        "scope": "Only absent-quantizer VP9 WebM very_high444 branch intentionally changes encoder plan."
+      }
+    },
+    "priorCacheBaseline": "Earlier gate receipt retained; its d32 cache baseline is not the prior formally consumed 91cb package."
+  },
+  "creatorRegression": {
+    "domain": {
+      "path": "C:/tmps/liquid-static-matrix-20261012/domain-fix-receipt.json",
+      "sha256": "e457168093776912029f39da8e471f2c681f857e5ca3fa68f4d73e0a8c2bf672",
+      "tests": {
+        "passed": 9,
+        "failed": 0,
+        "skipped": 0
+      },
+      "checks": [
+        "GLTF same-node material primitives and different-node common root field, sync and phase",
+        "negative/nonuniform transforms and shared seam continuity",
+        "single-mesh exact legacy payload and actual Rust Float32 result",
+        "material/map/normalMap/UV/index/groups preservation",
+        "bounds containment, tangent removal, reverse seek, disabled/dispose exact original geometry",
+        "second chunk malformed result atomicity",
+        "await disposal rejects late publication",
+        "later mesh normal preparation failure atomicity",
+        "120000 total vertices with original two 60000-vertex requests"
+      ]
+    },
+    "cleanup": {
+      "path": "C:/tmps/liquid-static-matrix-20261012/staging-cleanup-closure.json",
+      "sha256": "52c8f33fa54a9924550882ee1ef6557712e705187509aa3450cc183570251dec",
+      "tests": {
+        "passed": 11,
+        "failed": 0,
+        "skipped": 0
+      },
+      "changes": [
+        "Best-effort release of every staged geometry on preparation failure, preserving primary cause with AggregateError when cleanup also fails",
+        "All mesh publication completes before staged dispose callbacks; every disposal attempted even when earlier disposal throws",
+        "Existing request budgets and single-mesh payload unchanged"
+      ]
+    },
+    "historicalPins": [
+      {
+        "path": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/elftia/elftia-plugin-creator-studio/resources/agent/skills/html-video/assets/rocut-stylized/liquid-object-geometry.mjs",
+        "bytes": 11606,
+        "sha256": "f5862e6c0b9b65ff0c7c297708a44fe3f75887a5a01c7ed2e86bf6b00ff1d5a5"
+      },
+      {
+        "path": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/elftia/elftia-plugin-creator-studio/resources/agent/skills/html-video/references/rocut-liquid-object.md",
+        "bytes": 10730,
+        "sha256": "4e6e4292df5344c3007234e87e4f4ebaa74a95266e0a6aaebbbe1af5f19a16d7"
+      },
+      {
+        "path": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/elftia/elftia-plugin-creator-studio/scripts/tests/liquid-object-domain.test.mjs",
+        "bytes": 12050,
+        "sha256": "99ea56fcab4c141132677cd10990e700d04bccb443ecb96526b26543ea85f8e3"
+      },
+      {
+        "path": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/_others/rocut/rust/crates/effects/src/liquid_object.rs",
+        "bytes": 5061,
+        "sha256": "6f22e72c3ffd3f0f365d0baad6c49d1d1ca90b13f6a22005429e70c07b0ca4cf"
+      },
+      {
+        "path": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/_others/rocut/rust/crates/editor-api/src/liquid_object_params.rs",
+        "bytes": 4724,
+        "sha256": "0adf81eebce8f457e85d9fc4cc60eee1e923367d99d0023dc040b657a50f47c4"
+      },
+      {
+        "path": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/_others/rocut/rust/crates/editor-api/src/liquid_object_transport_policy.rs",
+        "bytes": 2333,
+        "sha256": "5aa1f21ccc1d0b86ef197491197ac338aecd086ebb2bee087a341fbb65531efd"
+      },
+      {
+        "path": "C:/tmps/rocut-liquid-domain-native-20261012/src/lib.rs",
+        "bytes": 321,
+        "sha256": "1cb758ae9b92de41a9e47dd78102d3aba6f3dec309f05d46573fdf2840d70826"
+      },
+      {
+        "path": "C:/tmps/rocut-liquid-domain-native-20261012/src/main.rs",
+        "bytes": 439,
+        "sha256": "af0e51baa53522326ade40a0771b84b165c18811be391e9506b343da6dc834b1"
+      },
+      {
+        "path": "C:/tmps/rocut-liquid-domain-native-20261012/Cargo.toml",
+        "bytes": 187,
+        "sha256": "b93a2fddc539ac37b63ed9dd423907fa3b1c0d1aa8909ba581c7054af4258d59"
+      },
+      {
+        "path": "C:/tmps/rocut-liquid-domain-native-20261012/Cargo.lock",
+        "bytes": 2679,
+        "sha256": "364e3c165f8bfa142283729e628197ce6d3e7d86845c15e7129b090e3c67f350"
+      },
+      {
+        "path": "C:/tmps/rocut-liquid-domain-native-20261012/target/debug/liquid-domain-native.exe",
+        "bytes": 605696,
+        "sha256": "1180240454d9e91965d88fbdb57a3ffe86c5f3b3c9c891841a4f6d6d9a553faf"
+      },
+      {
+        "path": "C:/tmps/rocut-three-pinned-features-ZvqmB9/toolchain/node_modules/three/package.json",
+        "bytes": 3826,
+        "sha256": "1d5c438acdc1fe5a52fb8ede2e417afd91fec91d22275c40f7b739591b24e4df"
+      },
+      {
+        "path": "C:/tmps/rocut-three-pinned-features-ZvqmB9/toolchain/node_modules/three/build/three.module.js",
+        "bytes": 650153,
+        "sha256": "bbf5ed13fe4373f5bd38b14ea8e62e9f157327da5638edc6d3863e08b167c9c7"
+      },
+      {
+        "path": "C:/tmps/rocut-three-pinned-features-ZvqmB9/toolchain/node_modules/three/build/three.core.js",
+        "bytes": 1443056,
+        "sha256": "3718df126d69c125362a03340913204470d8c50238605150e57f808840fb7759"
+      },
+      {
+        "path": "C:/tmps/rocut-three-pinned-features-ZvqmB9/toolchain/node_modules/three/examples/jsm/loaders/GLTFLoader.js",
+        "bytes": 114959,
+        "sha256": "97642d720f16cc9a0c9844934198e4d0c023bea8e89576d0f7545d03b2d103d2"
+      },
+      {
+        "path": "C:/tmps/liquid-static-matrix-20261012/pre-fix-receipt.json",
+        "bytes": 2129,
+        "sha256": "d4aff07ccfcf98b8cb10bc6ab402400fa7d2d7f7532b2dd05d9220ac3250fefa"
+      },
+      {
+        "path": "C:/tmps/liquid-static-matrix-20261012/post-fix-native-receipt.json",
+        "bytes": 24086,
+        "sha256": "638a60650b8a1a9404bfda233adb9d8ab73969e4b2fae07aabd05a38a5c94d40"
+      },
+      {
+        "path": "C:/tmps/liquid-static-matrix-20261012/post-fix-native-02-receipt.json",
+        "bytes": 1068,
+        "sha256": "7bad90a01136b26d39c9657ccfe17515bacd885d19405c0d77cf4d7476ed4a82"
+      }
+    ],
+    "currentSourcePins": [
+      {
+        "path": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/elftia/elftia-plugin-creator-studio/resources/agent/skills/html-video/assets/rocut-stylized/liquid-object-geometry.mjs",
+        "sha256": "cf25afcb2ab8289b0905eaea9edaae851d0e05f1b3fce8b9a7c211e386ebf612"
+      },
+      {
+        "path": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/elftia/elftia-plugin-creator-studio/scripts/tests/liquid-object-domain.test.mjs",
+        "sha256": "329c9b81db703da2f5f23bb12507063b417941b1f8196fc810ce5b583c7d7b46"
+      },
+      {
+        "path": "C:/tmps/liquid-static-matrix-20261012/staging-cleanup-11-receipt.json",
+        "sha256": "7450e51cc5a456af00a75896689c85251b8820961d36d90406f39f54f140e0ba"
+      }
+    ]
+  },
+  "wasm": {
+    "producer": {
+      "path": "C:/tmps/rocut-liquid-domain-wasm-20261012/receipt-normal-producer.json",
+      "sha256": "70a21948acfff09871ee626c4ea9d9d250b57acb34b6ab5f4dfa78803a00f1d6",
+      "ok": true,
+      "buildExit": 0,
+      "sourcePins": {
+        "rust/crates/effects/src/liquid_object_domain_tests.rs": "a493d24fc973c47f6b8b26dd38bbe07170b8d36e41a68906a4f747f71a34062c",
+        "Cargo.lock": "b57f8e4c832710ae636f8afc5effea4c25c02486240d3ebd81ed1235a055efbe",
+        "Cargo.toml": "0dd9db1ae4c7beb96e10c47cf4328900e14cb5ce37870dd45a191cfdc24e0602",
+        "apps/desktop/Cargo.toml": "b675674bd81042f8eed4aca841f8c5f0b4cb8fd09f5052f2168ab4d0892bc5ff",
+        "rust/crates/bridge/Cargo.toml": "2107314d4b0f67edff892508523dca2f1dcbce1a58e1fab771f7e0e3a452449c",
+        "rust/crates/compositor/Cargo.toml": "f4049a235ef96fcaf67be8d16e888f15d6529b4b143691758392e15fd059df05",
+        "rust/crates/editor-api/Cargo.toml": "66c6f88530e8fc7c4f5893733cba895344f467804337ddae7cc03267caf86592",
+        "rust/crates/editor-api/src/liquid_object_params.rs": "0adf81eebce8f457e85d9fc4cc60eee1e923367d99d0023dc040b657a50f47c4",
+        "rust/crates/editor-api/src/liquid_object_params_tests.rs": "5fa2425e531bf0687f654dcb6e836109885e786cbad09d4eafb14777cb0ed66c",
+        "rust/crates/editor-api/src/liquid_object_transport.rs": "bc8843032090bf2ec5f8cda1da3144f74b0912e88e003b71d0c31308d50f9b8b",
+        "rust/crates/editor-api/src/liquid_object_transport_command.rs": "2c5875b3c858048fe7dac46af5fcbe7447308190297def6d9bad12cd98718c8e",
+        "rust/crates/editor-api/src/liquid_object_transport_policy.rs": "5aa1f21ccc1d0b86ef197491197ac338aecd086ebb2bee087a341fbb65531efd",
+        "rust/crates/editor-api/src/liquid_object_transport_reservation.rs": "49261eff1807d1c429b199d8cebde2ef40b4b91cd3b6e4833513557bba74eb16",
+        "rust/crates/editor-api/src/liquid_object_transport_session.rs": "f37a40474d8be82dedfd8a7d9d7d149d189dc3de01effe8593035ebc7b28374e",
+        "rust/crates/editor-api/src/liquid_object_transport_tests.rs": "e0ef4275b5f6d13422a8fe9900320f2a8628a9b1917963215928e8c0bc58aea5",
+        "rust/crates/editor-api/src/liquid_object_transport_types.rs": "2bf727776e67180cd4d53cdd28e234b4df60f6f35099df598c77619fc017db94",
+        "rust/crates/effects/Cargo.toml": "521e536bc9e5bd1dcf4345efb667501ba07d9abd9d944e011696aec5b8af03d3",
+        "rust/crates/effects/src/liquid_object.rs": "6f22e72c3ffd3f0f365d0baad6c49d1d1ca90b13f6a22005429e70c07b0ca4cf",
+        "rust/crates/effects/src/liquid_object_tests.rs": "4b4016bcf6beebecfb48d1007e9b4eb7db416fbad1c6151a4b83868ef9c63411",
+        "rust/crates/gpu/Cargo.toml": "3f4edea0f2ad615679e316cb692bd2e1216e712b3a5168a7ee44ab83dab6c01f",
+        "rust/crates/masks/Cargo.toml": "188f416e936f5f22e87d2d05a94ece4e3c7d94d91bc36e51e94a81d606af14ee",
+        "rust/crates/motion-text/Cargo.toml": "87a8c3ad11e27c446008b0d88376a034eb1c04ca358793f7ca86e5abc3fd6d47",
+        "rust/crates/time/Cargo.toml": "7bd2d1746b8b7f0f0a01c48ba622818570b27a8743677d5706aa69f9dda098e9",
+        "rust/crates/transaction-identity/Cargo.toml": "bbb35933142ec56dc1b09f44884d7683a5576dde5ab11a5739041ce648a37871",
+        "rust/wasm/Cargo.toml": "6736213cbf8424fb6226594e0afaee5f01a18d8d40d9c619c1329034dcc07cdb",
+        "rust/wasm/src/liquid_object_transport.rs": "9a1deb19249ebcb76a356197d2969303b1b5df0d3d00eccc15becf147cb20421"
+      },
+      "sourceDrift": [],
+      "sourcePinCount": 984
+    },
+    "gates": {
+      "path": "C:/tmps/rocut-liquid-domain-wasm-20261012/gate-receipt-final.json",
+      "sha256": "2c23015aba80f2681b8ace8c6df16363f66366f0b5238dc6bb7889cdb4e1bbb8",
+      "ok": true,
+      "checks": [
+        {
+          "label": "paths-selected",
+          "args": [
+            "script/check-wasm-paths.mjs",
+            "--file",
+            "C:/tmps/rocut-liquid-domain-wasm-20261012/pkg/opencut_wasm_bg.wasm"
+          ],
+          "exit": 0
+        },
+        {
+          "label": "api",
+          "args": [
+            "script/check-wasm-api-surface.mjs",
+            "--pkg-dir",
+            "C:/tmps/rocut-liquid-domain-wasm-20261012/pkg"
+          ],
+          "exit": 0
+        },
+        {
+          "label": "api-controls",
+          "args": [
+            "script/check-wasm-api-surface.mjs",
+            "--pkg-dir",
+            "C:/tmps/rocut-liquid-domain-wasm-20261012/pkg",
+            "--negative-control"
+          ],
+          "exit": 0
+        },
+        {
+          "label": "current-type-controls",
+          "args": [
+            "script/test-wasm-current-api-contract.mjs",
+            "--pkg-dir",
+            "C:/tmps/rocut-liquid-domain-wasm-20261012/pkg"
+          ],
+          "exit": 0
+        },
+        {
+          "label": "initialization-selected",
+          "args": [
+            "script/fixtures/wasm-init-probe.mjs",
+            "--specifier=file:///C:/tmps/rocut-liquid-domain-wasm-20261012/pkg/opencut_wasm_sync.js"
+          ],
+          "exit": 0
+        }
+      ],
+      "coreSha": "8afce2680db2514a6f0c01e2fc563506dadef2f73ab15dd0ddf47c82d01fea30",
+      "sourceDrift": []
+    }
+  },
+  "formalDeliveries": {
+    "creator": {
+      "path": "C:/tmps/creator-integration-delivery-20261012-liquid-domain-03/verification-final.json",
+      "sha256": "945558aa10809da9c0c6d5e5ffbc69980a1f4767fb702591f7f88cbe9fb166c1",
+      "ok": true,
+      "steps": [
+        {
+          "name": "formal-vite-main",
+          "status": 0
+        },
+        {
+          "name": "formal-vite-renderer",
+          "status": 0
+        },
+        {
+          "name": "agent-copy",
+          "status": 0
+        },
+        {
+          "name": "boundary",
+          "status": 0
+        },
+        {
+          "name": "runtime-abi",
+          "status": 0
+        },
+        {
+          "name": "artifact-smoke-skill-gate",
+          "status": 0
+        }
+      ],
+      "sourceDrift": false,
+      "sourcePins": {
+        "resources/agent/skills/html-video/assets/rocut-stylized/liquid-object-geometry.mjs": "cf25afcb2ab8289b0905eaea9edaae851d0e05f1b3fce8b9a7c211e386ebf612",
+        "resources/agent/skills/html-video/assets/rocut-stylized/liquid-object-scene.ts": "31e5d8508a9282efb7d6f017c8e66d3978b67e925876535e7bf1dd09d2fe54e9",
+        "resources/agent/skills/html-video/assets/rocut-stylized/liquid-object.mjs": "fe98d91f653f06617d61fc3d0a8e245b4227c502852fd0a55f26dfa4aea4ba96",
+        "resources/agent/skills/html-video/references/rocut-liquid-object.md": "4e6e4292df5344c3007234e87e4f4ebaa74a95266e0a6aaebbbe1af5f19a16d7",
+        "scripts/tests/liquid-object-authoring.test.mjs": "eacf83fbba0adc04db1957b7d715b08111a8e866043536934bc277d4bd7291ba",
+        "scripts/tests/liquid-object-domain.test.mjs": "329c9b81db703da2f5f23bb12507063b417941b1f8196fc810ce5b583c7d7b46",
+        "scripts/tests/liquid-object-native-cli.rs": "75226b15b37723f5ff1275788b5d9cf045b6e0df4cb071c7896230deae260c7c",
+        "scripts/tests/liquid-object-native.test.mjs": "dc77297f9b88d97ddbab36a4399492712205d222087b166d44a6603023be07ab"
+      },
+      "sourcePinCount": 393,
+      "artifactPinCount": 257
+    },
+    "unifiedRuntime": {
+      "path": "C:/tmps/rocut-integration-delivery-20261012-liquid-domain-04/integration-receipt.json",
+      "sha256": "6b541c39044c147488a3df503208ca5bfd4297d55cf979c3816e103d975aa3bf",
+      "ok": true,
+      "canonicalRuntimeInputDrift": 0,
+      "canonicalInputDrift": 0,
+      "canonicalDistDrift": 0,
+      "sharedDistCount": 108
+    }
+  },
+  "actualWorker": {
+    "path": "C:/tmps/liquid-domain-worker-integration-20261012/receipt.json",
+    "sha256": "9cf40c67e5a96fa839e4e57ff0e58be4f74a9d6be1a824904b4f48f4417f22f7",
+    "verification": {
+      "path": "C:/tmps/liquid-domain-worker-integration-20261012/verification-final.json",
+      "sha256": "ad46af61da88ac005d7095a5f898ab3a8c35e2b412c812188d2dd758134e4057"
+    },
+    "ok": true,
+    "cases": [
+      {
+        "name": "shared-domain-seam-and-legacy-payload",
+        "passed": true,
+        "details": {
+          "sharedEdgesExact": true,
+          "legacyWithoutDomainAccepted": true,
+          "requests": 3
+        },
+        "reservations": {
+          "count": 3,
+          "accepted": 3,
+          "rejected": [],
+          "vertices": [
+            4,
+            4,
+            4
+          ]
+        },
+        "rustResults": [
+          {
+            "ok": true,
+            "restore": false
+          },
+          {
+            "ok": true,
+            "restore": false
+          },
+          {
+            "ok": true,
+            "restore": false
+          }
+        ],
+        "cleanup": {
+          "bindings": {
+            "added": 1,
+            "removed": 1,
+            "replies": 5,
+            "driver": "Synthetic binding event and reply delivery only"
+          },
+          "admissionUnusable": true
+        }
+      },
+      {
+        "name": "two-60000-chunks",
+        "passed": true,
+        "details": {
+          "vertices": 120000,
+          "requests": 2
+        },
+        "reservations": {
+          "count": 2,
+          "accepted": 2,
+          "rejected": [],
+          "vertices": [
+            60000,
+            60000
+          ]
+        },
+        "rustResults": [
+          {
+            "ok": true,
+            "restore": false
+          },
+          {
+            "ok": true,
+            "restore": false
+          }
+        ],
+        "cleanup": {
+          "bindings": {
+            "added": 1,
+            "removed": 1,
+            "replies": 4,
+            "driver": "Synthetic binding event and reply delivery only"
+          },
+          "admissionUnusable": true
+        }
+      },
+      {
+        "name": "100001-per-request-codec",
+        "passed": true,
+        "rejection": "Error: Liquid per-request vertex transport limit exceeded",
+        "reservations": {
+          "count": 0,
+          "accepted": 0,
+          "rejected": [],
+          "vertices": []
+        },
+        "rustResults": [],
+        "cleanup": {
+          "cleanupError": "AggregateError: Liquid broker cleanup failed",
+          "bindings": {
+            "added": 1,
+            "removed": 1,
+            "replies": 1,
+            "driver": "Synthetic binding event and reply delivery only"
+          },
+          "admissionUnusable": true
+        }
+      },
+      {
+        "name": "200001-whole-frame-Rust-reservation",
+        "passed": true,
+        "rejection": "Error: Rust Liquid admission rejected: budget",
+        "reservations": {
+          "count": 3,
+          "accepted": 2,
+          "rejected": [
+            {
+              "vertices": 1,
+              "meshId": 3,
+              "ok": false,
+              "error": {
+                "code": "budget",
+                "message": "whole-frame reservation exceeds policy"
+              }
+            }
+          ],
+          "vertices": [
+            100000,
+            100000,
+            1
+          ]
+        },
+        "rustResults": [
+          {
+            "ok": true,
+            "restore": true
+          },
+          {
+            "ok": true,
+            "restore": true
+          }
+        ],
+        "cleanup": {
+          "cleanupError": "AggregateError: Liquid broker cleanup failed",
+          "bindings": {
+            "added": 1,
+            "removed": 1,
+            "replies": 3,
+            "driver": "Synthetic binding event and reply delivery only"
+          },
+          "admissionUnusable": true
+        }
+      },
+      {
+        "name": "33-meshes-whole-frame-Rust-reservation",
+        "passed": true,
+        "rejection": "Error: Rust Liquid admission rejected: budget",
+        "reservations": {
+          "count": 33,
+          "accepted": 32,
+          "rejected": [
+            {
+              "vertices": 1,
+              "meshId": 33,
+              "ok": false,
+              "error": {
+                "code": "budget",
+                "message": "whole-frame reservation exceeds policy"
+              }
+            }
+          ],
+          "vertices": [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ]
+        },
+        "rustResults": [
+          {
+            "ok": true,
+            "restore": true
+          },
+          {
+            "ok": true,
+            "restore": true
+          },
+          {
+            "ok": true,
+            "restore": true
+          },
+          {
+            "ok": true,
+            "restore": true
+          },
+          {
+            "ok": true,
+            "restore": true
+          },
+          {
+            "ok": true,
+            "restore": true
+          },
+          {
+            "ok": true,
+            "restore": true
+          },
+          {
+            "ok": true,
+            "restore": true
+          },
+          {
+            "ok": true,
+            "restore": true
+          },
+          {
+            "ok": true,
+            "restore": true
+          },
+          {
+            "ok": true,
+            "restore": true
+          },
+          {
+            "ok": true,
+            "restore": true
+          },
+          {
+            "ok": true,
+            "restore": true
+          },
+          {
+            "ok": true,
+            "restore": true
+          },
+          {
+            "ok": true,
+            "restore": true
+          },
+          {
+            "ok": true,
+            "restore": true
+          },
+          {
+            "ok": true,
+            "restore": true
+          },
+          {
+            "ok": true,
+            "restore": true
+          },
+          {
+            "ok": true,
+            "restore": true
+          },
+          {
+            "ok": true,
+            "restore": true
+          },
+          {
+            "ok": true,
+            "restore": true
+          },
+          {
+            "ok": true,
+            "restore": true
+          },
+          {
+            "ok": true,
+            "restore": true
+          },
+          {
+            "ok": true,
+            "restore": true
+          },
+          {
+            "ok": true,
+            "restore": true
+          },
+          {
+            "ok": true,
+            "restore": true
+          },
+          {
+            "ok": true,
+            "restore": true
+          },
+          {
+            "ok": true,
+            "restore": true
+          },
+          {
+            "ok": true,
+            "restore": true
+          },
+          {
+            "ok": true,
+            "restore": true
+          },
+          {
+            "ok": true,
+            "restore": true
+          },
+          {
+            "ok": true,
+            "restore": true
+          }
+        ],
+        "cleanup": {
+          "cleanupError": "AggregateError: Liquid broker cleanup failed",
+          "bindings": {
+            "added": 1,
+            "removed": 1,
+            "replies": 33,
+            "driver": "Synthetic binding event and reply delivery only"
+          },
+          "admissionUnusable": true
+        }
+      },
+      {
+        "name": "bad-domain-inverted-enabled",
+        "passed": true,
+        "rejection": "Error: Liquid Rust evaluator returned a rejection or malformed geometry",
+        "reservations": {
+          "count": 1,
+          "accepted": 1,
+          "rejected": [],
+          "vertices": [
+            4
+          ]
+        },
+        "rustResults": [
+          {
+            "ok": false,
+            "error": {
+              "code": "geometry",
+              "message": "domain must have finite ordered xyz bounds within +/-1000000",
+              "path": "frame"
+            }
+          }
+        ],
+        "cleanup": {
+          "cleanupError": "AggregateError: Liquid broker cleanup failed",
+          "bindings": {
+            "added": 1,
+            "removed": 1,
+            "replies": 1,
+            "driver": "Synthetic binding event and reply delivery only"
+          },
+          "admissionUnusable": true
+        }
+      },
+      {
+        "name": "bad-domain-inverted-disabled",
+        "passed": true,
+        "rejection": "Error: Liquid Rust evaluator returned a rejection or malformed geometry",
+        "reservations": {
+          "count": 1,
+          "accepted": 1,
+          "rejected": [],
+          "vertices": [
+            4
+          ]
+        },
+        "rustResults": [
+          {
+            "ok": false,
+            "error": {
+              "code": "geometry",
+              "message": "domain must have finite ordered xyz bounds within +/-1000000",
+              "path": "frame"
+            }
+          }
+        ],
+        "cleanup": {
+          "cleanupError": "AggregateError: Liquid broker cleanup failed",
+          "bindings": {
+            "added": 1,
+            "removed": 1,
+            "replies": 1,
+            "driver": "Synthetic binding event and reply delivery only"
+          },
+          "admissionUnusable": true
+        }
+      },
+      {
+        "name": "bad-domain-non-containing-enabled",
+        "passed": true,
+        "rejection": "Error: Liquid Rust evaluator returned a rejection or malformed geometry",
+        "reservations": {
+          "count": 1,
+          "accepted": 1,
+          "rejected": [],
+          "vertices": [
+            4
+          ]
+        },
+        "rustResults": [
+          {
+            "ok": false,
+            "error": {
+              "code": "geometry",
+              "message": "domain must contain every rest vertex",
+              "path": "frame"
+            }
+          }
+        ],
+        "cleanup": {
+          "cleanupError": "AggregateError: Liquid broker cleanup failed",
+          "bindings": {
+            "added": 1,
+            "removed": 1,
+            "replies": 1,
+            "driver": "Synthetic binding event and reply delivery only"
+          },
+          "admissionUnusable": true
+        }
+      },
+      {
+        "name": "bad-domain-non-containing-disabled",
+        "passed": true,
+        "rejection": "Error: Liquid Rust evaluator returned a rejection or malformed geometry",
+        "reservations": {
+          "count": 1,
+          "accepted": 1,
+          "rejected": [],
+          "vertices": [
+            4
+          ]
+        },
+        "rustResults": [
+          {
+            "ok": false,
+            "error": {
+              "code": "geometry",
+              "message": "domain must contain every rest vertex",
+              "path": "frame"
+            }
+          }
+        ],
+        "cleanup": {
+          "cleanupError": "AggregateError: Liquid broker cleanup failed",
+          "bindings": {
+            "added": 1,
+            "removed": 1,
+            "replies": 1,
+            "driver": "Synthetic binding event and reply delivery only"
+          },
+          "admissionUnusable": true
+        }
+      },
+      {
+        "name": "bad-domain-out-of-range-enabled",
+        "passed": true,
+        "rejection": "Error: Liquid Rust evaluator returned a rejection or malformed geometry",
+        "reservations": {
+          "count": 1,
+          "accepted": 1,
+          "rejected": [],
+          "vertices": [
+            4
+          ]
+        },
+        "rustResults": [
+          {
+            "ok": false,
+            "error": {
+              "code": "geometry",
+              "message": "domain must have finite ordered xyz bounds within +/-1000000",
+              "path": "frame"
+            }
+          }
+        ],
+        "cleanup": {
+          "cleanupError": "AggregateError: Liquid broker cleanup failed",
+          "bindings": {
+            "added": 1,
+            "removed": 1,
+            "replies": 1,
+            "driver": "Synthetic binding event and reply delivery only"
+          },
+          "admissionUnusable": true
+        }
+      },
+      {
+        "name": "bad-domain-out-of-range-disabled",
+        "passed": true,
+        "rejection": "Error: Liquid Rust evaluator returned a rejection or malformed geometry",
+        "reservations": {
+          "count": 1,
+          "accepted": 1,
+          "rejected": [],
+          "vertices": [
+            4
+          ]
+        },
+        "rustResults": [
+          {
+            "ok": false,
+            "error": {
+              "code": "geometry",
+              "message": "domain must have finite ordered xyz bounds within +/-1000000",
+              "path": "frame"
+            }
+          }
+        ],
+        "cleanup": {
+          "cleanupError": "AggregateError: Liquid broker cleanup failed",
+          "bindings": {
+            "added": 1,
+            "removed": 1,
+            "replies": 1,
+            "driver": "Synthetic binding event and reply delivery only"
+          },
+          "admissionUnusable": true
+        }
+      },
+      {
+        "name": "domain-shape-codec",
+        "passed": true,
+        "rejection": "Error: Invalid Liquid transport domain shape",
+        "reservations": {
+          "count": 0,
+          "accepted": 0,
+          "rejected": [],
+          "vertices": []
+        },
+        "rustResults": [],
+        "cleanup": {
+          "cleanupError": "AggregateError: Liquid broker cleanup failed",
+          "bindings": {
+            "added": 1,
+            "removed": 1,
+            "replies": 1,
+            "driver": "Synthetic binding event and reply delivery only"
+          },
+          "admissionUnusable": true
+        }
+      },
+      {
+        "name": "fresh-worker-recovery-and-geometry-restoration",
+        "passed": true,
+        "details": {
+          "freshWorker": true,
+          "originalGeometryAndMaterialsRestored": true
+        },
+        "reservations": {
+          "count": 2,
+          "accepted": 2,
+          "rejected": [],
+          "vertices": [
+            4,
+            4
+          ]
+        },
+        "rustResults": [
+          {
+            "ok": true,
+            "restore": false
+          },
+          {
+            "ok": true,
+            "restore": false
+          }
+        ],
+        "cleanup": {
+          "bindings": {
+            "added": 1,
+            "removed": 1,
+            "replies": 4,
+            "driver": "Synthetic binding event and reply delivery only"
+          },
+          "admissionUnusable": true
+        }
+      },
+      {
+        "name": "100001-per-request-actual-Rust-owner",
+        "passed": true,
+        "response": {
+          "error": {
+            "code": "budget",
+            "message": "per-request reservation exceeds policy"
+          },
+          "ok": false,
+          "pending": false,
+          "phase": "failed",
+          "totals": {
+            "encodedBytes": 0,
+            "meshes": 0,
+            "requests": 0,
+            "retainedPayloadBytes": 0,
+            "vertices": 0
+          },
+          "version": 1
+        }
+      }
+    ],
+    "processes": [
+      {
+        "pid": 29580,
+        "closed": true,
+        "code": null,
+        "signal": "SIGKILL"
+      },
+      {
+        "pid": 41560,
+        "closed": true,
+        "code": null,
+        "signal": "SIGKILL"
+      },
+      {
+        "pid": 65952,
+        "closed": true,
+        "code": null,
+        "signal": "SIGKILL"
+      },
+      {
+        "pid": 24452,
+        "closed": true,
+        "code": null,
+        "signal": "SIGKILL"
+      },
+      {
+        "pid": 57804,
+        "closed": true,
+        "code": null,
+        "signal": "SIGKILL"
+      },
+      {
+        "pid": 49424,
+        "closed": true,
+        "code": null,
+        "signal": "SIGKILL"
+      },
+      {
+        "pid": 16840,
+        "closed": true,
+        "code": null,
+        "signal": "SIGKILL"
+      },
+      {
+        "pid": 56584,
+        "closed": true,
+        "code": null,
+        "signal": "SIGKILL"
+      },
+      {
+        "pid": 39856,
+        "closed": true,
+        "code": null,
+        "signal": "SIGKILL"
+      },
+      {
+        "pid": 38012,
+        "closed": true,
+        "code": null,
+        "signal": "SIGKILL"
+      },
+      {
+        "pid": 54976,
+        "closed": true,
+        "code": null,
+        "signal": "SIGKILL"
+      },
+      {
+        "pid": 42408,
+        "closed": true,
+        "code": null,
+        "signal": "SIGKILL"
+      },
+      {
+        "pid": 56828,
+        "closed": true,
+        "code": null,
+        "signal": "SIGKILL"
+      },
+      {
+        "pid": 35656,
+        "closed": true,
+        "code": null,
+        "signal": "SIGKILL"
+      }
+    ],
+    "allActualChildProcessesClosed": true,
+    "pinsBeforeAfter": [
+      {
+        "file": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\apps\\cli\\src\\programmatic\\liquid-object-worker.ts",
+        "bytes": 2537,
+        "sha256": "0591328a02fd75ad1ad054bcc7eb8891561c1030763a0989f048d66e8ec6d5f7",
+        "sha256After": "0591328a02fd75ad1ad054bcc7eb8891561c1030763a0989f048d66e8ec6d5f7"
+      },
+      {
+        "file": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\apps\\cli\\src\\programmatic\\liquid-object-worker-source.ts",
+        "bytes": 6220,
+        "sha256": "477f9b50c6d92ce4e95479a51b71b049f3f3cbd33ef95722360d613057956bc9",
+        "sha256After": "477f9b50c6d92ce4e95479a51b71b049f3f3cbd33ef95722360d613057956bc9"
+      },
+      {
+        "file": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\apps\\cli\\src\\programmatic\\liquid-object-worker-process.ts",
+        "bytes": 5270,
+        "sha256": "e77ac2e93af5d683d20cca30686e5e3454e8d2f9d5cec3e152bd18cf572ed3a4",
+        "sha256After": "e77ac2e93af5d683d20cca30686e5e3454e8d2f9d5cec3e152bd18cf572ed3a4"
+      },
+      {
+        "file": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\apps\\cli\\src\\programmatic\\liquid-object-worker-bootstrap.ts",
+        "bytes": 4087,
+        "sha256": "6fb90d1fcbc3f7b81010cf9a597dae211d6018a1285e8ca9bca140bd0722c43a",
+        "sha256After": "6fb90d1fcbc3f7b81010cf9a597dae211d6018a1285e8ca9bca140bd0722c43a"
+      },
+      {
+        "file": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\apps\\cli\\src\\programmatic\\liquid-object-worker-entry.mjs",
+        "bytes": 6756,
+        "sha256": "ec8f9c4655eebda649ecbe0ff61b9651d351e612708859175c6f61361b5bb243",
+        "sha256After": "ec8f9c4655eebda649ecbe0ff61b9651d351e612708859175c6f61361b5bb243"
+      },
+      {
+        "file": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\apps\\cli\\src\\programmatic\\liquid-object-broker.ts",
+        "bytes": 6446,
+        "sha256": "d09d3822035e0338f469335f1451f34be56211f327be73d43b00685aebdd5751",
+        "sha256After": "d09d3822035e0338f469335f1451f34be56211f327be73d43b00685aebdd5751"
+      },
+      {
+        "file": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\apps\\cli\\src\\programmatic\\liquid-object-broker-codec.ts",
+        "bytes": 2289,
+        "sha256": "3b84d37f8f2a56103e57644f26ada37eb61b4e140d15cbdd8b42347f5e75a9a3",
+        "sha256After": "3b84d37f8f2a56103e57644f26ada37eb61b4e140d15cbdd8b42347f5e75a9a3"
+      },
+      {
+        "file": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\apps\\cli\\src\\programmatic\\engines\\three-liquid-object-transport.ts",
+        "bytes": 5989,
+        "sha256": "2c06355f1faf770360b197b09fba8afb77141c4449b30f0c52a83156bb19215a",
+        "sha256After": "2c06355f1faf770360b197b09fba8afb77141c4449b30f0c52a83156bb19215a"
+      },
+      {
+        "file": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\apps\\cli\\src\\programmatic\\engines\\three-liquid-object-transport-wire.ts",
+        "bytes": 4680,
+        "sha256": "2a3981fd6a18768af19392eb0f3f412890d95446a95ecfb8f200d14a9cf5f001",
+        "sha256After": "2a3981fd6a18768af19392eb0f3f412890d95446a95ecfb8f200d14a9cf5f001"
+      },
+      {
+        "file": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\apps\\cli\\src\\programmatic\\engines\\three-liquid-object-transport-publication.ts",
+        "bytes": 4456,
+        "sha256": "ceb78db9b6aef6cf04a8d37ac2140f8a0e73fbe095d7d7364500af843d60dfda",
+        "sha256After": "ceb78db9b6aef6cf04a8d37ac2140f8a0e73fbe095d7d7364500af843d60dfda"
+      },
+      {
+        "file": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\apps\\cli\\src\\programmatic\\engines\\three-liquid-object-transport-termination.ts",
+        "bytes": 1014,
+        "sha256": "88d9489bc68d8dc7d5514e05aca3cd52f39dbfc6a1a5f480e9fa372403d093ae",
+        "sha256After": "88d9489bc68d8dc7d5514e05aca3cd52f39dbfc6a1a5f480e9fa372403d093ae"
+      },
+      {
+        "file": "C:/tmps/creator-integration-delivery-20261012-liquid-domain-03/producer/dist/creator-studio/agent/skills/html-video/assets/rocut-stylized/liquid-object-geometry.mjs",
+        "bytes": 12322,
+        "sha256": "cf25afcb2ab8289b0905eaea9edaae851d0e05f1b3fce8b9a7c211e386ebf612",
+        "sha256After": "cf25afcb2ab8289b0905eaea9edaae851d0e05f1b3fce8b9a7c211e386ebf612"
+      },
+      {
+        "file": "C:\\tmps\\liquid-domain-worker-integration-20261012\\api.ts",
+        "bytes": 487,
+        "sha256": "0d4b7052c68d8d52706dde0db40d5c61ee2095ab9e3504b2e40056e451b93e61",
+        "sha256After": "0d4b7052c68d8d52706dde0db40d5c61ee2095ab9e3504b2e40056e451b93e61"
+      },
+      {
+        "file": "C:\\tmps\\liquid-domain-worker-integration-20261012\\run.mjs",
+        "bytes": 13973,
+        "sha256": "af860e2b3f4ef41b77e74184619ffc5297c918e6251bf51b724dc92c2beb9659",
+        "sha256After": "af860e2b3f4ef41b77e74184619ffc5297c918e6251bf51b724dc92c2beb9659"
+      },
+      {
+        "file": "C:\\tmps\\rocut-integration-delivery-20261012-liquid-domain-04\\integration-receipt.json",
+        "bytes": 204235,
+        "sha256": "6b541c39044c147488a3df503208ca5bfd4297d55cf979c3816e103d975aa3bf",
+        "sha256After": "6b541c39044c147488a3df503208ca5bfd4297d55cf979c3816e103d975aa3bf"
+      },
+      {
+        "file": "C:\\tmps\\rocut-integration-delivery-20261012-liquid-domain-04\\runtime\\liquid-object-wasm.mjs",
+        "bytes": 231238,
+        "sha256": "ffdc8f243ad642225c1f20eae0764b942e6e5fdfdc56e140edcd136bc84ae7fd",
+        "sha256After": "ffdc8f243ad642225c1f20eae0764b942e6e5fdfdc56e140edcd136bc84ae7fd"
+      },
+      {
+        "file": "C:\\tmps\\liquid-domain-worker-integration-20261012\\liquid-object-wasm.mjs",
+        "bytes": 231238,
+        "sha256": "ffdc8f243ad642225c1f20eae0764b942e6e5fdfdc56e140edcd136bc84ae7fd",
+        "sha256After": "ffdc8f243ad642225c1f20eae0764b942e6e5fdfdc56e140edcd136bc84ae7fd"
+      },
+      {
+        "file": "C:\\tmps\\rocut-integration-delivery-20261012-liquid-domain-04\\runtime\\liquid-object-worker-entry.mjs",
+        "bytes": 6756,
+        "sha256": "ec8f9c4655eebda649ecbe0ff61b9651d351e612708859175c6f61361b5bb243",
+        "sha256After": "ec8f9c4655eebda649ecbe0ff61b9651d351e612708859175c6f61361b5bb243"
+      },
+      {
+        "file": "C:\\tmps\\liquid-domain-worker-integration-20261012\\liquid-object-worker-entry.mjs",
+        "bytes": 6756,
+        "sha256": "ec8f9c4655eebda649ecbe0ff61b9651d351e612708859175c6f61361b5bb243",
+        "sha256After": "ec8f9c4655eebda649ecbe0ff61b9651d351e612708859175c6f61361b5bb243"
+      },
+      {
+        "file": "C:\\tmps\\rocut-integration-delivery-20261012-liquid-domain-04\\runtime\\opencut_wasm_bg.wasm",
+        "bytes": 15230137,
+        "sha256": "8afce2680db2514a6f0c01e2fc563506dadef2f73ab15dd0ddf47c82d01fea30",
+        "sha256After": "8afce2680db2514a6f0c01e2fc563506dadef2f73ab15dd0ddf47c82d01fea30"
+      },
+      {
+        "file": "C:\\tmps\\liquid-domain-worker-integration-20261012\\opencut_wasm_bg.wasm",
+        "bytes": 15230137,
+        "sha256": "8afce2680db2514a6f0c01e2fc563506dadef2f73ab15dd0ddf47c82d01fea30",
+        "sha256After": "8afce2680db2514a6f0c01e2fc563506dadef2f73ab15dd0ddf47c82d01fea30"
+      },
+      {
+        "file": "C:\\tmps\\liquid-domain-worker-integration-20261012\\api.mjs",
+        "bytes": 42123,
+        "sha256": "17cfcb620d60edf3a14f4c57087cd892f35d74b049154b06c4a81994d345c21b",
+        "sha256After": "17cfcb620d60edf3a14f4c57087cd892f35d74b049154b06c4a81994d345c21b"
+      },
+      {
+        "file": "C:\\tmps\\liquid-domain-worker-integration-20261012\\api-metafile.json",
+        "bytes": 13370,
+        "sha256": "6c2d7d2f534e3d523b212d6c457b0cf66a9c01e38816f72b8621132a6bcb1f8e",
+        "sha256After": "6c2d7d2f534e3d523b212d6c457b0cf66a9c01e38816f72b8621132a6bcb1f8e"
+      },
+      {
+        "file": "C:\\tmps\\three-assets-shared-delivery-20261012\\attempt-02\\toolchain\\node_modules\\three\\package.json",
+        "bytes": 3826,
+        "sha256": "1d5c438acdc1fe5a52fb8ede2e417afd91fec91d22275c40f7b739591b24e4df",
+        "sha256After": "1d5c438acdc1fe5a52fb8ede2e417afd91fec91d22275c40f7b739591b24e4df"
+      },
+      {
+        "file": "C:\\tmps\\three-assets-shared-delivery-20261012\\attempt-02\\toolchain\\node_modules\\three\\build\\three.module.js",
+        "bytes": 650153,
+        "sha256": "bbf5ed13fe4373f5bd38b14ea8e62e9f157327da5638edc6d3863e08b167c9c7",
+        "sha256After": "bbf5ed13fe4373f5bd38b14ea8e62e9f157327da5638edc6d3863e08b167c9c7"
+      },
+      {
+        "file": "C:\\tmps\\three-assets-shared-delivery-20261012\\attempt-02\\toolchain\\node_modules\\three\\build\\three.core.js",
+        "bytes": 1443056,
+        "sha256": "3718df126d69c125362a03340913204470d8c50238605150e57f808840fb7759",
+        "sha256After": "3718df126d69c125362a03340913204470d8c50238605150e57f808840fb7759"
+      }
+    ]
+  },
+  "unchangedPolicy": {
+    "version": 1,
+    "maxControlJsonBytes": 8192,
+    "maxVerticesPerRequest": 100000,
+    "maxRequestJsonBytes": 12000000,
+    "maxResponseJsonBytes": 12000000,
+    "maxRequestEnvelopeBytes": 24004096,
+    "maxResponseEnvelopeBytes": 24004096,
+    "maxMeshesPerFrame": 32,
+    "maxVerticesPerFrame": 200000,
+    "maxRequestsPerFrame": 64,
+    "maxEncodedBytesPerFrame": 48000000,
+    "maxRetainedPayloadBytesPerFrame": 96000000,
+    "maxInFlight": 1,
+    "requestTimeoutMs": 15000,
+    "frameTimeoutMs": 30000,
+    "cleanupTimeoutMs": 5000,
+    "initTimeoutMs": 5000,
+    "terminationTimeoutMs": 5000
+  },
+  "limitations": [
+    "Synthetic CDP binding event/reply delivery is not an actual browser.",
+    "Native CPU and pure Node IPC are not GPU, Host, installed-plugin or final video acceptance.",
+    "Material/normal-map/surface combinations are finite tested cases, not a complete asset matrix.",
+    "Installed-state consumption remains unverified by these receipts.",
+    "No product budget relaxation, production source rewrite, rebuild, commit, or token/editor URL stored in this projection."
+  ],
+  "nativeUnit": {
+    "path": "C:/tmps/liquid-domain-worker-integration-20261012/native-unit-evidence.json",
+    "sha256": "69d2ccdd1cd0d594bb16deb5f22f2b9e649e69433b83e6760866a2a6c317080e",
+    "receipt": {
+      "ok": true,
+      "passed": 12,
+      "failed": 0,
+      "scope": "Existing source-linked native lib test executable rerun only to persist missing evidence; no Cargo/compile or pinned CLI mutation. Actual production modules and cfg(test) unit tests, not WASM/GPU/Host.",
+      "executable": {
+        "path": "C:/tmps/rocut-liquid-domain-native-20261012/target/debug/deps/liquid_domain_native-4746d7a7dc00394c.exe",
+        "sha256": "d744aefa3899922eb53074fe7ba691036126655aa05d791b601c9e3a0545fa0e"
+      },
+      "cli": {
+        "path": "C:/tmps/rocut-liquid-domain-native-20261012/target/debug/liquid-domain-native.exe",
+        "sha256": "1180240454d9e91965d88fbdb57a3ffe86c5f3b3c9c891841a4f6d6d9a553faf",
+        "priorReceipt": "C:/tmps/liquid-static-matrix-20261012/domain-fix-receipt.json",
+        "priorReceiptSha256": "e457168093776912029f39da8e471f2c681f857e5ca3fa68f4d73e0a8c2bf672",
+        "unchanged": true
+      },
+      "sourcePins": [
+        {
+          "path": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/_others/rocut/rust/crates/effects/src/liquid_object.rs",
+          "sha256": "6f22e72c3ffd3f0f365d0baad6c49d1d1ca90b13f6a22005429e70c07b0ca4cf"
+        },
+        {
+          "path": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/_others/rocut/rust/crates/effects/src/liquid_object_tests.rs",
+          "sha256": "4b4016bcf6beebecfb48d1007e9b4eb7db416fbad1c6151a4b83868ef9c63411"
+        },
+        {
+          "path": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/_others/rocut/rust/crates/effects/src/liquid_object_domain_tests.rs",
+          "sha256": "a493d24fc973c47f6b8b26dd38bbe07170b8d36e41a68906a4f747f71a34062c"
+        },
+        {
+          "path": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/_others/rocut/rust/crates/editor-api/src/liquid_object_params.rs",
+          "sha256": "0adf81eebce8f457e85d9fc4cc60eee1e923367d99d0023dc040b657a50f47c4"
+        },
+        {
+          "path": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/_others/rocut/rust/crates/editor-api/src/liquid_object_params_tests.rs",
+          "sha256": "5fa2425e531bf0687f654dcb6e836109885e786cbad09d4eafb14777cb0ed66c"
+        }
+      ],
+      "sourcePinComparison": "All overlap with prior source-linked CLI receipt verified; unchanged inputs.",
+      "outputLog": {
+        "path": "C:/tmps/liquid-domain-worker-integration-20261012/native-unit-evidence.log",
+        "sha256": "387df09d01e92addb7daa0cfc33d3ff5615b0229d2c60ff796f381ff37449f26"
+      },
+      "noBuildPerformed": true
+    }
+  }
+}

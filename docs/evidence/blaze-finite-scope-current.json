@@ -1,0 +1,105 @@
+{
+  "version": 1,
+  "date": "2026-10-12",
+  "status": "FINITE_CURRENT_AUTHORED_STATIC_EXPLICIT444_VIDEO_AND_NATIVE_PNG_SUBSETS_PASSED",
+  "ledgerRecommendation": "V_FOR_BOUNDED_REGISTERED_SUBSET_ONLY",
+  "finiteEffectVEligible": true,
+  "nativePngSubsetAccepted": true,
+  "videoMasterRepairProven": false,
+  "definition": {
+    "anchor": "Creator/docs/canvas-ui-director-rocut-development-plan.md:298",
+    "V": "A registered accepted video subset with explicit semantic differences; only the row's evidenced bounded subset is accepted, not upstream DOM, every input or installed state.",
+    "N": "The row's scope review/acceptance is not complete; partial implementation and verification may already exist."
+  },
+  "historicalArtifactRetentionAudit": {
+    "command": "node script/audit-blaze-finite-scope.mjs",
+    "tests": "node --test script/audit-blaze-finite-scope.test.mjs",
+    "testsPassed": 6,
+    "testsFailed": 0,
+    "directExistingExecutedArtifactsRehashed": 7,
+    "directExistingExecutedArtifactsMatching": 7,
+    "directHistoricalArtifactsMissing": 28,
+    "changedExistingDirectArtifacts": 0,
+    "qualification": "This command reviews historical retention and the initial seven live references only. It still returns N for missing historical author/video artifacts; the separate newly executed current acceptance below is not claimed covered by this historical audit."
+  },
+  "requirements": [
+    {
+      "requirement": "Real author edit/history/save/reload/Host reopen on a persisted project",
+      "status": "HISTORICAL_SUMMARY_RETAINED_EXECUTED_AUTHOR_ARTIFACTS_MISSING",
+      "historicalSummary": "blaze-ui-calibration.json records10 actual textbox edits and full clip undo/redo, reload and Host reopen; blaze-editor-export.json records revision31 and saved project bytes.",
+      "directArtifactCounts": { "uiCalibrationMissing": 6, "editorExportMissing": 5 },
+      "currentPartial": "C:/tmps/blaze-host-readonly-resume-Nio8gD/receipt.json rehashes exactly and proves bounded existing5clip project read-only reopen; it does not reproduce the missing mounted author/history execution.",
+      "acceptedForFiniteVideoV": false
+    },
+    {
+      "requirement": "Normal finite authored-project video output and independent decode",
+      "status": "HISTORICAL_SIX_JOB_SUMMARY_RETAINED_EXECUTED_OUTPUTS_MISSING",
+      "historicalSummary": "blaze-editor-export.json records6 distinct jobs, static/animated/disabled default420 and explicit444,6frames each,192x128/30fps; original meanRGBA10/activeRGB15/minimumActive64/PTS.0011 gates, no-effect/wrong-parameter/seed/repeated-first controls.",
+      "directArtifactCounts": { "editorExportMissing": 5, "pipelineMissing": 7 },
+      "specificMissing": [
+        "C:/tmps/rocut-stylized-f6XU4z/blaze-editor-export-WASVYH/evidence.json",
+        "C:/tmps/blaze-ui-export-audit-1jb8Gf/executed-HIvHvR/handoff.json",
+        "C:/tmps/rocut-stylized-f6XU4z/blaze-pipeline-default-nzlQYN/production.webm",
+        "C:/tmps/rocut-stylized-f6XU4z/blaze-pipeline-444-NkTge1/production.webm"
+      ],
+      "acceptedForFiniteVideoV": false
+    },
+    {
+      "requirement": "Native single-effect lossless PNG and ownership cancellation",
+      "status": "PASSED_BOUNDED_NORMAL059AF_RUNTIME",
+      "receipt": { "path": "C:/tmps/blaze-native-staged-H8GbJG/receipt.json", "sha256": "95a4b2d4b1af23b37b1a277a23221fc835f555b83750845b0effab9bebee6c79" },
+      "decode": { "path": "C:/tmps/blaze-native-staged-H8GbJG/png-decode-receipt.json", "sha256": "da69264ea87edd087dc22ed9fd6bb4ba4c7b02e6863b0bdab8489e1cdf9c0297" },
+      "qualification": "Real EffectPreviewService.exportEffectPng and normal BlazeOutputOwner; exact frozen96x256 RGBA/PNG plus same-turn cancellation and disposal. Not an authored video export; single-effect64MiB budget remains."
+    },
+    {
+      "requirement": "Normal typed final render graph PNG, real Save and normal dimensions",
+      "status": "PASSED_BOUNDED_NATIVE_OUTPUT_SUBSET",
+      "canonicalEvidence": "native-frame-png-current.json",
+      "wasmSha256": "1b6671bdecfe6d6ad488a4bdf4583dc4d06a81229e2ce0aeffd274660c27a9f2",
+      "receipt": { "path": "C:/tmps/wholegraph-png-probe-Z4issm/receipt.json", "sha256": "6d613dab7f014e025a8549746a23f18bb7612684d863cd64ed127ce4404c68b4" },
+      "dimensionReceipt": { "path": "C:/tmps/wholegraph-png-probe-vDgjP8/receipt.json", "sha256": "0f58478158c8bff539a63c570866e6f773d224064bad3dbb5a0cacbd852900c6" },
+      "coverage": "Original frozen96x256 transparent full-graph Blaze metrics0 with unchanged1.5straight gate; actual Save/ImageNode/Blaze uses existing blackopaque clear and independently composited original oracle, metrics0.720p/1080p/4K simple outputs decode exactly; nestedgroup/cancel/close-drain controls pass.",
+      "qualification": "Native graph supports straight alpha; default UI Save is not claimed transparent.3693 zero-alpha hiddenRGB bytes differ due existing graph blend semantics. Actual Save host/session inputs are scoped doubles, not mounted UI; Copy uses same createSnapshot but clipboard permission is untested. This PNG evidence does not establish video-master repair."
+    }
+  ],
+  "historicalBoundaries": {
+    "originalCanvasRawRemainsRed": { "straightMean": 1.6610118276784944, "originalGate": 1.5, "reclassified": false, "rerun": false },
+    "gpuHostDirectArtifactsMissing": 10,
+    "missingArtifactsNotRestored": true,
+    "historicalUnresolvedVsSafeLineageDiscrepancyPreserved": true,
+    "oldVideoSummaryNotRelabeledCurrentTypedRuntime": true
+  },
+  "currentAuthoredVideoAcceptance": {
+    "scope": "One new static Blaze image clip on current formal Surface/runtime; actual mounted Amount .75 to .9 edit, attached full-clip undo/redo, other clips/tracks unchanged, save/reload/Host reopen with exact authored bytes; one normal very_high explicit444 WebM VP9 six-frame export.",
+    "failedRunnerReceipt": { "path": "C:/tmps/blaze-current-author-video-20261012/attempt-3DonPJ/receipt.json", "sha256": "25e1905c8128ee5ba865fa59f85aadca1dfdaf24f18c0baae2b47a4ac1b11328" },
+    "independentDecodeReceipt": { "path": "C:/tmps/blaze-current-author-video-20261012/attempt-3DonPJ/current-444-static-corrected-descriptor-independent-decode.json", "sha256": "3c975247228f963dd5c4c03ac1337c2e0d34897f366906308d58a0a808cc0cc7" },
+    "video": { "path": "C:/tmps/blaze-current-author-video-20261012/attempt-3DonPJ/current.webm", "sha256": "3e5800a8cfc3b717c81b7bd21c24457fefd1ca652d712187be81baeadf37c67c" },
+    "authoredSnapshot": { "path": "C:/tmps/blaze-current-author-video-20261012/attempt-3DonPJ/authored-snapshot.json", "sha256": "a389cbf22e348d8dc598fe0d9ffd8fdef8e0e842fbbbb35427f68faaa0e083cf" },
+    "persistedProjectSha256BeforeAndAfterExport": "5eb3e99a50b3bebe3f4970d516bc410621d1d89de605dba3dbd5dd1276a3bd68",
+    "decode": { "frames": 6, "dimensions": "192x128", "fps": 30, "durationSeconds": 0.2, "profile": "Profile 1", "pixelFormat": "yuv444p", "originalGatesUnchanged": true, "meanRgbaRange": [0.6258646647135416, 0.6752522786458334], "activeRgbRange": [0.9076451485629305, 0.971463982346362], "allFramesPass": true, "ptsPass": true, "repeatedFirstRejectedFrames": [4, 5] },
+    "qualification": "Original runner preserved failed because spec.chroma was omitted while production options.videoChroma was 444; decoder correctly assumed420. Corrected descriptor-only independent decode reused exact existing media/reference bytes, no export rerun or gate change. Persisted authored project bytes verified identical after cleanup; live post-export snapshot equality assertion was skipped and is not claimed. Original cloned source project unchanged, browser/Host closed. Historical six jobs remain missing.",
+    "acceptedForFiniteVideoV": true
+  },
+  "currentAcceptanceRootReview": {
+    "directCanonicalArtifactPinsRehashed": 8,
+    "allDirectHashesMatch": true,
+    "actualAuthorReceiptFlagsChecked": true,
+    "allSixIndependentDecodeOriginalGatesChecked": true,
+    "originalFrozenInputsUnchangedBetweenFailedAndCorrectedDecode": true,
+    "persistedAuthoredProjectAfterExportSha256Checked": true,
+    "originalProjectUnchangedAndCleanupFlagsChecked": true,
+    "livePostExportSnapshotClaim": false,
+    "fixture": {
+      "path": "C:/tmps/blaze-current-author-video-20261012/run.mjs",
+      "sha256": "2642ecd0d9a6763eff909ae4fc6e49902c557178680cece692426b82637cd344"
+    }
+  },
+  "conclusion": "A newly executed bounded current authored static explicit444 video subset now meets the finite video-subset V definition together with the accepted native PNG subset. This does not restore missing historical jobs, accept default420/animated/disabled variants, or prove alpha-video master repair.",
+  "executedFiniteAcceptanceOnly": {
+    "existingReusableProject": "C:/tmps/blaze-durable-host-v2-rMm5rv/project",
+    "preserveOriginal": true,
+    "completed": "Cloned to one new dedicated current-Surface project; real author edit with undo/redo, save/reopen; one short video job and independent original-gate decode. No old six-matrix,4K/native-PNG rerun or installation expansion."
+  },
+  "notClaimed": ["Video alpha master repair", "Restored missing historical artifacts", "All Blaze inputs/codecs", "Installed/Electron/hardware equivalence", "Whole animation curve-domain safety"],
+  "cleanup": { "oneAuthorizedGpuVideoJobCompletedAndClosed": true, "noNewBuild": true, "noInstallCommitPush": true, "noSharedDependencyWrites": true, "noRootLedgerOrPlanEdits": true }
+}

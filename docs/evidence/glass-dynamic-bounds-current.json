@@ -1,0 +1,847 @@
+{
+  "version": 1,
+  "status": "passed-finite-current-444",
+  "scope": "Two real closed GLBs with negative parent/node scale, one skin and one morph; existing production Glass animated vertex bounds/backdrop fix verified by analytic CPU and actual ordinary production frame driver; VP9 WebM very_high default444 encoding gap fixed and accepted in two saved projects, 26 decoded frames under unchanged gates. No shader substitution.",
+  "runtime": {
+    "path": "C:/tmps/rocut-integration-delivery-20261012-liquid-domain-04/runtime",
+    "producerReceipt": "C:/tmps/rocut-integration-delivery-20261012-liquid-domain-04/integration-receipt.json",
+    "producerReceiptSha256": "6b541c39044c147488a3df503208ca5bfd4297d55cf979c3816e103d975aa3bf",
+    "pinsVerifiedBeforeAndAfter": 364,
+    "criticalPins": [
+      {
+        "path": "C:\\tmps\\rocut-integration-delivery-20261012-liquid-domain-04\\runtime\\opencut_wasm_bg.wasm",
+        "sha256": "8afce2680db2514a6f0c01e2fc563506dadef2f73ab15dd0ddf47c82d01fea30"
+      },
+      {
+        "path": "C:\\tmps\\rocut-integration-delivery-20261012-liquid-domain-04\\runtime\\rocut.mjs",
+        "sha256": "22b495d2f25d6bb35b7232c4eb656487a060403cfb7276f5b2809c0497c5040e"
+      },
+      {
+        "path": "C:\\tmps\\rocut-integration-delivery-20261012-liquid-domain-04\\runtime\\surface\\assets\\opencut_wasm_bg-DEtUTTGM.wasm",
+        "sha256": "8afce2680db2514a6f0c01e2fc563506dadef2f73ab15dd0ddf47c82d01fea30"
+      },
+      {
+        "path": "C:\\tmps\\rocut-integration-delivery-20261012-liquid-domain-04\\runtime\\surface\\assets\\surface-react-identity-probe-BNIQLzdx.css",
+        "sha256": "d312c7b94c84eab40234d9a03cd2003fac32652fab149151a670ff6be98c952e"
+      },
+      {
+        "path": "C:\\tmps\\rocut-integration-delivery-20261012-liquid-domain-04\\runtime\\surface\\assets\\surface-react-identity-probe-S8zpDyXI.js",
+        "sha256": "74a9ffe870ef0e729d6252a9fbaa99bcb48a44f966e06d7be3554e120d01aa06"
+      }
+    ]
+  },
+  "receipts": [
+    {
+      "path": "C:/tmps/glass-dynamic-bounds-20261012/contract.json",
+      "sha256": "63ff55c0fb613045924be86a985b542b8bd5066836de6e8453e54b33580b1fbd"
+    },
+    {
+      "path": "C:/tmps/glass-dynamic-bounds-20261012/cpu-receipt.json",
+      "sha256": "df05e4c5974c486c7312277c184402b6b46d60dd9d2805e9ec5a4fc7c1241354"
+    },
+    {
+      "path": "C:/tmps/glass-dynamic-bounds-20261012/gpu-receipt.json",
+      "sha256": "62b3c1d0992f4d654fd816f34c4ca486786fe016eb21bf8d96a31ca8867699b9"
+    },
+    {
+      "path": "C:/tmps/glass-dynamic-bounds-20261012/host-preparation-receipt.json",
+      "sha256": "a20d5710474b6f96139585106f1d8d31340e0bf7a06d6802ed6d2e788772ea23"
+    },
+    {
+      "path": "C:/tmps/glass-dynamic-bounds-20261012/baseline-444.json",
+      "sha256": "34772856b2fc169c516a903ccb9feb1b07cfd4e266879300bbab26e5c7a7c232"
+    },
+    {
+      "path": "C:/tmps/glass-dynamic-bounds-20261012/video-420-failure-receipt.json",
+      "sha256": "a9945bc074339e75a9f21342efb98e53dd1a0f3ffd1d52bbfd65894c30f72abe"
+    },
+    {
+      "path": "C:/tmps/glass-dynamic-bounds-20261012/video-444-failure-detail.json",
+      "sha256": "61a27333433b6af7d5e7f6519cd9511a14d0c248ab96218c95a6752c1abb7199"
+    },
+    {
+      "path": "C:/tmps/glass-dynamic-bounds-20261012/video-444-policy-diagnostic.json",
+      "sha256": "cf9a6342ca73a1bc01e8342e9dbeed6f8b3b09281b4d396ccb64cd8ded313e7e"
+    },
+    {
+      "path": "C:/tmps/glass-dynamic-bounds-20261012/one-frame2-observation-attempt02/receipt.json",
+      "sha256": "5fc1291becfddfc2759d9c8007e0c4622970c547aed16160c17c48b645695afb"
+    },
+    {
+      "path": "C:/tmps/glass-dynamic-bounds-20261012/unified444-supplement/video-444-receipt.json",
+      "sha256": "f9f177aee3c0de380cb6cd379a9d7b069f416260f0a1248afc8de4e72f5e2926"
+    },
+    {
+      "path": "C:/tmps/glass-dynamic-bounds-20261012/unified444-supplement/closure-audit.json",
+      "sha256": "44807d718fbb1a47fd12ee204ea0194709e3b4bdb08c0f560c90e17d105cfab0"
+    }
+  ],
+  "cpu": {
+    "ok": true,
+    "gates": {
+      "boundsMaxAbsoluteError": 0.000001,
+      "backdropMaxAbsoluteError": 0.000001,
+      "borrowedCacheIdentityAndBytesExact": true,
+      "leaseReleaseOnce": true
+    },
+    "projects": [
+      {
+        "id": "skin-negative-parent",
+        "seekTimes": [
+          0,
+          1,
+          0.25,
+          0.75,
+          0.5,
+          0,
+          1
+        ],
+        "cacheUnchanged": true,
+        "restoredMaterial": true,
+        "instanceReleasedOnce": true
+      },
+      {
+        "id": "morph-negative-node",
+        "seekTimes": [
+          0,
+          1,
+          0.25,
+          0.75,
+          0.5,
+          0,
+          1
+        ],
+        "cacheUnchanged": true,
+        "restoredMaterial": true,
+        "instanceReleasedOnce": true
+      }
+    ]
+  },
+  "gpu": {
+    "ok": true,
+    "reference": "Independent analytic backdrop placement, identical production physical shader/material and actual loaded models; stale rest-time backdrop and hidden-surface negative controls.",
+    "projects": [
+      {
+        "id": "skin-negative-parent",
+        "positive": [
+          {
+            "index": 0,
+            "time": 0,
+            "comparison": {
+              "mean": 0,
+              "max": 0,
+              "changed": 0,
+              "pixels": 24576
+            },
+            "pass": true
+          },
+          {
+            "index": 3,
+            "time": 0.25,
+            "comparison": {
+              "mean": 0,
+              "max": 0,
+              "changed": 0,
+              "pixels": 24576
+            },
+            "pass": true
+          },
+          {
+            "index": 6,
+            "time": 0.5,
+            "comparison": {
+              "mean": 0,
+              "max": 0,
+              "changed": 0,
+              "pixels": 24576
+            },
+            "pass": true
+          },
+          {
+            "index": 9,
+            "time": 0.75,
+            "comparison": {
+              "mean": 0,
+              "max": 0,
+              "changed": 0,
+              "pixels": 24576
+            },
+            "pass": true
+          },
+          {
+            "index": 12,
+            "time": 1,
+            "comparison": {
+              "mean": 0,
+              "max": 0,
+              "changed": 0,
+              "pixels": 24576
+            },
+            "pass": true
+          }
+        ],
+        "staleRestTimeBackdrop": {
+          "mean": 18.653846153846153,
+          "max": 101,
+          "changed": 520,
+          "pixels": 520
+        },
+        "surfaceVisibility": {
+          "mean": 20.002564102564104,
+          "max": 101,
+          "changed": 520,
+          "pixels": 520
+        },
+        "freshSceneRepeat": [
+          {
+            "index": 12,
+            "comparison": {
+              "mean": 0,
+              "max": 0,
+              "changed": 0,
+              "pixels": 24576
+            },
+            "pass": true
+          },
+          {
+            "index": 0,
+            "comparison": {
+              "mean": 0,
+              "max": 0,
+              "changed": 0,
+              "pixels": 24576
+            },
+            "pass": true
+          }
+        ]
+      },
+      {
+        "id": "morph-negative-node",
+        "positive": [
+          {
+            "index": 0,
+            "time": 0,
+            "comparison": {
+              "mean": 0,
+              "max": 0,
+              "changed": 0,
+              "pixels": 24576
+            },
+            "pass": true
+          },
+          {
+            "index": 3,
+            "time": 0.25,
+            "comparison": {
+              "mean": 0,
+              "max": 0,
+              "changed": 0,
+              "pixels": 24576
+            },
+            "pass": true
+          },
+          {
+            "index": 6,
+            "time": 0.5,
+            "comparison": {
+              "mean": 0,
+              "max": 0,
+              "changed": 0,
+              "pixels": 24576
+            },
+            "pass": true
+          },
+          {
+            "index": 9,
+            "time": 0.75,
+            "comparison": {
+              "mean": 0,
+              "max": 0,
+              "changed": 0,
+              "pixels": 24576
+            },
+            "pass": true
+          },
+          {
+            "index": 12,
+            "time": 1,
+            "comparison": {
+              "mean": 0,
+              "max": 0,
+              "changed": 0,
+              "pixels": 24576
+            },
+            "pass": true
+          }
+        ],
+        "staleRestTimeBackdrop": {
+          "mean": 48.21371882086168,
+          "max": 207,
+          "changed": 588,
+          "pixels": 588
+        },
+        "surfaceVisibility": {
+          "mean": 25.028344671201815,
+          "max": 130,
+          "changed": 588,
+          "pixels": 588
+        },
+        "freshSceneRepeat": [
+          {
+            "index": 12,
+            "comparison": {
+              "mean": 0,
+              "max": 0,
+              "changed": 0,
+              "pixels": 24576
+            },
+            "pass": true
+          },
+          {
+            "index": 0,
+            "comparison": {
+              "mean": 0,
+              "max": 0,
+              "changed": 0,
+              "pixels": 24576
+            },
+            "pass": true
+          }
+        ]
+      }
+    ],
+    "boundary": "Ordinary frame driver creates a fresh scene per capture; same-instance unordered seeks are CPU-only. Stale control models rest-time placement, not an exact historical GLTF cached envelope. No direct gl.getError measurement claim."
+  },
+  "encodingDiagnosis": {
+    "preencoderFrame2Sha256": "cbe978f90157547b79145c3d830e8d86fe68dbd8be078541c378c58d8ebaa844",
+    "preencoderVersusOriginalFreshReference": {
+      "rgbMean": 0,
+      "max": 0
+    },
+    "originalDecodedError": {
+      "rgbMean": 4.999620225694445,
+      "max": 114
+    },
+    "reproducedDecodedError": {
+      "rgbMean": 4.999620225694445,
+      "max": 114
+    },
+    "reproducedVideoSha256": "b0c6b66a951b3f67b20fde2beaa8ae9d20b90c2165b47e78074a3f09f6e75918",
+    "originalActualBitrate": 148000,
+    "originalNativeConfiguration": {
+      "codec": "vp09.01.10.08.03.01.13.01.01",
+      "width": 192,
+      "height": 128,
+      "displayWidth": 192,
+      "displayHeight": 128,
+      "bitrate": 148000,
+      "alpha": "discard",
+      "framerate": 12,
+      "hardwareAcceleration": "prefer-software"
+    },
+    "conclusion": "Actual original source Canvas frame2 matched retained fresh reference exactly; old failed444 video SHA was reproduced. Mismatch lies after encoder-input RGB boundary, not Glass render/animation/bounds. New defaultq8 selection was then validated empirically, not presumed from the policy."
+  },
+  "acceptance": {
+    "width": 192,
+    "height": 128,
+    "frameRate": {
+      "numerator": 12,
+      "denominator": 1
+    },
+    "projects": 2,
+    "totalDecodedFrames": 26,
+    "fullRgbMeanLimit": 3,
+    "activeProjectedBoundsRgbMeanLimit": 6,
+    "ptsErrorLimitSeconds": 0.001,
+    "allFramesPassed": true
+  },
+  "projects": [
+    {
+      "id": "skin-negative-parent",
+      "fixture": {
+        "id": "skin-negative-parent",
+        "kind": "skin",
+        "scale": [
+          -1.1,
+          0.8,
+          1
+        ],
+        "delta": [
+          0,
+          0,
+          -6
+        ],
+        "path": "C:/tmps/glass-dynamic-bounds-20261012/skin-negative-parent.glb",
+        "byteLength": 3404,
+        "sha256": "3415d6649ff961c5325534dac572d3a4ded5a0214abaf083857d8a955b46c102"
+      },
+      "originalPreparedProjectSha256": "c6779098a52406f7d8137e76478d8b32dbea02917300c0ea5de11d64b104dade",
+      "post420BaselineSha256": "92bacb4d4690a88602cbc720eb27b95b6fbec79f49dec68b65a7c9f4c9a73d9a",
+      "projectAfter": {
+        "sha256": "92bacb4d4690a88602cbc720eb27b95b6fbec79f49dec68b65a7c9f4c9a73d9a",
+        "sameBaselineBytes": true,
+        "originalSemanticBytesRecovered": true
+      },
+      "source": {
+        "path": "C:/tmps/glass-dynamic-bounds-20261012/skin-negative-parent/production-source.json",
+        "sha256": "6ab625f9dbdc506e132b68315a43028647cb979e98eee0e1f793192b157d60b6",
+        "productionSceneSha256": "7be8a889563a09d92439f100e9f9ed719b3ffb03b47aa52812c6d204251fe9d9"
+      },
+      "projectSemanticsAndRevisionUnchanged": true,
+      "job": {
+        "id": "1b7ce0afd7c78ba2",
+        "status": "completed",
+        "options": {
+          "format": "webm",
+          "quality": "very_high",
+          "videoChroma": "444",
+          "includeAudio": false,
+          "range": {
+            "startTime": 0,
+            "endTime": 130000
+          }
+        }
+      },
+      "video": {
+        "path": "C:/tmps/glass-dynamic-bounds-20261012/unified444-supplement/skin-negative-parent/production-444.webm",
+        "bytes": 182802,
+        "sha256": "c3e53cc9d30e283a84db88eca2a728e31526b1a57e3978081f2afe9b086480a5"
+      },
+      "decoded": {
+        "path": "C:/tmps/glass-dynamic-bounds-20261012/unified444-supplement/skin-negative-parent/decoded-444.rgba",
+        "sha256": "bdfb86cf2b237b4b71f4640a41c8a4968ec84bcf5cd3f1ca87e1d743cdab58a4",
+        "frames": 13,
+        "format": "yuv444p"
+      },
+      "policy": {
+        "request": {
+          "codec": "vp9",
+          "format": "webm",
+          "quality": "very_high",
+          "frameRate": {
+            "numerator": 12,
+            "denominator": 1
+          },
+          "width": 192,
+          "height": 128,
+          "videoChroma": "444"
+        },
+        "response": {
+          "bitrate": 148000,
+          "default": true,
+          "fullCodecString": "vp09.01.10.08.03.01.13.01.01",
+          "keyFrameIntervalFrames": 24,
+          "kind": "vp9Quantizer",
+          "nativeConfig": {
+            "alpha": "discard",
+            "bitrate": 148000,
+            "bitrateMode": "quantizer",
+            "codec": "vp09.01.10.08.03.01.13.01.01",
+            "displayHeight": 128,
+            "displayWidth": 192,
+            "framerate": 12,
+            "hardwareAcceleration": "prefer-software",
+            "height": 128,
+            "latencyMode": "quality",
+            "width": 192
+          },
+          "quantizer": 8
+        },
+        "nativeConfiguration": {
+          "codec": "vp09.01.10.08.03.01.13.01.01",
+          "width": 192,
+          "height": 128,
+          "displayWidth": 192,
+          "displayHeight": 128,
+          "bitrate": 148000,
+          "framerate": 12,
+          "alpha": "discard",
+          "bitrateMode": "quantizer",
+          "latencyMode": "quality",
+          "hardwareAcceleration": "prefer-software"
+        },
+        "encodeCount": 13,
+        "allEncodeQuantizers": 8,
+        "observation": {
+          "path": "C:/tmps/glass-dynamic-bounds-20261012/unified444-supplement/skin-negative-parent/export-job.json",
+          "sha256": "287c7da0aa9d8772180e0616b00efa6a83e49a3983a3bc2c41c77ca1eb040f3d"
+        }
+      },
+      "statistics": {
+        "id": "skin-negative-parent",
+        "job": "1b7ce0afd7c78ba2",
+        "frames": 13,
+        "maxFull": 0.8932427300347222,
+        "maxROI": 1.1525641025641025,
+        "maxPtsError": 0.00033333333333340764,
+        "semanticAndRevisionUnchanged": true,
+        "q8EncodeCount": 13
+      },
+      "matchingPriorReferenceCount": 7,
+      "frames": [
+        {
+          "index": 0,
+          "fullMean": 0.7343885633680556,
+          "activeMean": 0.7528935185185185,
+          "pts": 0,
+          "referenceSha256": "27fbf23b932afeaf564589f4b69c29042c44db1aefc2917322bbb310f5666565"
+        },
+        {
+          "index": 1,
+          "fullMean": 0.7888997395833334,
+          "activeMean": 0.8567708333333334,
+          "pts": 0.083,
+          "referenceSha256": "339e33886df94e2d839a94658bcb4c294e277fe3d64062a3ca62568965d712aa"
+        },
+        {
+          "index": 2,
+          "fullMean": 0.7477484809027778,
+          "activeMean": 0.9523809523809523,
+          "pts": 0.167,
+          "referenceSha256": "f3afcdc00ce287fa2c0e3c6a01ec3eb76bf97bbeed477958c8d3603985b58db0"
+        },
+        {
+          "index": 3,
+          "fullMean": 0.8096110026041666,
+          "activeMean": 0.8902777777777777,
+          "pts": 0.25,
+          "referenceSha256": "b53ec2ce3685a093908f3281b93eddb1aa3ee37f1d22b244e40ba51352ea107c"
+        },
+        {
+          "index": 4,
+          "fullMean": 0.8095024956597222,
+          "activeMean": 0.9739974937343359,
+          "pts": 0.333,
+          "referenceSha256": "fd64d1c3a713555d3dc5371ea26bd4851df3b873a144c9f70d2cf7fdf9a6ea66"
+        },
+        {
+          "index": 5,
+          "fullMean": 0.7746853298611112,
+          "activeMean": 0.9163105413105413,
+          "pts": 0.417,
+          "referenceSha256": "9615ed1eea49327bfa7da6fe3f819c314bb7086686413704e8da25a0628f3511"
+        },
+        {
+          "index": 6,
+          "fullMean": 0.7986111111111112,
+          "activeMean": 1.0245098039215685,
+          "pts": 0.5,
+          "referenceSha256": "9988fecd464d6b39c6ffa6dae160f3b3c9a4df888ed0398c8fd5ada7d38f0727"
+        },
+        {
+          "index": 7,
+          "fullMean": 0.8932427300347222,
+          "activeMean": 0.9496527777777778,
+          "pts": 0.583,
+          "referenceSha256": "84020793a7dfbbc4a862306fc1fee11e11d6b3d9df56a40c60ca14b4ff9bf25f"
+        },
+        {
+          "index": 8,
+          "fullMean": 0.8363037109375,
+          "activeMean": 0.9962121212121212,
+          "pts": 0.667,
+          "referenceSha256": "34eef4967a43560b1c1d93de2a1e66fdd8caf6c2adbaf2f2f08a75197f31b7f6"
+        },
+        {
+          "index": 9,
+          "fullMean": 0.8305935329861112,
+          "activeMean": 1.0166666666666666,
+          "pts": 0.75,
+          "referenceSha256": "2838c9c3fe75fbf27c91418fda45c8f26f04a65f14bad64a21d2b830a51405a3"
+        },
+        {
+          "index": 10,
+          "fullMean": 0.8463134765625,
+          "activeMean": 1.0281385281385282,
+          "pts": 0.833,
+          "referenceSha256": "a5bcf15b67c0edbdad731876ef78eab4ce09b5d3a936077345211d30ab065953"
+        },
+        {
+          "index": 11,
+          "fullMean": 0.8041449652777778,
+          "activeMean": 1.0904761904761904,
+          "pts": 0.917,
+          "referenceSha256": "74d1d83792e1c684962caf8716076c5f5b1e7d94e9876ef8a85a092088bfabc8"
+        },
+        {
+          "index": 12,
+          "fullMean": 0.8075358072916666,
+          "activeMean": 1.1525641025641025,
+          "pts": 1,
+          "referenceSha256": "cc2927b6680310e57056f43b08d86bc5a4d586a6890d33db3911f39b2050291a"
+        }
+      ]
+    },
+    {
+      "id": "morph-negative-node",
+      "fixture": {
+        "id": "morph-negative-node",
+        "kind": "morph",
+        "scale": [
+          -0.9,
+          1.2,
+          1
+        ],
+        "delta": [
+          0.5,
+          0,
+          -6
+        ],
+        "path": "C:/tmps/glass-dynamic-bounds-20261012/morph-negative-node.glb",
+        "byteLength": 2584,
+        "sha256": "f62041c058bc44584faba9d091b543930af9211f88b32b45fe3a741ea1841598"
+      },
+      "originalPreparedProjectSha256": "47025bbda2c391041189292698ae5c48f556bfa9489902c23c642655c3d29035",
+      "post420BaselineSha256": "47025bbda2c391041189292698ae5c48f556bfa9489902c23c642655c3d29035",
+      "projectAfter": {
+        "sha256": "5c1a8dac7791210633fa5571aed48eff778823f147f357fe679748cc3468b17c",
+        "sameBaselineBytes": false,
+        "originalSemanticBytesRecovered": true
+      },
+      "source": {
+        "path": "C:/tmps/glass-dynamic-bounds-20261012/morph-negative-node/production-source.json",
+        "sha256": "1e90b631d23c1fb4ada0138ce9a4d2a08631b8f694d390ff72dcaaf38e7e8668",
+        "productionSceneSha256": "7be8a889563a09d92439f100e9f9ed719b3ffb03b47aa52812c6d204251fe9d9"
+      },
+      "projectSemanticsAndRevisionUnchanged": true,
+      "job": {
+        "id": "609607d68e0a8088",
+        "status": "completed",
+        "options": {
+          "format": "webm",
+          "quality": "very_high",
+          "videoChroma": "444",
+          "includeAudio": false,
+          "range": {
+            "startTime": 0,
+            "endTime": 130000
+          }
+        }
+      },
+      "video": {
+        "path": "C:/tmps/glass-dynamic-bounds-20261012/unified444-supplement/morph-negative-node/production-444.webm",
+        "bytes": 181069,
+        "sha256": "53dad2271c381ae17fd36b2035c63b14c1ac4fbe61025fb2658d55f94969a69a"
+      },
+      "decoded": {
+        "path": "C:/tmps/glass-dynamic-bounds-20261012/unified444-supplement/morph-negative-node/decoded-444.rgba",
+        "sha256": "abad1aa2a60de05f4ae0892d34a2b6fb4658664b9cae08a820b5b2c0290a836f",
+        "frames": 13,
+        "format": "yuv444p"
+      },
+      "policy": {
+        "request": {
+          "codec": "vp9",
+          "format": "webm",
+          "quality": "very_high",
+          "frameRate": {
+            "numerator": 12,
+            "denominator": 1
+          },
+          "width": 192,
+          "height": 128,
+          "videoChroma": "444"
+        },
+        "response": {
+          "bitrate": 148000,
+          "default": true,
+          "fullCodecString": "vp09.01.10.08.03.01.13.01.01",
+          "keyFrameIntervalFrames": 24,
+          "kind": "vp9Quantizer",
+          "nativeConfig": {
+            "alpha": "discard",
+            "bitrate": 148000,
+            "bitrateMode": "quantizer",
+            "codec": "vp09.01.10.08.03.01.13.01.01",
+            "displayHeight": 128,
+            "displayWidth": 192,
+            "framerate": 12,
+            "hardwareAcceleration": "prefer-software",
+            "height": 128,
+            "latencyMode": "quality",
+            "width": 192
+          },
+          "quantizer": 8
+        },
+        "nativeConfiguration": {
+          "codec": "vp09.01.10.08.03.01.13.01.01",
+          "width": 192,
+          "height": 128,
+          "displayWidth": 192,
+          "displayHeight": 128,
+          "bitrate": 148000,
+          "framerate": 12,
+          "alpha": "discard",
+          "bitrateMode": "quantizer",
+          "latencyMode": "quality",
+          "hardwareAcceleration": "prefer-software"
+        },
+        "encodeCount": 13,
+        "allEncodeQuantizers": 8,
+        "observation": {
+          "path": "C:/tmps/glass-dynamic-bounds-20261012/unified444-supplement/morph-negative-node/export-job.json",
+          "sha256": "d6e08033028da8b5b15d6a27c5359e64a386054a6605624547c53e8aa1769471"
+        }
+      },
+      "statistics": {
+        "id": "morph-negative-node",
+        "job": "609607d68e0a8088",
+        "frames": 13,
+        "maxFull": 0.8747016059027778,
+        "maxROI": 1.0533333333333332,
+        "maxPtsError": 0.00033333333333340764,
+        "semanticAndRevisionUnchanged": true,
+        "q8EncodeCount": 13
+      },
+      "matchingPriorReferenceCount": 5,
+      "frames": [
+        {
+          "index": 0,
+          "fullMean": 0.7130533854166666,
+          "activeMean": 0.7721153846153846,
+          "pts": 0,
+          "referenceSha256": "8cd1b4b92753133ff7b74764a7f5716472d36b1683e7c96faa24aeba92f9b86e"
+        },
+        {
+          "index": 1,
+          "fullMean": 0.8205023871527778,
+          "activeMean": 0.8240740740740741,
+          "pts": 0.083,
+          "referenceSha256": "723a6289edad5f89b9b4ad7a08131fa4561f66220aadc9fd06e80e7b05f0df8e"
+        },
+        {
+          "index": 2,
+          "fullMean": 0.7701144748263888,
+          "activeMean": 0.9122153209109731,
+          "pts": 0.167,
+          "referenceSha256": "36d88680c013b3c77dee129e399de7f0a1324c5f36e84155c01db658de4563a0"
+        },
+        {
+          "index": 3,
+          "fullMean": 0.7940402560763888,
+          "activeMean": 0.9008264462809917,
+          "pts": 0.25,
+          "referenceSha256": "59d92d6cede1422c21dfd5f98456c61da3744f986faf5bcd80a23bc53b7c1f38"
+        },
+        {
+          "index": 4,
+          "fullMean": 0.7784966362847222,
+          "activeMean": 0.8865591397849463,
+          "pts": 0.333,
+          "referenceSha256": "98669aca2bfbcf22784f1dd67a67b1dec72aa22119a72cc081753f1c686eb20e"
+        },
+        {
+          "index": 5,
+          "fullMean": 0.7802598741319444,
+          "activeMean": 0.9283121597096189,
+          "pts": 0.417,
+          "referenceSha256": "d9f6f2ecf21d339d0b21c3700481cc1e44f728f19571c85ac32fd9377f73e8bd"
+        },
+        {
+          "index": 6,
+          "fullMean": 0.7916666666666666,
+          "activeMean": 0.9357769423558897,
+          "pts": 0.5,
+          "referenceSha256": "70018c76be3996e107191dd156bc25d95d6f4126721260b4a43b87aedab3f9b9"
+        },
+        {
+          "index": 7,
+          "fullMean": 0.8747016059027778,
+          "activeMean": 0.9725651577503429,
+          "pts": 0.583,
+          "referenceSha256": "019534565ae6f40b8c6358d055d40e922574df319c6af081b3b361ed31c62ff9"
+        },
+        {
+          "index": 8,
+          "fullMean": 0.7995876736111112,
+          "activeMean": 1.0037707390648567,
+          "pts": 0.667,
+          "referenceSha256": "4384eb32855c0dc16bcf48a0fb12ad610b094250a7f0bc0d7a2746f8ad06201c"
+        },
+        {
+          "index": 9,
+          "fullMean": 0.8301188151041666,
+          "activeMean": 1.0533333333333332,
+          "pts": 0.75,
+          "referenceSha256": "360150c966b08b8e1a3d47550d4fcbc839a1403afeaeb84f640d370f92e907d0"
+        },
+        {
+          "index": 10,
+          "fullMean": 0.815185546875,
+          "activeMean": 1.0282118055555556,
+          "pts": 0.833,
+          "referenceSha256": "95bad566a9af3f8bfad5f7cb171ff8c5276e48b5dfe07de707582bd9d1c791a4"
+        },
+        {
+          "index": 11,
+          "fullMean": 0.8258327907986112,
+          "activeMean": 1.0222222222222221,
+          "pts": 0.917,
+          "referenceSha256": "b3ca3765f8c857e1c70a7ae5e9def32488293a6f6585ee8be8301776ba276127"
+        },
+        {
+          "index": 12,
+          "fullMean": 0.8209499782986112,
+          "activeMean": 1.038548752834467,
+          "pts": 1,
+          "referenceSha256": "447cf9b86fc39c914ba5c1882fb42c4bf0030fb8667f8c13252cee66ccd720d5"
+        }
+      ]
+    }
+  ],
+  "cleanup": {
+    "ownedHostsAndBrowserClosed": [
+      {
+        "id": "skin-negative-parent",
+        "pid": 62884,
+        "hostClosed": true
+      },
+      {
+        "id": "morph-negative-node",
+        "pid": 55856,
+        "hostClosed": true
+      },
+      "own browser closed"
+    ],
+    "scopeChromeCountAfter": 0,
+    "hostProcessesAbsent": [
+      62884,
+      55856
+    ],
+    "gpuReleased": true,
+    "pageErrors": [],
+    "expectedOptionalPreset404Count": 2
+  },
+  "historicalFailures": {
+    "default420": {
+      "status": "failed-preserved",
+      "video": {
+        "path": "C:/tmps/glass-dynamic-bounds-20261012/skin-negative-parent/production.webm",
+        "sha256": "8d42d11e962f585e628b175774b139ca0ef322d481541ac75676450d0f497676"
+      },
+      "firstFrame": {
+        "fullRgbMean": 7.490424262152778,
+        "activeRgbMean": 11.90625
+      },
+      "secondProjectNotStarted": true
+    },
+    "old444": {
+      "status": "failed-preserved",
+      "video": {
+        "path": "C:/tmps/glass-dynamic-bounds-20261012/skin-negative-parent/production-444.webm",
+        "sha256": "b0c6b66a951b3f67b20fde2beaa8ae9d20b90c2165b47e78074a3f09f6e75918"
+      },
+      "failedFrame": 2,
+      "fullRgbMean": 4.999620225694445,
+      "activeRgbMean": 6.988888888888889,
+      "morphJobNotStarted": true
+    }
+  },
+  "limits": [
+    "Current444 acceptance does not replace or turn the original default420 saturated-checker fidelity failure green.",
+    "Finite skin/morph fixtures do not establish all Glass optics, all materials, all geometries, all GPUs or devices.",
+    "No installed application, install-state, packaged user-session, UI/history matrix or full material-quality acceptance claim.",
+    "Non-invasive boundary instrumentation preserved original return values/configuration; original video bytes reproduced exactly.",
+    "No quality threshold, input, source, physical shader or retained reference was weakened or replaced."
+  ]
+}

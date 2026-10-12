@@ -1,0 +1,2403 @@
+{
+  "version": 1,
+  "status": "passed-finite-real-consumer",
+  "scope": "Actual explicit external glTF author archive import and exact restoration/reimport; actual Creator model-feature-scene ordinary Three SVG flat/extrude consumption, three saved/reopened normal SceneExporter VP9 q8-444 jobs and 39 independently decoded frames. Not direct raw JSON glTF runtime decoder support.",
+  "runtime": {
+    "directory": "C:/tmps/rocut-integration-delivery-20261012-liquid-domain-04/runtime",
+    "config": {
+      "path": "C:/tmps/rocut-integration-delivery-20261012-liquid-domain-04/glass-runtime-config.json",
+      "byteLength": 78433,
+      "sha256": "8d1684cdc059e489bfca927a5d594bee15511853f83adb3a251aeb8d532e08dd"
+    },
+    "producerReceipt": {
+      "path": "C:/tmps/rocut-integration-delivery-20261012-liquid-domain-04/integration-receipt.json",
+      "byteLength": 204235,
+      "sha256": "6b541c39044c147488a3df503208ca5bfd4297d55cf979c3816e103d975aa3bf"
+    },
+    "allRuntimePinsVerifiedBeforeAndAfter": 364,
+    "criticalPins": [
+      {
+        "path": "C:\\tmps\\rocut-integration-delivery-20261012-liquid-domain-04\\runtime\\opencut_wasm_bg.wasm",
+        "sha256": "8afce2680db2514a6f0c01e2fc563506dadef2f73ab15dd0ddf47c82d01fea30"
+      },
+      {
+        "path": "C:\\tmps\\rocut-integration-delivery-20261012-liquid-domain-04\\runtime\\rocut.mjs",
+        "sha256": "22b495d2f25d6bb35b7232c4eb656487a060403cfb7276f5b2809c0497c5040e"
+      },
+      {
+        "path": "C:\\tmps\\rocut-integration-delivery-20261012-liquid-domain-04\\runtime\\surface\\assets\\app-C_1y5_4F.js",
+        "sha256": "cd19d6a7f906d84f673952fbb78d2a59fd3d7f5542989097f76d8ccb6995dc8f"
+      },
+      {
+        "path": "C:\\tmps\\rocut-integration-delivery-20261012-liquid-domain-04\\runtime\\surface\\assets\\opencut_wasm_bg-DEtUTTGM.wasm",
+        "sha256": "8afce2680db2514a6f0c01e2fc563506dadef2f73ab15dd0ddf47c82d01fea30"
+      },
+      {
+        "path": "C:\\tmps\\rocut-integration-delivery-20261012-liquid-domain-04\\runtime\\surface\\assets\\surface-react-identity-probe-S8zpDyXI.js",
+        "sha256": "74a9ffe870ef0e729d6252a9fbaa99bcb48a44f966e06d7be3554e120d01aa06"
+      }
+    ]
+  },
+  "package": {
+    "directory": "C:/tmps/three-assets-shared-delivery-20261012/attempt-02/toolchain/node_modules/@elftia/three-assets",
+    "archive": {
+      "path": "C:/tmps/three-assets-shared-delivery-20261012/attempt-02/elftia-three-assets-0.1.1.tgz",
+      "byteLength": 1512950,
+      "sha256": "fdd03f1f1353b1c9150aec4e54ed181f42fc0d9b7415569d4a53a62f04adb4ff"
+    },
+    "version": "0.1.1",
+    "three": "0.185.1",
+    "profiles": [
+      "offline-codecs-v1",
+      "svg-animation-v1"
+    ],
+    "consumerFiles": [
+      {
+        "path": "C:/tmps/three-assets-shared-delivery-20261012/attempt-02/toolchain/node_modules/@elftia/three-assets/package.json",
+        "byteLength": 870,
+        "sha256": "aae54481836251d3368453bb72c27a3a9d0878580cbabc05ff8623970064d347"
+      },
+      {
+        "path": "C:/tmps/three-assets-shared-delivery-20261012/attempt-02/toolchain/node_modules/@elftia/three-assets/dist/index.js",
+        "byteLength": 390,
+        "sha256": "ff474265ab2dd1600b02377a17064c8a8f9fbc85a88b3b11109ee87a28aa848e"
+      },
+      {
+        "path": "C:/tmps/three-assets-shared-delivery-20261012/attempt-02/toolchain/node_modules/@elftia/three-assets/dist/model.js",
+        "byteLength": 5897,
+        "sha256": "8d6d26c9f0d7ee25a38e27f8a6fb6767d42732b9e921b9ecefa6f70100b3e6f4"
+      },
+      {
+        "path": "C:/tmps/three-assets-shared-delivery-20261012/attempt-02/toolchain/node_modules/@elftia/three-assets/dist/svg-model.js",
+        "byteLength": 12195,
+        "sha256": "33b34bfe83bace1e6b2743887b3d97f0d7a8da460cc3ed15932df20b2843bdb3"
+      }
+    ]
+  },
+  "producerReceipts": [
+    {
+      "path": "C:/tmps/model-archive-svg-real-consumer-20261012/attempt-02/cpu-receipt.json",
+      "byteLength": 53528,
+      "sha256": "49d3279af4187411c32358557fca9963e7a33eb10f1b17a49d9e1791aef2dd3b"
+    },
+    {
+      "path": "C:/tmps/model-archive-svg-real-consumer-20261012/attempt-02/negative-preparation-receipt.json",
+      "byteLength": 1516,
+      "sha256": "c530594e6d5995d1c37f97f79e3253d38d652fc05bb813beceacf3efc331b07a"
+    },
+    {
+      "path": "C:/tmps/model-archive-svg-real-consumer-20261012/attempt-02/actual-consumer/receipt.json",
+      "byteLength": 37184,
+      "sha256": "a57712e8dc53598ca603e19f0c2a53cb8207c35b92c906553e204da6755419c8"
+    }
+  ],
+  "preservedHarnessFailure": {
+    "receipt": {
+      "path": "C:/tmps/model-archive-svg-real-consumer-20261012/attempt-02/../cpu-receipt.json",
+      "byteLength": 24429,
+      "sha256": "7c1b382b075ee476cc34376d15231636ae4bb9378dc16d0ad1b446aa8f8bf353"
+    },
+    "cause": "Private first runner asserted whole reimport response equal despite correct content-addressed reused:true versus first reused:false. Resource and archive byte identities were correct. First outputs preserved; attempt-02 uses explicit resource/archive equality and reused:true."
+  },
+  "authoring": {
+    "creatorFiles": [
+      {
+        "path": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/elftia/elftia-plugin-creator-studio/resources/agent/skills/html-video/assets/rocut-stylized/model-features.mjs",
+        "byteLength": 9702,
+        "sha256": "2002590d3ec7b8416ca3863a9e1c2ffd2ea0bdefc30aeb328c9d5f6e18b5e85a"
+      },
+      {
+        "path": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/elftia/elftia-plugin-creator-studio/resources/agent/skills/html-video/assets/rocut-stylized/model-feature-scene.ts",
+        "byteLength": 9276,
+        "sha256": "885839a75a040f302ae03162a4bbc96e4e81e81066e64e3dd54e8fa105b8b809"
+      }
+    ],
+    "sourceEntry": "model-feature-scene.ts",
+    "helper": "modelThree / svgModelThree",
+    "svgBranch": "assets.svg(inputProps.modelId,inputProps.shape)",
+    "externalGltfBranch": "Explicit resources/import archive combines declared JSON/bin/PNG into self-contained GLB; ordinary assets.model then consumes generated GLB.",
+    "noMaterialOrShaderSubstitution": true,
+    "privateRename": "Resolved absolute source and destination checked within dedicated attempt root, no symlink, originals preserved in unavailable directories."
+  },
+  "gates": {
+    "fullRgbMean": 3,
+    "activeRgbMean": 6,
+    "ptsSeconds": 0.001,
+    "minVisiblePixels": 200
+  },
+  "activeRegion": "Bounding rectangle of visible >70 RGB pixels in each fresh formal PNG; finite support ROI, not independent geometry oracle.",
+  "projects": [
+    {
+      "id": "external-gltf",
+      "fixture": [
+        {
+          "relativePath": "scene.gltf",
+          "path": "C:/tmps/model-archive-svg-real-consumer-20261012/attempt-02/external-gltf/model-author-unavailable/scene.gltf",
+          "byteLength": 1977,
+          "sha256": "29cdc922a4f08de835e900d2d071341a41244f2f78f4326445887221e6080937"
+        },
+        {
+          "relativePath": "mesh.bin",
+          "path": "C:/tmps/model-archive-svg-real-consumer-20261012/attempt-02/external-gltf/model-author-unavailable/mesh.bin",
+          "byteLength": 140,
+          "sha256": "16ba0dfaacf8ae7bef1620e07cba7a80c54a1aa617ef3006d25f1145832f5994"
+        },
+        {
+          "relativePath": "textures/base.png",
+          "path": "C:/tmps/model-archive-svg-real-consumer-20261012/attempt-02/external-gltf/model-author-unavailable/textures/base.png",
+          "byteLength": 80,
+          "sha256": "a06ba74d4137393859d73a5d9381a8394ae611857f93875a143bc17b42bd4a1b"
+        }
+      ],
+      "exactCreatorScene": {
+        "path": "C:/tmps/model-archive-svg-real-consumer-20261012/attempt-02/external-gltf/author-unavailable/model-feature-scene.ts",
+        "byteLength": 9276,
+        "sha256": "885839a75a040f302ae03162a4bbc96e4e81e81066e64e3dd54e8fa105b8b809"
+      },
+      "source": {
+        "path": "C:/tmps/model-archive-svg-real-consumer-20261012/attempt-02/external-gltf/source.json",
+        "byteLength": 2369,
+        "sha256": "9312d7216ca242606c1a87cd3a78a26c80746a395fdd0d0cb47f37d957a99199"
+      },
+      "savedProject": {
+        "path": "C:/tmps/model-archive-svg-real-consumer-20261012/attempt-02/external-gltf/saved-project.json",
+        "byteLength": 3088,
+        "sha256": "04114062b3bc94208bf0d602d17b6205ad847947d425ac4ae62c66afbeb8f597"
+      },
+      "resource": {
+        "id": "assets/external.glb",
+        "kind": "model",
+        "mimeType": "model/gltf-binary",
+        "byteLength": 1388,
+        "sha256": "9759adaf60a3d3897cd24568f318e16f229f38f902c8b97d1c1d95023f031c15",
+        "attachmentKey": "programmatic-sha256-9759adaf60a3d3897cd24568f318e16f229f38f902c8b97d1c1d95023f031c15"
+      },
+      "modelArchive": {
+        "resource": {
+          "id": "model-archive.json",
+          "kind": "source",
+          "mimeType": "application/octet-stream",
+          "byteLength": 1343,
+          "sha256": "98d725b7d33de8f34861204a31387c281476d3f0e7a9c5e6b0c6d7a84d168f46",
+          "attachmentKey": "programmatic-source-sha256-98d725b7d33de8f34861204a31387c281476d3f0e7a9c5e6b0c6d7a84d168f46"
+        },
+        "manifest": {
+          "version": 1,
+          "format": "gltf-2.0-author-archive",
+          "entryFile": "scene.gltf",
+          "files": [
+            {
+              "path": "scene.gltf",
+              "resource": {
+                "id": "model-source/scene.gltf",
+                "kind": "source",
+                "mimeType": "application/octet-stream",
+                "byteLength": 1977,
+                "sha256": "29cdc922a4f08de835e900d2d071341a41244f2f78f4326445887221e6080937",
+                "attachmentKey": "programmatic-source-sha256-29cdc922a4f08de835e900d2d071341a41244f2f78f4326445887221e6080937"
+              }
+            },
+            {
+              "path": "mesh.bin",
+              "resource": {
+                "id": "model-source/mesh.bin",
+                "kind": "source",
+                "mimeType": "application/octet-stream",
+                "byteLength": 140,
+                "sha256": "16ba0dfaacf8ae7bef1620e07cba7a80c54a1aa617ef3006d25f1145832f5994",
+                "attachmentKey": "programmatic-source-sha256-16ba0dfaacf8ae7bef1620e07cba7a80c54a1aa617ef3006d25f1145832f5994"
+              }
+            },
+            {
+              "path": "textures/base.png",
+              "resource": {
+                "id": "model-source/textures/base.png",
+                "kind": "source",
+                "mimeType": "application/octet-stream",
+                "byteLength": 80,
+                "sha256": "a06ba74d4137393859d73a5d9381a8394ae611857f93875a143bc17b42bd4a1b",
+                "attachmentKey": "programmatic-source-sha256-a06ba74d4137393859d73a5d9381a8394ae611857f93875a143bc17b42bd4a1b"
+              }
+            }
+          ],
+          "output": {
+            "id": "assets/external.glb",
+            "kind": "model",
+            "mimeType": "model/gltf-binary",
+            "byteLength": 1388,
+            "sha256": "9759adaf60a3d3897cd24568f318e16f229f38f902c8b97d1c1d95023f031c15",
+            "attachmentKey": "programmatic-sha256-9759adaf60a3d3897cd24568f318e16f229f38f902c8b97d1c1d95023f031c15"
+          }
+        }
+      },
+      "externalGlb": {
+        "path": "C:/tmps/model-archive-svg-real-consumer-20261012/attempt-02/external-gltf/imported.glb",
+        "byteLength": 1388,
+        "sha256": "9759adaf60a3d3897cd24568f318e16f229f38f902c8b97d1c1d95023f031c15"
+      },
+      "reopened": {
+        "exactSource": true,
+        "exactSavedProject": true,
+        "originalAuthorAndModelDirectoriesUnavailable": true,
+        "revision": 1,
+        "reusedDocument": true
+      },
+      "restore": {
+        "sourceScene": {
+          "path": "C:/tmps/model-archive-svg-real-consumer-20261012/attempt-02/external-gltf/restore-parent/build/source/model-feature-scene.ts",
+          "byteLength": 9276,
+          "sha256": "885839a75a040f302ae03162a4bbc96e4e81e81066e64e3dd54e8fa105b8b809"
+        },
+        "model": {
+          "result": {
+            "status": "complete",
+            "incomplete": false,
+            "directory": "C:\\tmps\\model-archive-svg-real-consumer-20261012\\attempt-02\\external-gltf\\restore-parent\\model",
+            "sourceDirectory": "C:\\tmps\\model-archive-svg-real-consumer-20261012\\attempt-02\\external-gltf\\restore-parent\\model\\source",
+            "entryFile": "scene.gltf",
+            "archivePath": "C:\\tmps\\model-archive-svg-real-consumer-20261012\\attempt-02\\external-gltf\\restore-parent\\model\\metadata\\model-archive.json",
+            "receiptPath": "C:\\tmps\\model-archive-svg-real-consumer-20261012\\attempt-02\\external-gltf\\restore-parent\\model\\metadata\\restore-receipt.json",
+            "sourceFileCount": 3,
+            "sourceByteLength": 2197,
+            "glbRebuilt": false
+          },
+          "files": [
+            {
+              "path": "C:\\tmps\\model-archive-svg-real-consumer-20261012\\attempt-02\\external-gltf\\restore-parent\\model\\source/scene.gltf",
+              "byteLength": 1977,
+              "sha256": "29cdc922a4f08de835e900d2d071341a41244f2f78f4326445887221e6080937",
+              "relativePath": "scene.gltf"
+            },
+            {
+              "path": "C:\\tmps\\model-archive-svg-real-consumer-20261012\\attempt-02\\external-gltf\\restore-parent\\model\\source/mesh.bin",
+              "byteLength": 140,
+              "sha256": "16ba0dfaacf8ae7bef1620e07cba7a80c54a1aa617ef3006d25f1145832f5994",
+              "relativePath": "mesh.bin"
+            },
+            {
+              "path": "C:\\tmps\\model-archive-svg-real-consumer-20261012\\attempt-02\\external-gltf\\restore-parent\\model\\source/textures/base.png",
+              "byteLength": 80,
+              "sha256": "a06ba74d4137393859d73a5d9381a8394ae611857f93875a143bc17b42bd4a1b",
+              "relativePath": "textures/base.png"
+            }
+          ]
+        },
+        "reimport": {
+          "exactDescriptorAndManifest": true,
+          "existingContentAddressedAttachmentReused": true
+        },
+        "projectAndRevisionUnchanged": true
+      },
+      "inputProps": {
+        "scale": 1,
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "rotationSpeed": [
+          0,
+          0,
+          0
+        ],
+        "backgroundColor": "#202b3b",
+        "camera": {
+          "position": [
+            0,
+            0,
+            4
+          ],
+          "target": [
+            0,
+            0,
+            0
+          ],
+          "fov": 37,
+          "near": 0.1,
+          "far": 1000
+        },
+        "assetKind": "model",
+        "modelId": "assets/external.glb"
+      },
+      "formalHttpBytesVerified": [
+        {
+          "id": "model-feature-scene.ts",
+          "sha256": "885839a75a040f302ae03162a4bbc96e4e81e81066e64e3dd54e8fa105b8b809",
+          "byteLength": 9276
+        },
+        {
+          "id": "_rocut/toolchain-lock.json",
+          "sha256": "7ed54a61bc865a29b6535b832d1c8024728ef306f4239c0ea5887ebcb5518ab9",
+          "byteLength": 7714
+        },
+        {
+          "id": "_rocut/compiled.html",
+          "sha256": "380855cfecdb4e2c7cd0dabe7fefa6d9c7a0ac1999db5bc09a72e515ab47f74a",
+          "byteLength": 2153784
+        },
+        {
+          "id": "assets/external.glb",
+          "sha256": "9759adaf60a3d3897cd24568f318e16f229f38f902c8b97d1c1d95023f031c15",
+          "byteLength": 1388
+        }
+      ],
+      "toolchainLock": {
+        "path": "C:/tmps/model-archive-svg-real-consumer-20261012/attempt-02/external-gltf/restore-parent/build/metadata/toolchain-lock.json",
+        "byteLength": 7714,
+        "sha256": "7ed54a61bc865a29b6535b832d1c8024728ef306f4239c0ea5887ebcb5518ab9"
+      },
+      "threeAssetFeatures": {
+        "version": 1,
+        "profile": "svg-animation-v1",
+        "files": [
+          {
+            "path": "C:/tmps/three-assets-shared-delivery-20261012/attempt-02/toolchain/node_modules/@elftia/three-assets/dist/svg-model.js",
+            "byteLength": 12195,
+            "sha256": "33b34bfe83bace1e6b2743887b3d97f0d7a8da460cc3ed15932df20b2843bdb3"
+          },
+          {
+            "path": "C:/tmps/three-assets-shared-delivery-20261012/attempt-02/toolchain/node_modules/@elftia/three-assets/dist/model-animation.js",
+            "byteLength": 3212,
+            "sha256": "1a29fb52c4cbed57a1096e8759f660a61fd14a925dc4756327e3be45b501a5c0"
+          },
+          {
+            "path": "C:/tmps/three-assets-shared-delivery-20261012/attempt-02/toolchain/node_modules/@elftia/three-assets/dist/model-instance.js",
+            "byteLength": 4000,
+            "sha256": "8873ef41fbb97a2b48d802ae2b9fbecfd15c9bbcc6653612cbdcba49e4d18b1f"
+          },
+          {
+            "path": "C:/tmps/three-assets-shared-delivery-20261012/attempt-02/toolchain/node_modules/@elftia/three-assets/dist/ownership.js",
+            "byteLength": 5609,
+            "sha256": "ea09bfe7194ce298b40cfed4296b51ee89331e7d3959b37037f9fdf16f582bf9"
+          },
+          {
+            "path": "C:/tmps/three-assets-shared-delivery-20261012/attempt-02/toolchain/node_modules/@elftia/three-assets/dist/types.js",
+            "byteLength": 208,
+            "sha256": "537af576d1974a438c56861999b08f36f02666847aa3ce04d185a381959a0b88"
+          },
+          {
+            "path": "C:/tmps/three-assets-shared-delivery-20261012/attempt-02/toolchain/node_modules/@elftia/three-assets/dist/index.js",
+            "byteLength": 390,
+            "sha256": "ff474265ab2dd1600b02377a17064c8a8f9fbc85a88b3b11109ee87a28aa848e"
+          }
+        ]
+      },
+      "threeAssetCodecs": {
+        "version": 1,
+        "profile": "offline-codecs-v1",
+        "files": [
+          {
+            "path": "C:/tmps/three-assets-shared-delivery-20261012/attempt-02/toolchain/node_modules/@elftia/three-assets/dist/draco.js",
+            "byteLength": 10946,
+            "sha256": "6482f7a54fd1b86344b3533eb67f900eebffe16c4be9cf4572f9a1006f67ac67"
+          },
+          {
+            "path": "C:/tmps/three-assets-shared-delivery-20261012/attempt-02/toolchain/node_modules/@elftia/three-assets/dist/draco-decoder.js",
+            "byteLength": 2542162,
+            "sha256": "d9903097ed35d8cb2836494632db5e93fe641f5a7e31a32630e36aa737456407"
+          },
+          {
+            "path": "C:/tmps/three-assets-shared-delivery-20261012/attempt-02/toolchain/node_modules/@elftia/three-assets/dist/glb.js",
+            "byteLength": 7081,
+            "sha256": "4b309c4aa339352b6d9952b7dd563a62c504955707410b2ce77a8d21712994e9"
+          },
+          {
+            "path": "C:/tmps/three-assets-shared-delivery-20261012/attempt-02/toolchain/node_modules/@elftia/three-assets/dist/glb-validation.js",
+            "byteLength": 9591,
+            "sha256": "01fce749d19138599a57b5f33bf9693a126112983a2cb0ba84e9fca5c92fefc8"
+          },
+          {
+            "path": "C:/tmps/three-assets-shared-delivery-20261012/attempt-02/toolchain/node_modules/@elftia/three-assets/dist/ktx2-glb.js",
+            "byteLength": 1477,
+            "sha256": "444a719074e63e97368f531a2cdbad104bc3f65af75d2a2e502575302529b990"
+          },
+          {
+            "path": "C:/tmps/three-assets-shared-delivery-20261012/attempt-02/toolchain/node_modules/@elftia/three-assets/dist/ktx2.js",
+            "byteLength": 9599,
+            "sha256": "fe20c1de5dbf3f7c445068ec93dc5a1947e2e15e7ddcb958125ff65075dfcc15"
+          },
+          {
+            "path": "C:/tmps/three-assets-shared-delivery-20261012/attempt-02/toolchain/node_modules/@elftia/three-assets/dist/ktx2-basis.js",
+            "byteLength": 77202,
+            "sha256": "4d5b03a04398a95e6bafbcaeff6c214a049516626a88491b0b53c3ec723decc2"
+          },
+          {
+            "path": "C:/tmps/three-assets-shared-delivery-20261012/attempt-02/toolchain/node_modules/@elftia/three-assets/dist/ktx2-wasm.js",
+            "byteLength": 703257,
+            "sha256": "80f486c446c760f5cadd359578a70e71ca70152b245909c46254318315071a50"
+          },
+          {
+            "path": "C:/tmps/three-assets-shared-delivery-20261012/attempt-02/toolchain/node_modules/@elftia/three-assets/dist/model.js",
+            "byteLength": 5897,
+            "sha256": "8d6d26c9f0d7ee25a38e27f8a6fb6767d42732b9e921b9ecefa6f70100b3e6f4"
+          },
+          {
+            "path": "C:/tmps/three-assets-shared-delivery-20261012/attempt-02/toolchain/node_modules/@elftia/three-assets/DRACO-LICENSE.txt",
+            "byteLength": 13898,
+            "sha256": "d3709b0fb4b8a94bbb1d02b8a2e484f258b0d9c5c5a01f940391f3fe662cd1a4"
+          },
+          {
+            "path": "C:/tmps/three-assets-shared-delivery-20261012/attempt-02/toolchain/node_modules/@elftia/three-assets/src/ktx2-basis-LICENSE.txt",
+            "byteLength": 11348,
+            "sha256": "9068f389fe23eac9d714ad942ed90541f7d2095cdcf9c3b9839cf6d9b459db92"
+          },
+          {
+            "path": "C:/tmps/three-assets-shared-delivery-20261012/attempt-02/toolchain/node_modules/@elftia/three-assets/CODEC-PROVENANCE.md",
+            "byteLength": 1603,
+            "sha256": "a5cd0b858123727621e6a22b06ac90e7c5dcbc6cdbde076101614b344381796c"
+          }
+        ]
+      },
+      "gpu": [
+        {
+          "index": 0,
+          "sha256": "4202fe0096d772e68d9cb36980f6e09ae76b0660079797e63b44a11fbf51359f",
+          "visible": {
+            "count": 9216,
+            "rect": [
+              48,
+              144,
+              16,
+              112
+            ]
+          }
+        },
+        {
+          "index": 6,
+          "sha256": "4202fe0096d772e68d9cb36980f6e09ae76b0660079797e63b44a11fbf51359f",
+          "visible": {
+            "count": 9216,
+            "rect": [
+              48,
+              144,
+              16,
+              112
+            ]
+          }
+        },
+        {
+          "index": 12,
+          "sha256": "4202fe0096d772e68d9cb36980f6e09ae76b0660079797e63b44a11fbf51359f",
+          "visible": {
+            "count": 9216,
+            "rect": [
+              48,
+              144,
+              16,
+              112
+            ]
+          }
+        }
+      ],
+      "reopenedSavedProjectExact": true,
+      "job": {
+        "id": "815fedb026bd4dde",
+        "status": "completed",
+        "options": {
+          "format": "webm",
+          "quality": "very_high",
+          "videoChroma": "444",
+          "includeAudio": false,
+          "range": {
+            "startTime": 0,
+            "endTime": 130000
+          }
+        }
+      },
+      "actualPolicy": {
+        "request": {
+          "codec": "vp9",
+          "format": "webm",
+          "quality": "very_high",
+          "frameRate": {
+            "numerator": 12,
+            "denominator": 1
+          },
+          "width": 192,
+          "height": 128,
+          "videoChroma": "444"
+        },
+        "response": {
+          "bitrate": 148000,
+          "default": true,
+          "fullCodecString": "vp09.01.10.08.03.01.13.01.01",
+          "keyFrameIntervalFrames": 24,
+          "kind": "vp9Quantizer",
+          "nativeConfig": {
+            "alpha": "discard",
+            "bitrate": 148000,
+            "bitrateMode": "quantizer",
+            "codec": "vp09.01.10.08.03.01.13.01.01",
+            "displayHeight": 128,
+            "displayWidth": 192,
+            "framerate": 12,
+            "hardwareAcceleration": "prefer-software",
+            "height": 128,
+            "latencyMode": "quality",
+            "width": 192
+          },
+          "quantizer": 8
+        },
+        "boundary": "actual WebAssembly exports.resolveVideoExportJson invocation, copied input/output before caller frees returned bytes"
+      },
+      "nativeEncoder": {
+        "codec": "vp09.01.10.08.03.01.13.01.01",
+        "width": 192,
+        "height": 128,
+        "displayWidth": 192,
+        "displayHeight": 128,
+        "bitrate": 148000,
+        "framerate": 12,
+        "alpha": "discard",
+        "bitrateMode": "quantizer",
+        "latencyMode": "quality",
+        "hardwareAcceleration": "prefer-software"
+      },
+      "actualEncodeCount": 13,
+      "allActualEncodeQuantizers": 8,
+      "video": {
+        "path": "C:/tmps/model-archive-svg-real-consumer-20261012/attempt-02/actual-consumer/external-gltf/production.webm",
+        "byteLength": 1725,
+        "sha256": "0cdd33762ea8eeca4622fc0e32e34832d88cb372eb79fb724538371ff416363d"
+      },
+      "decoded": {
+        "path": "C:/tmps/model-archive-svg-real-consumer-20261012/attempt-02/actual-consumer/external-gltf/decoded.rgba",
+        "byteLength": 1277952,
+        "sha256": "cdfe81b19118cf13781b42b4475d59fc78aa06e4efead661353da2b1e3024746"
+      },
+      "ffprobe": {
+        "path": "C:/tmps/model-archive-svg-real-consumer-20261012/attempt-02/actual-consumer/external-gltf/ffprobe.json",
+        "byteLength": 1396,
+        "sha256": "34cc1bfb50e7586b6236519f391d0760fc3c071d4a46c72d43f263fe69fc5e05"
+      },
+      "frames": [
+        {
+          "index": 0,
+          "comparison": {
+            "mean": 0.6492513020833334,
+            "max": 4
+          },
+          "active": {
+            "mean": 0.6189959490740741,
+            "max": 4
+          },
+          "roi": [
+            48,
+            144,
+            16,
+            112
+          ],
+          "pts": 0,
+          "referenceSha256": "4202fe0096d772e68d9cb36980f6e09ae76b0660079797e63b44a11fbf51359f",
+          "reference": {
+            "path": "C:/tmps/model-archive-svg-real-consumer-20261012/attempt-02/actual-consumer/external-gltf/fresh-0.png",
+            "byteLength": 645,
+            "sha256": "4202fe0096d772e68d9cb36980f6e09ae76b0660079797e63b44a11fbf51359f"
+          }
+        },
+        {
+          "index": 1,
+          "comparison": {
+            "mean": 0.649169921875,
+            "max": 4
+          },
+          "active": {
+            "mean": 0.6187789351851852,
+            "max": 4
+          },
+          "roi": [
+            48,
+            144,
+            16,
+            112
+          ],
+          "pts": 0.083,
+          "referenceSha256": "4202fe0096d772e68d9cb36980f6e09ae76b0660079797e63b44a11fbf51359f",
+          "reference": {
+            "path": "C:/tmps/model-archive-svg-real-consumer-20261012/attempt-02/actual-consumer/external-gltf/fresh-1.png",
+            "byteLength": 645,
+            "sha256": "4202fe0096d772e68d9cb36980f6e09ae76b0660079797e63b44a11fbf51359f"
+          }
+        },
+        {
+          "index": 2,
+          "comparison": {
+            "mean": 0.649169921875,
+            "max": 4
+          },
+          "active": {
+            "mean": 0.6187789351851852,
+            "max": 4
+          },
+          "roi": [
+            48,
+            144,
+            16,
+            112
+          ],
+          "pts": 0.167,
+          "referenceSha256": "4202fe0096d772e68d9cb36980f6e09ae76b0660079797e63b44a11fbf51359f",
+          "reference": {
+            "path": "C:/tmps/model-archive-svg-real-consumer-20261012/attempt-02/actual-consumer/external-gltf/fresh-2.png",
+            "byteLength": 645,
+            "sha256": "4202fe0096d772e68d9cb36980f6e09ae76b0660079797e63b44a11fbf51359f"
+          }
+        },
+        {
+          "index": 3,
+          "comparison": {
+            "mean": 0.649169921875,
+            "max": 4
+          },
+          "active": {
+            "mean": 0.6187789351851852,
+            "max": 4
+          },
+          "roi": [
+            48,
+            144,
+            16,
+            112
+          ],
+          "pts": 0.25,
+          "referenceSha256": "4202fe0096d772e68d9cb36980f6e09ae76b0660079797e63b44a11fbf51359f",
+          "reference": {
+            "path": "C:/tmps/model-archive-svg-real-consumer-20261012/attempt-02/actual-consumer/external-gltf/fresh-3.png",
+            "byteLength": 645,
+            "sha256": "4202fe0096d772e68d9cb36980f6e09ae76b0660079797e63b44a11fbf51359f"
+          }
+        },
+        {
+          "index": 4,
+          "comparison": {
+            "mean": 0.649169921875,
+            "max": 4
+          },
+          "active": {
+            "mean": 0.6187789351851852,
+            "max": 4
+          },
+          "roi": [
+            48,
+            144,
+            16,
+            112
+          ],
+          "pts": 0.333,
+          "referenceSha256": "4202fe0096d772e68d9cb36980f6e09ae76b0660079797e63b44a11fbf51359f",
+          "reference": {
+            "path": "C:/tmps/model-archive-svg-real-consumer-20261012/attempt-02/actual-consumer/external-gltf/fresh-4.png",
+            "byteLength": 645,
+            "sha256": "4202fe0096d772e68d9cb36980f6e09ae76b0660079797e63b44a11fbf51359f"
+          }
+        },
+        {
+          "index": 5,
+          "comparison": {
+            "mean": 0.649169921875,
+            "max": 4
+          },
+          "active": {
+            "mean": 0.6187789351851852,
+            "max": 4
+          },
+          "roi": [
+            48,
+            144,
+            16,
+            112
+          ],
+          "pts": 0.417,
+          "referenceSha256": "4202fe0096d772e68d9cb36980f6e09ae76b0660079797e63b44a11fbf51359f",
+          "reference": {
+            "path": "C:/tmps/model-archive-svg-real-consumer-20261012/attempt-02/actual-consumer/external-gltf/fresh-5.png",
+            "byteLength": 645,
+            "sha256": "4202fe0096d772e68d9cb36980f6e09ae76b0660079797e63b44a11fbf51359f"
+          }
+        },
+        {
+          "index": 6,
+          "comparison": {
+            "mean": 0.649169921875,
+            "max": 4
+          },
+          "active": {
+            "mean": 0.6187789351851852,
+            "max": 4
+          },
+          "roi": [
+            48,
+            144,
+            16,
+            112
+          ],
+          "pts": 0.5,
+          "referenceSha256": "4202fe0096d772e68d9cb36980f6e09ae76b0660079797e63b44a11fbf51359f",
+          "reference": {
+            "path": "C:/tmps/model-archive-svg-real-consumer-20261012/attempt-02/actual-consumer/external-gltf/fresh-6.png",
+            "byteLength": 645,
+            "sha256": "4202fe0096d772e68d9cb36980f6e09ae76b0660079797e63b44a11fbf51359f"
+          }
+        },
+        {
+          "index": 7,
+          "comparison": {
+            "mean": 0.649169921875,
+            "max": 4
+          },
+          "active": {
+            "mean": 0.6187789351851852,
+            "max": 4
+          },
+          "roi": [
+            48,
+            144,
+            16,
+            112
+          ],
+          "pts": 0.583,
+          "referenceSha256": "4202fe0096d772e68d9cb36980f6e09ae76b0660079797e63b44a11fbf51359f",
+          "reference": {
+            "path": "C:/tmps/model-archive-svg-real-consumer-20261012/attempt-02/actual-consumer/external-gltf/fresh-7.png",
+            "byteLength": 645,
+            "sha256": "4202fe0096d772e68d9cb36980f6e09ae76b0660079797e63b44a11fbf51359f"
+          }
+        },
+        {
+          "index": 8,
+          "comparison": {
+            "mean": 0.649169921875,
+            "max": 4
+          },
+          "active": {
+            "mean": 0.6187789351851852,
+            "max": 4
+          },
+          "roi": [
+            48,
+            144,
+            16,
+            112
+          ],
+          "pts": 0.667,
+          "referenceSha256": "4202fe0096d772e68d9cb36980f6e09ae76b0660079797e63b44a11fbf51359f",
+          "reference": {
+            "path": "C:/tmps/model-archive-svg-real-consumer-20261012/attempt-02/actual-consumer/external-gltf/fresh-8.png",
+            "byteLength": 645,
+            "sha256": "4202fe0096d772e68d9cb36980f6e09ae76b0660079797e63b44a11fbf51359f"
+          }
+        },
+        {
+          "index": 9,
+          "comparison": {
+            "mean": 0.649169921875,
+            "max": 4
+          },
+          "active": {
+            "mean": 0.6187789351851852,
+            "max": 4
+          },
+          "roi": [
+            48,
+            144,
+            16,
+            112
+          ],
+          "pts": 0.75,
+          "referenceSha256": "4202fe0096d772e68d9cb36980f6e09ae76b0660079797e63b44a11fbf51359f",
+          "reference": {
+            "path": "C:/tmps/model-archive-svg-real-consumer-20261012/attempt-02/actual-consumer/external-gltf/fresh-9.png",
+            "byteLength": 645,
+            "sha256": "4202fe0096d772e68d9cb36980f6e09ae76b0660079797e63b44a11fbf51359f"
+          }
+        },
+        {
+          "index": 10,
+          "comparison": {
+            "mean": 0.649169921875,
+            "max": 4
+          },
+          "active": {
+            "mean": 0.6187789351851852,
+            "max": 4
+          },
+          "roi": [
+            48,
+            144,
+            16,
+            112
+          ],
+          "pts": 0.833,
+          "referenceSha256": "4202fe0096d772e68d9cb36980f6e09ae76b0660079797e63b44a11fbf51359f",
+          "reference": {
+            "path": "C:/tmps/model-archive-svg-real-consumer-20261012/attempt-02/actual-consumer/external-gltf/fresh-10.png",
+            "byteLength": 645,
+            "sha256": "4202fe0096d772e68d9cb36980f6e09ae76b0660079797e63b44a11fbf51359f"
+          }
+        },
+        {
+          "index": 11,
+          "comparison": {
+            "mean": 0.649169921875,
+            "max": 4
+          },
+          "active": {
+            "mean": 0.6187789351851852,
+            "max": 4
+          },
+          "roi": [
+            48,
+            144,
+            16,
+            112
+          ],
+          "pts": 0.917,
+          "referenceSha256": "4202fe0096d772e68d9cb36980f6e09ae76b0660079797e63b44a11fbf51359f",
+          "reference": {
+            "path": "C:/tmps/model-archive-svg-real-consumer-20261012/attempt-02/actual-consumer/external-gltf/fresh-11.png",
+            "byteLength": 645,
+            "sha256": "4202fe0096d772e68d9cb36980f6e09ae76b0660079797e63b44a11fbf51359f"
+          }
+        },
+        {
+          "index": 12,
+          "comparison": {
+            "mean": 0.649169921875,
+            "max": 4
+          },
+          "active": {
+            "mean": 0.6187789351851852,
+            "max": 4
+          },
+          "roi": [
+            48,
+            144,
+            16,
+            112
+          ],
+          "pts": 1,
+          "referenceSha256": "4202fe0096d772e68d9cb36980f6e09ae76b0660079797e63b44a11fbf51359f",
+          "reference": {
+            "path": "C:/tmps/model-archive-svg-real-consumer-20261012/attempt-02/actual-consumer/external-gltf/fresh-12.png",
+            "byteLength": 645,
+            "sha256": "4202fe0096d772e68d9cb36980f6e09ae76b0660079797e63b44a11fbf51359f"
+          }
+        }
+      ],
+      "statistics": {
+        "frames": 13,
+        "maxFullRgbMean": 0.6492513020833334,
+        "maxActiveRgbMean": 0.6189959490740741,
+        "maxPtsErrorSeconds": 0.00033333333333340764
+      },
+      "projectSemanticsUnchanged": true
+    },
+    {
+      "id": "svg-flat",
+      "fixture": [
+        {
+          "relativePath": "hole.svg",
+          "path": "C:/tmps/model-archive-svg-real-consumer-20261012/attempt-02/svg-flat/model-author-unavailable/hole.svg",
+          "byteLength": 192,
+          "sha256": "f830f60e9762807604c3ce8dda9480e5c13dbf18eb4a9d3c7793e85d812c096f"
+        }
+      ],
+      "exactCreatorScene": {
+        "path": "C:/tmps/model-archive-svg-real-consumer-20261012/attempt-02/svg-flat/author-unavailable/model-feature-scene.ts",
+        "byteLength": 9276,
+        "sha256": "885839a75a040f302ae03162a4bbc96e4e81e81066e64e3dd54e8fa105b8b809"
+      },
+      "source": {
+        "path": "C:/tmps/model-archive-svg-real-consumer-20261012/attempt-02/svg-flat/source.json",
+        "byteLength": 2475,
+        "sha256": "899331b84ed7a4e095e3f0f1964b8c15bdf931808d49efe9965f16c764633628"
+      },
+      "savedProject": {
+        "path": "C:/tmps/model-archive-svg-real-consumer-20261012/attempt-02/svg-flat/saved-project.json",
+        "byteLength": 3123,
+        "sha256": "f00fcbc776e63c3722ad6bf15b2bd1bc3ec55ea080cfdb36386af4df48f781b0"
+      },
+      "resource": {
+        "id": "assets/hole.svg",
+        "kind": "model",
+        "mimeType": "image/svg+xml",
+        "byteLength": 192,
+        "sha256": "f830f60e9762807604c3ce8dda9480e5c13dbf18eb4a9d3c7793e85d812c096f",
+        "attachmentKey": "programmatic-sha256-f830f60e9762807604c3ce8dda9480e5c13dbf18eb4a9d3c7793e85d812c096f"
+      },
+      "reopened": {
+        "exactSource": true,
+        "exactSavedProject": true,
+        "originalAuthorAndModelDirectoriesUnavailable": true,
+        "revision": 1,
+        "reusedDocument": true
+      },
+      "restore": {
+        "sourceScene": {
+          "path": "C:/tmps/model-archive-svg-real-consumer-20261012/attempt-02/svg-flat/restore-parent/build/source/model-feature-scene.ts",
+          "byteLength": 9276,
+          "sha256": "885839a75a040f302ae03162a4bbc96e4e81e81066e64e3dd54e8fa105b8b809"
+        },
+        "projectAndRevisionUnchanged": true
+      },
+      "inputProps": {
+        "scale": 0.02,
+        "position": [
+          -1,
+          1,
+          0
+        ],
+        "rotation": [
+          0.2,
+          -0.25,
+          0
+        ],
+        "rotationSpeed": [
+          0,
+          0,
+          0
+        ],
+        "backgroundColor": "#202b3b",
+        "camera": {
+          "position": [
+            0,
+            0,
+            4
+          ],
+          "target": [
+            0,
+            0,
+            0
+          ],
+          "fov": 37,
+          "near": 0.1,
+          "far": 1000
+        },
+        "assetKind": "svg",
+        "modelId": "assets/hole.svg",
+        "shape": {
+          "modeling": {
+            "kind": "flat"
+          },
+          "curveSegments": 8
+        }
+      },
+      "formalHttpBytesVerified": [
+        {
+          "id": "model-feature-scene.ts",
+          "sha256": "885839a75a040f302ae03162a4bbc96e4e81e81066e64e3dd54e8fa105b8b809",
+          "byteLength": 9276
+        },
+        {
+          "id": "_rocut/toolchain-lock.json",
+          "sha256": "7ed54a61bc865a29b6535b832d1c8024728ef306f4239c0ea5887ebcb5518ab9",
+          "byteLength": 7714
+        },
+        {
+          "id": "_rocut/compiled.html",
+          "sha256": "8deef2b462117dc8947a26b5f6cc9195b86c8c276e0fa6f5257e6ebca7d4b4e2",
+          "byteLength": 2153843
+        },
+        {
+          "id": "assets/hole.svg",
+          "sha256": "f830f60e9762807604c3ce8dda9480e5c13dbf18eb4a9d3c7793e85d812c096f",
+          "byteLength": 192
+        }
+      ],
+      "toolchainLock": {
+        "path": "C:/tmps/model-archive-svg-real-consumer-20261012/attempt-02/svg-flat/restore-parent/build/metadata/toolchain-lock.json",
+        "byteLength": 7714,
+        "sha256": "7ed54a61bc865a29b6535b832d1c8024728ef306f4239c0ea5887ebcb5518ab9"
+      },
+      "threeAssetFeatures": {
+        "version": 1,
+        "profile": "svg-animation-v1",
+        "files": [
+          {
+            "path": "C:/tmps/three-assets-shared-delivery-20261012/attempt-02/toolchain/node_modules/@elftia/three-assets/dist/svg-model.js",
+            "byteLength": 12195,
+            "sha256": "33b34bfe83bace1e6b2743887b3d97f0d7a8da460cc3ed15932df20b2843bdb3"
+          },
+          {
+            "path": "C:/tmps/three-assets-shared-delivery-20261012/attempt-02/toolchain/node_modules/@elftia/three-assets/dist/model-animation.js",
+            "byteLength": 3212,
+            "sha256": "1a29fb52c4cbed57a1096e8759f660a61fd14a925dc4756327e3be45b501a5c0"
+          },
+          {
+            "path": "C:/tmps/three-assets-shared-delivery-20261012/attempt-02/toolchain/node_modules/@elftia/three-assets/dist/model-instance.js",
+            "byteLength": 4000,
+            "sha256": "8873ef41fbb97a2b48d802ae2b9fbecfd15c9bbcc6653612cbdcba49e4d18b1f"
+          },
+          {
+            "path": "C:/tmps/three-assets-shared-delivery-20261012/attempt-02/toolchain/node_modules/@elftia/three-assets/dist/ownership.js",
+            "byteLength": 5609,
+            "sha256": "ea09bfe7194ce298b40cfed4296b51ee89331e7d3959b37037f9fdf16f582bf9"
+          },
+          {
+            "path": "C:/tmps/three-assets-shared-delivery-20261012/attempt-02/toolchain/node_modules/@elftia/three-assets/dist/types.js",
+            "byteLength": 208,
+            "sha256": "537af576d1974a438c56861999b08f36f02666847aa3ce04d185a381959a0b88"
+          },
+          {
+            "path": "C:/tmps/three-assets-shared-delivery-20261012/attempt-02/toolchain/node_modules/@elftia/three-assets/dist/index.js",
+            "byteLength": 390,
+            "sha256": "ff474265ab2dd1600b02377a17064c8a8f9fbc85a88b3b11109ee87a28aa848e"
+          }
+        ]
+      },
+      "threeAssetCodecs": {
+        "version": 1,
+        "profile": "offline-codecs-v1",
+        "files": [
+          {
+            "path": "C:/tmps/three-assets-shared-delivery-20261012/attempt-02/toolchain/node_modules/@elftia/three-assets/dist/draco.js",
+            "byteLength": 10946,
+            "sha256": "6482f7a54fd1b86344b3533eb67f900eebffe16c4be9cf4572f9a1006f67ac67"
+          },
+          {
+            "path": "C:/tmps/three-assets-shared-delivery-20261012/attempt-02/toolchain/node_modules/@elftia/three-assets/dist/draco-decoder.js",
+            "byteLength": 2542162,
+            "sha256": "d9903097ed35d8cb2836494632db5e93fe641f5a7e31a32630e36aa737456407"
+          },
+          {
+            "path": "C:/tmps/three-assets-shared-delivery-20261012/attempt-02/toolchain/node_modules/@elftia/three-assets/dist/glb.js",
+            "byteLength": 7081,
+            "sha256": "4b309c4aa339352b6d9952b7dd563a62c504955707410b2ce77a8d21712994e9"
+          },
+          {
+            "path": "C:/tmps/three-assets-shared-delivery-20261012/attempt-02/toolchain/node_modules/@elftia/three-assets/dist/glb-validation.js",
+            "byteLength": 9591,
+            "sha256": "01fce749d19138599a57b5f33bf9693a126112983a2cb0ba84e9fca5c92fefc8"
+          },
+          {
+            "path": "C:/tmps/three-assets-shared-delivery-20261012/attempt-02/toolchain/node_modules/@elftia/three-assets/dist/ktx2-glb.js",
+            "byteLength": 1477,
+            "sha256": "444a719074e63e97368f531a2cdbad104bc3f65af75d2a2e502575302529b990"
+          },
+          {
+            "path": "C:/tmps/three-assets-shared-delivery-20261012/attempt-02/toolchain/node_modules/@elftia/three-assets/dist/ktx2.js",
+            "byteLength": 9599,
+            "sha256": "fe20c1de5dbf3f7c445068ec93dc5a1947e2e15e7ddcb958125ff65075dfcc15"
+          },
+          {
+            "path": "C:/tmps/three-assets-shared-delivery-20261012/attempt-02/toolchain/node_modules/@elftia/three-assets/dist/ktx2-basis.js",
+            "byteLength": 77202,
+            "sha256": "4d5b03a04398a95e6bafbcaeff6c214a049516626a88491b0b53c3ec723decc2"
+          },
+          {
+            "path": "C:/tmps/three-assets-shared-delivery-20261012/attempt-02/toolchain/node_modules/@elftia/three-assets/dist/ktx2-wasm.js",
+            "byteLength": 703257,
+            "sha256": "80f486c446c760f5cadd359578a70e71ca70152b245909c46254318315071a50"
+          },
+          {
+            "path": "C:/tmps/three-assets-shared-delivery-20261012/attempt-02/toolchain/node_modules/@elftia/three-assets/dist/model.js",
+            "byteLength": 5897,
+            "sha256": "8d6d26c9f0d7ee25a38e27f8a6fb6767d42732b9e921b9ecefa6f70100b3e6f4"
+          },
+          {
+            "path": "C:/tmps/three-assets-shared-delivery-20261012/attempt-02/toolchain/node_modules/@elftia/three-assets/DRACO-LICENSE.txt",
+            "byteLength": 13898,
+            "sha256": "d3709b0fb4b8a94bbb1d02b8a2e484f258b0d9c5c5a01f940391f3fe662cd1a4"
+          },
+          {
+            "path": "C:/tmps/three-assets-shared-delivery-20261012/attempt-02/toolchain/node_modules/@elftia/three-assets/src/ktx2-basis-LICENSE.txt",
+            "byteLength": 11348,
+            "sha256": "9068f389fe23eac9d714ad942ed90541f7d2095cdcf9c3b9839cf6d9b459db92"
+          },
+          {
+            "path": "C:/tmps/three-assets-shared-delivery-20261012/attempt-02/toolchain/node_modules/@elftia/three-assets/CODEC-PROVENANCE.md",
+            "byteLength": 1603,
+            "sha256": "a5cd0b858123727621e6a22b06ac90e7c5dcbc6cdbde076101614b344381796c"
+          }
+        ]
+      },
+      "gpu": [
+        {
+          "index": 0,
+          "sha256": "e2fed2658d2b00e31739a72f2183a3e7605fe525d2048f1d83019ae6aa7a0745",
+          "visible": {
+            "count": 6206,
+            "rect": [
+              52,
+              142,
+              20,
+              111
+            ]
+          }
+        },
+        {
+          "index": 6,
+          "sha256": "e2fed2658d2b00e31739a72f2183a3e7605fe525d2048f1d83019ae6aa7a0745",
+          "visible": {
+            "count": 6206,
+            "rect": [
+              52,
+              142,
+              20,
+              111
+            ]
+          }
+        },
+        {
+          "index": 12,
+          "sha256": "e2fed2658d2b00e31739a72f2183a3e7605fe525d2048f1d83019ae6aa7a0745",
+          "visible": {
+            "count": 6206,
+            "rect": [
+              52,
+              142,
+              20,
+              111
+            ]
+          }
+        }
+      ],
+      "reopenedSavedProjectExact": true,
+      "job": {
+        "id": "f52af07503b0761a",
+        "status": "completed",
+        "options": {
+          "format": "webm",
+          "quality": "very_high",
+          "videoChroma": "444",
+          "includeAudio": false,
+          "range": {
+            "startTime": 0,
+            "endTime": 130000
+          }
+        }
+      },
+      "actualPolicy": {
+        "request": {
+          "codec": "vp9",
+          "format": "webm",
+          "quality": "very_high",
+          "frameRate": {
+            "numerator": 12,
+            "denominator": 1
+          },
+          "width": 192,
+          "height": 128,
+          "videoChroma": "444"
+        },
+        "response": {
+          "bitrate": 148000,
+          "default": true,
+          "fullCodecString": "vp09.01.10.08.03.01.13.01.01",
+          "keyFrameIntervalFrames": 24,
+          "kind": "vp9Quantizer",
+          "nativeConfig": {
+            "alpha": "discard",
+            "bitrate": 148000,
+            "bitrateMode": "quantizer",
+            "codec": "vp09.01.10.08.03.01.13.01.01",
+            "displayHeight": 128,
+            "displayWidth": 192,
+            "framerate": 12,
+            "hardwareAcceleration": "prefer-software",
+            "height": 128,
+            "latencyMode": "quality",
+            "width": 192
+          },
+          "quantizer": 8
+        },
+        "boundary": "actual WebAssembly exports.resolveVideoExportJson invocation, copied input/output before caller frees returned bytes"
+      },
+      "nativeEncoder": {
+        "codec": "vp09.01.10.08.03.01.13.01.01",
+        "width": 192,
+        "height": 128,
+        "displayWidth": 192,
+        "displayHeight": 128,
+        "bitrate": 148000,
+        "framerate": 12,
+        "alpha": "discard",
+        "bitrateMode": "quantizer",
+        "latencyMode": "quality",
+        "hardwareAcceleration": "prefer-software"
+      },
+      "actualEncodeCount": 13,
+      "allActualEncodeQuantizers": 8,
+      "video": {
+        "path": "C:/tmps/model-archive-svg-real-consumer-20261012/attempt-02/actual-consumer/svg-flat/production.webm",
+        "byteLength": 2924,
+        "sha256": "aa3d59f551cb7580877e7b5889b86b05f0eee902faeda6131b8b6ba69f5e0500"
+      },
+      "decoded": {
+        "path": "C:/tmps/model-archive-svg-real-consumer-20261012/attempt-02/actual-consumer/svg-flat/decoded.rgba",
+        "byteLength": 1277952,
+        "sha256": "69232bda5aeeaf582bd7f80b60b2c401dd8e25f6521f7ea18d7c79b72f407a03"
+      },
+      "ffprobe": {
+        "path": "C:/tmps/model-archive-svg-real-consumer-20261012/attempt-02/actual-consumer/svg-flat/ffprobe.json",
+        "byteLength": 1396,
+        "sha256": "34cc1bfb50e7586b6236519f391d0760fc3c071d4a46c72d43f263fe69fc5e05"
+      },
+      "frames": [
+        {
+          "index": 0,
+          "comparison": {
+            "mean": 0.6138237847222222,
+            "max": 5
+          },
+          "active": {
+            "mean": 0.5046398046398046,
+            "max": 5
+          },
+          "roi": [
+            52,
+            142,
+            20,
+            111
+          ],
+          "pts": 0,
+          "referenceSha256": "e2fed2658d2b00e31739a72f2183a3e7605fe525d2048f1d83019ae6aa7a0745",
+          "reference": {
+            "path": "C:/tmps/model-archive-svg-real-consumer-20261012/attempt-02/actual-consumer/svg-flat/fresh-0.png",
+            "byteLength": 1006,
+            "sha256": "e2fed2658d2b00e31739a72f2183a3e7605fe525d2048f1d83019ae6aa7a0745"
+          }
+        },
+        {
+          "index": 1,
+          "comparison": {
+            "mean": 0.6117350260416666,
+            "max": 5
+          },
+          "active": {
+            "mean": 0.4992266992266992,
+            "max": 5
+          },
+          "roi": [
+            52,
+            142,
+            20,
+            111
+          ],
+          "pts": 0.083,
+          "referenceSha256": "e2fed2658d2b00e31739a72f2183a3e7605fe525d2048f1d83019ae6aa7a0745",
+          "reference": {
+            "path": "C:/tmps/model-archive-svg-real-consumer-20261012/attempt-02/actual-consumer/svg-flat/fresh-1.png",
+            "byteLength": 1006,
+            "sha256": "e2fed2658d2b00e31739a72f2183a3e7605fe525d2048f1d83019ae6aa7a0745"
+          }
+        },
+        {
+          "index": 2,
+          "comparison": {
+            "mean": 0.6116536458333334,
+            "max": 5
+          },
+          "active": {
+            "mean": 0.49898249898249897,
+            "max": 5
+          },
+          "roi": [
+            52,
+            142,
+            20,
+            111
+          ],
+          "pts": 0.167,
+          "referenceSha256": "e2fed2658d2b00e31739a72f2183a3e7605fe525d2048f1d83019ae6aa7a0745",
+          "reference": {
+            "path": "C:/tmps/model-archive-svg-real-consumer-20261012/attempt-02/actual-consumer/svg-flat/fresh-2.png",
+            "byteLength": 1006,
+            "sha256": "e2fed2658d2b00e31739a72f2183a3e7605fe525d2048f1d83019ae6aa7a0745"
+          }
+        },
+        {
+          "index": 3,
+          "comparison": {
+            "mean": 0.6116536458333334,
+            "max": 5
+          },
+          "active": {
+            "mean": 0.49898249898249897,
+            "max": 5
+          },
+          "roi": [
+            52,
+            142,
+            20,
+            111
+          ],
+          "pts": 0.25,
+          "referenceSha256": "e2fed2658d2b00e31739a72f2183a3e7605fe525d2048f1d83019ae6aa7a0745",
+          "reference": {
+            "path": "C:/tmps/model-archive-svg-real-consumer-20261012/attempt-02/actual-consumer/svg-flat/fresh-3.png",
+            "byteLength": 1006,
+            "sha256": "e2fed2658d2b00e31739a72f2183a3e7605fe525d2048f1d83019ae6aa7a0745"
+          }
+        },
+        {
+          "index": 4,
+          "comparison": {
+            "mean": 0.6116536458333334,
+            "max": 5
+          },
+          "active": {
+            "mean": 0.49898249898249897,
+            "max": 5
+          },
+          "roi": [
+            52,
+            142,
+            20,
+            111
+          ],
+          "pts": 0.333,
+          "referenceSha256": "e2fed2658d2b00e31739a72f2183a3e7605fe525d2048f1d83019ae6aa7a0745",
+          "reference": {
+            "path": "C:/tmps/model-archive-svg-real-consumer-20261012/attempt-02/actual-consumer/svg-flat/fresh-4.png",
+            "byteLength": 1006,
+            "sha256": "e2fed2658d2b00e31739a72f2183a3e7605fe525d2048f1d83019ae6aa7a0745"
+          }
+        },
+        {
+          "index": 5,
+          "comparison": {
+            "mean": 0.6116536458333334,
+            "max": 5
+          },
+          "active": {
+            "mean": 0.49898249898249897,
+            "max": 5
+          },
+          "roi": [
+            52,
+            142,
+            20,
+            111
+          ],
+          "pts": 0.417,
+          "referenceSha256": "e2fed2658d2b00e31739a72f2183a3e7605fe525d2048f1d83019ae6aa7a0745",
+          "reference": {
+            "path": "C:/tmps/model-archive-svg-real-consumer-20261012/attempt-02/actual-consumer/svg-flat/fresh-5.png",
+            "byteLength": 1006,
+            "sha256": "e2fed2658d2b00e31739a72f2183a3e7605fe525d2048f1d83019ae6aa7a0745"
+          }
+        },
+        {
+          "index": 6,
+          "comparison": {
+            "mean": 0.6116536458333334,
+            "max": 5
+          },
+          "active": {
+            "mean": 0.49898249898249897,
+            "max": 5
+          },
+          "roi": [
+            52,
+            142,
+            20,
+            111
+          ],
+          "pts": 0.5,
+          "referenceSha256": "e2fed2658d2b00e31739a72f2183a3e7605fe525d2048f1d83019ae6aa7a0745",
+          "reference": {
+            "path": "C:/tmps/model-archive-svg-real-consumer-20261012/attempt-02/actual-consumer/svg-flat/fresh-6.png",
+            "byteLength": 1006,
+            "sha256": "e2fed2658d2b00e31739a72f2183a3e7605fe525d2048f1d83019ae6aa7a0745"
+          }
+        },
+        {
+          "index": 7,
+          "comparison": {
+            "mean": 0.6116536458333334,
+            "max": 5
+          },
+          "active": {
+            "mean": 0.49898249898249897,
+            "max": 5
+          },
+          "roi": [
+            52,
+            142,
+            20,
+            111
+          ],
+          "pts": 0.583,
+          "referenceSha256": "e2fed2658d2b00e31739a72f2183a3e7605fe525d2048f1d83019ae6aa7a0745",
+          "reference": {
+            "path": "C:/tmps/model-archive-svg-real-consumer-20261012/attempt-02/actual-consumer/svg-flat/fresh-7.png",
+            "byteLength": 1006,
+            "sha256": "e2fed2658d2b00e31739a72f2183a3e7605fe525d2048f1d83019ae6aa7a0745"
+          }
+        },
+        {
+          "index": 8,
+          "comparison": {
+            "mean": 0.6116536458333334,
+            "max": 5
+          },
+          "active": {
+            "mean": 0.49898249898249897,
+            "max": 5
+          },
+          "roi": [
+            52,
+            142,
+            20,
+            111
+          ],
+          "pts": 0.667,
+          "referenceSha256": "e2fed2658d2b00e31739a72f2183a3e7605fe525d2048f1d83019ae6aa7a0745",
+          "reference": {
+            "path": "C:/tmps/model-archive-svg-real-consumer-20261012/attempt-02/actual-consumer/svg-flat/fresh-8.png",
+            "byteLength": 1006,
+            "sha256": "e2fed2658d2b00e31739a72f2183a3e7605fe525d2048f1d83019ae6aa7a0745"
+          }
+        },
+        {
+          "index": 9,
+          "comparison": {
+            "mean": 0.6116536458333334,
+            "max": 5
+          },
+          "active": {
+            "mean": 0.49898249898249897,
+            "max": 5
+          },
+          "roi": [
+            52,
+            142,
+            20,
+            111
+          ],
+          "pts": 0.75,
+          "referenceSha256": "e2fed2658d2b00e31739a72f2183a3e7605fe525d2048f1d83019ae6aa7a0745",
+          "reference": {
+            "path": "C:/tmps/model-archive-svg-real-consumer-20261012/attempt-02/actual-consumer/svg-flat/fresh-9.png",
+            "byteLength": 1006,
+            "sha256": "e2fed2658d2b00e31739a72f2183a3e7605fe525d2048f1d83019ae6aa7a0745"
+          }
+        },
+        {
+          "index": 10,
+          "comparison": {
+            "mean": 0.6116536458333334,
+            "max": 5
+          },
+          "active": {
+            "mean": 0.49898249898249897,
+            "max": 5
+          },
+          "roi": [
+            52,
+            142,
+            20,
+            111
+          ],
+          "pts": 0.833,
+          "referenceSha256": "e2fed2658d2b00e31739a72f2183a3e7605fe525d2048f1d83019ae6aa7a0745",
+          "reference": {
+            "path": "C:/tmps/model-archive-svg-real-consumer-20261012/attempt-02/actual-consumer/svg-flat/fresh-10.png",
+            "byteLength": 1006,
+            "sha256": "e2fed2658d2b00e31739a72f2183a3e7605fe525d2048f1d83019ae6aa7a0745"
+          }
+        },
+        {
+          "index": 11,
+          "comparison": {
+            "mean": 0.6116536458333334,
+            "max": 5
+          },
+          "active": {
+            "mean": 0.49898249898249897,
+            "max": 5
+          },
+          "roi": [
+            52,
+            142,
+            20,
+            111
+          ],
+          "pts": 0.917,
+          "referenceSha256": "e2fed2658d2b00e31739a72f2183a3e7605fe525d2048f1d83019ae6aa7a0745",
+          "reference": {
+            "path": "C:/tmps/model-archive-svg-real-consumer-20261012/attempt-02/actual-consumer/svg-flat/fresh-11.png",
+            "byteLength": 1006,
+            "sha256": "e2fed2658d2b00e31739a72f2183a3e7605fe525d2048f1d83019ae6aa7a0745"
+          }
+        },
+        {
+          "index": 12,
+          "comparison": {
+            "mean": 0.6116536458333334,
+            "max": 5
+          },
+          "active": {
+            "mean": 0.49898249898249897,
+            "max": 5
+          },
+          "roi": [
+            52,
+            142,
+            20,
+            111
+          ],
+          "pts": 1,
+          "referenceSha256": "e2fed2658d2b00e31739a72f2183a3e7605fe525d2048f1d83019ae6aa7a0745",
+          "reference": {
+            "path": "C:/tmps/model-archive-svg-real-consumer-20261012/attempt-02/actual-consumer/svg-flat/fresh-12.png",
+            "byteLength": 1006,
+            "sha256": "e2fed2658d2b00e31739a72f2183a3e7605fe525d2048f1d83019ae6aa7a0745"
+          }
+        }
+      ],
+      "statistics": {
+        "frames": 13,
+        "maxFullRgbMean": 0.6138237847222222,
+        "maxActiveRgbMean": 0.5046398046398046,
+        "maxPtsErrorSeconds": 0.00033333333333340764
+      },
+      "projectSemanticsUnchanged": true
+    },
+    {
+      "id": "svg-extrude",
+      "fixture": [
+        {
+          "relativePath": "hole.svg",
+          "path": "C:/tmps/model-archive-svg-real-consumer-20261012/attempt-02/svg-extrude/model-author-unavailable/hole.svg",
+          "byteLength": 192,
+          "sha256": "f830f60e9762807604c3ce8dda9480e5c13dbf18eb4a9d3c7793e85d812c096f"
+        }
+      ],
+      "exactCreatorScene": {
+        "path": "C:/tmps/model-archive-svg-real-consumer-20261012/attempt-02/svg-extrude/author-unavailable/model-feature-scene.ts",
+        "byteLength": 9276,
+        "sha256": "885839a75a040f302ae03162a4bbc96e4e81e81066e64e3dd54e8fa105b8b809"
+      },
+      "source": {
+        "path": "C:/tmps/model-archive-svg-real-consumer-20261012/attempt-02/svg-extrude/source.json",
+        "byteLength": 2500,
+        "sha256": "ea2342f0220269f14e977c0ab85957eea41bf53726acd0f816c1be37e4d72cf3"
+      },
+      "savedProject": {
+        "path": "C:/tmps/model-archive-svg-real-consumer-20261012/attempt-02/svg-extrude/saved-project.json",
+        "byteLength": 3145,
+        "sha256": "a2932ff25c288836ce4551895ef7a876e0f2101ea83d16cbb94260684a3764ef"
+      },
+      "resource": {
+        "id": "assets/hole.svg",
+        "kind": "model",
+        "mimeType": "image/svg+xml",
+        "byteLength": 192,
+        "sha256": "f830f60e9762807604c3ce8dda9480e5c13dbf18eb4a9d3c7793e85d812c096f",
+        "attachmentKey": "programmatic-sha256-f830f60e9762807604c3ce8dda9480e5c13dbf18eb4a9d3c7793e85d812c096f"
+      },
+      "reopened": {
+        "exactSource": true,
+        "exactSavedProject": true,
+        "originalAuthorAndModelDirectoriesUnavailable": true,
+        "revision": 1,
+        "reusedDocument": true
+      },
+      "restore": {
+        "sourceScene": {
+          "path": "C:/tmps/model-archive-svg-real-consumer-20261012/attempt-02/svg-extrude/restore-parent/build/source/model-feature-scene.ts",
+          "byteLength": 9276,
+          "sha256": "885839a75a040f302ae03162a4bbc96e4e81e81066e64e3dd54e8fa105b8b809"
+        },
+        "projectAndRevisionUnchanged": true
+      },
+      "inputProps": {
+        "scale": 0.02,
+        "position": [
+          -1,
+          1,
+          0
+        ],
+        "rotation": [
+          0.2,
+          -0.25,
+          0
+        ],
+        "rotationSpeed": [
+          0,
+          0,
+          0
+        ],
+        "backgroundColor": "#202b3b",
+        "camera": {
+          "position": [
+            0,
+            0,
+            4
+          ],
+          "target": [
+            0,
+            0,
+            0
+          ],
+          "fov": 37,
+          "near": 0.1,
+          "far": 1000
+        },
+        "assetKind": "svg",
+        "modelId": "assets/hole.svg",
+        "shape": {
+          "modeling": {
+            "kind": "extrude",
+            "depth": 8
+          },
+          "curveSegments": 8
+        }
+      },
+      "formalHttpBytesVerified": [
+        {
+          "id": "model-feature-scene.ts",
+          "sha256": "885839a75a040f302ae03162a4bbc96e4e81e81066e64e3dd54e8fa105b8b809",
+          "byteLength": 9276
+        },
+        {
+          "id": "_rocut/toolchain-lock.json",
+          "sha256": "7ed54a61bc865a29b6535b832d1c8024728ef306f4239c0ea5887ebcb5518ab9",
+          "byteLength": 7714
+        },
+        {
+          "id": "_rocut/compiled.html",
+          "sha256": "87dab064c4889ec0b0e5e563e9617f8cb8bd5ecfee0a4ee7d37c4cbeb917b6ab",
+          "byteLength": 2153856
+        },
+        {
+          "id": "assets/hole.svg",
+          "sha256": "f830f60e9762807604c3ce8dda9480e5c13dbf18eb4a9d3c7793e85d812c096f",
+          "byteLength": 192
+        }
+      ],
+      "toolchainLock": {
+        "path": "C:/tmps/model-archive-svg-real-consumer-20261012/attempt-02/svg-extrude/restore-parent/build/metadata/toolchain-lock.json",
+        "byteLength": 7714,
+        "sha256": "7ed54a61bc865a29b6535b832d1c8024728ef306f4239c0ea5887ebcb5518ab9"
+      },
+      "threeAssetFeatures": {
+        "version": 1,
+        "profile": "svg-animation-v1",
+        "files": [
+          {
+            "path": "C:/tmps/three-assets-shared-delivery-20261012/attempt-02/toolchain/node_modules/@elftia/three-assets/dist/svg-model.js",
+            "byteLength": 12195,
+            "sha256": "33b34bfe83bace1e6b2743887b3d97f0d7a8da460cc3ed15932df20b2843bdb3"
+          },
+          {
+            "path": "C:/tmps/three-assets-shared-delivery-20261012/attempt-02/toolchain/node_modules/@elftia/three-assets/dist/model-animation.js",
+            "byteLength": 3212,
+            "sha256": "1a29fb52c4cbed57a1096e8759f660a61fd14a925dc4756327e3be45b501a5c0"
+          },
+          {
+            "path": "C:/tmps/three-assets-shared-delivery-20261012/attempt-02/toolchain/node_modules/@elftia/three-assets/dist/model-instance.js",
+            "byteLength": 4000,
+            "sha256": "8873ef41fbb97a2b48d802ae2b9fbecfd15c9bbcc6653612cbdcba49e4d18b1f"
+          },
+          {
+            "path": "C:/tmps/three-assets-shared-delivery-20261012/attempt-02/toolchain/node_modules/@elftia/three-assets/dist/ownership.js",
+            "byteLength": 5609,
+            "sha256": "ea09bfe7194ce298b40cfed4296b51ee89331e7d3959b37037f9fdf16f582bf9"
+          },
+          {
+            "path": "C:/tmps/three-assets-shared-delivery-20261012/attempt-02/toolchain/node_modules/@elftia/three-assets/dist/types.js",
+            "byteLength": 208,
+            "sha256": "537af576d1974a438c56861999b08f36f02666847aa3ce04d185a381959a0b88"
+          },
+          {
+            "path": "C:/tmps/three-assets-shared-delivery-20261012/attempt-02/toolchain/node_modules/@elftia/three-assets/dist/index.js",
+            "byteLength": 390,
+            "sha256": "ff474265ab2dd1600b02377a17064c8a8f9fbc85a88b3b11109ee87a28aa848e"
+          }
+        ]
+      },
+      "threeAssetCodecs": {
+        "version": 1,
+        "profile": "offline-codecs-v1",
+        "files": [
+          {
+            "path": "C:/tmps/three-assets-shared-delivery-20261012/attempt-02/toolchain/node_modules/@elftia/three-assets/dist/draco.js",
+            "byteLength": 10946,
+            "sha256": "6482f7a54fd1b86344b3533eb67f900eebffe16c4be9cf4572f9a1006f67ac67"
+          },
+          {
+            "path": "C:/tmps/three-assets-shared-delivery-20261012/attempt-02/toolchain/node_modules/@elftia/three-assets/dist/draco-decoder.js",
+            "byteLength": 2542162,
+            "sha256": "d9903097ed35d8cb2836494632db5e93fe641f5a7e31a32630e36aa737456407"
+          },
+          {
+            "path": "C:/tmps/three-assets-shared-delivery-20261012/attempt-02/toolchain/node_modules/@elftia/three-assets/dist/glb.js",
+            "byteLength": 7081,
+            "sha256": "4b309c4aa339352b6d9952b7dd563a62c504955707410b2ce77a8d21712994e9"
+          },
+          {
+            "path": "C:/tmps/three-assets-shared-delivery-20261012/attempt-02/toolchain/node_modules/@elftia/three-assets/dist/glb-validation.js",
+            "byteLength": 9591,
+            "sha256": "01fce749d19138599a57b5f33bf9693a126112983a2cb0ba84e9fca5c92fefc8"
+          },
+          {
+            "path": "C:/tmps/three-assets-shared-delivery-20261012/attempt-02/toolchain/node_modules/@elftia/three-assets/dist/ktx2-glb.js",
+            "byteLength": 1477,
+            "sha256": "444a719074e63e97368f531a2cdbad104bc3f65af75d2a2e502575302529b990"
+          },
+          {
+            "path": "C:/tmps/three-assets-shared-delivery-20261012/attempt-02/toolchain/node_modules/@elftia/three-assets/dist/ktx2.js",
+            "byteLength": 9599,
+            "sha256": "fe20c1de5dbf3f7c445068ec93dc5a1947e2e15e7ddcb958125ff65075dfcc15"
+          },
+          {
+            "path": "C:/tmps/three-assets-shared-delivery-20261012/attempt-02/toolchain/node_modules/@elftia/three-assets/dist/ktx2-basis.js",
+            "byteLength": 77202,
+            "sha256": "4d5b03a04398a95e6bafbcaeff6c214a049516626a88491b0b53c3ec723decc2"
+          },
+          {
+            "path": "C:/tmps/three-assets-shared-delivery-20261012/attempt-02/toolchain/node_modules/@elftia/three-assets/dist/ktx2-wasm.js",
+            "byteLength": 703257,
+            "sha256": "80f486c446c760f5cadd359578a70e71ca70152b245909c46254318315071a50"
+          },
+          {
+            "path": "C:/tmps/three-assets-shared-delivery-20261012/attempt-02/toolchain/node_modules/@elftia/three-assets/dist/model.js",
+            "byteLength": 5897,
+            "sha256": "8d6d26c9f0d7ee25a38e27f8a6fb6767d42732b9e921b9ecefa6f70100b3e6f4"
+          },
+          {
+            "path": "C:/tmps/three-assets-shared-delivery-20261012/attempt-02/toolchain/node_modules/@elftia/three-assets/DRACO-LICENSE.txt",
+            "byteLength": 13898,
+            "sha256": "d3709b0fb4b8a94bbb1d02b8a2e484f258b0d9c5c5a01f940391f3fe662cd1a4"
+          },
+          {
+            "path": "C:/tmps/three-assets-shared-delivery-20261012/attempt-02/toolchain/node_modules/@elftia/three-assets/src/ktx2-basis-LICENSE.txt",
+            "byteLength": 11348,
+            "sha256": "9068f389fe23eac9d714ad942ed90541f7d2095cdcf9c3b9839cf6d9b459db92"
+          },
+          {
+            "path": "C:/tmps/three-assets-shared-delivery-20261012/attempt-02/toolchain/node_modules/@elftia/three-assets/CODEC-PROVENANCE.md",
+            "byteLength": 1603,
+            "sha256": "a5cd0b858123727621e6a22b06ac90e7c5dcbc6cdbde076101614b344381796c"
+          }
+        ]
+      },
+      "gpu": [
+        {
+          "index": 0,
+          "sha256": "7e70b8cae545fa77a508213c1db9ab30cecb8fad566557f2ca3e27d51670a60f",
+          "visible": {
+            "count": 6929,
+            "rect": [
+              49,
+              142,
+              20,
+              114
+            ]
+          }
+        },
+        {
+          "index": 6,
+          "sha256": "7e70b8cae545fa77a508213c1db9ab30cecb8fad566557f2ca3e27d51670a60f",
+          "visible": {
+            "count": 6929,
+            "rect": [
+              49,
+              142,
+              20,
+              114
+            ]
+          }
+        },
+        {
+          "index": 12,
+          "sha256": "7e70b8cae545fa77a508213c1db9ab30cecb8fad566557f2ca3e27d51670a60f",
+          "visible": {
+            "count": 6929,
+            "rect": [
+              49,
+              142,
+              20,
+              114
+            ]
+          }
+        }
+      ],
+      "reopenedSavedProjectExact": true,
+      "job": {
+        "id": "0f26011f65c935fe",
+        "status": "completed",
+        "options": {
+          "format": "webm",
+          "quality": "very_high",
+          "videoChroma": "444",
+          "includeAudio": false,
+          "range": {
+            "startTime": 0,
+            "endTime": 130000
+          }
+        }
+      },
+      "actualPolicy": {
+        "request": {
+          "codec": "vp9",
+          "format": "webm",
+          "quality": "very_high",
+          "frameRate": {
+            "numerator": 12,
+            "denominator": 1
+          },
+          "width": 192,
+          "height": 128,
+          "videoChroma": "444"
+        },
+        "response": {
+          "bitrate": 148000,
+          "default": true,
+          "fullCodecString": "vp09.01.10.08.03.01.13.01.01",
+          "keyFrameIntervalFrames": 24,
+          "kind": "vp9Quantizer",
+          "nativeConfig": {
+            "alpha": "discard",
+            "bitrate": 148000,
+            "bitrateMode": "quantizer",
+            "codec": "vp09.01.10.08.03.01.13.01.01",
+            "displayHeight": 128,
+            "displayWidth": 192,
+            "framerate": 12,
+            "hardwareAcceleration": "prefer-software",
+            "height": 128,
+            "latencyMode": "quality",
+            "width": 192
+          },
+          "quantizer": 8
+        },
+        "boundary": "actual WebAssembly exports.resolveVideoExportJson invocation, copied input/output before caller frees returned bytes"
+      },
+      "nativeEncoder": {
+        "codec": "vp09.01.10.08.03.01.13.01.01",
+        "width": 192,
+        "height": 128,
+        "displayWidth": 192,
+        "displayHeight": 128,
+        "bitrate": 148000,
+        "framerate": 12,
+        "alpha": "discard",
+        "bitrateMode": "quantizer",
+        "latencyMode": "quality",
+        "hardwareAcceleration": "prefer-software"
+      },
+      "actualEncodeCount": 13,
+      "allActualEncodeQuantizers": 8,
+      "video": {
+        "path": "C:/tmps/model-archive-svg-real-consumer-20261012/attempt-02/actual-consumer/svg-extrude/production.webm",
+        "byteLength": 3174,
+        "sha256": "315dafcba1069fc1e81afd4ab349aef0f5af8fa21b336f8fbc127fe7469ae464"
+      },
+      "decoded": {
+        "path": "C:/tmps/model-archive-svg-real-consumer-20261012/attempt-02/actual-consumer/svg-extrude/decoded.rgba",
+        "byteLength": 1277952,
+        "sha256": "41ff652f0f740e5f56b60adf38cd4bd4a758589e22e96131aa647cdfad75e69f"
+      },
+      "ffprobe": {
+        "path": "C:/tmps/model-archive-svg-real-consumer-20261012/attempt-02/actual-consumer/svg-extrude/ffprobe.json",
+        "byteLength": 1396,
+        "sha256": "34cc1bfb50e7586b6236519f391d0760fc3c071d4a46c72d43f263fe69fc5e05"
+      },
+      "frames": [
+        {
+          "index": 0,
+          "comparison": {
+            "mean": 0.6127115885416666,
+            "max": 6
+          },
+          "active": {
+            "mean": 0.5107145580721422,
+            "max": 6
+          },
+          "roi": [
+            49,
+            142,
+            20,
+            114
+          ],
+          "pts": 0,
+          "referenceSha256": "7e70b8cae545fa77a508213c1db9ab30cecb8fad566557f2ca3e27d51670a60f",
+          "reference": {
+            "path": "C:/tmps/model-archive-svg-real-consumer-20261012/attempt-02/actual-consumer/svg-extrude/fresh-0.png",
+            "byteLength": 1038,
+            "sha256": "7e70b8cae545fa77a508213c1db9ab30cecb8fad566557f2ca3e27d51670a60f"
+          }
+        },
+        {
+          "index": 1,
+          "comparison": {
+            "mean": 0.6111382378472222,
+            "max": 6
+          },
+          "active": {
+            "mean": 0.5074734995805689,
+            "max": 6
+          },
+          "roi": [
+            49,
+            142,
+            20,
+            114
+          ],
+          "pts": 0.083,
+          "referenceSha256": "7e70b8cae545fa77a508213c1db9ab30cecb8fad566557f2ca3e27d51670a60f",
+          "reference": {
+            "path": "C:/tmps/model-archive-svg-real-consumer-20261012/attempt-02/actual-consumer/svg-extrude/fresh-1.png",
+            "byteLength": 1038,
+            "sha256": "7e70b8cae545fa77a508213c1db9ab30cecb8fad566557f2ca3e27d51670a60f"
+          }
+        },
+        {
+          "index": 2,
+          "comparison": {
+            "mean": 0.6111111111111112,
+            "max": 6
+          },
+          "active": {
+            "mean": 0.507435369480668,
+            "max": 6
+          },
+          "roi": [
+            49,
+            142,
+            20,
+            114
+          ],
+          "pts": 0.167,
+          "referenceSha256": "7e70b8cae545fa77a508213c1db9ab30cecb8fad566557f2ca3e27d51670a60f",
+          "reference": {
+            "path": "C:/tmps/model-archive-svg-real-consumer-20261012/attempt-02/actual-consumer/svg-extrude/fresh-2.png",
+            "byteLength": 1038,
+            "sha256": "7e70b8cae545fa77a508213c1db9ab30cecb8fad566557f2ca3e27d51670a60f"
+          }
+        },
+        {
+          "index": 3,
+          "comparison": {
+            "mean": 0.6111111111111112,
+            "max": 6
+          },
+          "active": {
+            "mean": 0.507435369480668,
+            "max": 6
+          },
+          "roi": [
+            49,
+            142,
+            20,
+            114
+          ],
+          "pts": 0.25,
+          "referenceSha256": "7e70b8cae545fa77a508213c1db9ab30cecb8fad566557f2ca3e27d51670a60f",
+          "reference": {
+            "path": "C:/tmps/model-archive-svg-real-consumer-20261012/attempt-02/actual-consumer/svg-extrude/fresh-3.png",
+            "byteLength": 1038,
+            "sha256": "7e70b8cae545fa77a508213c1db9ab30cecb8fad566557f2ca3e27d51670a60f"
+          }
+        },
+        {
+          "index": 4,
+          "comparison": {
+            "mean": 0.6111111111111112,
+            "max": 6
+          },
+          "active": {
+            "mean": 0.507435369480668,
+            "max": 6
+          },
+          "roi": [
+            49,
+            142,
+            20,
+            114
+          ],
+          "pts": 0.333,
+          "referenceSha256": "7e70b8cae545fa77a508213c1db9ab30cecb8fad566557f2ca3e27d51670a60f",
+          "reference": {
+            "path": "C:/tmps/model-archive-svg-real-consumer-20261012/attempt-02/actual-consumer/svg-extrude/fresh-4.png",
+            "byteLength": 1038,
+            "sha256": "7e70b8cae545fa77a508213c1db9ab30cecb8fad566557f2ca3e27d51670a60f"
+          }
+        },
+        {
+          "index": 5,
+          "comparison": {
+            "mean": 0.6111111111111112,
+            "max": 6
+          },
+          "active": {
+            "mean": 0.507435369480668,
+            "max": 6
+          },
+          "roi": [
+            49,
+            142,
+            20,
+            114
+          ],
+          "pts": 0.417,
+          "referenceSha256": "7e70b8cae545fa77a508213c1db9ab30cecb8fad566557f2ca3e27d51670a60f",
+          "reference": {
+            "path": "C:/tmps/model-archive-svg-real-consumer-20261012/attempt-02/actual-consumer/svg-extrude/fresh-5.png",
+            "byteLength": 1038,
+            "sha256": "7e70b8cae545fa77a508213c1db9ab30cecb8fad566557f2ca3e27d51670a60f"
+          }
+        },
+        {
+          "index": 6,
+          "comparison": {
+            "mean": 0.6111111111111112,
+            "max": 6
+          },
+          "active": {
+            "mean": 0.507435369480668,
+            "max": 6
+          },
+          "roi": [
+            49,
+            142,
+            20,
+            114
+          ],
+          "pts": 0.5,
+          "referenceSha256": "7e70b8cae545fa77a508213c1db9ab30cecb8fad566557f2ca3e27d51670a60f",
+          "reference": {
+            "path": "C:/tmps/model-archive-svg-real-consumer-20261012/attempt-02/actual-consumer/svg-extrude/fresh-6.png",
+            "byteLength": 1038,
+            "sha256": "7e70b8cae545fa77a508213c1db9ab30cecb8fad566557f2ca3e27d51670a60f"
+          }
+        },
+        {
+          "index": 7,
+          "comparison": {
+            "mean": 0.6111111111111112,
+            "max": 6
+          },
+          "active": {
+            "mean": 0.507435369480668,
+            "max": 6
+          },
+          "roi": [
+            49,
+            142,
+            20,
+            114
+          ],
+          "pts": 0.583,
+          "referenceSha256": "7e70b8cae545fa77a508213c1db9ab30cecb8fad566557f2ca3e27d51670a60f",
+          "reference": {
+            "path": "C:/tmps/model-archive-svg-real-consumer-20261012/attempt-02/actual-consumer/svg-extrude/fresh-7.png",
+            "byteLength": 1038,
+            "sha256": "7e70b8cae545fa77a508213c1db9ab30cecb8fad566557f2ca3e27d51670a60f"
+          }
+        },
+        {
+          "index": 8,
+          "comparison": {
+            "mean": 0.6111111111111112,
+            "max": 6
+          },
+          "active": {
+            "mean": 0.507435369480668,
+            "max": 6
+          },
+          "roi": [
+            49,
+            142,
+            20,
+            114
+          ],
+          "pts": 0.667,
+          "referenceSha256": "7e70b8cae545fa77a508213c1db9ab30cecb8fad566557f2ca3e27d51670a60f",
+          "reference": {
+            "path": "C:/tmps/model-archive-svg-real-consumer-20261012/attempt-02/actual-consumer/svg-extrude/fresh-8.png",
+            "byteLength": 1038,
+            "sha256": "7e70b8cae545fa77a508213c1db9ab30cecb8fad566557f2ca3e27d51670a60f"
+          }
+        },
+        {
+          "index": 9,
+          "comparison": {
+            "mean": 0.6111111111111112,
+            "max": 6
+          },
+          "active": {
+            "mean": 0.507435369480668,
+            "max": 6
+          },
+          "roi": [
+            49,
+            142,
+            20,
+            114
+          ],
+          "pts": 0.75,
+          "referenceSha256": "7e70b8cae545fa77a508213c1db9ab30cecb8fad566557f2ca3e27d51670a60f",
+          "reference": {
+            "path": "C:/tmps/model-archive-svg-real-consumer-20261012/attempt-02/actual-consumer/svg-extrude/fresh-9.png",
+            "byteLength": 1038,
+            "sha256": "7e70b8cae545fa77a508213c1db9ab30cecb8fad566557f2ca3e27d51670a60f"
+          }
+        },
+        {
+          "index": 10,
+          "comparison": {
+            "mean": 0.6111111111111112,
+            "max": 6
+          },
+          "active": {
+            "mean": 0.507435369480668,
+            "max": 6
+          },
+          "roi": [
+            49,
+            142,
+            20,
+            114
+          ],
+          "pts": 0.833,
+          "referenceSha256": "7e70b8cae545fa77a508213c1db9ab30cecb8fad566557f2ca3e27d51670a60f",
+          "reference": {
+            "path": "C:/tmps/model-archive-svg-real-consumer-20261012/attempt-02/actual-consumer/svg-extrude/fresh-10.png",
+            "byteLength": 1038,
+            "sha256": "7e70b8cae545fa77a508213c1db9ab30cecb8fad566557f2ca3e27d51670a60f"
+          }
+        },
+        {
+          "index": 11,
+          "comparison": {
+            "mean": 0.6111111111111112,
+            "max": 6
+          },
+          "active": {
+            "mean": 0.507435369480668,
+            "max": 6
+          },
+          "roi": [
+            49,
+            142,
+            20,
+            114
+          ],
+          "pts": 0.917,
+          "referenceSha256": "7e70b8cae545fa77a508213c1db9ab30cecb8fad566557f2ca3e27d51670a60f",
+          "reference": {
+            "path": "C:/tmps/model-archive-svg-real-consumer-20261012/attempt-02/actual-consumer/svg-extrude/fresh-11.png",
+            "byteLength": 1038,
+            "sha256": "7e70b8cae545fa77a508213c1db9ab30cecb8fad566557f2ca3e27d51670a60f"
+          }
+        },
+        {
+          "index": 12,
+          "comparison": {
+            "mean": 0.6111111111111112,
+            "max": 6
+          },
+          "active": {
+            "mean": 0.507435369480668,
+            "max": 6
+          },
+          "roi": [
+            49,
+            142,
+            20,
+            114
+          ],
+          "pts": 1,
+          "referenceSha256": "7e70b8cae545fa77a508213c1db9ab30cecb8fad566557f2ca3e27d51670a60f",
+          "reference": {
+            "path": "C:/tmps/model-archive-svg-real-consumer-20261012/attempt-02/actual-consumer/svg-extrude/fresh-12.png",
+            "byteLength": 1038,
+            "sha256": "7e70b8cae545fa77a508213c1db9ab30cecb8fad566557f2ca3e27d51670a60f"
+          }
+        }
+      ],
+      "statistics": {
+        "frames": 13,
+        "maxFullRgbMean": 0.6127115885416666,
+        "maxActiveRgbMean": 0.5107145580721422,
+        "maxPtsErrorSeconds": 0.00033333333333340764
+      },
+      "projectSemanticsUnchanged": true
+    }
+  ],
+  "cpuRejections": [
+    {
+      "id": "missing-PNG-closure",
+      "status": 422,
+      "result": {
+        "error": "Undeclared or missing glTF dependency: textures/base.png"
+      },
+      "projectAndRevisionUnchanged": true
+    },
+    {
+      "id": "extra-unused-closure",
+      "status": 422,
+      "result": {
+        "error": "Declared glTF closure contains unused files"
+      },
+      "projectAndRevisionUnchanged": true
+    },
+    {
+      "id": "external-gltf-existing-output-no-overwrite",
+      "status": 422,
+      "result": {
+        "error": "EEXIST: file already exists, mkdir 'C:\\tmps\\model-archive-svg-real-consumer-20261012\\attempt-02\\external-gltf\\restore-parent\\build'"
+      },
+      "projectAndRevisionUnchanged": true
+    },
+    {
+      "id": "runtime-GLB-not-author-manifest",
+      "status": 422,
+      "result": {
+        "error": "Model archive must be a source resource"
+      },
+      "projectAndRevisionUnchanged": true
+    },
+    {
+      "id": "svg-flat-existing-output-no-overwrite",
+      "status": 422,
+      "result": {
+        "error": "EEXIST: file already exists, mkdir 'C:\\tmps\\model-archive-svg-real-consumer-20261012\\attempt-02\\svg-flat\\restore-parent\\build'"
+      },
+      "projectAndRevisionUnchanged": true
+    },
+    {
+      "id": "svg-extrude-existing-output-no-overwrite",
+      "status": 422,
+      "result": {
+        "error": "EEXIST: file already exists, mkdir 'C:\\tmps\\model-archive-svg-real-consumer-20261012\\attempt-02\\svg-extrude\\restore-parent\\build'"
+      },
+      "projectAndRevisionUnchanged": true
+    }
+  ],
+  "actualDriverSvgRejections": [
+    {
+      "id": "svg-script",
+      "status": 422,
+      "contentType": "application/json",
+      "error": "{\"error\":\"HTML frame evaluation failed: Error: AssetError: Unsupported SVG element\\n    at <anonymous>:29:19\"}",
+      "noRasterFallback": true
+    },
+    {
+      "id": "svg-external-image",
+      "status": 422,
+      "contentType": "application/json",
+      "error": "{\"error\":\"HTML frame evaluation failed: Error: AssetError: Unsupported SVG element\\n    at <anonymous>:29:19\"}",
+      "noRasterFallback": true
+    },
+    {
+      "id": "svg-stroke",
+      "status": 422,
+      "contentType": "application/json",
+      "error": "{\"error\":\"HTML frame evaluation failed: Error: AssetError: Unsupported SVG attribute or reference\\n    at <anonymous>:29:19\"}",
+      "noRasterFallback": true
+    }
+  ],
+  "negativeProjectAndRevisionUnchanged": true,
+  "flatVsExtrude": {
+    "mean": 4.3221435546875,
+    "max": 203
+  },
+  "cleanup": {
+    "cpuHostsClosed": [
+      {
+        "id": "external-gltf",
+        "stage": "prepare",
+        "hostClosed": true,
+        "pid": 31588
+      },
+      {
+        "id": "external-gltf",
+        "stage": "reopen-restore",
+        "hostClosed": true,
+        "pid": 20324
+      },
+      {
+        "id": "svg-flat",
+        "stage": "prepare",
+        "hostClosed": true,
+        "pid": 31088
+      },
+      {
+        "id": "svg-flat",
+        "stage": "reopen-restore",
+        "hostClosed": true,
+        "pid": 62540
+      },
+      {
+        "id": "svg-extrude",
+        "stage": "prepare",
+        "hostClosed": true,
+        "pid": 41804
+      },
+      {
+        "id": "svg-extrude",
+        "stage": "reopen-restore",
+        "hostClosed": true,
+        "pid": 51112
+      }
+    ],
+    "negativePreparationHostClosed": true,
+    "gpuHostsAndBrowserClosed": [
+      {
+        "id": "external-gltf",
+        "stage": "render",
+        "hostClosed": true
+      },
+      {
+        "id": "external-gltf",
+        "stage": "reopened-export",
+        "hostClosed": true
+      },
+      {
+        "id": "svg-flat",
+        "stage": "render",
+        "hostClosed": true
+      },
+      {
+        "id": "svg-flat",
+        "stage": "reopened-export",
+        "hostClosed": true
+      },
+      {
+        "id": "svg-extrude",
+        "stage": "render",
+        "hostClosed": true
+      },
+      {
+        "id": "svg-extrude",
+        "stage": "reopened-export",
+        "hostClosed": true
+      },
+      {
+        "stage": "negative",
+        "hostClosed": true
+      },
+      {
+        "browserClosed": true
+      }
+    ],
+    "pageErrors": [],
+    "externalNetworkRequests": [],
+    "auditedOwnedRunnerBrowserAndHostProcessesAbsent": [
+      48924,
+      5060,
+      64112,
+      59884
+    ],
+    "gpuReleased": true
+  },
+  "limits": [
+    "Finite self-authored four-vertex external textured glTF and one static filled SVG with hole and circle, flat/extrude; not all glTF/SVG/material/device inputs.",
+    "Direct raw JSON glTF runtime model descriptor remains unsupported; explicit archive import is the tested supported author entry.",
+    "No installed package/Electron/cross-host/worker acceptance, no editor UI/history interaction claim.",
+    "Formal HTTP archived source/resource byte identity verified separately in CPU stage, not represented as in-frame fetch instrumentation.",
+    "SVG subset script/external-image/stroke rejected by actual ordinary driver without raster fallback; this does not extend supported SVG subset.",
+    "Exact Creator scene bytes preserved; no shared loader, runtime, production or dependency installation changes."
+  ]
+}

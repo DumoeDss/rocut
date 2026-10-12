@@ -1,0 +1,1462 @@
+{
+  "version": 1,
+  "status": "passed-finite-real-consumer",
+  "scope": "Actual delivered offline Draco indexed triangle and KTX2/Basis ETC1S and UASTC textured GLBs, formal resource archive/compiler, ordinary production browser frame driver, three normal reopened SceneExporter q8-444 jobs and 39 FFmpeg decoded frames. No CPU-render simulation, author decoder download or model download.",
+  "runtime": {
+    "path": "C:/tmps/rocut-integration-delivery-20261012-liquid-domain-04/runtime",
+    "producerReceipt": "C:/tmps/rocut-integration-delivery-20261012-liquid-domain-04/integration-receipt.json",
+    "producerReceiptSha256": "6b541c39044c147488a3df503208ca5bfd4297d55cf979c3816e103d975aa3bf",
+    "allRuntimeFilesVerifiedBeforeAndAfter": 364,
+    "criticalPins": [
+      {
+        "path": "C:\\tmps\\rocut-integration-delivery-20261012-liquid-domain-04\\runtime\\opencut_wasm_bg.wasm",
+        "sha256": "8afce2680db2514a6f0c01e2fc563506dadef2f73ab15dd0ddf47c82d01fea30"
+      },
+      {
+        "path": "C:\\tmps\\rocut-integration-delivery-20261012-liquid-domain-04\\runtime\\rocut.mjs",
+        "sha256": "22b495d2f25d6bb35b7232c4eb656487a060403cfb7276f5b2809c0497c5040e"
+      },
+      {
+        "path": "C:\\tmps\\rocut-integration-delivery-20261012-liquid-domain-04\\runtime\\surface\\assets\\app-C_1y5_4F.js",
+        "sha256": "cd19d6a7f906d84f673952fbb78d2a59fd3d7f5542989097f76d8ccb6995dc8f"
+      },
+      {
+        "path": "C:\\tmps\\rocut-integration-delivery-20261012-liquid-domain-04\\runtime\\surface\\assets\\opencut_wasm_bg-DEtUTTGM.wasm",
+        "sha256": "8afce2680db2514a6f0c01e2fc563506dadef2f73ab15dd0ddf47c82d01fea30"
+      },
+      {
+        "path": "C:\\tmps\\rocut-integration-delivery-20261012-liquid-domain-04\\runtime\\surface\\assets\\surface-react-identity-probe-S8zpDyXI.js",
+        "sha256": "74a9ffe870ef0e729d6252a9fbaa99bcb48a44f966e06d7be3554e120d01aa06"
+      },
+      {
+        "path": "C:\\tmps\\rocut-integration-delivery-20261012-liquid-domain-04\\runtime\\surface\\index.html",
+        "sha256": "39602f3fe59eafeeef7b77c28a58e67f08fce7fdf3a4b8b67a533924df1cf900"
+      }
+    ]
+  },
+  "package": {
+    "path": "C:/tmps/three-assets-shared-delivery-20261012/attempt-02/toolchain/node_modules/@elftia/three-assets",
+    "version": "0.1.1",
+    "three": "0.185.1",
+    "archive": {
+      "path": "C:/tmps/three-assets-shared-delivery-20261012/attempt-02/elftia-three-assets-0.1.1.tgz",
+      "sha256": "fdd03f1f1353b1c9150aec4e54ed181f42fc0d9b7415569d4a53a62f04adb4ff"
+    },
+    "producerReceipt": {
+      "path": "C:/tmps/three-assets-shared-delivery-20261012/attempt-02/receipt-final-v2.json",
+      "sha256": "bb511a1bf7b2940498c2c79ab6c56c5522282e9e4c202a2a3b0891dd8766b1db"
+    },
+    "profile": "offline-codecs-v1",
+    "codecFiles": [
+      {
+        "path": "C:/tmps/three-assets-shared-delivery-20261012/attempt-02/toolchain/node_modules/@elftia/three-assets/dist/draco.js",
+        "byteLength": 10946,
+        "sha256": "6482f7a54fd1b86344b3533eb67f900eebffe16c4be9cf4572f9a1006f67ac67"
+      },
+      {
+        "path": "C:/tmps/three-assets-shared-delivery-20261012/attempt-02/toolchain/node_modules/@elftia/three-assets/dist/draco-decoder.js",
+        "byteLength": 2542162,
+        "sha256": "d9903097ed35d8cb2836494632db5e93fe641f5a7e31a32630e36aa737456407"
+      },
+      {
+        "path": "C:/tmps/three-assets-shared-delivery-20261012/attempt-02/toolchain/node_modules/@elftia/three-assets/dist/glb.js",
+        "byteLength": 7081,
+        "sha256": "4b309c4aa339352b6d9952b7dd563a62c504955707410b2ce77a8d21712994e9"
+      },
+      {
+        "path": "C:/tmps/three-assets-shared-delivery-20261012/attempt-02/toolchain/node_modules/@elftia/three-assets/dist/glb-validation.js",
+        "byteLength": 9591,
+        "sha256": "01fce749d19138599a57b5f33bf9693a126112983a2cb0ba84e9fca5c92fefc8"
+      },
+      {
+        "path": "C:/tmps/three-assets-shared-delivery-20261012/attempt-02/toolchain/node_modules/@elftia/three-assets/dist/ktx2-glb.js",
+        "byteLength": 1477,
+        "sha256": "444a719074e63e97368f531a2cdbad104bc3f65af75d2a2e502575302529b990"
+      },
+      {
+        "path": "C:/tmps/three-assets-shared-delivery-20261012/attempt-02/toolchain/node_modules/@elftia/three-assets/dist/ktx2.js",
+        "byteLength": 9599,
+        "sha256": "fe20c1de5dbf3f7c445068ec93dc5a1947e2e15e7ddcb958125ff65075dfcc15"
+      },
+      {
+        "path": "C:/tmps/three-assets-shared-delivery-20261012/attempt-02/toolchain/node_modules/@elftia/three-assets/dist/ktx2-basis.js",
+        "byteLength": 77202,
+        "sha256": "4d5b03a04398a95e6bafbcaeff6c214a049516626a88491b0b53c3ec723decc2"
+      },
+      {
+        "path": "C:/tmps/three-assets-shared-delivery-20261012/attempt-02/toolchain/node_modules/@elftia/three-assets/dist/ktx2-wasm.js",
+        "byteLength": 703257,
+        "sha256": "80f486c446c760f5cadd359578a70e71ca70152b245909c46254318315071a50"
+      },
+      {
+        "path": "C:/tmps/three-assets-shared-delivery-20261012/attempt-02/toolchain/node_modules/@elftia/three-assets/dist/model.js",
+        "byteLength": 5897,
+        "sha256": "8d6d26c9f0d7ee25a38e27f8a6fb6767d42732b9e921b9ecefa6f70100b3e6f4"
+      },
+      {
+        "path": "C:/tmps/three-assets-shared-delivery-20261012/attempt-02/toolchain/node_modules/@elftia/three-assets/DRACO-LICENSE.txt",
+        "byteLength": 13898,
+        "sha256": "d3709b0fb4b8a94bbb1d02b8a2e484f258b0d9c5c5a01f940391f3fe662cd1a4"
+      },
+      {
+        "path": "C:/tmps/three-assets-shared-delivery-20261012/attempt-02/toolchain/node_modules/@elftia/three-assets/src/ktx2-basis-LICENSE.txt",
+        "byteLength": 11348,
+        "sha256": "9068f389fe23eac9d714ad942ed90541f7d2095cdcf9c3b9839cf6d9b459db92"
+      },
+      {
+        "path": "C:/tmps/three-assets-shared-delivery-20261012/attempt-02/toolchain/node_modules/@elftia/three-assets/CODEC-PROVENANCE.md",
+        "byteLength": 1603,
+        "sha256": "a5cd0b858123727621e6a22b06ac90e7c5dcbc6cdbde076101614b344381796c"
+      }
+    ],
+    "embeddedOriginalBasisWasmSha256": "6cf17dc889352c42e9acf8897107978d127005fe3386c36a0e3845e27967630a",
+    "featureProfilePresentButNotAcceptedHere": "svg-animation-v1"
+  },
+  "receipts": [
+    {
+      "path": "C:/tmps/offline-assets-real-consumer-20261012/fixture-receipt.json",
+      "sha256": "9baa20e90256851915d24584c770543720ae05f23ba30311dd42c5b991c4af1c"
+    },
+    {
+      "path": "C:/tmps/offline-assets-real-consumer-20261012/preparation-too-small-cpu-budget.json",
+      "sha256": "703bda860d9eb88865c3f50c6032873739b67d59caa39a4b8e9a6b3d2afe993d"
+    },
+    {
+      "path": "C:/tmps/offline-assets-real-consumer-20261012/preparation-receipt.json",
+      "sha256": "133955dbf2824184a05d6d177e7e95cb00b6b8c3c4f9cf97edd1f4bc127f70fd"
+    },
+    {
+      "path": "C:/tmps/offline-assets-real-consumer-20261012/actual-consumer/receipt.json",
+      "sha256": "455a47623461b14612255dcb38a03521ec293572378bb62d72eaf201208e5dc0"
+    },
+    {
+      "path": "C:/tmps/offline-assets-real-consumer-20261012/served-byte-receipt.json",
+      "sha256": "be82a2f7cde309230d189589d39d2a9085c5bfe74c3cd4def991687c7895676b"
+    },
+    {
+      "path": "C:/tmps/offline-assets-real-consumer-20261012/closure-audit.json",
+      "sha256": "e3892049f7139d8bd5cae96acca1e8110034ce2b600d97fedd96e67be58f43eb"
+    }
+  ],
+  "contract": {
+    "width": 192,
+    "height": 128,
+    "frameRate": {
+      "numerator": 12,
+      "denominator": 1
+    },
+    "durationFrames": 13,
+    "projectCount": 3,
+    "totalDecodedFrames": 39,
+    "gpuTicks": [
+      0,
+      60000,
+      120000
+    ],
+    "gates": {
+      "gpuMean": 0.1,
+      "gpuMax": 2,
+      "videoRgbMean": 3,
+      "videoActiveMean": 6,
+      "ptsSeconds": 0.001
+    },
+    "material": "Authored KHR_materials_unlit in both compressed target and plain/PNG control; original material retained, no shader replacement.",
+    "referenceLimits": "Draco control uses independent authored known triangle vertices/indices. ETC1S/UASTC controls derive PNG from same fixed decoder CPU RGBA: independent image/GPU transport route, not independent codec mathematical accuracy."
+  },
+  "projects": [
+    {
+      "id": "draco-triangle",
+      "fixture": {
+        "id": "draco-triangle",
+        "target": {
+          "path": "C:/tmps/offline-assets-real-consumer-20261012/draco-triangle-target.glb",
+          "bytes": 928,
+          "sha256": "bb0d745fe9c42e1c38b429510716675435083423def60557edb270a442eb0707"
+        },
+        "reference": {
+          "path": "C:/tmps/offline-assets-real-consumer-20261012/draco-triangle-reference.glb",
+          "bytes": 804,
+          "sha256": "e68f935b34491b84f740c70c797b33028548814ed52e94356e251f16c7f78fdb"
+        },
+        "license": "Self-authored triangle encoded with fixed Three0.185.1 Draco encoder; no downloaded model."
+      },
+      "geometry": {
+        "vertices": 3,
+        "indices": 3
+      },
+      "preparedProjectSha256": "963768d700beaa12c670f932e075c132858089933218defd562ef25ee69dfbce",
+      "sceneSource": {
+        "path": "C:/tmps/offline-assets-real-consumer-20261012/draco-triangle/author/asset-scene.ts",
+        "sha256": "058813e0f0dfdbcb1a7e0e3d9bb4741f4c4df545871e191d2a44770135f15cb1"
+      },
+      "sources": {
+        "target": {
+          "path": "C:/tmps/offline-assets-real-consumer-20261012/draco-triangle/target-source.json",
+          "sha256": "8b654feb0f2e8d1f2e53a1c8fc7222d62567c1bd0d2f71348d8af1c3c0234c34",
+          "resources": [
+            {
+              "id": "_rocut/compiled.html",
+              "kind": "document",
+              "mimeType": "text/html",
+              "byteLength": 2147699,
+              "sha256": "db3ee1edb0a63e516da7148f82e12366f7775a991edb3c582d47ab69834fd311",
+              "attachmentKey": "programmatic-sha256-db3ee1edb0a63e516da7148f82e12366f7775a991edb3c582d47ab69834fd311"
+            },
+            {
+              "id": "draco-triangle-target.glb",
+              "kind": "model",
+              "mimeType": "model/gltf-binary",
+              "byteLength": 928,
+              "sha256": "bb0d745fe9c42e1c38b429510716675435083423def60557edb270a442eb0707",
+              "attachmentKey": "programmatic-sha256-bb0d745fe9c42e1c38b429510716675435083423def60557edb270a442eb0707"
+            }
+          ],
+          "buildInputs": [
+            {
+              "id": "asset-scene.ts",
+              "kind": "source",
+              "mimeType": "application/octet-stream",
+              "byteLength": 526,
+              "sha256": "058813e0f0dfdbcb1a7e0e3d9bb4741f4c4df545871e191d2a44770135f15cb1",
+              "attachmentKey": "programmatic-source-sha256-058813e0f0dfdbcb1a7e0e3d9bb4741f4c4df545871e191d2a44770135f15cb1"
+            }
+          ]
+        },
+        "reference": {
+          "path": "C:/tmps/offline-assets-real-consumer-20261012/draco-triangle/reference-source.json",
+          "sha256": "c177a00a1ef0897d1a1746c18af16e8854ba39b5deedcf14ea621a0412ac2290",
+          "resources": [
+            {
+              "id": "_rocut/compiled.html",
+              "kind": "document",
+              "mimeType": "text/html",
+              "byteLength": 2147702,
+              "sha256": "c6d2a4eb580a3b5aa022a7fb50766573b199964868cfb9659cc38b31dc4d578b",
+              "attachmentKey": "programmatic-sha256-c6d2a4eb580a3b5aa022a7fb50766573b199964868cfb9659cc38b31dc4d578b"
+            },
+            {
+              "id": "draco-triangle-reference.glb",
+              "kind": "model",
+              "mimeType": "model/gltf-binary",
+              "byteLength": 804,
+              "sha256": "e68f935b34491b84f740c70c797b33028548814ed52e94356e251f16c7f78fdb",
+              "attachmentKey": "programmatic-sha256-e68f935b34491b84f740c70c797b33028548814ed52e94356e251f16c7f78fdb"
+            }
+          ],
+          "buildInputs": [
+            {
+              "id": "asset-scene.ts",
+              "kind": "source",
+              "mimeType": "application/octet-stream",
+              "byteLength": 526,
+              "sha256": "058813e0f0dfdbcb1a7e0e3d9bb4741f4c4df545871e191d2a44770135f15cb1",
+              "attachmentKey": "programmatic-source-sha256-058813e0f0dfdbcb1a7e0e3d9bb4741f4c4df545871e191d2a44770135f15cb1"
+            }
+          ]
+        }
+      },
+      "toolchainLockSha256": "7ed54a61bc865a29b6535b832d1c8024728ef306f4239c0ea5887ebcb5518ab9",
+      "reopenedSavedProjectExact": true,
+      "reopenedPixelsMatchBeforeExport": true,
+      "projectSemanticsUnchanged": true,
+      "gpu": [
+        {
+          "index": 0,
+          "comparison": {
+            "mean": 0,
+            "max": 0
+          },
+          "targetSha256": "817ce49068ab17848b993d09a9f78a347c8580ba2f86d65afacfc3f5bb1bd0bd",
+          "referenceSha256": "817ce49068ab17848b993d09a9f78a347c8580ba2f86d65afacfc3f5bb1bd0bd",
+          "visiblePixels": 3040
+        },
+        {
+          "index": 6,
+          "comparison": {
+            "mean": 0,
+            "max": 0
+          },
+          "targetSha256": "4cf7b2515e1522994aecbe1bc53bddd0fd56e25d574ae27bec2219e7bb8422a7",
+          "referenceSha256": "4cf7b2515e1522994aecbe1bc53bddd0fd56e25d574ae27bec2219e7bb8422a7",
+          "visiblePixels": 2966
+        },
+        {
+          "index": 12,
+          "comparison": {
+            "mean": 0,
+            "max": 0
+          },
+          "targetSha256": "64e78577406692978f541251ccc69b53c93727ee82039d8e37fcf2cf30b5a6b0",
+          "referenceSha256": "64e78577406692978f541251ccc69b53c93727ee82039d8e37fcf2cf30b5a6b0",
+          "visiblePixels": 2845
+        }
+      ],
+      "job": {
+        "id": "43c02549ada98882",
+        "status": "completed",
+        "options": {
+          "format": "webm",
+          "quality": "very_high",
+          "videoChroma": "444",
+          "includeAudio": false,
+          "range": {
+            "startTime": 0,
+            "endTime": 130000
+          }
+        }
+      },
+      "actualPolicy": {
+        "request": {
+          "codec": "vp9",
+          "format": "webm",
+          "quality": "very_high",
+          "frameRate": {
+            "numerator": 12,
+            "denominator": 1
+          },
+          "width": 192,
+          "height": 128,
+          "videoChroma": "444"
+        },
+        "response": {
+          "bitrate": 148000,
+          "default": true,
+          "fullCodecString": "vp09.01.10.08.03.01.13.01.01",
+          "keyFrameIntervalFrames": 24,
+          "kind": "vp9Quantizer",
+          "nativeConfig": {
+            "alpha": "discard",
+            "bitrate": 148000,
+            "bitrateMode": "quantizer",
+            "codec": "vp09.01.10.08.03.01.13.01.01",
+            "displayHeight": 128,
+            "displayWidth": 192,
+            "framerate": 12,
+            "hardwareAcceleration": "prefer-software",
+            "height": 128,
+            "latencyMode": "quality",
+            "width": 192
+          },
+          "quantizer": 8
+        },
+        "boundary": "actual WebAssembly exports.resolveVideoExportJson invocation, copied input/output before caller frees returned bytes"
+      },
+      "nativeEncoder": {
+        "codec": "vp09.01.10.08.03.01.13.01.01",
+        "width": 192,
+        "height": 128,
+        "displayWidth": 192,
+        "displayHeight": 128,
+        "bitrate": 148000,
+        "framerate": 12,
+        "alpha": "discard",
+        "bitrateMode": "quantizer",
+        "latencyMode": "quality",
+        "hardwareAcceleration": "prefer-software"
+      },
+      "encodeCount": 13,
+      "allActualEncodeQuantizers": 8,
+      "video": {
+        "bytes": 17292,
+        "sha256": "e92fc60e43bac06b77262dc28ae7903ff4f258b71a4e6705e7cecee4fc2a46f8",
+        "path": "C:/tmps/offline-assets-real-consumer-20261012/actual-consumer/draco-triangle/production.webm"
+      },
+      "decoded": {
+        "path": "C:/tmps/offline-assets-real-consumer-20261012/actual-consumer/draco-triangle/decoded.rgba",
+        "sha256": "f6d7a8d1ba0f5191a25235d18685090e927fa7cfb26f2ab602f81d710437b984"
+      },
+      "ffprobe": {
+        "path": "C:/tmps/offline-assets-real-consumer-20261012/actual-consumer/draco-triangle/ffprobe.json",
+        "sha256": "34cc1bfb50e7586b6236519f391d0760fc3c071d4a46c72d43f263fe69fc5e05"
+      },
+      "statistics": {
+        "frames": 13,
+        "maxFullRgbMean": 0.6643202039930556,
+        "maxActiveRgbMean": 0.6521526418786693,
+        "maxPtsErrorSeconds": 0.00033333333333340764
+      },
+      "frames": [
+        {
+          "index": 0,
+          "comparison": {
+            "mean": 0.6526150173611112,
+            "max": 4
+          },
+          "active": {
+            "mean": 0.5986193293885601,
+            "max": 4
+          },
+          "pts": 0,
+          "referenceSha256": "817ce49068ab17848b993d09a9f78a347c8580ba2f86d65afacfc3f5bb1bd0bd"
+        },
+        {
+          "index": 1,
+          "comparison": {
+            "mean": 0.6566026475694444,
+            "max": 11
+          },
+          "active": {
+            "mean": 0.6197676966907736,
+            "max": 11
+          },
+          "pts": 0.083,
+          "referenceSha256": "f5400aae1d854339d47d899d537ef8b5f073fa610de3bd3fd0ceebdeab9a1167"
+        },
+        {
+          "index": 2,
+          "comparison": {
+            "mean": 0.6579454210069444,
+            "max": 11
+          },
+          "active": {
+            "mean": 0.6258741258741258,
+            "max": 11
+          },
+          "pts": 0.167,
+          "referenceSha256": "f62f000a7e3191e2b0c028e2957af894df1d4b063d0a06a975f9e58ae8212d1f"
+        },
+        {
+          "index": 3,
+          "comparison": {
+            "mean": 0.6573215060763888,
+            "max": 11
+          },
+          "active": {
+            "mean": 0.6248751248751249,
+            "max": 11
+          },
+          "pts": 0.25,
+          "referenceSha256": "487be206fe7a84ac47f2235a46d13b706a46c33023108244cd6563981e618de9"
+        },
+        {
+          "index": 4,
+          "comparison": {
+            "mean": 0.6585693359375,
+            "max": 11
+          },
+          "active": {
+            "mean": 0.6316017316017316,
+            "max": 11
+          },
+          "pts": 0.333,
+          "referenceSha256": "2556bb90adc62d2dc5cee27f4f81498cd23ccacbeb443c41c94f527dfee8c0dd"
+        },
+        {
+          "index": 5,
+          "comparison": {
+            "mean": 0.6610107421875,
+            "max": 12
+          },
+          "active": {
+            "mean": 0.6401315789473684,
+            "max": 12
+          },
+          "pts": 0.417,
+          "referenceSha256": "51b4044e4e6bd621379eafad05e5fcf0af5a5736235727f1e2ccef911aae2dc8"
+        },
+        {
+          "index": 6,
+          "comparison": {
+            "mean": 0.6597493489583334,
+            "max": 11
+          },
+          "active": {
+            "mean": 0.6366341991341992,
+            "max": 11
+          },
+          "pts": 0.5,
+          "referenceSha256": "4cf7b2515e1522994aecbe1bc53bddd0fd56e25d574ae27bec2219e7bb8422a7"
+        },
+        {
+          "index": 7,
+          "comparison": {
+            "mean": 0.6576334635416666,
+            "max": 9
+          },
+          "active": {
+            "mean": 0.6286255411255411,
+            "max": 9
+          },
+          "pts": 0.583,
+          "referenceSha256": "e32fbdb055670c369739d9424cc2b4188b1fdb1ae2940dec480e734a4c38ae41"
+        },
+        {
+          "index": 8,
+          "comparison": {
+            "mean": 0.6586235894097222,
+            "max": 9
+          },
+          "active": {
+            "mean": 0.6309370988446726,
+            "max": 9
+          },
+          "pts": 0.667,
+          "referenceSha256": "1c4f9741cd757e8d6681fca825ae6c8e4bd1d3a232ca2f18d924d79167015e8e"
+        },
+        {
+          "index": 9,
+          "comparison": {
+            "mean": 0.6584337022569444,
+            "max": 10
+          },
+          "active": {
+            "mean": 0.6284552845528455,
+            "max": 10
+          },
+          "pts": 0.75,
+          "referenceSha256": "4b8584c4a59e8e2d78a1ffdd56b321d7f503c9c65518f8f8b326927df5d78252"
+        },
+        {
+          "index": 10,
+          "comparison": {
+            "mean": 0.6636962890625,
+            "max": 11
+          },
+          "active": {
+            "mean": 0.6477147879586904,
+            "max": 11
+          },
+          "pts": 0.833,
+          "referenceSha256": "f82446f507974a92a6299a7ef38ede4275667898054ea6b39b40784cacd3714d"
+        },
+        {
+          "index": 11,
+          "comparison": {
+            "mean": 0.6637912326388888,
+            "max": 52
+          },
+          "active": {
+            "mean": 0.6505713030103274,
+            "max": 52
+          },
+          "pts": 0.917,
+          "referenceSha256": "709e8dd9cea4ce4b33644175c61fe67a977b6b1ddfe686c5be05807fe5f1c07a"
+        },
+        {
+          "index": 12,
+          "comparison": {
+            "mean": 0.6643202039930556,
+            "max": 35
+          },
+          "active": {
+            "mean": 0.6521526418786693,
+            "max": 35
+          },
+          "pts": 1,
+          "referenceSha256": "64e78577406692978f541251ccc69b53c93727ee82039d8e37fcf2cf30b5a6b0"
+        }
+      ]
+    },
+    {
+      "id": "basis-etc1s",
+      "fixture": {
+        "id": "basis-etc1s",
+        "target": {
+          "path": "C:/tmps/offline-assets-real-consumer-20261012/basis-etc1s-target.glb",
+          "bytes": 2288,
+          "sha256": "6e81136722dcf0a990c4110b13a760f01df5bb02aad51504a6c7b07d6ca3fa6d"
+        },
+        "reference": {
+          "path": "C:/tmps/offline-assets-real-consumer-20261012/basis-etc1s-reference.glb",
+          "bytes": 1600,
+          "sha256": "cbb9d5d8b70f4392b3dddb54b7b9faf1ea7e3ffae7112ef80ba11447d2b0049c"
+        },
+        "encodedTextureSha256": "e56ddcc757fc73ff06bb0dac2a3533ce79c1e196ad895a3ff7dcc4d9de6b9d5d",
+        "decodedRgbaSha256": "b492daacc6737893324398334075c09a481bfff432240a718fc615ca0cd625ec",
+        "license": "Existing fixed Three r185 test vector, source/hash documented in MIT three-assets test/ktx2.test.ts; no download. Decoder Apache2.0. PNG control derives CPU RGBA from same fixed decoder: tests independent PNG GPU transport, not independent codec accuracy."
+      },
+      "geometry": {
+        "vertices": 4,
+        "indices": 6
+      },
+      "preparedProjectSha256": "53fdfe1dad48415ed309d0e9e7a5740e683fbf7b8d420b3bea986ab280f543b6",
+      "sceneSource": {
+        "path": "C:/tmps/offline-assets-real-consumer-20261012/basis-etc1s/author/asset-scene.ts",
+        "sha256": "058813e0f0dfdbcb1a7e0e3d9bb4741f4c4df545871e191d2a44770135f15cb1"
+      },
+      "sources": {
+        "target": {
+          "path": "C:/tmps/offline-assets-real-consumer-20261012/basis-etc1s/target-source.json",
+          "sha256": "9b847ba401adfec29e89a14b5626960c517cb32a0463e161a402d59b8b86f2f6",
+          "resources": [
+            {
+              "id": "_rocut/compiled.html",
+              "kind": "document",
+              "mimeType": "text/html",
+              "byteLength": 2147696,
+              "sha256": "f660b0470a6993ff65ebf4d9e383efbbb4d7738387cccf662d5691d07ed93a02",
+              "attachmentKey": "programmatic-sha256-f660b0470a6993ff65ebf4d9e383efbbb4d7738387cccf662d5691d07ed93a02"
+            },
+            {
+              "id": "basis-etc1s-target.glb",
+              "kind": "model",
+              "mimeType": "model/gltf-binary",
+              "byteLength": 2288,
+              "sha256": "6e81136722dcf0a990c4110b13a760f01df5bb02aad51504a6c7b07d6ca3fa6d",
+              "attachmentKey": "programmatic-sha256-6e81136722dcf0a990c4110b13a760f01df5bb02aad51504a6c7b07d6ca3fa6d"
+            }
+          ],
+          "buildInputs": [
+            {
+              "id": "asset-scene.ts",
+              "kind": "source",
+              "mimeType": "application/octet-stream",
+              "byteLength": 526,
+              "sha256": "058813e0f0dfdbcb1a7e0e3d9bb4741f4c4df545871e191d2a44770135f15cb1",
+              "attachmentKey": "programmatic-source-sha256-058813e0f0dfdbcb1a7e0e3d9bb4741f4c4df545871e191d2a44770135f15cb1"
+            }
+          ]
+        },
+        "reference": {
+          "path": "C:/tmps/offline-assets-real-consumer-20261012/basis-etc1s/reference-source.json",
+          "sha256": "5bfee0bb76735a483d2a86e7851ef962d07b9493a427e7774a4dac5076fc914b",
+          "resources": [
+            {
+              "id": "_rocut/compiled.html",
+              "kind": "document",
+              "mimeType": "text/html",
+              "byteLength": 2147699,
+              "sha256": "7209ce2601c2efdb67b790991b9dd1ceb38439209dcd1ff6d7bd399dabdd3547",
+              "attachmentKey": "programmatic-sha256-7209ce2601c2efdb67b790991b9dd1ceb38439209dcd1ff6d7bd399dabdd3547"
+            },
+            {
+              "id": "basis-etc1s-reference.glb",
+              "kind": "model",
+              "mimeType": "model/gltf-binary",
+              "byteLength": 1600,
+              "sha256": "cbb9d5d8b70f4392b3dddb54b7b9faf1ea7e3ffae7112ef80ba11447d2b0049c",
+              "attachmentKey": "programmatic-sha256-cbb9d5d8b70f4392b3dddb54b7b9faf1ea7e3ffae7112ef80ba11447d2b0049c"
+            }
+          ],
+          "buildInputs": [
+            {
+              "id": "asset-scene.ts",
+              "kind": "source",
+              "mimeType": "application/octet-stream",
+              "byteLength": 526,
+              "sha256": "058813e0f0dfdbcb1a7e0e3d9bb4741f4c4df545871e191d2a44770135f15cb1",
+              "attachmentKey": "programmatic-source-sha256-058813e0f0dfdbcb1a7e0e3d9bb4741f4c4df545871e191d2a44770135f15cb1"
+            }
+          ]
+        }
+      },
+      "toolchainLockSha256": "7ed54a61bc865a29b6535b832d1c8024728ef306f4239c0ea5887ebcb5518ab9",
+      "reopenedSavedProjectExact": true,
+      "reopenedPixelsMatchBeforeExport": true,
+      "projectSemanticsUnchanged": true,
+      "gpu": [
+        {
+          "index": 0,
+          "comparison": {
+            "mean": 0,
+            "max": 0
+          },
+          "targetSha256": "cc7f8e55c6d57e87fd960f9560327465217e6df1ec510ab182e37bee347a3061",
+          "referenceSha256": "cc7f8e55c6d57e87fd960f9560327465217e6df1ec510ab182e37bee347a3061",
+          "visiblePixels": 5776
+        },
+        {
+          "index": 6,
+          "comparison": {
+            "mean": 0,
+            "max": 0
+          },
+          "targetSha256": "47001960ea3caa86f1aa451e2bfc825d0c4aebda0a12c351b4a5633079b26722",
+          "referenceSha256": "47001960ea3caa86f1aa451e2bfc825d0c4aebda0a12c351b4a5633079b26722",
+          "visiblePixels": 5838
+        },
+        {
+          "index": 12,
+          "comparison": {
+            "mean": 0,
+            "max": 0
+          },
+          "targetSha256": "98e5900c85c5d3f4c2b8cd7b416a95e6b6738a060cea7dea523f5a8c48f182f3",
+          "referenceSha256": "98e5900c85c5d3f4c2b8cd7b416a95e6b6738a060cea7dea523f5a8c48f182f3",
+          "visiblePixels": 5629
+        }
+      ],
+      "job": {
+        "id": "75d2865d65967dcf",
+        "status": "completed",
+        "options": {
+          "format": "webm",
+          "quality": "very_high",
+          "videoChroma": "444",
+          "includeAudio": false,
+          "range": {
+            "startTime": 0,
+            "endTime": 130000
+          }
+        }
+      },
+      "actualPolicy": {
+        "request": {
+          "codec": "vp9",
+          "format": "webm",
+          "quality": "very_high",
+          "frameRate": {
+            "numerator": 12,
+            "denominator": 1
+          },
+          "width": 192,
+          "height": 128,
+          "videoChroma": "444"
+        },
+        "response": {
+          "bitrate": 148000,
+          "default": true,
+          "fullCodecString": "vp09.01.10.08.03.01.13.01.01",
+          "keyFrameIntervalFrames": 24,
+          "kind": "vp9Quantizer",
+          "nativeConfig": {
+            "alpha": "discard",
+            "bitrate": 148000,
+            "bitrateMode": "quantizer",
+            "codec": "vp09.01.10.08.03.01.13.01.01",
+            "displayHeight": 128,
+            "displayWidth": 192,
+            "framerate": 12,
+            "hardwareAcceleration": "prefer-software",
+            "height": 128,
+            "latencyMode": "quality",
+            "width": 192
+          },
+          "quantizer": 8
+        },
+        "boundary": "actual WebAssembly exports.resolveVideoExportJson invocation, copied input/output before caller frees returned bytes"
+      },
+      "nativeEncoder": {
+        "codec": "vp09.01.10.08.03.01.13.01.01",
+        "width": 192,
+        "height": 128,
+        "displayWidth": 192,
+        "displayHeight": 128,
+        "bitrate": 148000,
+        "framerate": 12,
+        "alpha": "discard",
+        "bitrateMode": "quantizer",
+        "latencyMode": "quality",
+        "hardwareAcceleration": "prefer-software"
+      },
+      "encodeCount": 13,
+      "allActualEncodeQuantizers": 8,
+      "video": {
+        "bytes": 33367,
+        "sha256": "a24286bcb314f008d3a794d23c5eada0517bc88697488716437636f86d5ce9d0",
+        "path": "C:/tmps/offline-assets-real-consumer-20261012/actual-consumer/basis-etc1s/production.webm"
+      },
+      "decoded": {
+        "path": "C:/tmps/offline-assets-real-consumer-20261012/actual-consumer/basis-etc1s/decoded.rgba",
+        "sha256": "e3ef2f8e3a548af6bfc46e8e907ea5aa0a4f566e7bc6e1b6bf626d7a5c22ab00"
+      },
+      "ffprobe": {
+        "path": "C:/tmps/offline-assets-real-consumer-20261012/actual-consumer/basis-etc1s/ffprobe.json",
+        "sha256": "34cc1bfb50e7586b6236519f391d0760fc3c071d4a46c72d43f263fe69fc5e05"
+      },
+      "statistics": {
+        "frames": 13,
+        "maxFullRgbMean": 0.8140733506944444,
+        "maxActiveRgbMean": 1.2436399217221135,
+        "maxPtsErrorSeconds": 0.00033333333333340764
+      },
+      "frames": [
+        {
+          "index": 0,
+          "comparison": {
+            "mean": 0.779296875,
+            "max": 6
+          },
+          "active": {
+            "mean": 1.1159872890642122,
+            "max": 6
+          },
+          "pts": 0,
+          "referenceSha256": "cc7f8e55c6d57e87fd960f9560327465217e6df1ec510ab182e37bee347a3061"
+        },
+        {
+          "index": 1,
+          "comparison": {
+            "mean": 0.7979736328125,
+            "max": 12
+          },
+          "active": {
+            "mean": 1.1877054569362262,
+            "max": 12
+          },
+          "pts": 0.083,
+          "referenceSha256": "0a5ce0d8d348697c1884da700a3c249903a4b47d99fbe4045f73588c03890523"
+        },
+        {
+          "index": 2,
+          "comparison": {
+            "mean": 0.8009847005208334,
+            "max": 14
+          },
+          "active": {
+            "mean": 1.2027972027972027,
+            "max": 14
+          },
+          "pts": 0.167,
+          "referenceSha256": "62b98059d54ba71d365b700ba78797bf2f01ac90d7d49b5b762ce1efc723154f"
+        },
+        {
+          "index": 3,
+          "comparison": {
+            "mean": 0.7981635199652778,
+            "max": 10
+          },
+          "active": {
+            "mean": 1.1913086913086912,
+            "max": 10
+          },
+          "pts": 0.25,
+          "referenceSha256": "a9e6bbf4cc668a9709ae139a952f5e93258c454636c50d7b7690a30094b205c4"
+        },
+        {
+          "index": 4,
+          "comparison": {
+            "mean": 0.8060167100694444,
+            "max": 13
+          },
+          "active": {
+            "mean": 1.2155844155844155,
+            "max": 13
+          },
+          "pts": 0.333,
+          "referenceSha256": "6f80e579bb0fa2ccc915383649b9ba9458bc533e2c33cf77b753fc8fd2640470"
+        },
+        {
+          "index": 5,
+          "comparison": {
+            "mean": 0.8089192708333334,
+            "max": 11
+          },
+          "active": {
+            "mean": 1.231140350877193,
+            "max": 11
+          },
+          "pts": 0.417,
+          "referenceSha256": "7fc367c2e3bebc6b43fa7d4716f2a83c367f357ceb41609c3bb591d4ddf00f00"
+        },
+        {
+          "index": 6,
+          "comparison": {
+            "mean": 0.8107231987847222,
+            "max": 11
+          },
+          "active": {
+            "mean": 1.2279220779220779,
+            "max": 11
+          },
+          "pts": 0.5,
+          "referenceSha256": "47001960ea3caa86f1aa451e2bfc825d0c4aebda0a12c351b4a5633079b26722"
+        },
+        {
+          "index": 7,
+          "comparison": {
+            "mean": 0.8108723958333334,
+            "max": 12
+          },
+          "active": {
+            "mean": 1.2376082251082252,
+            "max": 12
+          },
+          "pts": 0.583,
+          "referenceSha256": "417c6e8d8c9a9f700dbe4514e9302c473e24f6a0cc8d6dc38f890bd1a3906ca9"
+        },
+        {
+          "index": 8,
+          "comparison": {
+            "mean": 0.8090142144097222,
+            "max": 10
+          },
+          "active": {
+            "mean": 1.222400513478819,
+            "max": 10
+          },
+          "pts": 0.667,
+          "referenceSha256": "7d0b7885cf40d94fb9d4c0732dbe22e7174a31c6901e5826cd967aace3f6c82f"
+        },
+        {
+          "index": 9,
+          "comparison": {
+            "mean": 0.8098551432291666,
+            "max": 11
+          },
+          "active": {
+            "mean": 1.23289972899729,
+            "max": 11
+          },
+          "pts": 0.75,
+          "referenceSha256": "71f6ae14461b800dfd03814741ba594a8fa11c36ac0ef373cb899d2943d488b0"
+        },
+        {
+          "index": 10,
+          "comparison": {
+            "mean": 0.8093397352430556,
+            "max": 11
+          },
+          "active": {
+            "mean": 1.2326961107448913,
+            "max": 11
+          },
+          "pts": 0.833,
+          "referenceSha256": "0a6b7fc0e237086b687e6add99e44596ab337b6ac25fbd9a115ae436241b7659"
+        },
+        {
+          "index": 11,
+          "comparison": {
+            "mean": 0.8104926215277778,
+            "max": 10
+          },
+          "active": {
+            "mean": 1.2277521423862887,
+            "max": 10
+          },
+          "pts": 0.917,
+          "referenceSha256": "15b64996589251719ade1bdf02f1f98508c3593b29078882f8fd1e57e5080881"
+        },
+        {
+          "index": 12,
+          "comparison": {
+            "mean": 0.8140733506944444,
+            "max": 12
+          },
+          "active": {
+            "mean": 1.2436399217221135,
+            "max": 12
+          },
+          "pts": 1,
+          "referenceSha256": "98e5900c85c5d3f4c2b8cd7b416a95e6b6738a060cea7dea523f5a8c48f182f3"
+        }
+      ]
+    },
+    {
+      "id": "basis-uastc",
+      "fixture": {
+        "id": "basis-uastc",
+        "target": {
+          "path": "C:/tmps/offline-assets-real-consumer-20261012/basis-uastc-target.glb",
+          "bytes": 3880,
+          "sha256": "d62fb68624a4d137dce9be998abc5b0417f7cd45bb0b325af923dd5fb3171a58"
+        },
+        "reference": {
+          "path": "C:/tmps/offline-assets-real-consumer-20261012/basis-uastc-reference.glb",
+          "bytes": 1652,
+          "sha256": "1acc34d65570ba9cef6888dd20ff59d785ad68c3f41ae908a2bb91aff7635760"
+        },
+        "encodedTextureSha256": "21b6912cae1f074ae3eda1b751f43c36eafc7eb83f3af71f85bba2ccbafce125",
+        "decodedRgbaSha256": "fd9d51898dce01c2cdfd4ece339a4e5d5a5f198b80d124485af5874d62bba5ad",
+        "license": "Existing fixed Three r185 test vector, source/hash documented in MIT three-assets test/ktx2.test.ts; no download. Decoder Apache2.0. PNG control derives CPU RGBA from same fixed decoder: tests independent PNG GPU transport, not independent codec accuracy."
+      },
+      "geometry": {
+        "vertices": 4,
+        "indices": 6
+      },
+      "preparedProjectSha256": "2231060ac070e926388066e9b3665a6b19fbcf31ffde0a1ca7b698d26c01ccc8",
+      "sceneSource": {
+        "path": "C:/tmps/offline-assets-real-consumer-20261012/basis-uastc/author/asset-scene.ts",
+        "sha256": "058813e0f0dfdbcb1a7e0e3d9bb4741f4c4df545871e191d2a44770135f15cb1"
+      },
+      "sources": {
+        "target": {
+          "path": "C:/tmps/offline-assets-real-consumer-20261012/basis-uastc/target-source.json",
+          "sha256": "7337299901c9cec2f89bdb3adbad7006972100a38bc7af11dbd94f03cc7ae79e",
+          "resources": [
+            {
+              "id": "_rocut/compiled.html",
+              "kind": "document",
+              "mimeType": "text/html",
+              "byteLength": 2147696,
+              "sha256": "3fc7f10030844535c25e9ad4385b46bf207e580e78f626a4bf7db2dc3ceba7b0",
+              "attachmentKey": "programmatic-sha256-3fc7f10030844535c25e9ad4385b46bf207e580e78f626a4bf7db2dc3ceba7b0"
+            },
+            {
+              "id": "basis-uastc-target.glb",
+              "kind": "model",
+              "mimeType": "model/gltf-binary",
+              "byteLength": 3880,
+              "sha256": "d62fb68624a4d137dce9be998abc5b0417f7cd45bb0b325af923dd5fb3171a58",
+              "attachmentKey": "programmatic-sha256-d62fb68624a4d137dce9be998abc5b0417f7cd45bb0b325af923dd5fb3171a58"
+            }
+          ],
+          "buildInputs": [
+            {
+              "id": "asset-scene.ts",
+              "kind": "source",
+              "mimeType": "application/octet-stream",
+              "byteLength": 526,
+              "sha256": "058813e0f0dfdbcb1a7e0e3d9bb4741f4c4df545871e191d2a44770135f15cb1",
+              "attachmentKey": "programmatic-source-sha256-058813e0f0dfdbcb1a7e0e3d9bb4741f4c4df545871e191d2a44770135f15cb1"
+            }
+          ]
+        },
+        "reference": {
+          "path": "C:/tmps/offline-assets-real-consumer-20261012/basis-uastc/reference-source.json",
+          "sha256": "405e18b994d07207b21a9d20c2c9ecfb25388d67025328caa9fdd9d5bd691bfe",
+          "resources": [
+            {
+              "id": "_rocut/compiled.html",
+              "kind": "document",
+              "mimeType": "text/html",
+              "byteLength": 2147699,
+              "sha256": "5460a762a219a64d7e6edca8dc056dc4d9a4c209b54ef112058f0a142400dc0e",
+              "attachmentKey": "programmatic-sha256-5460a762a219a64d7e6edca8dc056dc4d9a4c209b54ef112058f0a142400dc0e"
+            },
+            {
+              "id": "basis-uastc-reference.glb",
+              "kind": "model",
+              "mimeType": "model/gltf-binary",
+              "byteLength": 1652,
+              "sha256": "1acc34d65570ba9cef6888dd20ff59d785ad68c3f41ae908a2bb91aff7635760",
+              "attachmentKey": "programmatic-sha256-1acc34d65570ba9cef6888dd20ff59d785ad68c3f41ae908a2bb91aff7635760"
+            }
+          ],
+          "buildInputs": [
+            {
+              "id": "asset-scene.ts",
+              "kind": "source",
+              "mimeType": "application/octet-stream",
+              "byteLength": 526,
+              "sha256": "058813e0f0dfdbcb1a7e0e3d9bb4741f4c4df545871e191d2a44770135f15cb1",
+              "attachmentKey": "programmatic-source-sha256-058813e0f0dfdbcb1a7e0e3d9bb4741f4c4df545871e191d2a44770135f15cb1"
+            }
+          ]
+        }
+      },
+      "toolchainLockSha256": "7ed54a61bc865a29b6535b832d1c8024728ef306f4239c0ea5887ebcb5518ab9",
+      "reopenedSavedProjectExact": true,
+      "reopenedPixelsMatchBeforeExport": true,
+      "projectSemanticsUnchanged": true,
+      "gpu": [
+        {
+          "index": 0,
+          "comparison": {
+            "mean": 0,
+            "max": 0
+          },
+          "targetSha256": "39edb7e3110f4a8507b76d7fcb24fa38cf71d010402d19ea19583ff2d6ae2468",
+          "referenceSha256": "39edb7e3110f4a8507b76d7fcb24fa38cf71d010402d19ea19583ff2d6ae2468",
+          "visiblePixels": 5776
+        },
+        {
+          "index": 6,
+          "comparison": {
+            "mean": 0,
+            "max": 0
+          },
+          "targetSha256": "bac886d30ad86c31576c57ee16db808d0b6267c4af307d0f3a3a0f316d8f3be4",
+          "referenceSha256": "bac886d30ad86c31576c57ee16db808d0b6267c4af307d0f3a3a0f316d8f3be4",
+          "visiblePixels": 5838
+        },
+        {
+          "index": 12,
+          "comparison": {
+            "mean": 0,
+            "max": 0
+          },
+          "targetSha256": "f7631df6f7d51739fafb54831d475e7331c7ad2c43e00ac34469aa0df3cfa6a2",
+          "referenceSha256": "f7631df6f7d51739fafb54831d475e7331c7ad2c43e00ac34469aa0df3cfa6a2",
+          "visiblePixels": 5629
+        }
+      ],
+      "job": {
+        "id": "2548733ffbc1c7e4",
+        "status": "completed",
+        "options": {
+          "format": "webm",
+          "quality": "very_high",
+          "videoChroma": "444",
+          "includeAudio": false,
+          "range": {
+            "startTime": 0,
+            "endTime": 130000
+          }
+        }
+      },
+      "actualPolicy": {
+        "request": {
+          "codec": "vp9",
+          "format": "webm",
+          "quality": "very_high",
+          "frameRate": {
+            "numerator": 12,
+            "denominator": 1
+          },
+          "width": 192,
+          "height": 128,
+          "videoChroma": "444"
+        },
+        "response": {
+          "bitrate": 148000,
+          "default": true,
+          "fullCodecString": "vp09.01.10.08.03.01.13.01.01",
+          "keyFrameIntervalFrames": 24,
+          "kind": "vp9Quantizer",
+          "nativeConfig": {
+            "alpha": "discard",
+            "bitrate": 148000,
+            "bitrateMode": "quantizer",
+            "codec": "vp09.01.10.08.03.01.13.01.01",
+            "displayHeight": 128,
+            "displayWidth": 192,
+            "framerate": 12,
+            "hardwareAcceleration": "prefer-software",
+            "height": 128,
+            "latencyMode": "quality",
+            "width": 192
+          },
+          "quantizer": 8
+        },
+        "boundary": "actual WebAssembly exports.resolveVideoExportJson invocation, copied input/output before caller frees returned bytes"
+      },
+      "nativeEncoder": {
+        "codec": "vp09.01.10.08.03.01.13.01.01",
+        "width": 192,
+        "height": 128,
+        "displayWidth": 192,
+        "displayHeight": 128,
+        "bitrate": 148000,
+        "framerate": 12,
+        "alpha": "discard",
+        "bitrateMode": "quantizer",
+        "latencyMode": "quality",
+        "hardwareAcceleration": "prefer-software"
+      },
+      "encodeCount": 13,
+      "allActualEncodeQuantizers": 8,
+      "video": {
+        "bytes": 32977,
+        "sha256": "0128be33f66fa8cda41c0f41b58fdccc547e57c5c17c6af8d2d3153b844a11e1",
+        "path": "C:/tmps/offline-assets-real-consumer-20261012/actual-consumer/basis-uastc/production.webm"
+      },
+      "decoded": {
+        "path": "C:/tmps/offline-assets-real-consumer-20261012/actual-consumer/basis-uastc/decoded.rgba",
+        "sha256": "01456eca0cfef9f176d741a35ec5a3ae18b376f469b4d0abc01e5c72e842b4d4"
+      },
+      "ffprobe": {
+        "path": "C:/tmps/offline-assets-real-consumer-20261012/actual-consumer/basis-uastc/ffprobe.json",
+        "sha256": "34cc1bfb50e7586b6236519f391d0760fc3c071d4a46c72d43f263fe69fc5e05"
+      },
+      "statistics": {
+        "frames": 13,
+        "maxFullRgbMean": 0.7451578776041666,
+        "maxActiveRgbMean": 0.968308327897369,
+        "maxPtsErrorSeconds": 0.00033333333333340764
+      },
+      "frames": [
+        {
+          "index": 0,
+          "comparison": {
+            "mean": 0.705078125,
+            "max": 6
+          },
+          "active": {
+            "mean": 0.8188691650230112,
+            "max": 6
+          },
+          "pts": 0,
+          "referenceSha256": "39edb7e3110f4a8507b76d7fcb24fa38cf71d010402d19ea19583ff2d6ae2468"
+        },
+        {
+          "index": 1,
+          "comparison": {
+            "mean": 0.7206217447916666,
+            "max": 11
+          },
+          "active": {
+            "mean": 0.8769449923296078,
+            "max": 11
+          },
+          "pts": 0.083,
+          "referenceSha256": "9e6d06accceb3f684f0e700b3b7e12dc9da5292d5506e0e159cffbecd739f2a5"
+        },
+        {
+          "index": 2,
+          "comparison": {
+            "mean": 0.7263590494791666,
+            "max": 13
+          },
+          "active": {
+            "mean": 0.9009324009324009,
+            "max": 13
+          },
+          "pts": 0.167,
+          "referenceSha256": "62794621eed6dda703aab64f93766d17748043a1c2d0e5ce6d1be6938e541c3a"
+        },
+        {
+          "index": 3,
+          "comparison": {
+            "mean": 0.7261420355902778,
+            "max": 10
+          },
+          "active": {
+            "mean": 0.8907758907758908,
+            "max": 10
+          },
+          "pts": 0.25,
+          "referenceSha256": "ae86cdc6c870cc0d2cd2300b9b6ad99bcfde697c05a53d6db29509db2de611a5"
+        },
+        {
+          "index": 4,
+          "comparison": {
+            "mean": 0.7235378689236112,
+            "max": 11
+          },
+          "active": {
+            "mean": 0.8863636363636364,
+            "max": 11
+          },
+          "pts": 0.333,
+          "referenceSha256": "a87ea19ae2e8a7df862481c597bbfc968a886c1ca6ee0ec2a75544c46a967f19"
+        },
+        {
+          "index": 5,
+          "comparison": {
+            "mean": 0.7290174696180556,
+            "max": 10
+          },
+          "active": {
+            "mean": 0.9095394736842105,
+            "max": 10
+          },
+          "pts": 0.417,
+          "referenceSha256": "042990f42725b3ec3da3e894b4fcf775b65cd9f50a7b31211b5da29574f93ed3"
+        },
+        {
+          "index": 6,
+          "comparison": {
+            "mean": 0.7303059895833334,
+            "max": 11
+          },
+          "active": {
+            "mean": 0.9077380952380952,
+            "max": 11
+          },
+          "pts": 0.5,
+          "referenceSha256": "bac886d30ad86c31576c57ee16db808d0b6267c4af307d0f3a3a0f316d8f3be4"
+        },
+        {
+          "index": 7,
+          "comparison": {
+            "mean": 0.7291937934027778,
+            "max": 10
+          },
+          "active": {
+            "mean": 0.9122835497835498,
+            "max": 10
+          },
+          "pts": 0.583,
+          "referenceSha256": "59799b27e7d0cd5c88cb9eeea8aee201808741f4be6dc9c7f606b1506f76519a"
+        },
+        {
+          "index": 8,
+          "comparison": {
+            "mean": 0.7296413845486112,
+            "max": 10
+          },
+          "active": {
+            "mean": 0.9072528883183568,
+            "max": 10
+          },
+          "pts": 0.667,
+          "referenceSha256": "c52468f62787c98455d9145ef2e50abc889ff2d05d943c1555c17c9947e72104"
+        },
+        {
+          "index": 9,
+          "comparison": {
+            "mean": 0.7318115234375,
+            "max": 11
+          },
+          "active": {
+            "mean": 0.9195663956639566,
+            "max": 11
+          },
+          "pts": 0.75,
+          "referenceSha256": "eb786ed664cf4372bd7a8c6baf8b5df5e386a32333656572947d5de6150afa80"
+        },
+        {
+          "index": 10,
+          "comparison": {
+            "mean": 0.7341444227430556,
+            "max": 11
+          },
+          "active": {
+            "mean": 0.9239178202592837,
+            "max": 11
+          },
+          "pts": 0.833,
+          "referenceSha256": "54df490a7a40e90506f0fdaecf16fdc197ae63c8044fa57b32ae9b0909e2830e"
+        },
+        {
+          "index": 11,
+          "comparison": {
+            "mean": 0.7369113498263888,
+            "max": 10
+          },
+          "active": {
+            "mean": 0.9294111184355087,
+            "max": 10
+          },
+          "pts": 0.917,
+          "referenceSha256": "c6d98e5e022ba54b11bfe35ce10bb5014fd9228e88d82532c7a89ff1d129e755"
+        },
+        {
+          "index": 12,
+          "comparison": {
+            "mean": 0.7451578776041666,
+            "max": 12
+          },
+          "active": {
+            "mean": 0.968308327897369,
+            "max": 12
+          },
+          "pts": 1,
+          "referenceSha256": "f7631df6f7d51739fafb54831d475e7331c7ad2c43e00ac34469aa0df3cfa6a2"
+        }
+      ]
+    }
+  ],
+  "servedBytes": {
+    "scope": "CPU-only actual formal Host HTTP resource-load response bytes after successful saved/reopened GPU consumption; not a claim of decoder HTTP downloads or in-frame network tracing.",
+    "resources": [
+      {
+        "project": "draco-triangle",
+        "id": "_rocut/compiled.html",
+        "kind": "document",
+        "mimeType": "text/html",
+        "bytes": 2147699,
+        "sha256": "db3ee1edb0a63e516da7148f82e12366f7775a991edb3c582d47ab69834fd311",
+        "actualRoute": "POST api/programmatic/resources/load"
+      },
+      {
+        "project": "draco-triangle",
+        "id": "draco-triangle-target.glb",
+        "kind": "model",
+        "mimeType": "model/gltf-binary",
+        "bytes": 928,
+        "sha256": "bb0d745fe9c42e1c38b429510716675435083423def60557edb270a442eb0707",
+        "actualRoute": "POST api/programmatic/resources/load"
+      },
+      {
+        "project": "basis-etc1s",
+        "id": "_rocut/compiled.html",
+        "kind": "document",
+        "mimeType": "text/html",
+        "bytes": 2147696,
+        "sha256": "f660b0470a6993ff65ebf4d9e383efbbb4d7738387cccf662d5691d07ed93a02",
+        "actualRoute": "POST api/programmatic/resources/load"
+      },
+      {
+        "project": "basis-etc1s",
+        "id": "basis-etc1s-target.glb",
+        "kind": "model",
+        "mimeType": "model/gltf-binary",
+        "bytes": 2288,
+        "sha256": "6e81136722dcf0a990c4110b13a760f01df5bb02aad51504a6c7b07d6ca3fa6d",
+        "actualRoute": "POST api/programmatic/resources/load"
+      },
+      {
+        "project": "basis-uastc",
+        "id": "_rocut/compiled.html",
+        "kind": "document",
+        "mimeType": "text/html",
+        "bytes": 2147696,
+        "sha256": "3fc7f10030844535c25e9ad4385b46bf207e580e78f626a4bf7db2dc3ceba7b0",
+        "actualRoute": "POST api/programmatic/resources/load"
+      },
+      {
+        "project": "basis-uastc",
+        "id": "basis-uastc-target.glb",
+        "kind": "model",
+        "mimeType": "model/gltf-binary",
+        "bytes": 3880,
+        "sha256": "d62fb68624a4d137dce9be998abc5b0417f7cd45bb0b325af923dd5fb3171a58",
+        "actualRoute": "POST api/programmatic/resources/load"
+      }
+    ],
+    "surfaceAssets": [
+      {
+        "file": "app-C_1y5_4F.js",
+        "sha256": "cd19d6a7f906d84f673952fbb78d2a59fd3d7f5542989097f76d8ccb6995dc8f",
+        "bytes": 130434,
+        "actualRoute": "GET assets/app-C_1y5_4F.js"
+      },
+      {
+        "file": "surface-react-identity-probe-S8zpDyXI.js",
+        "sha256": "74a9ffe870ef0e729d6252a9fbaa99bcb48a44f966e06d7be3554e120d01aa06",
+        "bytes": 6894754,
+        "actualRoute": "GET assets/surface-react-identity-probe-S8zpDyXI.js"
+      }
+    ],
+    "embeddedBasisWasmIdentical": true,
+    "decoderNetworkDownloadsObserved": 0,
+    "note": "Surface resource/load network observer during export had no responses because actual frame backend resolves archived bytes. Separate CPU actual formal HTTP response verification is retained explicitly; not represented as in-frame decoder fetch instrumentation."
+  },
+  "cleanup": {
+    "ownedGpuHostsAndBrowserClosed": [
+      {
+        "id": "draco-triangle",
+        "stage": "first-render",
+        "hostClosed": true
+      },
+      {
+        "id": "draco-triangle",
+        "stage": "reopened-export",
+        "hostClosed": true
+      },
+      {
+        "id": "basis-etc1s",
+        "stage": "first-render",
+        "hostClosed": true
+      },
+      {
+        "id": "basis-etc1s",
+        "stage": "reopened-export",
+        "hostClosed": true
+      },
+      {
+        "id": "basis-uastc",
+        "stage": "first-render",
+        "hostClosed": true
+      },
+      {
+        "id": "basis-uastc",
+        "stage": "reopened-export",
+        "hostClosed": true
+      },
+      "own browser closed"
+    ],
+    "cpuServeHostsClosed": [
+      {
+        "id": "draco-triangle",
+        "hostClosed": true
+      },
+      {
+        "id": "basis-etc1s",
+        "hostClosed": true
+      },
+      {
+        "id": "basis-uastc",
+        "hostClosed": true
+      }
+    ],
+    "auditedOldRunnerAndRootProcessesAbsent": [
+      32180,
+      46784,
+      47020
+    ],
+    "gpuReleased": true,
+    "pageErrors": [],
+    "externalNetworkRequests": []
+  },
+  "limits": [
+    "No external JSON glTF consumer acceptance: delivered loadModel admits self-containedGLB only.",
+    "SVG separate loadSvgModel API exists in featureprofile but was not exercised here; no SVG acceptance claim.",
+    "No independent Basis transcoder correctness/codec-math oracle; finite supported vectors and GPU transport only.",
+    "No full GPU/device/geometry/material matrix, worker/OffscreenCanvas or installed application acceptance.",
+    "Smallest first privateCPU decoded budget1MB failed Draco fixedscratch accounting; corrected privateCPU budget2MB only, failure retained; formal resource limits and acceptance thresholds never changed.",
+    "Archive packaging receipt is preexisting; this task did not pack/install/build shared dependencies or modify loaders/production rendering."
+  ]
+}

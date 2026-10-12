@@ -1,0 +1,715 @@
+{
+  "version": 1,
+  "date": "2026-10-12",
+  "overallGoalComplete": false,
+  "basis": {
+    "creatorPlan": "docs/canvas-ui-director-rocut-development-plan.md",
+    "sections": [
+      "7.2",
+      "8.11",
+      "2026-10-12 author closure continuation"
+    ],
+    "vDefinition": "Evidenced registered finite video subset with explicit semantic differences, not arbitrary models, every host, installed state or upstream equivalence"
+  },
+  "audit": {
+    "kind": "CPU-only retained evidence mapping and artifact rehash; no new render/export/compile/build/install",
+    "runtimePinsVerified": 364
+  },
+  "remainingRegisteredFiniteSubset": [],
+  "notClaimed": [
+    "Arbitrary models/materials or cross-product of every combination",
+    "New UI history for the added finite model/material cases; author/history evidenced separately on their own saved static project",
+    "Default420 on new dynamic/shared-domain cases; their outputs explicitly opt-in444 q8",
+    "Hardware/WebGPU, installation/Electron/P8 or release",
+    "Historical missing original execution bytes restored or re-executed"
+  ],
+  "status": "accepted-registered-finite-ink-object-subset",
+  "scope": "Static authored curved GLB Ink subset plus two separately evidenced finite skinned+relative morph negative-transform MASK UV1/RGBA textured PBR/unlit combinations; normal Three0.185.1 formal Host frames and opaque video.",
+  "registeredParameters": [
+    "contourWidth",
+    "inkDensity",
+    "paperTexture",
+    "paperScale",
+    "seed",
+    "inkColor",
+    "paperColor"
+  ],
+  "requirements": [
+    {
+      "requirement": "Rust parameter authority, light/map-dependent density, seeded paper grain, viewport-pixel contour and borrowed resource restoration",
+      "evidence": [
+        "ink-object-implementation.json",
+        "ink-object-gpu.json",
+        "ink-dynamic-current.json"
+      ],
+      "boundary": "Older implementation/GPU canonical summaries retained, some historical raw artifacts missing; new finite dynamic CPU/resource and formal GPU/video pins independently match"
+    },
+    {
+      "requirement": "Declared color/paper parameter visual behavior",
+      "evidence": [
+        "C:/tmps/object-declared-param-oracles-20261012/acceptance-receipt.json",
+        "ink-object-gpu.json"
+      ],
+      "boundary": "Current narrow paperColor analytic center/background exact; old diagnostic broad parameter summary not claimed rehashed raw execution"
+    },
+    {
+      "requirement": "Real author Apply/history/save/reopen and same edited project full output",
+      "evidence": [
+        "C:/tmps/ink-object-author-history-20261012-SIPWZY/acceptance-receipt.json"
+      ],
+      "boundary": "Full editor dedicated inkDensity .85 to .15; one Apply PUT/compile, attached history API not toolbar click; rev4 reopen; full49 formal PNG vs FFmpeg 3/6 gates"
+    },
+    {
+      "requirement": "Planned finite model/material combinations and dynamic boundary",
+      "evidence": [
+        "ink-dynamic-current.json"
+      ],
+      "boundary": "Two skin+relative-morph negative-transform MASK UV1/RGBA textured PBR/unlit cases, actual formal Host early/mid/late/repeat/contour controls and each13-frame444 q8. Not arbitrary skinned/morph/instanced/shader support"
+    }
+  ],
+  "author": {
+    "receipt": {
+      "path": "C:/tmps/ink-object-author-history-20261012-SIPWZY/acceptance-receipt.json",
+      "byteLength": 3356,
+      "sha256": "85014ee276f0c18f652ee1b45a44e4114efa46c702c143a4c21829624ff8097c"
+    },
+    "uiSurface": "Full real Rocut editor page mounted in owned headless Chromium; dedicated ink.inkDensity textbox and Recompile and apply button. Not standalone component or mock.",
+    "historyMechanism": "Attached live editor history.status/undo/redo transport, complete clip deepEqual; not toolbar clicks.",
+    "control": {
+      "before": 0.85,
+      "after": 0.15,
+      "draftWrites": 0,
+      "applyPersistenceWrites": 1,
+      "applyRevisionCompiles": 1,
+      "totalObservedRecordPuts": 5,
+      "totalObservedRevisionCompiles": 1
+    },
+    "revisions": {
+      "before": 1,
+      "afterApply": 2,
+      "afterUndo": 3,
+      "afterRedo": 4,
+      "reopened": 4
+    },
+    "frames": 49,
+    "fps": 24,
+    "video": {
+      "id": "957ab1eefc42d490",
+      "options": {
+        "format": "webm",
+        "quality": "very_high",
+        "includeAudio": false,
+        "range": {
+          "startTime": 0,
+          "endTime": 245000
+        }
+      },
+      "status": "completed",
+      "sourceProjectSha256": "d990586288a1f22201afa8e6f2b27e4654b24943faa483a63ebbe7a66c2c100d",
+      "outputPath": "C:\\tmps\\ink-object-author-history-20261012-SIPWZY\\project\\exports\\957ab1eefc42d490.webm",
+      "bytes": 29769,
+      "sha256": "e985c6722ceef42a257c98a7e22e863cd5799c1f36559b2017eecbc2249e0306"
+    },
+    "decode": {
+      "meanRange": [
+        1.3426106770833333,
+        1.4836832682291667
+      ],
+      "activeMeanRange": [
+        1.228246913580247,
+        1.8523851720573032
+      ],
+      "everyFrameIndependentFormalPng": true,
+      "allPredeclaredGatesPassed": true
+    },
+    "projectBytesAndRevisionUnchanged": true,
+    "cleanup": [
+      {
+        "owner": "Host",
+        "pid": 35156,
+        "closed": true
+      },
+      {
+        "owner": "Host",
+        "pid": 35292,
+        "closed": true
+      },
+      {
+        "owner": "browser",
+        "closed": true
+      },
+      {
+        "owner": "Host",
+        "pid": 60048,
+        "closed": true
+      }
+    ],
+    "retainedWarnings": [
+      {
+        "path": "api/library/graph-editor-presets/user-presets",
+        "status": 404
+      },
+      {
+        "path": "api/library/graph-editor-presets/user-presets",
+        "status": 404
+      }
+    ]
+  },
+  "currentFiniteCases": {
+    "canonical": {
+      "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut/docs/evidence/ink-dynamic-current.json",
+      "byteLength": 34582,
+      "sha256": "bd515a2fcd12aab4684be3cd3af76a089772ca0c20bb9b266ebf7d6dad1dbb41"
+    },
+    "checks": [
+      "Actual Three0.185.1 / actual three-assets createModelAnimation finite skin and relative morph",
+      "Negative nonuniform parent transform; contour SkinnedMesh shares actual skeleton/morph weights and CPU posed vertices",
+      "MASK map UV1 transform and RGBA COLOR_0, both PBR and unlit fill/contour configuration",
+      "Unordered absolute seeks [0,.75,.25,1,0,.75,.25] repeat pose exactly; no advancing-delta clock",
+      "Borrowed geometry attribute arrays, material, texture matrix/offset/repeat remain unchanged and undisposed",
+      "Published owned fill/contour materials disposed once, model lease disposed once, hull removed; original material and original pose restored",
+      "Invalid MASK UV1 rejects and cleans acquired model lease with borrowed resources untouched"
+    ],
+    "projects": [
+      {
+        "id": "pbr-mask",
+        "motion": {
+          "mean": 6.794813368055555,
+          "changedPixels": 1810,
+          "totalPixels": 24576
+        },
+        "seek": {
+          "mean": 0,
+          "changedPixels": 0,
+          "totalPixels": 24576
+        },
+        "contour": {
+          "mean": 1.4204372829861112,
+          "changedPixels": 663,
+          "totalPixels": 24576
+        },
+        "projectBytesUnchanged": true
+      },
+      {
+        "id": "unlit-mask",
+        "motion": {
+          "mean": 6.837293836805555,
+          "changedPixels": 1809,
+          "totalPixels": 24576
+        },
+        "seek": {
+          "mean": 0,
+          "changedPixels": 0,
+          "totalPixels": 24576
+        },
+        "contour": {
+          "mean": 1.3947889539930556,
+          "changedPixels": 663,
+          "totalPixels": 24576
+        },
+        "projectBytesUnchanged": true
+      }
+    ],
+    "videos": [
+      {
+        "id": "pbr-mask",
+        "jobId": "708ef2faad3f3c2b",
+        "frames": 13,
+        "gates": {
+          "width": 192,
+          "height": 128,
+          "frames": 13,
+          "fps": "12/1",
+          "codec": "vp9",
+          "pixelFormat": "yuv444p",
+          "fullRgbMae": 3,
+          "activeRgbMae": 6,
+          "roi": [
+            35,
+            157,
+            10,
+            118
+          ],
+          "ptsError": 0.001
+        },
+        "maxFullMae": 1.0115966796875,
+        "maxActiveMae": 1.0216302367941712,
+        "maxPtsError": 0.00033333333333340764,
+        "video": {
+          "path": "C:/tmps/ink-dynamic-current-20261012/video-uZWgUE/production-444.webm",
+          "bytes": 21834,
+          "sha256": "7bb8105cb22017b5c26cde5a4d4b5aef37bcb46ccb634787c7e8d96593363cd2"
+        },
+        "decoded": {
+          "path": "C:/tmps/ink-dynamic-current-20261012/video-uZWgUE/decoded.rgba",
+          "sha256": "c55a156491bc0a7282d2dd1cca29b9f8a2d4e180d7d3f5a8fc5e2d5509e71573",
+          "bytes": 1277952
+        },
+        "cleanup": [
+          "attached Surface Browser closed before formal reference requests",
+          "owned Host closed"
+        ]
+      },
+      {
+        "id": "unlit-mask",
+        "jobId": "a7a27db422d68156",
+        "frames": 13,
+        "gates": {
+          "width": 192,
+          "height": 128,
+          "frames": 13,
+          "fps": "12/1",
+          "codec": "vp9",
+          "pixelFormat": "yuv444p",
+          "fullRgbMae": 3,
+          "activeRgbMae": 6,
+          "roi": [
+            35,
+            157,
+            10,
+            118
+          ],
+          "ptsError": 0.001
+        },
+        "maxFullMae": 1.0118815104166667,
+        "maxActiveMae": 1.022161505768063,
+        "maxPtsError": 0.00033333333333340764,
+        "video": {
+          "path": "C:/tmps/ink-dynamic-current-20261012/video-CHo0jQ/production-444.webm",
+          "bytes": 22225,
+          "sha256": "13aab608efd3c76c73f608096687d9e761eed1e453e8d7500edf657ef7fb80a0"
+        },
+        "decoded": {
+          "path": "C:/tmps/ink-dynamic-current-20261012/video-CHo0jQ/decoded.rgba",
+          "sha256": "dae8873963afe0fb060f5537f9ce5f0c38d9456e2ee4332d9a6e26f92b9f2c6b",
+          "bytes": 1277952
+        },
+        "cleanup": [
+          "attached Surface Browser closed before formal reference requests",
+          "owned Host closed"
+        ]
+      }
+    ],
+    "limitations": [
+      "Only two new finite skin+relative morph negative-transform MASK UV1/RGBA textured PBR/unlit combinations, not arbitrary-model support.",
+      "Actual normal Three0.185.1 packaged CLI Host frames and actual packaged Surface SceneExporter/WebCodecs, explicit444 very_high q8 only; no default420 assertion.",
+      "Each video uses a byte-exact isolated clone of its same saved HTTP-authored project; Surface bookkeeping established stable baseline before unique export. Not UI/history/install proof.",
+      "SwiftShader/ANGLE configured browser, not discrete hardware GPU claim.",
+      "Published CPU-owned material/hull/lease disposal counted; formal descendant Browser/worker PIDs not independently enumerated, actual production awaited cleanup and owned Host/Surface close recorded."
+    ],
+    "retainedFixtureFailure": {
+      "path": "C:/tmps/ink-dynamic-current-20261012/video-M2P3gp/video-receipt.json",
+      "sha256": "02130faeb2c0cfdcc0adb116aefa445bccb00daac48e1f04542fd57fbcf1fbf0",
+      "cause": "Dedicated runner copied Liquid clip selector; actual Ink clip id differs. Locator timeout before job submission, no production export job failed. Both Browser/Host closed. Only fixture selector fixed; fresh byte-exact clone, same source/reference/gates."
+    }
+  },
+  "historyNotRelabeled": {
+    "oldBakedExports": "ink-object-editor-export.json and ink-object-editor-export-full.json remain baked/no UI-history scope; actual edited project acceptance is SIPWZY, not a replacement baked project",
+    "oldDiagnosticArtifacts": [
+      {
+        "location": "C:/tmps/ink-object-native-a4db86ce/implementation-receipt.json",
+        "expectedSha256": "18a99b9a526c7fb53697f9f43e5f454bd73a9fe173007df1cfb9537457b8dddd",
+        "status": "missing-original-artifact"
+      },
+      {
+        "location": "C:/tmps/ink-object-native-a4db86ce/scene-review-fix-receipt.json",
+        "expectedSha256": "97570c35e752463a2c323772adc209e9c9586a8f8f126b9d0c9e40e42bea485b",
+        "status": "missing-original-artifact"
+      },
+      {
+        "location": "C:/tmps/ink-object-gpu-run-MGWjbU/gpu-run.json",
+        "expectedSha256": "bd78e0fc86c2e87f2d410371d24b07b92abcdda4de75ae55192c8b97a6a80a7b",
+        "status": "missing-original-artifact"
+      },
+      {
+        "location": "C:\\tmps\\ink-object-gpu-5EAfx3\\preparation.json",
+        "expectedSha256": "74ffdc76e6b7df514af4b31830914b5a04ce6b89812c1ded00520262337df9a9",
+        "status": "missing-original-artifact"
+      },
+      {
+        "location": "C:/tmps/ink-object-gpu-run-UxqkYh/gpu-run.json",
+        "expectedSha256": "bdb5f3f68bb24685e24f01b9f284fcffed8c8271d4db00eab6e72d4c427bc58b",
+        "status": "missing-original-artifact"
+      },
+      {
+        "location": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/elftia/elftia-plugin-creator-studio/resources/agent/skills/html-video/assets/rocut-stylized/ink-object-scene.ts",
+        "expectedSha256": "6424af41aab9763ef81a63bf92b69cd397ccad117d21eadc92947c1e2a6e567b",
+        "currentArtifact": {
+          "path": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/elftia/elftia-plugin-creator-studio/resources/agent/skills/html-video/assets/rocut-stylized/ink-object-scene.ts",
+          "byteLength": 15773,
+          "sha256": "366327a5b7ec8d425a5d754044fce5097e52aea67d3398659e61c724816e09ac"
+        },
+        "status": "current-bytes-differ-from-historical-pin"
+      },
+      {
+        "location": "C:\\tmps\\object-wasm-development-5aSyix\\pkg\\opencut_wasm_bg.wasm",
+        "expectedSha256": "5d40cb7ae4e0fed4d7c7b81d1ef7617b5d874ec5dd6fbead2da03fbc8d021560",
+        "status": "missing-original-artifact"
+      },
+      {
+        "location": "C:\\tmps\\ink-object-gpu-5EAfx3\\ink-model.glb",
+        "expectedSha256": "72eb7f7d3e832c3d7dd1e04e76cfb3a5cb2b175a72826acf8a4b8ae37254babb",
+        "status": "missing-original-artifact"
+      },
+      {
+        "location": "C:\\tmps\\ink-object-gpu-5EAfx3\\ink-environment.hdr",
+        "expectedSha256": "c0189db833bcd32f4d2b3c30309eff76fe009695741652fa710c136a2448ba56",
+        "status": "missing-original-artifact"
+      }
+    ],
+    "preparationFailure": "C:/tmps/ink-object-author-history-20261012-gLenip/receipt-final.json: fixture assumed Liquid-only capabilities on Ink; corrected engine and normalized props assertion, no canonical change.",
+    "scopeEvolution": "Old Ink static implementation rejection summary remains historical. Added two actual skin/morph/MASK cases are accepted only within their new finite evidence, not a retroactive broad rewrite."
+  },
+  "dependencies": [
+    {
+      "path": "C:/tmps/ink-object-author-history-20261012-SIPWZY/acceptance-receipt.json",
+      "byteLength": 3356,
+      "sha256": "85014ee276f0c18f652ee1b45a44e4114efa46c702c143a4c21829624ff8097c"
+    },
+    {
+      "path": "C:/tmps/object-declared-param-oracles-20261012/acceptance-receipt.json",
+      "byteLength": 1566,
+      "sha256": "0988b476ad0f1f342b5e5b76d149ca6ca03ba95315f12fa3262261035196e24c"
+    },
+    {
+      "path": "C:/tmps/ink-dynamic-current-20261012/attempt-XvnF3f/review-final.json",
+      "byteLength": 17450,
+      "sha256": "b8384eb4f5bbd5e85ee88b1b0e7986401f77be0f6ecf1eb939e866fa789c1843"
+    },
+    {
+      "path": "C:/tmps/ink-dynamic-current-20261012/attempt-XvnF3f/preparation-receipt.json",
+      "byteLength": 6111,
+      "sha256": "c2e652e6499b8c051e28f51ff5295edca1f9a2d15f87f29c383bfa83ef254baa"
+    },
+    {
+      "path": "C:/tmps/ink-dynamic-current-20261012/attempt-XvnF3f/verification-final.json",
+      "byteLength": 12793,
+      "sha256": "23d19e1559fe785bbe56ca48035a7a4220f1a073aedda56c71e134f8dad0cc56"
+    },
+    {
+      "path": "C:/tmps/ink-dynamic-current-20261012/attempt-XvnF3f/gpu-receipt.json",
+      "byteLength": 7120,
+      "sha256": "86aa08d43d8c65e4452f037ca91031084756fe9f2f06257874801d4ff208b721"
+    },
+    {
+      "path": "C:/tmps/ink-dynamic-current-20261012/attempt-XvnF3f/pbr-mask/early.png",
+      "byteLength": 2601,
+      "sha256": "454865104c5791081c763a658a9cb19aa9f73a262b1266d11043741f9fbf95e8"
+    },
+    {
+      "path": "C:/tmps/ink-dynamic-current-20261012/attempt-XvnF3f/pbr-mask/mid.png",
+      "byteLength": 2685,
+      "sha256": "d4790f21214e877a63122bc04944850282967d353cf11e4488798da11abadcd2"
+    },
+    {
+      "path": "C:/tmps/ink-dynamic-current-20261012/attempt-XvnF3f/pbr-mask/late.png",
+      "byteLength": 2828,
+      "sha256": "d6e7abd981e73d2655bdcad736ddb3fbad731b8bf99759b2cef5b277eb605e91"
+    },
+    {
+      "path": "C:/tmps/ink-dynamic-current-20261012/attempt-XvnF3f/pbr-mask/mid-repeat.png",
+      "byteLength": 2685,
+      "sha256": "d4790f21214e877a63122bc04944850282967d353cf11e4488798da11abadcd2"
+    },
+    {
+      "path": "C:/tmps/ink-dynamic-current-20261012/attempt-XvnF3f/pbr-mask/late-no-contour.png",
+      "byteLength": 3112,
+      "sha256": "c59b4808cae5d3a3301c3a3ddea8ea2c62a351e0a3d8be2ef2edf51bcfc2ded1"
+    },
+    {
+      "path": "C:/tmps/ink-dynamic-current-20261012/attempt-XvnF3f/unlit-mask/early.png",
+      "byteLength": 2672,
+      "sha256": "c6d31a5a6f9c1971cc1e255982591e2449bdd0645073af53fab69f5adea6e285"
+    },
+    {
+      "path": "C:/tmps/ink-dynamic-current-20261012/attempt-XvnF3f/unlit-mask/mid.png",
+      "byteLength": 2661,
+      "sha256": "5369bfd48496912d7871b84d9836e0045035691f9c8f1e77b3634327919d7e28"
+    },
+    {
+      "path": "C:/tmps/ink-dynamic-current-20261012/attempt-XvnF3f/unlit-mask/late.png",
+      "byteLength": 2807,
+      "sha256": "affcf891d98390dc24c78222c09d6b1faeb8cc7c4f41c4c1ca24fc9d67756ca8"
+    },
+    {
+      "path": "C:/tmps/ink-dynamic-current-20261012/attempt-XvnF3f/unlit-mask/mid-repeat.png",
+      "byteLength": 2661,
+      "sha256": "5369bfd48496912d7871b84d9836e0045035691f9c8f1e77b3634327919d7e28"
+    },
+    {
+      "path": "C:/tmps/ink-dynamic-current-20261012/attempt-XvnF3f/unlit-mask/late-no-contour.png",
+      "byteLength": 3084,
+      "sha256": "6538af7119532461aea24c7e31a774bc2dedb9b70b70be71ca2d159e45289bee"
+    },
+    {
+      "path": "C:/tmps/ink-dynamic-current-20261012/video-uZWgUE/contract.json",
+      "byteLength": 7934,
+      "sha256": "ab44cbb24e1a8d87bfe6a96aa01c13a6f7d4f96c3362b40d79d2ccfd28e5c9d4"
+    },
+    {
+      "path": "C:/tmps/ink-dynamic-current-20261012/video-uZWgUE/video-receipt.json",
+      "byteLength": 22149,
+      "sha256": "864fcf4f6ca7c94ebcd5a19088240bedc399cea45fdb6084438c43da5bfa6152"
+    },
+    {
+      "path": "C:/tmps/ink-dynamic-current-20261012/video-uZWgUE/production-444.webm",
+      "byteLength": 21834,
+      "sha256": "7bb8105cb22017b5c26cde5a4d4b5aef37bcb46ccb634787c7e8d96593363cd2"
+    },
+    {
+      "path": "C:/tmps/ink-dynamic-current-20261012/video-uZWgUE/decoded.rgba",
+      "byteLength": 1277952,
+      "sha256": "c55a156491bc0a7282d2dd1cca29b9f8a2d4e180d7d3f5a8fc5e2d5509e71573"
+    },
+    {
+      "path": "C:/tmps/ink-dynamic-current-20261012/video-CHo0jQ/contract.json",
+      "byteLength": 7938,
+      "sha256": "7b619301455814f5a85ffad007012b7f53570606dcfbbbf049e7e1ce228656cc"
+    },
+    {
+      "path": "C:/tmps/ink-dynamic-current-20261012/video-CHo0jQ/video-receipt.json",
+      "byteLength": 25231,
+      "sha256": "3d3c08b497cf94f0429d79d724b6a31d7f266b8bbf486e3f62e1e5df22fee6db"
+    },
+    {
+      "path": "C:/tmps/ink-dynamic-current-20261012/video-CHo0jQ/production-444.webm",
+      "byteLength": 22225,
+      "sha256": "13aab608efd3c76c73f608096687d9e761eed1e453e8d7500edf657ef7fb80a0"
+    },
+    {
+      "path": "C:/tmps/ink-dynamic-current-20261012/video-CHo0jQ/decoded.rgba",
+      "byteLength": 1277952,
+      "sha256": "dae8873963afe0fb060f5537f9ce5f0c38d9456e2ee4332d9a6e26f92b9f2c6b"
+    },
+    {
+      "path": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/elftia/elftia-plugin-creator-studio/scripts/tests/ink-dynamic-current.test.mjs",
+      "byteLength": 8805,
+      "sha256": "58ab662d02678bec9fc1414f02481e69c4d508ef79141d7fd328f0428b71383b"
+    },
+    {
+      "path": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/elftia/elftia-plugin-creator-studio/resources/agent/skills/html-video/assets/rocut-stylized/ink-object-scene.ts",
+      "byteLength": 15773,
+      "sha256": "366327a5b7ec8d425a5d754044fce5097e52aea67d3398659e61c724816e09ac"
+    },
+    {
+      "path": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/elftia/elftia-plugin-creator-studio/resources/agent/skills/html-video/assets/rocut-stylized/ink-object.mjs",
+      "byteLength": 4288,
+      "sha256": "733dfae6992514efe58f43545d71353ed88c1e943d00bdc60e7371ff27bb4384"
+    },
+    {
+      "path": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/elftia/elftia-plugin-creator-studio/resources/agent/skills/html-video/assets/rocut-stylized/object-animation.mjs",
+      "byteLength": 1151,
+      "sha256": "7acd03a49330d9eef2200c2afd0de31cfaa7b58da87b29c8b4478d920dd5e90d"
+    },
+    {
+      "path": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/elftia/elftia-plugin-creator-studio/resources/agent/skills/html-video/assets/rocut-stylized/object-animation-clip-selection.mjs",
+      "byteLength": 409,
+      "sha256": "7ef0936fc148495f980c0e1a4e81b47c3a8c98e888b368eafdd337a241a068fd"
+    },
+    {
+      "path": "C:/tmps/three-assets-shared-delivery-20261012/attempt-02/toolchain/node_modules/three/build/three.module.js",
+      "byteLength": 650153,
+      "sha256": "bbf5ed13fe4373f5bd38b14ea8e62e9f157327da5638edc6d3863e08b167c9c7"
+    },
+    {
+      "path": "C:/tmps/three-assets-shared-delivery-20261012/attempt-02/toolchain/node_modules/three/package.json",
+      "byteLength": 3826,
+      "sha256": "1d5c438acdc1fe5a52fb8ede2e417afd91fec91d22275c40f7b739591b24e4df"
+    },
+    {
+      "path": "C:/tmps/three-assets-shared-delivery-20261012/attempt-02/toolchain/node_modules/@elftia/three-assets/dist/model-animation.js",
+      "byteLength": 3212,
+      "sha256": "1a29fb52c4cbed57a1096e8759f660a61fd14a925dc4756327e3be45b501a5c0"
+    },
+    {
+      "path": "C:/tmps/ink-dynamic-current-20261012/assets.mjs",
+      "byteLength": 4070,
+      "sha256": "05a1e9510f96167b5c4fe7de3717cf2586a71345e055e0c7c917522591010429"
+    },
+    {
+      "path": "C:/tmps/ink-dynamic-current-20261012/prepare.mjs",
+      "byteLength": 7356,
+      "sha256": "80d22957c34bf9db672ecc5ad1a56799fddce2c474ad4bd97c7d2570b53b9d1c"
+    },
+    {
+      "path": "C:/tmps/ink-dynamic-current-20261012/gpu.mjs",
+      "byteLength": 4991,
+      "sha256": "588e63c977d96469b8c85ccfc60e1dc37c9d66345547ef757c3b05c662126e49"
+    },
+    {
+      "path": "C:/tmps/ink-dynamic-current-20261012/video.mjs",
+      "byteLength": 12799,
+      "sha256": "4305f58ff2f8dfca7baabaaca02b359d210bcdbb6b90d2f7e1d2879bfa9f52fb"
+    },
+    {
+      "path": "C:/tmps/ink-dynamic-current-20261012/review.mjs",
+      "byteLength": 4709,
+      "sha256": "10f282d88008ca8c6eeae060396a5ff139bafce6a6a28a153370b8bcd981e1a2"
+    },
+    {
+      "path": "C:/tmps/ink-dynamic-current-20261012/video-M2P3gp/video-receipt.json",
+      "byteLength": 1884,
+      "sha256": "02130faeb2c0cfdcc0adb116aefa445bccb00daac48e1f04542fd57fbcf1fbf0"
+    },
+    {
+      "path": "C:/tmps/ink-dynamic-current-20261012/attempt-XvnF3f/cpu-tests.log",
+      "byteLength": 470,
+      "sha256": "f5ce0330c8e445e101fbefa015a64a4aa07ca80d20233090a7b2929473f3a3ab"
+    },
+    {
+      "path": "C:/tmps/ink-dynamic-current-20261012/verify.mjs",
+      "byteLength": 2868,
+      "sha256": "4f6486e8a16950bc53a2294a59aa9d7d9fa7806c5486c18ff38fe84339bcc95d"
+    },
+    {
+      "path": "C:/tmps/ink-dynamic-current-20261012/attempt-XvnF3f/pbr-mask/project/attachments/programmatic-sha256-37b7d26077154dc3ea2f28c09090d7511697767f4b393218c0c290871bcb284b/body.bin",
+      "byteLength": 2158927,
+      "sha256": "37b7d26077154dc3ea2f28c09090d7511697767f4b393218c0c290871bcb284b"
+    },
+    {
+      "path": "C:/tmps/ink-dynamic-current-20261012/attempt-XvnF3f/pbr-mask/project/attachments/programmatic-sha256-58afd392d9e194ee73d0db72f42f03120d45113c8fee4b162f9140eeb1e08e53/body.bin",
+      "byteLength": 5320,
+      "sha256": "58afd392d9e194ee73d0db72f42f03120d45113c8fee4b162f9140eeb1e08e53"
+    },
+    {
+      "path": "C:/tmps/ink-dynamic-current-20261012/attempt-XvnF3f/pbr-mask/project/attachments/programmatic-source-sha256-366327a5b7ec8d425a5d754044fce5097e52aea67d3398659e61c724816e09ac/body.bin",
+      "byteLength": 15773,
+      "sha256": "366327a5b7ec8d425a5d754044fce5097e52aea67d3398659e61c724816e09ac"
+    },
+    {
+      "path": "C:/tmps/ink-dynamic-current-20261012/attempt-XvnF3f/pbr-mask/project/attachments/programmatic-source-sha256-7ef0936fc148495f980c0e1a4e81b47c3a8c98e888b368eafdd337a241a068fd/body.bin",
+      "byteLength": 409,
+      "sha256": "7ef0936fc148495f980c0e1a4e81b47c3a8c98e888b368eafdd337a241a068fd"
+    },
+    {
+      "path": "C:/tmps/ink-dynamic-current-20261012/attempt-XvnF3f/pbr-mask/project/attachments/programmatic-source-sha256-7acd03a49330d9eef2200c2afd0de31cfaa7b58da87b29c8b4478d920dd5e90d/body.bin",
+      "byteLength": 1151,
+      "sha256": "7acd03a49330d9eef2200c2afd0de31cfaa7b58da87b29c8b4478d920dd5e90d"
+    },
+    {
+      "path": "C:/tmps/ink-dynamic-current-20261012/attempt-XvnF3f/pbr-mask/project/attachments/programmatic-source-sha256-7ed54a61bc865a29b6535b832d1c8024728ef306f4239c0ea5887ebcb5518ab9/body.bin",
+      "byteLength": 7714,
+      "sha256": "7ed54a61bc865a29b6535b832d1c8024728ef306f4239c0ea5887ebcb5518ab9"
+    },
+    {
+      "path": "C:/tmps/ink-dynamic-current-20261012/attempt-XvnF3f/pbr-mask/project/attachments/programmatic-sha256-17032670f358e0fe67125ebd1b557aa92d0d95f9a258711cfc4413e5bf80726b/body.bin",
+      "byteLength": 2158927,
+      "sha256": "17032670f358e0fe67125ebd1b557aa92d0d95f9a258711cfc4413e5bf80726b"
+    },
+    {
+      "path": "C:/tmps/ink-dynamic-current-20261012/attempt-XvnF3f/unlit-mask/project/attachments/programmatic-sha256-37b7d26077154dc3ea2f28c09090d7511697767f4b393218c0c290871bcb284b/body.bin",
+      "byteLength": 2158927,
+      "sha256": "37b7d26077154dc3ea2f28c09090d7511697767f4b393218c0c290871bcb284b"
+    },
+    {
+      "path": "C:/tmps/ink-dynamic-current-20261012/attempt-XvnF3f/unlit-mask/project/attachments/programmatic-sha256-458b70ab516bd637a4bd8dbe352c882f806b5966870d74b058468047cbd45cb9/body.bin",
+      "byteLength": 5384,
+      "sha256": "458b70ab516bd637a4bd8dbe352c882f806b5966870d74b058468047cbd45cb9"
+    },
+    {
+      "path": "C:/tmps/ink-dynamic-current-20261012/attempt-XvnF3f/unlit-mask/project/attachments/programmatic-source-sha256-366327a5b7ec8d425a5d754044fce5097e52aea67d3398659e61c724816e09ac/body.bin",
+      "byteLength": 15773,
+      "sha256": "366327a5b7ec8d425a5d754044fce5097e52aea67d3398659e61c724816e09ac"
+    },
+    {
+      "path": "C:/tmps/ink-dynamic-current-20261012/attempt-XvnF3f/unlit-mask/project/attachments/programmatic-source-sha256-7ef0936fc148495f980c0e1a4e81b47c3a8c98e888b368eafdd337a241a068fd/body.bin",
+      "byteLength": 409,
+      "sha256": "7ef0936fc148495f980c0e1a4e81b47c3a8c98e888b368eafdd337a241a068fd"
+    },
+    {
+      "path": "C:/tmps/ink-dynamic-current-20261012/attempt-XvnF3f/unlit-mask/project/attachments/programmatic-source-sha256-7acd03a49330d9eef2200c2afd0de31cfaa7b58da87b29c8b4478d920dd5e90d/body.bin",
+      "byteLength": 1151,
+      "sha256": "7acd03a49330d9eef2200c2afd0de31cfaa7b58da87b29c8b4478d920dd5e90d"
+    },
+    {
+      "path": "C:/tmps/ink-dynamic-current-20261012/attempt-XvnF3f/unlit-mask/project/attachments/programmatic-source-sha256-7ed54a61bc865a29b6535b832d1c8024728ef306f4239c0ea5887ebcb5518ab9/body.bin",
+      "byteLength": 7714,
+      "sha256": "7ed54a61bc865a29b6535b832d1c8024728ef306f4239c0ea5887ebcb5518ab9"
+    },
+    {
+      "path": "C:/tmps/ink-dynamic-current-20261012/attempt-XvnF3f/unlit-mask/project/attachments/programmatic-sha256-17032670f358e0fe67125ebd1b557aa92d0d95f9a258711cfc4413e5bf80726b/body.bin",
+      "byteLength": 2158927,
+      "sha256": "17032670f358e0fe67125ebd1b557aa92d0d95f9a258711cfc4413e5bf80726b"
+    },
+    {
+      "path": "C:/tmps/ink-dynamic-current-20261012/attempt-XvnF3f/pbr-mask/model.glb",
+      "byteLength": 5320,
+      "sha256": "58afd392d9e194ee73d0db72f42f03120d45113c8fee4b162f9140eeb1e08e53"
+    },
+    {
+      "path": "C:/tmps/ink-dynamic-current-20261012/attempt-XvnF3f/pbr-mask/production-source.json",
+      "byteLength": 3318,
+      "sha256": "826ea2fe46646800e2573e0af57c09c80952fb897cea39a8a23c70759bbd8cac"
+    },
+    {
+      "path": "C:/tmps/ink-dynamic-current-20261012/attempt-XvnF3f/pbr-mask/no-contour-source.json",
+      "byteLength": 3318,
+      "sha256": "abea119f5b1f4542eaa9110de9f4d7b670e8567eb7879c8ff0d4f5f27c97b720"
+    },
+    {
+      "path": "C:/tmps/ink-dynamic-current-20261012/attempt-XvnF3f/unlit-mask/model.glb",
+      "byteLength": 5384,
+      "sha256": "458b70ab516bd637a4bd8dbe352c882f806b5966870d74b058468047cbd45cb9"
+    },
+    {
+      "path": "C:/tmps/ink-dynamic-current-20261012/attempt-XvnF3f/unlit-mask/production-source.json",
+      "byteLength": 3318,
+      "sha256": "1c8296b620217ec31b1a59a6f39b3f77c498801ecf3939704815544cbbb9d8e8"
+    },
+    {
+      "path": "C:/tmps/ink-dynamic-current-20261012/attempt-XvnF3f/unlit-mask/no-contour-source.json",
+      "byteLength": 3318,
+      "sha256": "badad2586df33bf8e7536a0e265b90d83aa2a83c230aee9abc203839a8c8ac0f"
+    },
+    {
+      "path": "C:/tmps/ink-object-author-history-20261012-SIPWZY/receipt-final.json",
+      "byteLength": 17889,
+      "sha256": "918985422251874d89674892e37502e2b519262f591e9346fe9af378d89b3a3a"
+    },
+    {
+      "path": "C:/tmps/rocut-recipe-catalog-wasm-20261012/pkg/opencut_wasm_sync.js",
+      "byteLength": 4776,
+      "sha256": "7a4ea8c60b541224e8d4cdf29f42913dcfbdbf80a642cff562289b4ce666d04b"
+    },
+    {
+      "path": "C:/tmps/rocut-recipe-catalog-wasm-20261012/pkg/opencut_wasm_bg.js",
+      "byteLength": 194990,
+      "sha256": "569dbaf5f44d9e479a3f267646803b70d48c8d88d74c75457e008ec1cf9d0b0d"
+    },
+    {
+      "path": "C:/tmps/rocut-recipe-catalog-wasm-20261012/pkg/opencut_wasm_bg.wasm",
+      "byteLength": 15194990,
+      "sha256": "91cb239afd1efd81fa36a700bea6436e3707532a8f3111b175d22ee61dfbca86"
+    },
+    {
+      "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut/docs/evidence/ink-object-implementation.json",
+      "byteLength": 11996,
+      "sha256": "bbab69707e8cadf69099d9c95eec2ffa5172ac37a7f226a8ccd394174cb78637"
+    },
+    {
+      "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut/docs/evidence/ink-object-gpu.json",
+      "byteLength": 13527,
+      "sha256": "c8736a927e9f5afdc80f79c12fc22bfaa7965ada8cc32162dd8e1d49ca93b03c"
+    },
+    {
+      "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut/docs/evidence/ink-editor-ui-history.json",
+      "byteLength": 35374,
+      "sha256": "1bddfab6e2eb64dee9ce6b7576a7caff78fc47bc7b52e376718b39e216f96fd4"
+    },
+    {
+      "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut/docs/evidence/ink-object-editor-export.json",
+      "byteLength": 9855,
+      "sha256": "9c4451ad34a941e30bfa87b2042a1dbb5d26e84d7d677c4d5aa6c8358584b591"
+    },
+    {
+      "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut/docs/evidence/ink-object-editor-export-full.json",
+      "byteLength": 2709,
+      "sha256": "0eb187cbe1f0b2d6ccdd570e1c96988b3bfdd17e9dfa11699d6adf7ad1d6c7b7"
+    },
+    {
+      "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut/docs/evidence/ink-dynamic-current.json",
+      "byteLength": 34582,
+      "sha256": "bd515a2fcd12aab4684be3cd3af76a089772ca0c20bb9b266ebf7d6dad1dbb41"
+    }
+  ]
+}

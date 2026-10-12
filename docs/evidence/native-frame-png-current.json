@@ -1,0 +1,103 @@
+{
+  "version": 1,
+  "date": "2026-10-12",
+  "status": "NORMAL_TYPED_FULL_GRAPH_PNG_FROZEN_BLAZE_REAL_SAVE_AND_NORMAL_DIMENSIONS_PASSED",
+  "wasmSha256": "1b6671bdecfe6d6ad488a4bdf4583dc4d06a81229e2ce0aeffd274660c27a9f2",
+  "producer": {
+    "receipt": "C:/tmps/rocut-wholegraph-png-typed-normal-20261012/receipt-normal-producer.json",
+    "receiptSha256": "9557f57f5709d4cb78b60a11a44b01149705cac8a8703517abab4d3101338a4c",
+    "entry": "C:/tmps/rocut-wholegraph-png-typed-normal-20261012/build.mjs",
+    "package": "C:/tmps/rocut-wholegraph-png-typed-normal-20261012/pkg",
+    "exitCode": 0,
+    "sourceFiles": 998,
+    "sourceDrift": [],
+    "oldPackageDrift": [],
+    "offlineLockedNoInstall": true,
+    "normalWasmPackAndWasmOpt": true,
+    "diagnosticReadbackFeature": false,
+    "dtsSha256": "1af4879944fc45eafb60ef458b50adbe63cd7ce619d9fdd8923683fd23893c30",
+    "wrapperSha256": "52f93e0a4dd7564926579ca3f9d1b48d7f8a0d250919b10496bf26aa55974f9d"
+  },
+  "abi": "commitRenderFramePngForHandle(handle, request): Promise<NativeFramePng>; consumes the same prepared immutable full graph reservation; owner/generation are decimal strings.",
+  "consumer": "Existing RendererManager.saveSnapshot/copySnapshot -> createSnapshot -> CanvasRenderer.renderSnapshotPng -> shared resolve/build/upload -> WasmCompositor.renderPngAsync -> same Rust final graph texture -> shared native readback -> shared Rust PNG encoder -> browser Blob/download or clipboard.",
+  "budget": {
+    "limitBytes": 1073741824,
+    "policy": "Independent native frame output plus actual resident uploaded/pooled RGBA GPU textures, including idle pool. Conservative8*RGBA+2*paddedStaging+3*PNG base. Not universal process RSS; unrelated CPU raster caches retain existing policies. Base preflight before graph allocation; actual resident charge before staging allocation.",
+    "existingStagingLimitBytes": 67108864,
+    "existingCanvasFrameAndGroupTargetLimitBytes": 268435456,
+    "singleEffectLimitUnchangedBytes": 67108864,
+    "actualNormalDimensions": [
+      { "width": 1280, "height": 720, "peakBytes": 51637427, "pngBytes": 3687481, "decodedPixelsExact": true },
+      { "width": 1920, "height": 1080, "peakBytes": 119837957, "pngBytes": 8296191, "decodedPixelsExact": true },
+      { "width": 3840, "height": 2160, "peakBytes": 476506097, "pngBytes": 33182371, "decodedPixelsExact": true }
+    ]
+  },
+  "cpu": {
+    "requestAndExistingOwnershipTests": { "passed": 9, "failed": 0, "command": "bun test packages/editor-classic/src/services/renderer/compositor/render-request.async.test.ts packages/editor-classic/src/services/renderer/compositor/wasm-compositor-ownership.test.ts packages/editor-classic/src/services/renderer/render-residency-compositor.test.ts" },
+    "pngAndFrameBudgetTests": { "passed": 4, "failed": 0, "binary": "C:/tmps/whole-frame-output-budget-tests.exe", "scope": "720p/1080p/4K base+sixRGBAresident admission and overcap rejection; single-effect64MiB unchanged; lossless PNG bytes/CRC/Adler" },
+    "normalWasm32CheckPassed": true,
+    "strictUtf8NoBom": true,
+    "diffCheck": true
+  },
+  "gpu": {
+    "receipt": "C:/tmps/wholegraph-png-probe-vDgjP8/receipt.json",
+    "receiptSha256": "0f58478158c8bff539a63c570866e6f773d224064bad3dbb5a0cacbd852900c6",
+    "backend": "webgl",
+    "nestedIsolatedGroupLowAlphaOracle": { "max": 1, "mean": 0.125, "gateMax": 1, "gateMean": 0.35, "passed": true },
+    "independentDecode": "Node CRC32 + zlib + PNG framing/filter0, sRGB verified; no Canvas decode. All720p/1080p/4K pixels exact opaque red.",
+    "actualSaveCaller": "Production RendererManager.saveSnapshot and renderer pipeline with scoped host/session inputs; HTMLCanvasElement.toBlob throws throughout Save to prohibit display PNG fallback; saved PNG independently decoded against expected composited pixels.",
+    "controls": { "nativeCancel": true, "realSave": true, "closeAbort": true, "handleReleased": true, "noCanvasFallback": true },
+    "cleanup": { "gpuDisposed": true, "browserClosed": true, "serverClosed": true, "watchdogExpired": false, "terminalExitCode": 0, "gpuLeaseReleased": true }
+  },
+  "apiReview": {
+    "status": "ACTUAL_EXACT_SIGNATURE_AND_TYPE_NEGATIVE_CONTROLS_PASSED_METADATA_GATE_OWNED_BY_ROOT",
+    "exactTypeFixtureAdded": true,
+    "observedPinsNotGuessed": true,
+    "initialActualDeclarationRejected": "Promise<Promise<NativeFramePng>>",
+    "requiredDeclaration": "Promise<NativeFramePng>",
+    "repair": "Only unchecked_return_type changed from Promise<NativeFramePng> to NativeFramePng; Rust async and production runtime behavior unchanged; contract not widened.",
+    "freshTypedProducerRoot": "C:/tmps/rocut-wholegraph-png-typed-normal-20261012",
+    "initialArtifactAndGpuReceiptPreserved": true,
+    "actualReviewReceipt": "C:/tmps/wholegraph-api-review-20261012/attempt-2c1Ztq/receipt.json",
+    "actualReviewReceiptSha256": "8d12f1ec66a98c889fce3d1d59a2ccb4056d9e6ed465927cae0f36ee5c9a523c",
+    "typeChecks": { "passed": 13, "failed": 0, "negativeControls": 11 },
+    "runtimeLineage": "Typed repair has byte-identical WASM/wrapper/sync-entry/low-level declarations to initial1b66 artifact. Generated bgJS differs only return-type JSDoc, executable statements unchanged. Prior normal-dimension and cancellation GPU evidence remains scoped to identical executable runtime."
+  },
+  "frozenBlazeWholeGraphAndSave": {
+    "receipt": "C:/tmps/wholegraph-png-probe-Z4issm/receipt.json",
+    "receiptSha256": "6d613dab7f014e025a8549746a23f18bb7612684d863cd64ed127ce4404c68b4",
+    "typedPackage": "C:/tmps/rocut-wholegraph-png-typed-normal-20261012/pkg",
+    "source": { "width": 96, "height": 256, "sha256": "3a3ed164e42500a1c5b2d0093f0a813d27dc50d038f330cc100a7e70ece2e6e4", "loadedImageSourceExact": true },
+    "originalExpectedRgbaSha256": "cf9bd607fa0961a77ed75afdc4172fb5788e0c1937c53462da4a4a9fcc753077",
+    "originalTick": 48000,
+    "originalParamsAndFrameRatePreserved": true,
+    "nativeGraph": {
+      "caller": "Real WasmCompositor.renderPngAsync, transparent clear and original Blaze passes, full immutable graph traversal; no outer blend or oracle replacement.",
+      "originalStraightMeanGate": 1.5,
+      "metrics": { "premultipliedMean": 0, "premultipliedMaximum": 0, "alphaMean": 0, "alphaMaximum": 0, "straightMean": 0, "straightMaximum": 0, "straightChannels": 23166, "pass": true },
+      "pngSha256": "41ffa553ac10353b20dba7a6be87c429b041293079ff6b2622ce62fa0883d58b",
+      "zeroAlphaHiddenRgbByteDifferences": 3693,
+      "hiddenRgbQualification": "Existing final full-graph blend clears RGB at zero final alpha. Original alpha and visible-channel gates are exact; this is not all-RGBA-byte identity or single-effect hidden-RGB preservation."
+    },
+    "actualSave": {
+      "caller": "Production RendererManager.saveSnapshot -> CanvasRenderer -> real ImageNode resolver and original Blaze pass at48000ticks -> native final-graph PNG -> download Blob; host/session inputs scoped doubles.",
+      "background": "Unmodified existing opaque-black frame clear. Native straight-alpha transport does not imply transparent default UI snapshots.",
+      "oracle": "Same original Blaze effect oracle, then independent existing normal blend over opaque black: RGB=round(effectRGB*effectAlpha/255), alpha255.",
+      "metrics": { "premultipliedMean": 0, "premultipliedMaximum": 0, "alphaMean": 0, "alphaMaximum": 0, "straightMean": 0, "straightMaximum": 0, "straightChannels": 73728, "pass": true },
+      "pngSha256": "41f5d30b7bc79d633e4403a6afc10b4e606ac3ae4f42ef53d8da78337bd0efc1",
+      "displayToBlobThrowsDuringSave": true
+    },
+    "noEffectNegativeControlRejected": true,
+    "independentPngCrcZlibFilter0Decode": true,
+    "cleanup": { "gpuDisposed": true, "browserClosed": true, "serverClosed": true, "watchdogExpired": false, "terminalExitCode": 0, "gpuLeaseReleased": true }
+  },
+  "retainedRed": { "originalCanvasRawGatePassed": false, "straightMean": 1.6610118276784944, "gateMean": 1.5, "reclassified": false, "rerun": false, "canonicalEvidence": "docs/evidence/blaze-current-channel-closure.json" },
+  "notClaimed": [
+    "Mounted author UI or restored original artifacts",
+    "Browser clipboard permission and mounted Copy UI interaction",
+    "Arbitrary complex4K graphs",
+    "Full Blaze matrix or video codec integration",
+    "Universal1GiB process RSS bound"
+  ],
+  "cleanup": { "noInstallCommitPush": true, "oldPackagesPreserved": true, "noSharedDependenciesOverwritten": true, "initialNormalProducerPlusNecessaryDeclarationRepairProducer": true }
+}

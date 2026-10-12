@@ -1,0 +1,84 @@
+{
+  "status": "current-normal-surface-export-passed-with-retained-startup-diagnostics",
+  "ok": true,
+  "scope": "Current unmodified formal CLI Host and default packaged Surface reopen original revision31 graph on a byte-exact isolated clone. No admission bypass, source changes, rebuild, effect-control replay, or original-project edits. SwiftShader/ANGLE browser integration only, not discrete hardware, Electron, alpha master, installed plugin, or broad animation certification. Historical bypass evidence remains historical; this receipt independently closes this finite current integration gap.",
+  "cpu": {
+    "ok": true,
+    "receipt": {
+      "path": "C:/tmps/flame-current-admission-20261012/attempt-iL7HqM/cpu-receipt.json",
+      "sha256": "d8c6d4500d16fef1b22fe09c7d56ca6d937480c9c45509cf27dc27da096784e4"
+    },
+    "revision": 31,
+    "runtimePinCount": 364,
+    "originalAndCloneUnchanged": true,
+    "allOwnedHostsClosed": true
+  },
+  "current": {
+    "receipt": {
+      "path": "C:/tmps/flame-current-admission-20261012/gpu-3AGf74/current-receipt.json",
+      "sha256": "0b814ce362eed14ec863fd6ce5b8e37c1874fb9fe105d9fefcb75c1026059c8f"
+    },
+    "runner": {
+      "path": "C:/tmps/flame-current-admission-20261012/gpu.mjs",
+      "sha256": "af8f5f7bbe7ef268529267aaf16f7587aeab648eab085401c8efbe551110eb85"
+    },
+    "jobId": "cfb733c38426696b",
+    "jobsSubmitted": 1,
+    "options": {
+      "format": "webm",
+      "quality": "very_high",
+      "includeAudio": false,
+      "range": { "startTime": 20000, "endTime": 85000 }
+    },
+    "explicitChromaOrQuantizerOverride": false,
+    "observedDefaultPolicy": { "chroma": "420", "quantizer": 8, "actualEncodeCalls": 13 },
+    "video": {
+      "path": "C:/tmps/flame-current-admission-20261012/gpu-3AGf74/project/exports/cfb733c38426696b.webm",
+      "sha256": "fad1d883ffdd6323969d437a4b24fd8fc35f6746fdf44770373217f6fc88855f",
+      "codec": "vp9",
+      "pixelFormat": "yuv420p",
+      "width": 192,
+      "height": 128,
+      "fps": "24/1",
+      "frames": 13
+    },
+    "originalGraphReopenedExact": true,
+    "freshPresentationEqualsFixedHistoricalRgba": true,
+    "freshPngLosslessRgbaVerified": true,
+    "independentFfprobeAndFfmpegDecode": true,
+    "referenceMapping": [
+      { "ticks": 20000, "outputFrameIndex": 0, "decodedMeanRgb": 1.8385959201388888, "decodedActiveRgb": 3.6822011260428225, "activePixels": 8111 },
+      { "ticks": 40000, "outputFrameIndex": 4, "decodedMeanRgb": 1.9008110894097223, "decodedActiveRgb": 3.7865182436611007, "activePixels": 8085 },
+      { "ticks": 80000, "outputFrameIndex": 12, "decodedMeanRgb": 1.8891330295138888, "decodedActiveRgb": 3.7515569487983282, "activePixels": 7975 }
+    ],
+    "mappingNote": "Only the original early20000/final40000/late80000 references are used; no invented frame16/last substitution. Same decoded metrics pass against both fixed historical references and fresh normal-Surface composited PNGs.",
+    "runtimePinDrift": [],
+    "originalFilesUnchanged": true,
+    "cloneExportStageBytesUnchanged": true,
+    "hostClosed": true,
+    "browserClosed": true,
+    "gpuLeaseReleased": true,
+    "pageErrors": [],
+    "retainedStartupDiagnostics": {
+      "cleanConsoleClaim": false,
+      "programmaticPreviewTimeouts": 2,
+      "phases": ["worker-start", "iframe-load"],
+      "timeoutMilliseconds": 5000,
+      "http404": "/api/library/graph-editor-presets/user-presets",
+      "note": "These transient preview startup diagnostics remain in the immutable receipt. Subsequent stable fresh presentation captures and the single export completed successfully. No retry export or threshold changes."
+    }
+  },
+  "fixedGates": {
+    "meanRgb": 4,
+    "activeRgb": 6,
+    "activePixels": 48,
+    "activeDelta": 16,
+    "timestamp": 0.0011
+  },
+  "range": { "startTime": 20000, "endTime": 85000 },
+  "historicalProject": {
+    "path": "C:/tmps/flame-wrap-editor-cg0ltn/project/project.json",
+    "sha256": "41257e0863f46b9a74b696ed9334d76421b26d184c987432a9e219f929cd86bd"
+  },
+  "wasmSha256": "8afce2680db2514a6f0c01e2fc563506dadef2f73ab15dd0ddf47c82d01fea30"
+}

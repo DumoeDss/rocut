@@ -1,0 +1,207 @@
+{
+  "version": 1,
+  "date": "2026-10-12",
+  "status": "eight-finite-effect-subsets-accepted-current-blaze-authored-static444-video-and-native-wholegraph-png-passed",
+  "overallGoalComplete": false,
+  "scope": "Archival requirement audit under the existing P7 V definition. Executed bounded video subsets, not equivalence, all inputs, installed state or release.",
+  "audit": {
+    "command": "node script/audit-stylized-finite-acceptance.mjs",
+    "ok": true,
+    "directRetainedArtifactPins": 128,
+    "allDirectArtifactHashesMatch": true,
+    "conflictingArtifactHashes": 0,
+    "missingOrChangedDirectArtifacts": 0,
+    "source": {
+      "script/audit-stylized-finite-acceptance.mjs": "fb42554b9a788033c5f8ddf0b6fce66f0ed15bf7e28ad631bc3416a43f157452",
+      "script/fixtures/finite-evidence-pins.mjs": "288e5be3b277b3ce5f7cf94ac0c91b91e4c11d23749c1247c8c8127a4eadf4ce",
+      "script/fixtures/frost-finite-acceptance.mjs": "3df3523bc7c3d7b8bc8b6f574539d169a9b849465ff3d565c3234348e2657f6b",
+      "script/fixtures/stylized-finite-acceptance.mjs": "4adb0ffc8806d4a1b49a985dde244cdd7a77c7c2b7c46069e92c9a2ad5519df6",
+      "script/fixtures/stylized-finite-acceptance.test.mjs": "3a370eed839a41775f5ccdc6953b79b914b16ae7336ea2b4383ba09a8c0f069a"
+    },
+    "tests": {
+      "command": "node --test script/fixtures/stylized-finite-acceptance.test.mjs",
+      "passed": 8,
+      "failed": 0,
+      "skipped": 0,
+      "mutatedClaimNegativeControls": 22,
+      "artifactClassificationNegativeControls": 2
+    },
+    "historicalSourceProvenance": {
+      "records": 7,
+      "frozenExecutionSourceRoot": "C:/tmps/rocut-recipe-catalog-wasm-20261012/source",
+      "allSevenFrozenExecutionSourceHashesMatch": true,
+      "currentWorktreeOrNewProducerCertified": false,
+      "observedLiveSourceChanges": [
+        "rust/wasm/src/canvas_capture_readback.rs: shared capture cancellation retirement repair",
+        "rust/wasm/src/compositor_requests.rs: whole-render-graph PNG integration, separately verified",
+        "rust/wasm/src/compositor.rs: whole-render-graph PNG integration, separately verified"
+      ],
+      "policy": "Retained receipts, outputs and frozen executed source bytes must still match. Live source hashes are reported separately, never rewritten into old evidence or treated as an immutable output. This archival acceptance does not certify later worktree changes.",
+      "captureRepairEvidence": {
+        "path": "blaze-current-channel-closure.json",
+        "sha256": "c0236577943a8d90bc220f9eb9039a471b533e32811ce0f6113070ebda37de1e"
+      }
+    },
+    "limits": [
+      "Only directly linked path/sha256 records were independently rehashed; no recursive claim of all historical transitive pins",
+      "No new GPU render, export, compile, install, commit or push was performed by this audit",
+      "These seven archival claims refer to their recorded frozen normal deliveries. New whole-graph PNG and current private package consumption have separate evidence; neither certifies installed acceptance."
+    ]
+  },
+  "bubble": {
+    "ledgerStatus": "V",
+    "acceptedSubset": "Explicit bounded deterministic trajectory and optical standalone effect above an archived source-image prefix; real author/history/persistence plus moving, animated and disabled targets in default420 and explicit444.",
+    "requirements": {
+      "realMountedAuthoringAndCompleteDTOHistory": "12 transactions, keyboard undo/redo, single Apply PUT, five fresh illegal-time rejections with unchanged graph/disk and retained drafts",
+      "saveReloadHostReopen": "Complete DTO/graph/revision and saved bytes match",
+      "correctIntermediateInput": "Actual descriptor source prefix precedes effect; analytical source plus independent f64 oracle frozen before any corrected export",
+      "normalExportAndIndependentDecode": "Six unique terminal jobs, six frames each, VP9 yuv420p/yuv444p with original meanRGBA10/activeRGB15/activePixels64 and PTS .0011 gates",
+      "failureAndSensitivityRetention": "Original wrong-stack failure remains false; refraction-neutral and wrong-stack controls retained",
+      "ownership": "No live jobs; recorded browser/Host cleanup and GPU release"
+    },
+    "evidence": {
+      "path": "bubble-current-standalone-export.json",
+      "sha256": "06f80bed9afa4e858d7edb5e0162d80bec29ada5985cb876cf5db7fbdf89aa1d"
+    },
+    "notClaimed": [
+      "Arbitrary input types, duration, dimensions or ranges",
+      "All ideal unquantized f64 optical behavior, all shaders or global allocation counters",
+      "Installed runtime, Electron or hardware GPU equivalence"
+    ]
+  },
+  "canvas": {
+    "ledgerStatus": "V",
+    "acceptedSubset": "Captured full-resolution frozen prefix source drives bounded deterministic material replay from explicit trajectories; weave, wet/dried brush and declared WebGL pending-capture invalidation; authored saved project and default420 output parity.",
+    "requirements": {
+      "authorAndDurableState": "Actual mounted controls, complete clip undo/redo, save/reload and Host reopen; same saved project bytes remain identical",
+      "normalOutput": "Single normal attached q8/default420 export, six frames; independent FFmpeg decode and actual fresh preview-boundary copies pass original meanRGB4/activeRGB6/activePixels48 and motion .1 gates",
+      "captureLifecycle": "Six real request/resource invalidations while pending under declared fence delay; no read before mutation, structured AbortError/RENDER_CANCELLED, stale-publication refusal, timer retirement and recovery",
+      "independentMaterialQuality": "Three frozen f64 material/raster cases, GPU RGB max2/mean.35, exact alpha and zero holes; original negative controls retained",
+      "ownership": "Recorded renderer/Host/browser/compositor/GPU cleanup"
+    },
+    "evidence": [
+      {
+        "path": "canvas-current-author-export.json",
+        "sha256": "077016ba3a9ba63e2f28af1b89002fa8511185f571dad016b0468640bdff4755"
+      },
+      {
+        "path": "canvas-current-capture-lifecycle.json",
+        "sha256": "df9dac1b3617ac15c5db24fcd157121bec1dac755cbead31e513d70fbbb8481f"
+      },
+      {
+        "path": "canvas-material-reference-gpu.json",
+        "sha256": "ce5cc262f6cb661b8fbcc26159dba99af93d143516ce69883122dbb2b61135a8"
+      }
+    ],
+    "notClaimed": [
+      "Video-history source sampling, live DOM or wall-clock accumulated painting",
+      "Natural WebGPU mapping wait, hardware, device-loss/OOM or universal material realism",
+      "Export-button interaction, installed runtime or final release"
+    ]
+  },
+  "flameWrap": {
+    "ledgerStatus": "V",
+    "acceptedSubset": "Native alpha-edge shader, real author/history/reload and same-project420/444 exports; normal bounded concave/disconnected/hole/translation/reverse topology and current unmodified admission plus default420 output.",
+    "topologyEvidence": {
+      "path": "flame-wrap-topology.json",
+      "sha256": "1df65aa0b7b8e4af29b716de194f869e23c17b25ef18e3f8d8125dcf4c91d184"
+    },
+    "currentIntegrationEvidence": {
+      "path": "flame-current-admission-export.json",
+      "sha256": "fb8b7cdc34d919efe8d2de75134985c789508b48bf7daa9d167d6c77bb936932",
+      "jobId": "cfb733c38426696b",
+      "frames": 13,
+      "admissionBypass": false,
+      "default420Quantizer": 8,
+      "fixedHistoricalReferencesAndFreshPresentationByteExact": true,
+      "originalMeanRgbActiveRgbActivePixelsPtsGates": [4, 6, 48, 0.0011]
+    },
+    "originalFailedOrDiagnosticEvidenceNotRelabeled": true,
+    "notClaimed": [
+      "Arbitrary topology, moving-video history, alpha-master or installed support",
+      "Clean startup console: two five-second preview timeouts and optional user-presets 404 remain in the receipt",
+      "Historical bypass receipt transformed into normal admission evidence"
+    ]
+  },
+  "frost": {
+    "ledgerStatus": "V",
+    "acceptedSubset": "Finite input-image refraction/scatter/tint, stable seed, bounded capsule stamps/hold/linear recovery and deterministic seeking; transparent render alpha and opaque production video.",
+    "evidence": {
+      "path": "frost-finite-scope-current.json",
+      "sha256": "c06442bcb74e9901e346b332bf20caa17e65c14d76c398638c8fe014abb86637"
+    },
+    "scheduleClockEvidence": {
+      "path": "frost-schedule-clock-current.json",
+      "sha256": "46641f7a0bfdf0cf58089b9204404752424238e1941f38ab3449b69b8e52a47e",
+      "advanceJob": "906402fb18eae814",
+      "freezeJob": "4f0da9dd0217024c",
+      "normalRenderAndEncodedStampRecoveryPassed": true,
+      "isolatedFrozenRenderAndEncodedStampRecoveryRejected": true
+    },
+    "originalFailuresAndWeakFramesNotRelabeled": true,
+    "notClaimed": [
+      "Transparent video master: the current native encoder uses alpha discard",
+      "Revision37 frames0..11 active-region identification; weak masks remain weak",
+      "Restoration of missing historical optical bytes, physical ice realism, hardware/WebGPU or installed acceptance"
+    ]
+  },
+  "glassObject": {
+    "ledgerStatus": "V",
+    "evidence": {
+      "path": "glass-finite-scope-current.json",
+      "sha256": "413f5539a9ec4597ea94f24a1f7017be757bc441c32a4fa1edea6def01cc0d98"
+    },
+    "acceptedSubset": "Eight declared requirements: controlled GLB/environment/background, actual Physical optics, retained maps/groups/multiple meshes/negative transforms, finite skin/morph bounds, historical edited full49 output plus current dynamic26 and physical26 q8-444 frames.",
+    "preservedLimit": "Default420 saturated-checker pressure remains failed (full7.490/active11.906); current444 is not relabeled default420 or installed support."
+  },
+  "inkObject": {
+    "ledgerStatus": "V",
+    "evidence": {
+      "path": "ink-finite-scope-current.json",
+      "sha256": "e4593fc35a16dba62632fefd32c0dfd0f2cd8112cfce4bcf60f9cf378bdb77f4"
+    },
+    "acceptedSubset": "Actual dedicated author rev4/full49 opaque video, narrow paper-color oracle, static curved GLB plus two separately evidenced skin/relative-morph negative-transform MASK UV1/RGBA PBR/unlit finite combinations and26 q8-444 frames.",
+    "preservedLimit": "Historical missing raw receipts remain missing. Not arbitrary models, default420 dynamic matrix, all UI fields or installed support."
+  },
+  "liquidObject": {
+    "ledgerStatus": "V",
+    "evidence": {
+      "path": "liquid-object-finite-scope-current.json",
+      "sha256": "f4356940326f29f3fb888190b85507c0fa32b4344422ae51f0ba884a01ec2eb0"
+    },
+    "acceptedSubset": "Object-specific real author rev4/full61 opaque video, rest-space wave/twist with disabled/zero exact recovery and bounded shared-root two textured/normal-mapped PBR mesh19-frame q8-444 output.",
+    "preservedLimit": "Original skinned/morph/instanced rejection and per-request/frame quotas remain. Background Liquid history is not counted as Liquid Object. Historical source pins are distinct from verified final archived Creator geometry."
+  },
+  "modelFiniteScopeReview": {
+    "kind": "Separate CPU-only scope mapping and direct hash review; not part of the four-claim script above",
+    "rootObservedInkAndLiquidAbsoluteRecords": 191,
+    "allObservedAbsoluteHashesMatch": true,
+    "glassMappingRequirements": 8,
+    "glassOwnerRehashedReferencedEvidenceFiles": 7,
+    "historicalMissingArtifactsNotClaimedRehashed": true,
+    "currentWorktreeInstalledOrUniversalSupport": false
+  },
+  "blaze": {
+    "ledgerStatus": "V",
+    "evidence": {
+      "path": "blaze-finite-scope-current.json",
+      "sha256": "36bc4fa37a807ec63bf3ca6c42ea2d704cefa0cce63d5765b9ea8331d64706ab"
+    },
+    "acceptedSubset": "New current static image/opaque explicit444 authored project with real amount edit, full clip undo/redo, save/reload/Host reopen and one six-frame normal VP9 output independently decoded under original10/15/64/.0011 gates; separately verified native PNG subsets.",
+    "review": "Separate direct retained artifact/hash and authored-project/decode flag review, not part of the four-claim archival audit above.",
+    "historicalMissingDirectArtifacts": 28,
+    "preservedLimit": "Original Canvas RAW remains red; old six-job summaries are not restored or reclassified current. No default420, animated/disabled variant, alpha-video master, live post-export snapshot, installed or Electron claim."
+  },
+  "ledger": {
+    "total": 35,
+    "V": 35,
+    "N": 0,
+    "notAProjectCompletionPercentage": true,
+    "remainingN": []
+  },
+  "remainingOverall": [
+    "Selected Electron whole-graph compatibility and Director canonical dependency alignment; historical watchdog/429 limitations remain explicitly bounded",
+    "Canonical WASM/shared dependency source closure and full applicable release gates; current matched private Surface/runtime/Creator consumption already passed",
+    "Installed Elftia Creator/Rocut, offline reopen, upgrade/rollback, version/artifact consistency and authorized release"
+  ]
+}
