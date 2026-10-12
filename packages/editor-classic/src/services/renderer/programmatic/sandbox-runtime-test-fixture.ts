@@ -9,14 +9,19 @@ export class SandboxBitmap {
 
 class SandboxPort {
 	onmessage: ((event: { data: unknown }) => void) | null = null;
+	onmessageerror: (() => void) | null = null;
 	messages: unknown[] = [];
 	closed = false;
 	dispatchError = false;
+	closeError = false;
+	closeCalls = 0;
 	postMessage(data: unknown) {
 		if (this.dispatchError) throw Error("Port dispatch failed");
 		this.messages.push(data);
 	}
 	close() {
+		this.closeCalls++;
+		if (this.closeError) throw Error("Port close failed");
 		this.closed = true;
 	}
 }
@@ -27,6 +32,8 @@ export function installSandboxHarness() {
 	const deadlines: { callback: () => void; milliseconds: number }[] = [];
 	let timerCleared = false;
 	let removed = false;
+	let removeError = false;
+	let removeCalls = 0;
 	let connections = 0;
 	let connectError = false;
 	const iframe = {
@@ -36,6 +43,8 @@ export function installSandboxHarness() {
 		onload: () => {},
 		setAttribute() {},
 		remove() {
+			removeCalls++;
+			if (removeError) throw Error("Iframe remove failed");
 			removed = true;
 		},
 		contentWindow: {
@@ -79,6 +88,15 @@ export function installSandboxHarness() {
 		deadlines,
 		get connections() {
 			return connections;
+		},
+		get removeCalls() {
+			return removeCalls;
+		},
+		failRemoval() {
+			removeError = true;
+		},
+		messageError() {
+			channels[0].port1.onmessageerror?.();
 		},
 		get disposed() {
 			return (

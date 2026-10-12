@@ -2,6 +2,7 @@ import { expect, test } from "bun:test";
 import { renderToStaticMarkup } from "react-dom/server";
 import { isValidElement, type ReactNode } from "react";
 import type { ProgrammaticSource } from "@opencut/editor-contracts";
+import type { BuildDraftSnapshot } from "./programmatic-build-draft";
 import { cleanBuildDraft } from "./programmatic-build-draft-state";
 import {
 	blankModelTexture,
@@ -10,6 +11,9 @@ import {
 	modelTextureTexts,
 	MODEL_TEXTURE_SLOTS,
 	MODEL_TEXTURE_CONSUMER_MARKER,
+	MODEL_TEXTURE_CONSUMER_MARKER_V2,
+	MODEL_TEXTURE_SLOTS_V2,
+	modelTextureConsumerVersion,
 	modelTextureConsumerIssue,
 } from "./programmatic-model-texture-data";
 import { ProgrammaticModelTextureFields } from "./programmatic-model-texture-fields";
@@ -84,6 +88,64 @@ const texts = () => ({
 	material: "0",
 	slot: "map",
 	flipY: "false",
+});
+
+test("AO slot requires matching archived v2; old or ambiguous consumers are never upgraded", () => {
+	const base = state(),
+		id = "model-feature-scene.ts";
+	const marked = (original: string, code = original) => ({
+		...base,
+		files: { [id]: { original, code } },
+	});
+	const modern = marked(MODEL_TEXTURE_CONSUMER_MARKER_V2);
+	expect(modelTextureConsumerVersion(base)).toBe(1);
+	expect(modelTextureContext(base)?.slots).toEqual(MODEL_TEXTURE_SLOTS);
+	expect(modelTextureConsumerVersion(modern)).toBe(2);
+	expect(modelTextureContext(modern)?.slots).toEqual(MODEL_TEXTURE_SLOTS_V2);
+	const ao = { ...texts(), slot: "aoMap" };
+	expect(
+		editModelTexture({ state: base, canCompile: true, texts: ao }).inputProps,
+	).toBeUndefined();
+	const accepted = editModelTexture({
+		state: modern,
+		canCompile: true,
+		texts: ao,
+	});
+	expect(JSON.parse(accepted.inputProps!).textureBindings).toEqual([
+		{ ...binding, slot: "aoMap" },
+	]);
+	expect(modern.baseline).toEqual(base.baseline);
+	const render = (current: typeof base) =>
+		renderToStaticMarkup(
+			<ProgrammaticModelTextureFields
+				id="ao"
+				state={current}
+				canCompile
+				onEdit={() => {}}
+			/>,
+		);
+	expect(render(modern)).toContain('<option value="aoMap">aoMap</option>');
+	expect(render(base)).not.toContain('<option value="aoMap">aoMap</option>');
+	for (const current of [
+		marked(MODEL_TEXTURE_CONSUMER_MARKER, MODEL_TEXTURE_CONSUMER_MARKER_V2),
+		marked(MODEL_TEXTURE_CONSUMER_MARKER_V2, MODEL_TEXTURE_CONSUMER_MARKER),
+		marked(MODEL_TEXTURE_CONSUMER_MARKER_V2.repeat(2)),
+		marked(
+			`${MODEL_TEXTURE_CONSUMER_MARKER}\n${MODEL_TEXTURE_CONSUMER_MARKER_V2}`,
+		),
+		marked("// rocut-model-texture-bindings-v3"),
+		marked("// rocut-model-texture-bindings-v02"),
+		marked(
+			`${MODEL_TEXTURE_CONSUMER_MARKER_V2}\n// rocut-model-texture-bindings-v3`,
+		),
+	]) {
+		expect(modelTextureContext(current)).toBeUndefined();
+		expect(modelTextureConsumerIssue(current)).toBeDefined();
+		expect(
+			editModelTexture({ state: current, canCompile: true, texts: ao })
+				.inputProps,
+		).toBeUndefined();
+	}
 });
 
 test("strict archived model identity and unique complete resource choices gate texture authoring", () => {
@@ -325,7 +387,7 @@ test("actual build panel composes empty texture authoring with one original Reco
 test("old/unloaded/changed consumers cannot gain texture bindings and invalid mesh types require an explicit repair", () => {
 	const s = state(),
 		id = "model-feature-scene.ts";
-	for (const files of [
+	const consumerCases: BuildDraftSnapshot["files"][] = [
 		{},
 		{ [id]: { original: "old scene", code: MODEL_TEXTURE_CONSUMER_MARKER } },
 		{
@@ -337,7 +399,8 @@ test("old/unloaded/changed consumers cannot gain texture bindings and invalid me
 				code: MODEL_TEXTURE_CONSUMER_MARKER,
 			},
 		},
-	]) {
+	];
+	for (const files of consumerCases) {
 		expect(modelTextureContext({ ...s, files })).toBeUndefined();
 		expect(
 			editModelTexture({

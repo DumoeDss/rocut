@@ -14,7 +14,8 @@ const WORKER_SOURCE =
 	MV_REFERENCE_POST_SOURCE +
 	MV_ROAD_REFERENCE_POST_SOURCE +
 	MV_ROAD_POST_BACKEND_SOURCE +
-	`onmessage = async ({data}) => {
+	`onmessageerror = () => postMessage({error:"Programmatic Worker request deserialization failed"});
+onmessage = async ({data}) => {
   const {source, frame, resources = [], sequenceImages = [], imageAdmissions = [], operation = 'render'} = data;
   const send = postMessage.bind(self);
   send({sandboxStage:"worker-started"});
@@ -122,26 +123,46 @@ addEventListener("message", function connect(event) {
   const port = event.ports[0];
   let worker;
   let url;
-  const cleanup = () => { if (worker) worker.terminate(); if (url) URL.revokeObjectURL(url); };
+  const cleanup = () => {
+    const currentWorker = worker, currentUrl = url;
+    worker = undefined; url = undefined;
+    try { if (currentWorker) currentWorker.terminate(); } catch {}
+    try { if (currentUrl) URL.revokeObjectURL(currentUrl); } catch {}
+  };
+  let terminal = false;
+  const fail = error => {
+    if (terminal) return;
+    terminal = true;
+    try { port.postMessage({error}); } catch {} finally { cleanup(); }
+  };
+  port.onmessageerror = () => fail("Programmatic request deserialization failed");
   port.onmessage = ({data}) => {
-    if (data === "dispose") { cleanup(); port.close(); return; }
-    if (worker) return;
+    if (data === "dispose") { terminal = true; cleanup(); try { port.close(); } catch {} return; }
+    if (terminal || worker) return;
     try {
     url = URL.createObjectURL(new Blob([${JSON.stringify(WORKER_SOURCE)}], {type:"text/javascript"}));
     worker = new Worker(url);
     worker.onmessage = ({data}) => {
-      if (!data || typeof data !== "object") { port.postMessage({error:"Invalid worker result"}); cleanup(); return; }
+      if (terminal) { if (data?.bitmap instanceof ImageBitmap) { try { data.bitmap.close(); } catch {} } return; }
+      if (!data || typeof data !== "object") { fail("Invalid worker result"); return; }
+      try {
       if (data.sandboxStage === "worker-started" && Object.keys(data).length === 1) { port.postMessage({sandboxStage:"worker-started"}); return; }
       if (data.bitmap instanceof ImageBitmap) port.postMessage({bitmap:data.bitmap}, [data.bitmap]);
       else if (Array.isArray(data.fontMetrics) && Array.isArray(data.imageDimensions)) port.postMessage({fontMetrics:data.fontMetrics,imageDimensions:data.imageDimensions});
       else if (Array.isArray(data.fontMetrics)) port.postMessage({fontMetrics:data.fontMetrics});
       else if (Array.isArray(data.tunnelFontMeasurements)) port.postMessage({tunnelFontMeasurements:data.tunnelFontMeasurements});
       else port.postMessage({error:typeof data.error === "string" ? data.error : "Invalid worker result"});
+      terminal = true;
       cleanup();
+      } catch {
+        if (data.bitmap instanceof ImageBitmap) { try { data.bitmap.close(); } catch {} }
+        fail("Programmatic Worker result dispatch failed");
+      }
     };
-    worker.onerror = () => { port.postMessage({error:"Programmatic Worker failed"}); cleanup(); };
+    worker.onerror = () => fail("Programmatic Worker failed");
+    worker.onmessageerror = () => fail("Programmatic Worker response deserialization failed");
     worker.postMessage(data);
-    } catch { port.postMessage({error:"Programmatic Worker startup failed"}); cleanup(); }
+    } catch { fail("Programmatic Worker startup failed"); }
   };
   port.postMessage("ready");
 });

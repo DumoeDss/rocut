@@ -3,23 +3,37 @@ import { runInNewContext } from "node:vm";
 import { PROGRAMMATIC_SANDBOX_DOCUMENT } from "./sandbox-document";
 import { SandboxBitmap } from "./sandbox-runtime-test-fixture";
 
-function broker({ startupFailure = false } = {}) {
+function broker({
+	startupFailure = false,
+	terminateFailure = false,
+	revokeFailure = false,
+} = {}) {
 	const listeners = new Map<string, (event: object) => void>();
 	const blobs: Blob[] = [];
 	const messages: unknown[] = [];
 	const workers: BrokerWorker[] = [];
 	const revoked: string[] = [];
 	const parent = {};
+	let replyFailure = false;
+	let closed = 0;
 	const port = {
 		onmessage: (_event: { data: unknown }) => {},
+		onmessageerror: () => {},
 		postMessage(data: unknown) {
+			if (replyFailure) {
+				replyFailure = false;
+				throw Error("Reply transfer failed");
+			}
 			messages.push(data);
 		},
-		close() {},
+		close() {
+			closed++;
+		},
 	};
 	class BrokerWorker {
 		onmessage = (_event: { data: unknown }) => {};
 		onerror = () => {};
+		onmessageerror = () => {};
 		terminated = 0;
 		constructor() {
 			if (startupFailure) throw Error("Worker unavailable");
@@ -28,6 +42,7 @@ function broker({ startupFailure = false } = {}) {
 		postMessage() {}
 		terminate() {
 			this.terminated++;
+			if (terminateFailure) throw Error("Worker termination failed");
 		}
 	}
 	const script = PROGRAMMATIC_SANDBOX_DOCUMENT.match(
@@ -48,6 +63,7 @@ function broker({ startupFailure = false } = {}) {
 				},
 				revokeObjectURL(url: string) {
 					revoked.push(url);
+					if (revokeFailure) throw Error("Blob revocation failed");
 				},
 			},
 			addEventListener(name: string, listener: (event: object) => void) {
@@ -65,7 +81,19 @@ function broker({ startupFailure = false } = {}) {
 		ports: [port],
 	});
 	port.onmessage({ data: { source: {}, frame: {} } });
-	return { messages, workers, blobs, revoked };
+	return {
+		messages,
+		workers,
+		blobs,
+		revoked,
+		port,
+		get closed() {
+			return closed;
+		},
+		failReply() {
+			replyFailure = true;
+		},
+	};
 }
 
 test("Worker start is relayed without terminating the worker or releasing its Blob", () => {
@@ -125,4 +153,69 @@ test("the actual generated Worker emits start before its resource/render pipelin
 	expect(messages[0]).toEqual({ sandboxStage: "worker-started" });
 	// Missing decode limits deliberately terminates after the genuine start event.
 	expect(messages[1]).toMatchObject({ error: expect.any(String) });
+});
+
+test("broker Worker and request-port message errors fail immediately and dispose once", () => {
+	for (const target of ["worker", "port"]) {
+		const transport = broker();
+		if (target === "worker") transport.workers[0].onmessageerror();
+		else transport.port.onmessageerror();
+		expect(transport.messages[1]).toEqual({
+			error:
+				target === "worker"
+					? "Programmatic Worker response deserialization failed"
+					: "Programmatic request deserialization failed",
+		});
+		expect(transport.workers[0].terminated).toBe(1);
+		expect(transport.revoked).toEqual(["blob:fixture"]);
+		transport.workers[0].onerror();
+		expect(transport.messages).toHaveLength(2);
+	}
+});
+
+test("broker cleanup failures do not skip remaining releases or replace failure", () => {
+	const transport = broker({ terminateFailure: true, revokeFailure: true });
+	expect(() => transport.workers[0].onmessageerror()).not.toThrow();
+	expect(transport.messages[1]).toEqual({
+		error: "Programmatic Worker response deserialization failed",
+	});
+	expect(transport.workers[0].terminated).toBe(1);
+	expect(transport.revoked).toEqual(["blob:fixture"]);
+	transport.port.onmessage({ data: "dispose" });
+	expect(transport.closed).toBe(1);
+	expect(transport.workers[0].terminated).toBe(1);
+	expect(transport.revoked).toHaveLength(1);
+});
+
+test("a failed bitmap relay reports ordinary failure and closes its untransferred bitmap", () => {
+	const transport = broker();
+	transport.failReply();
+	const bitmap = new SandboxBitmap();
+	expect(() =>
+		transport.workers[0].onmessage({ data: { bitmap } }),
+	).not.toThrow();
+	expect(transport.messages[1]).toEqual({
+		error: "Programmatic Worker result dispatch failed",
+	});
+	expect(bitmap.closed).toBe(true);
+	expect(transport.workers[0].terminated).toBe(1);
+	expect(transport.revoked).toHaveLength(1);
+});
+
+test("generated Worker request messageerror publishes a failure without starting render", async () => {
+	const transport = broker();
+	const messages: unknown[] = [];
+	runInNewContext(
+		(await transport.blobs[0].text()) + "\nonmessageerror()",
+		{
+			self: {},
+			postMessage(data: unknown) {
+				messages.push(data);
+			},
+		},
+		{ timeout: 1000 },
+	);
+	expect(messages).toEqual([
+		{ error: "Programmatic Worker request deserialization failed" },
+	]);
 });

@@ -12,7 +12,6 @@ import {
 	modelTextureContext,
 	modelTextureTexts,
 	modelTextureConsumerIssue,
-	MODEL_TEXTURE_SLOTS,
 	type ModelTextureTexts,
 } from "./programmatic-model-texture-data";
 import { sourceFingerprint } from "./programmatic-source-draft";
@@ -67,6 +66,7 @@ export function ProgrammaticModelTextureFields(props: Props) {
 					index={index}
 					initial={modelTextureTexts(binding)}
 					images={context.images}
+					slots={context.slots}
 					retained={binding}
 				/>
 			))}
@@ -75,6 +75,7 @@ export function ProgrammaticModelTextureFields(props: Props) {
 					key={`new:${sourceFingerprint(props.state.baseline)}`}
 					{...props}
 					images={context.images}
+					slots={context.slots}
 					initial={blankModelTexture()}
 				/>
 			)}
@@ -89,11 +90,13 @@ function TextureRow({
 	index,
 	initial,
 	images,
+	slots,
 	retained,
 }: Props & {
 	index?: number;
 	initial?: ModelTextureTexts;
 	images: string[];
+	slots: readonly string[];
 	retained?: unknown;
 }) {
 	const [texts, setTexts] = useState(initial),
@@ -188,15 +191,12 @@ function TextureRow({
 							className="bg-input rounded border p-1"
 						>
 							<option value="">Choose a slot explicitly</option>
-							{texts.slot &&
-								!(MODEL_TEXTURE_SLOTS as readonly string[]).includes(
-									texts.slot,
-								) && (
-									<option value={texts.slot}>
-										Unknown slot (retained): {texts.slot}
-									</option>
-								)}
-							{MODEL_TEXTURE_SLOTS.map((slot) => (
+							{texts.slot && !slots.includes(texts.slot) && (
+								<option value={texts.slot}>
+									Unknown slot (retained): {texts.slot}
+								</option>
+							)}
+							{slots.map((slot) => (
 								<option key={slot} value={slot}>
 									{slot}
 								</option>

@@ -106,16 +106,22 @@ export async function runProgrammaticSandbox({
 		const failure = (message: string) =>
 			sandboxFailure({ ...request, phase, message });
 		const cleanup = () => {
-			clearTimeout(timer);
-			signal?.removeEventListener("abort", abort);
-			try {
-				channel.port1.postMessage("dispose");
-			} catch {
-				// Removing the realm still terminates its Worker if the port failed.
+			// Teardown must not replace the operation result/reason or strand its
+			// promise. Attempt every independent release even if one API fails.
+			for (const release of [
+				() => clearTimeout(timer),
+				() => signal?.removeEventListener("abort", abort),
+				() => channel.port1.postMessage("dispose"),
+				() => channel.port1.close(),
+				() => channel.port2.close(),
+				() => iframe.remove(),
+			]) {
+				try {
+					release();
+				} catch {
+					/* Continue releasing the remaining realm resources. */
+				}
 			}
-			channel.port1.close();
-			channel.port2.close();
-			iframe.remove();
 		};
 		const fail = (error: unknown) => {
 			if (settled) return;
@@ -130,6 +136,8 @@ export async function runProgrammaticSandbox({
 			5000,
 		);
 		signal?.addEventListener("abort", abort, { once: true });
+		channel.port1.onmessageerror = () =>
+			fail(failure("Programmatic response deserialization failed"));
 		channel.port1.onmessage = ({ data }: MessageEvent<unknown>) => {
 			if (data === "ready") {
 				if (!settled && connected && !dispatched) {

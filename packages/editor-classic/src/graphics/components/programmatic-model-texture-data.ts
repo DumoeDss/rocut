@@ -17,17 +17,42 @@ export const MODEL_TEXTURE_SLOTS = [
 ] as const;
 export const MODEL_TEXTURE_CONSUMER_MARKER =
 	"// rocut-model-texture-bindings-v1";
+export const MODEL_TEXTURE_CONSUMER_MARKER_V2 =
+	"// rocut-model-texture-bindings-v2";
+export const MODEL_TEXTURE_SLOTS_V2 = [
+	...MODEL_TEXTURE_SLOTS,
+	"aoMap",
+] as const;
+
+/** The loaded edit must retain the archived consumer version; no implicit upgrade. */
+export function modelTextureConsumerVersion(
+	state: BuildDraftSnapshot,
+): 1 | 2 | undefined {
+	const file = state.files["model-feature-scene.ts"];
+	if (!file) return undefined;
+	const version = (code: string) => {
+		const markers = [
+			...code.matchAll(/\/\/ rocut-model-texture-bindings-v(\d+)\b/g),
+		];
+		if (markers.length !== 1) return undefined;
+		const number = markers[0]![1];
+		return number === "1" ? 1 : number === "2" ? 2 : undefined;
+	};
+	const original = version(file.original);
+	return original !== undefined && original === version(file.code)
+		? original
+		: undefined;
+}
+
 export function modelTextureConsumerIssue(
 	state: BuildDraftSnapshot,
 ): string | undefined {
 	const file = state.files["model-feature-scene.ts"];
 	if (!file)
 		return "Load the archived model-feature-scene.ts author file to check texture binding support. No source upgrade or fallback is applied.";
-	const marked = (code: string) =>
-		code.split(MODEL_TEXTURE_CONSUMER_MARKER).length === 2;
-	return marked(file.original) && marked(file.code)
+	return modelTextureConsumerVersion(state)
 		? undefined
-		: "This archived/current scene does not advertise texture binding consumer v1. Existing JSON is retained; no source upgrade was applied.";
+		: "The archived/current scene must advertise one matching texture binding consumer v1 or v2. Existing JSON is retained; no source upgrade was applied.";
 }
 export type ModelTextureTexts = {
 	imageId: string;
@@ -94,7 +119,16 @@ export function modelTextureContext(state: BuildDraftSnapshot) {
 				resources.filter((other) => other.id === resource.id).length === 1,
 		)
 		.map((resource) => resource.id);
-	return images.length ? { images, models } : undefined;
+	const consumerVersion = modelTextureConsumerVersion(state);
+	return images.length
+		? {
+				images,
+				models,
+				consumerVersion,
+				slots:
+					consumerVersion === 2 ? MODEL_TEXTURE_SLOTS_V2 : MODEL_TEXTURE_SLOTS,
+			}
+		: undefined;
 }
 export function modelTextureTexts(
 	value: unknown,
@@ -165,7 +199,7 @@ export function editModelTexture({
 			!texts.material.trim() ||
 			!Number.isSafeInteger(Number(texts.material)) ||
 			Number(texts.material) < 0 ||
-			!(MODEL_TEXTURE_SLOTS as readonly string[]).includes(texts.slot) ||
+			!(context.slots as readonly string[]).includes(texts.slot) ||
 			!["true", "false"].includes(texts.flipY)
 		)
 			return {

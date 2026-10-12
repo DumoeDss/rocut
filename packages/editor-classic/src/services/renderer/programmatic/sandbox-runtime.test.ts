@@ -169,3 +169,63 @@ test("invalid dimensions close the transferred bitmap and preserve frame context
 	expect(bitmap.closed).toBe(true);
 	expect(transport.disposed).toBe(true);
 });
+
+for (const phase of [
+	"iframe-load",
+	"sandbox-ready",
+	"worker-start",
+	"worker-result",
+]) {
+	test(`message deserialization immediately rejects with ${phase} context`, async () => {
+		const { result, transport } = await start();
+		if (phase !== "iframe-load") transport.iframe.onload();
+		if (phase === "worker-start" || phase === "worker-result")
+			transport.send("ready");
+		if (phase === "worker-result")
+			transport.send({ sandboxStage: "worker-started" });
+		transport.messageError();
+		await expect(result).rejects.toMatchObject({
+			context: { phase, operation: "render", frameIndex: 161 },
+			message: expect.stringContaining("deserialization failed"),
+		});
+		expect(transport.deadlines[0].milliseconds).toBe(5000);
+		expect(transport.disposed).toBe(true);
+	});
+}
+
+test("cleanup exceptions cannot replace a failure or skip independent releases", async () => {
+	const { result, transport } = await start();
+	transport.channels[0].port1.closeError = true;
+	transport.channels[0].port2.closeError = true;
+	transport.failRemoval();
+	transport.messageError();
+	await expect(result).rejects.toMatchObject({
+		message: expect.stringContaining("deserialization failed"),
+		context: { phase: "iframe-load" },
+	});
+	for (const port of [transport.channels[0].port1, transport.channels[0].port2])
+		expect(port.closeCalls).toBe(1);
+	expect(transport.removeCalls).toBe(1);
+});
+
+test("cleanup exceptions retain cancellation identity and a successful caller-owned bitmap", async () => {
+	const controller = new AbortController();
+	const cancelled = await start(controller.signal);
+	cancelled.transport.channels[0].port1.closeError = true;
+	cancelled.transport.failRemoval();
+	const reason = Error("original private cancellation reason");
+	controller.abort(reason);
+	expect(await cancelled.result.catch((error: unknown) => error)).toBe(reason);
+	expect(cancelled.transport.channels[0].port2.closed).toBe(true);
+	expect(cancelled.transport.removeCalls).toBe(1);
+	cancelled.transport.restore();
+	const success = await start();
+	success.transport.channels[0].port1.closeError = true;
+	success.transport.failRemoval();
+	const bitmap = new SandboxBitmap();
+	success.transport.send({ bitmap });
+	expect(await success.result).toBe(bitmap);
+	expect(bitmap.closed).toBe(false);
+	expect(success.transport.channels[0].port2.closed).toBe(true);
+	expect(success.transport.removeCalls).toBe(1);
+});
