@@ -39,10 +39,22 @@ export function prepareLiquidTransportRequest({
 		text: requestJson,
 		maximum: policy.maxRequestJsonBytes,
 	});
+	const parsed: unknown = JSON.parse(payloadJson);
+	const hasDomain = parsed !== null && typeof parsed === "object" && Object.hasOwn(parsed, "domain");
 	const request = record({
-		value: JSON.parse(payloadJson),
-		keys: ["version", "params", "positions", "time", "seed"],
+		value: parsed,
+		keys: hasDomain
+			? ["version", "params", "positions", "time", "seed", "domain"]
+			: ["version", "params", "positions", "time", "seed"],
 	});
+	if (hasDomain) {
+		const domain = record({ value: request.domain, keys: ["min", "max"] });
+		if (["min", "max"].some((key) => {
+			const values = domain[key];
+			return !Array.isArray(values) || values.length !== 3 ||
+				values.some((value: unknown) => typeof value !== "number" || !Number.isFinite(value));
+		})) throw Error("Invalid Liquid transport domain shape");
+	}
 	if (
 		request.version !== 1 ||
 		request.time !== identity.frame.time ||

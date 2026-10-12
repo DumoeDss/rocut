@@ -1,4 +1,6 @@
-use effects::liquid_object::{LiquidObjectControls, LiquidObjectFrame, deform_liquid_object};
+use effects::liquid_object::{
+    LiquidObjectControls, LiquidObjectDomain, LiquidObjectFrame, deform_liquid_object_with_domain,
+};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
@@ -105,6 +107,15 @@ struct FrameRequest {
     time: f64,
     seed: u32,
     positions: Vec<f64>,
+    #[serde(default, deserialize_with = "deserialize_domain")]
+    domain: Option<LiquidObjectDomain>,
+}
+
+fn deserialize_domain<'de, D>(deserializer: D) -> Result<Option<LiquidObjectDomain>, D::Error>
+where
+    D: serde::Deserializer<'de>,
+{
+    LiquidObjectDomain::deserialize(deserializer).map(Some)
 }
 
 pub fn evaluate_liquid_object_frame_json(input: String) -> String {
@@ -127,12 +138,13 @@ pub fn evaluate_liquid_object_frame_json(input: String) -> String {
             ));
         }
         request.params.validate()?;
-        deform_liquid_object(
+        deform_liquid_object_with_domain(
             &request.positions,
             &request.params.controls(),
             request.time,
             request.seed,
             request.params.enabled,
+            request.domain.as_ref(),
         )
         .map_err(|message| error("geometry", "frame", message))
     })();

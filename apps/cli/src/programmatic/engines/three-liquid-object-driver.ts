@@ -35,12 +35,28 @@ async function runLiquidObjectPhase(author,runtime,mappedFrame,signal) {
       const task=(async()=>{
         check();
         if(!input || typeof input!=='object' || Array.isArray(input) ||
-           Reflect.ownKeys(input).length!==2 || !Object.hasOwn(input,'params') || !Object.hasOwn(input,'positions'))
-          throw Error('Liquid facade accepts only params and rest positions');
+           !Object.hasOwn(input,'params') || !Object.hasOwn(input,'positions') ||
+           Reflect.ownKeys(input).some(key=>!['params','positions','domain'].includes(key)))
+          throw Error('Liquid facade accepts only params, rest positions and optional domain');
+        const hasDomain=Object.hasOwn(input,'domain');
+        if(hasDomain) {
+          const domain=input.domain;
+          if(!domain || typeof domain!=='object' || Array.isArray(domain) ||
+             Reflect.ownKeys(domain).length!==2 || !Object.hasOwn(domain,'min') || !Object.hasOwn(domain,'max') ||
+             ['min','max'].some(key=>!Array.isArray(domain[key]) || domain[key].length!==3 ||
+               Reflect.ownKeys(domain[key]).length!==4 ||
+               [0,1,2].some(index=>!Object.hasOwn(domain[key],index) ||
+                 typeof domain[key][index]!=='number' || !Number.isFinite(domain[key][index]))))
+            throw Error('Liquid domain requires only min/max finite three-number arrays');
+        }
         // Only this closure supplies mapped time and seed. Host must repeat binding
         // and budget admission before copying/encoding the structured payload.
-        const result=await service.evaluate({version:1,params:input.params,positions:input.positions,
-          time:frame.time,seed:frame.seed});
+        const request={version:1,params:input.params,positions:input.positions,
+          time:frame.time,seed:frame.seed};
+        // Rust alone validates domain bounds and containment. Omission preserves
+        // the original payload keys and serialization order exactly.
+        if(hasDomain) request.domain=input.domain;
+        const result=await service.evaluate(request);
         check();
         if(typeof result!=='string') throw Error('Liquid Host must return Rust JSON text');
         return result;

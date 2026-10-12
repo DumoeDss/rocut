@@ -44,3 +44,33 @@ fn strict_frames_require_integer_seed_and_absolute_time() {
         assert_eq!(result["ok"], false);
     }
 }
+
+#[test]
+fn shared_domain_is_optional_strict_and_authoritative() {
+    let request = |domain: Option<serde_json::Value>| {
+        let mut input = serde_json::json!({
+            "version": 1, "params": {"version": 1},
+            "positions": [0, 0, 0], "time": 1.25, "seed": 19,
+        });
+        if let Some(domain) = domain {
+            input["domain"] = domain;
+        }
+        serde_json::from_str::<serde_json::Value>(&evaluate_liquid_object_frame_json(
+            input.to_string(),
+        ))
+        .unwrap()
+    };
+    assert_eq!(request(None)["ok"], true);
+    let valid = serde_json::json!({"min": [-2, -1, 0], "max": [2, 1, 0]});
+    assert_eq!(request(Some(valid))["ok"], true);
+    for invalid in [
+        serde_json::Value::Null,
+        serde_json::json!({"min": [0, 0], "max": [1, 1, 1]}),
+        serde_json::json!({"min": [0, 0, 0], "max": [1, 1, 1], "time": 99}),
+        serde_json::json!({"min": [1, 1, 1], "max": [2, 2, 2]}),
+        serde_json::json!({"min": [0, 0, 0], "max": [-1, 1, 1]}),
+        serde_json::json!({"min": [0, 0, 0], "max": [1000001, 1, 1]}),
+    ] {
+        assert_eq!(request(Some(invalid))["ok"], false);
+    }
+}

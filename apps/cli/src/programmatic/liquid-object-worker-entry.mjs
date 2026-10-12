@@ -140,10 +140,16 @@ async function evaluate(json, request) {
 	)
 		throw Error("Liquid evaluation lacks matching Rust reservation");
 	const payload = text(request.payloadJson, policy.maxRequestJsonBytes);
-	const parsed = shape(
-		JSON.parse(payload),
-		"version params positions time seed".split(" "),
-	);
+	const value = JSON.parse(payload);
+	const hasDomain = value !== null && typeof value === "object" && Object.hasOwn(value, "domain");
+	const parsed = shape(value,
+		(hasDomain ? "version params positions time seed domain" : "version params positions time seed").split(" "));
+	if (hasDomain) {
+		const domain = shape(parsed.domain, ["min", "max"]);
+		if (["min", "max"].some((key) => !Array.isArray(domain[key]) || domain[key].length !== 3 ||
+			domain[key].some((item) => typeof item !== "number" || !Number.isFinite(item))))
+			throw Error("Invalid Liquid IPC domain shape");
+	}
 	if (
 		parsed.version !== 1 ||
 		parsed.time !== frame.time ||

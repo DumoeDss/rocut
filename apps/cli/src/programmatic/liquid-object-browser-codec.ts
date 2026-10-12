@@ -29,7 +29,17 @@ const sameFrame=value=>{
  return Object.keys(frame).every(key=>value[key]===frame[key]);
 };
 const prepare=(input,requestId)=>{
- shape(input,['version','params','positions','time','seed']);
+ const hasDomain=Object.hasOwn(input,'domain');
+ shape(input,hasDomain?['version','params','positions','time','seed','domain']:['version','params','positions','time','seed']);
+ if(Reflect.ownKeys(input).length!==(hasDomain?6:5)) throw Error('Invalid Liquid browser transport shape');
+ if(hasDomain) {
+  const domain=shape(input.domain,['min','max']);
+  if(Reflect.ownKeys(domain).length!==2 || ['min','max'].some(key=>
+   !Array.isArray(domain[key]) || domain[key].length!==3 || Reflect.ownKeys(domain[key]).length!==4 ||
+   [0,1,2].some(index=>!Object.hasOwn(domain[key],index) ||
+    typeof domain[key][index]!=='number' || !Number.isFinite(domain[key][index]))))
+   throw Error('Invalid Liquid browser domain shape');
+ }
  if(input.version!==1 || input.time!==frame.time || input.seed!==frame.seed ||
   !Array.isArray(input.positions) || input.positions.length%3 ||
   input.positions.length/3>policy.maxVerticesPerRequest)

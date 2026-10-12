@@ -30,6 +30,8 @@ test('facade binds mapped time/seed, hides service and rejects use after closed 
     assert.equal(await liquid.deformRest({ params: { version: 1 }, positions: [0, 0, 0] }), 'Rust JSON');
   } }, host, frame, new AbortController().signal);
   assert.equal(request.time, frame.time); assert.equal(request.seed, frame.seed);
+  assert.equal(JSON.stringify(request), JSON.stringify({ version: 1, params: { version: 1 },
+    positions: [0, 0, 0], time: frame.time, seed: frame.seed }));
   await assert.rejects(saved.deformRest({ params: {}, positions: [] }), /outside/);
   assert(host.terminal);
 });
@@ -42,6 +44,51 @@ test('caller clocks and mismatched host frames cannot select a request', async (
   await assert.rejects(runPhase({ liquidFrame() {} }, runtime(evaluate, { ...frame, seed: 20 }),
     frame, new AbortController().signal), /does not match/);
   assert.equal(calls, 0);
+});
+test('two rest chunks forward the same root-space domain without overriding trusted phase', async () => {
+  const domain = { min: [-2, -1, -3], max: [4, 5, 6] }, requests = [];
+  const host = runtime(async request => { requests.push(request); return 'Rust JSON'; });
+  await runPhase({ async liquidFrame({ liquid }) {
+    for (const positions of [[-2, -1, -3], [4, 5, 6]])
+      await liquid.deformRest({ params: { version: 1 }, positions, domain });
+  } }, host, frame, new AbortController().signal);
+  assert.equal(requests.length, 2);
+  for (const request of requests) {
+    assert.strictEqual(request.domain, domain);
+    assert.equal(request.time, frame.time); assert.equal(request.seed, frame.seed);
+    assert.deepEqual(Object.keys(request), ['version', 'params', 'positions', 'time', 'seed', 'domain']);
+  }
+});
+test('malformed domain and caller timing/extra keys fail closed before Host evaluation', async () => {
+  const good = { min: [0, 0, 0], max: [1, 1, 1] };
+  const sparse = [0, , 0], extra = [0, 0, 0]; extra.extra = 1;
+  const symbolDomain = { ...good, [Symbol('extra')]: true };
+  const invalid = [undefined, null, [], 3, { min: [0, 0, 0] }, { ...good, extra: 1 },
+    symbolDomain, { min: [0, 0], max: good.max }, { min: [0, 0, 0, 0], max: good.max },
+    { min: [0, '0', 0], max: good.max }, { min: [0, NaN, 0], max: good.max },
+    { min: good.min, max: [0, Infinity, 0] }, { min: sparse, max: good.max },
+    { min: extra, max: good.max }, { min: new Float32Array(3), max: good.max }];
+  let calls = 0;
+  for (const domain of invalid) {
+    const host = runtime(async () => { calls++; return ''; });
+    await assert.rejects(runPhase({ async liquidFrame({ liquid }) {
+      await liquid.deformRest({ params: {}, positions: [], domain });
+    } }, host, frame, new AbortController().signal), /domain requires/);
+    assert(host.terminal);
+  }
+  for (const extra of [{ time: 9 }, { seed: 99 }, { version: 1 }, { [Symbol('extra')]: 1 }])
+    await assert.rejects(runPhase({ async liquidFrame({ liquid }) {
+      await liquid.deformRest({ params: {}, positions: [], domain: good, ...extra });
+    } }, runtime(async () => { calls++; return ''; }), frame, new AbortController().signal), /only params/);
+  assert.equal(calls, 0);
+});
+test('domain geometric authority stays in Rust rather than the facade', async () => {
+  let request;
+  await runPhase({ async liquidFrame({ liquid }) {
+    await liquid.deformRest({ params: {}, positions: [99, 0, 0],
+      domain: { min: [2, 0, 0], max: [1, 0, 0] } });
+  } }, runtime(async value => { request = value; return 'Rust rejection JSON'; }), frame, new AbortController().signal);
+  assert.deepEqual(request.domain, { min: [2, 0, 0], max: [1, 0, 0] });
 });
 test('forgotten pending requests fail the frame and late completion cannot succeed', async () => {
   let finish, pending;
@@ -110,7 +157,11 @@ test('actual Rust plus actual Three185 async author hook deforms/restores and di
   const author = await scene.createScene({ THREE, assets: { model: async () => ({ value: root }) },
     renderer: { getSize: size => size.set(640, 360) }, signal: controller.signal,
     inputProps: { modelId: 'actual-cpu.glb', liquid: params } });
-  assert.deepEqual(Array.from(mesh.geometry.getAttribute('position').array), rest);
+  const initial = Array.from(mesh.geometry.getAttribute('position').array);
+  assert.equal(initial.length, rest.length);
+  // Identity geometry transforms may canonicalize signed zero. Ordinary
+  // coordinates remain exactly equal, including every nonzero component.
+  assert(initial.every((value, index) => value === rest[index]));
   const host = runtime(async request => native(JSON.stringify(request)));
   await runPhase(author, host, frame, controller.signal);
   assert.notDeepEqual(Array.from(mesh.geometry.getAttribute('position').array), rest);
