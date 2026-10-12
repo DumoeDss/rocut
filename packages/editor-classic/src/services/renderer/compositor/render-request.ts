@@ -114,15 +114,23 @@ export function yieldRenderTask({
 	});
 }
 
-export async function renderFrameRequest({
-	api,
-	resources,
-	handle,
-	frame,
-	signal,
-	assertCurrent = () => {},
-	maxSteps = 1,
-}: {
+export interface NativeFramePng {
+	png: Uint8Array;
+	width: number;
+	height: number;
+	handle: number;
+	requestId: number;
+	owner: string;
+	generation: string;
+	peakBytes: number;
+	format: "rgba8unorm";
+	alphaMode: "straight";
+	colorSpace: "srgb";
+	mimeType: "image/png";
+	backend: "webgl" | "webgpu";
+}
+
+type RequestOptions = {
 	api: RenderFrameRequestApi;
 	resources: Pick<SessionResources, "setTimeout">;
 	handle: number;
@@ -130,7 +138,69 @@ export async function renderFrameRequest({
 	signal?: AbortSignal;
 	assertCurrent?: () => void;
 	maxSteps?: number;
-}): Promise<void> {
+};
+
+export function renderFrameRequest(options: RequestOptions): Promise<void> {
+	return executeFrameRequest({
+		...options,
+		commit: (request) =>
+			options.api.commitRenderFrameForHandle(options.handle, request),
+	});
+}
+
+export function renderFramePngRequest(
+	options: RequestOptions,
+): Promise<NativeFramePng> {
+	const commit = Reflect.get(options.api, "commitRenderFramePngForHandle");
+	if (typeof commit !== "function")
+		throw new Error("WASM native frame PNG API unavailable.");
+	return executeFrameRequest({
+		...options,
+		commit: async (request) => {
+			const result: NativeFramePng = await commit.call(
+				options.api,
+				options.handle,
+				request,
+			);
+			if (
+				!(result?.png instanceof Uint8Array) ||
+				result.png.length < 8 ||
+				result.handle !== options.handle ||
+				result.requestId !== request ||
+				result.width !== options.frame.width ||
+				result.height !== options.frame.height ||
+				![137, 80, 78, 71, 13, 10, 26, 10].every(
+					(byte, index) => result.png[index] === byte,
+				) ||
+				!/^\d+$/.test(result.owner) ||
+				!/^[1-9]\d*$/.test(result.generation) ||
+				!Number.isSafeInteger(result.peakBytes) ||
+				result.peakBytes < 1 ||
+				result.peakBytes > 1024 ** 3 ||
+				result.format !== "rgba8unorm" ||
+				result.alphaMode !== "straight" ||
+				result.colorSpace !== "srgb" ||
+				result.mimeType !== "image/png" ||
+				(result.backend !== "webgl" && result.backend !== "webgpu")
+			)
+				throw new Error("Invalid native frame PNG result.");
+			return result;
+		},
+	});
+}
+
+async function executeFrameRequest<T>({
+	api,
+	resources,
+	handle,
+	frame,
+	signal,
+	assertCurrent = () => {},
+	maxSteps = 1,
+	commit,
+}: RequestOptions & {
+	commit: (request: number) => T | Promise<T>;
+}): Promise<T> {
 	const check = () => {
 		assertRenderNotAborted(signal);
 		assertCurrent();
@@ -145,6 +215,7 @@ export async function renderFrameRequest({
 		cancellationFailure: unknown,
 		failure: unknown,
 		failed = false;
+	let result!: T;
 	const cancel = () => {
 		if (cancelled || committed) return;
 		cancelled = true;
@@ -168,9 +239,11 @@ export async function renderFrameRequest({
 			check();
 		}
 		check();
-		// This synchronous commit cannot be interrupted by a later JS task. No
-		// claim is made that submitted GPU work can be recalled after this point.
-		api.commitRenderFrameForHandle(handle, request);
+		// Ordinary commit is synchronous; PNG commit retains the reservation
+		// during asynchronous mapping and cancels without prematurely unlocking.
+		const output = commit(request);
+		// Await native readback retirement, even when aborted. Never race release.
+		result = output instanceof Promise ? await output : output;
 		committed = true;
 		check();
 	} catch (error) {
@@ -186,4 +259,5 @@ export async function renderFrameRequest({
 			"Render request and cancellation cleanup failed.",
 		);
 	if (failed) throw failure;
+	return result;
 }

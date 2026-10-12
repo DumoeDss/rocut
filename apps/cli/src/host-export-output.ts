@@ -3,18 +3,26 @@ import { mkdir, open, rename, rm } from "node:fs/promises";
 import path from "node:path";
 import type { ExportJob } from "./host-export";
 
+export type ManagedOutputJob = Omit<ExportJob, "options"> & {
+	readonly options: { readonly format: "mp4" | "webm" | "png" };
+};
+
 /** Owns only files created for this upload; concurrent result reports coalesce. */
-export function createExportOutputWriter({
+export function createExportOutputWriter<
+	T extends ManagedOutputJob = ExportJob,
+>({
 	projectDir,
 	now,
 	noteActivity,
+	validatePublication,
 }: {
 	readonly projectDir: string;
 	readonly now: () => number;
 	readonly noteActivity: () => void;
+	readonly validatePublication?: (job: T) => Promise<void>;
 }) {
-	const pending = new Map<string, Promise<ExportJob>>();
-	const canPublish = (job: ExportJob): boolean => {
+	const pending = new Map<string, Promise<T>>();
+	const canPublish = (job: T): boolean => {
 		if (job.status !== "pending" && job.status !== "running") return false;
 		if (!job.cancelRequested) return true;
 		job.status = "cancelled";
@@ -22,10 +30,7 @@ export function createExportOutputWriter({
 		noteActivity();
 		return false;
 	};
-	const publish = async (
-		job: ExportJob,
-		bytes: Uint8Array,
-	): Promise<ExportJob> => {
+	const publish = async (job: T, bytes: Uint8Array): Promise<T> => {
 		if (!canPublish(job)) return job;
 		const dir = path.join(projectDir, "exports");
 		await mkdir(dir, { recursive: true });
@@ -44,9 +49,11 @@ export function createExportOutputWriter({
 			} finally {
 				await handle.close();
 			}
+			await validatePublication?.(job);
 			if (!canPublish(job)) return job;
 			await rename(staging, file);
 			published = true;
+			await validatePublication?.(job);
 			// Cancellation/failure can arrive at any await, including rename itself.
 			if (!canPublish(job)) return job;
 			job.status = "completed";
@@ -60,7 +67,7 @@ export function createExportOutputWriter({
 			else if (job.status !== "completed") await rm(file, { force: true });
 		}
 	};
-	return (job: ExportJob, bytes: Uint8Array): Promise<ExportJob> => {
+	return (job: T, bytes: Uint8Array): Promise<T> => {
 		const active = pending.get(job.id);
 		if (active) return active;
 		const writing = publish(job, bytes).finally(() => pending.delete(job.id));

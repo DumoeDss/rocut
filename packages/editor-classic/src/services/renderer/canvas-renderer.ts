@@ -3,7 +3,10 @@ import type { AnyBaseNode } from "./nodes/base-node";
 import { createCanvasSurface } from "./canvas-utils";
 import { buildFrameDescriptor } from "./compositor/frame-descriptor";
 import type { WasmCompositor } from "./compositor/wasm-compositor";
-import { assertRenderNotAborted } from "./compositor/render-request";
+import {
+	assertRenderNotAborted,
+	type NativeFramePng,
+} from "./compositor/render-request";
 import type { VideoCache } from "../video-cache/service";
 import { resolveRenderTree } from "./resolve";
 import {
@@ -127,6 +130,45 @@ export class CanvasRenderer {
 		});
 	}
 
+	async renderSnapshotPng({
+		node,
+		time,
+		signal,
+	}: {
+		node: AnyBaseNode;
+		time: number;
+		signal?: AbortSignal;
+	}): Promise<Blob> {
+		return this.runPublication({
+			signal,
+			operation: ({ token }) =>
+				this.compositor.runExclusive(
+					async (signal) => {
+						const output = await this.renderLocked({
+							node,
+							time,
+							token,
+							signal,
+							png: true,
+						});
+						this.assertPublicationCurrent({ token, signal });
+						if (
+							!output ||
+							output.width !== this.width ||
+							output.height !== this.height
+						)
+							throw new Error("Native snapshot dimensions mismatch.");
+						const blob = new Blob([new Uint8Array(output.png)], {
+							type: "image/png",
+						});
+						this.assertPublicationCurrent({ token, signal });
+						return blob;
+					},
+					{ signal },
+				),
+		});
+	}
+
 	async renderAndCapture<T>({
 		node,
 		time,
@@ -211,12 +253,14 @@ export class CanvasRenderer {
 		time,
 		token,
 		signal,
+		png = false,
 	}: {
 		node: AnyBaseNode;
 		time: number;
 		token: RendererPublicationToken | null;
 		signal: AbortSignal;
-	}): Promise<void> {
+		png?: boolean;
+	}): Promise<void | NativeFramePng> {
 		this.assertPublicationCurrent({ token, signal });
 		const rasterResidency = this.rasterResidencyDomain.tree(node);
 		await measureSpanAsync({
@@ -259,15 +303,18 @@ export class CanvasRenderer {
 		} finally {
 			publication.discard({ textureSyncStarted });
 		}
-		await measureSpanAsync({
+		const output = await measureSpanAsync<void | NativeFramePng>({
 			name: "renderFrame",
 			fn: () =>
-				this.compositor.renderAsync(frame, {
+				(png
+					? this.compositor.renderPngAsync.bind(this.compositor)
+					: this.compositor.renderAsync.bind(this.compositor))(frame, {
 					signal,
 					assertCurrent: () => this.assertPublicationCurrent({ token, signal }),
 				}),
 		});
 		this.assertPublicationCurrent({ token, signal });
+		return output;
 	}
 
 	/** Retire only this root; texture clearing is serialized with publication. */

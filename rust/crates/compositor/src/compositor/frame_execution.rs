@@ -2,6 +2,13 @@ use super::{Compositor, CompositorError, GpuContext, RenderFrameOptions, wgpu};
 use crate::{CanvasCaptureTicket, FrameDescriptor, PreparedFrame};
 
 impl Compositor {
+    /// Actual uploaded and pooled RGBA8 storage, including idle pool allocations.
+    /// Native output charges these resident resources in addition to its own
+    /// conservative CPU/staging/PNG peak; no texture is retained across an await.
+    pub fn resident_rgba_bytes(&self) -> Option<u64> {
+        self.textures.resident_rgba_bytes()?.checked_add(self.texture_pool.resident_rgba_bytes()?)
+    }
+
     pub fn render_frame_to_texture(
         &mut self,
         context: &GpuContext,

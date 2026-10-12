@@ -58,6 +58,22 @@ export function createEditorTaskRunner({
 			try {
 				await editor.command.whenIdle();
 				await assertCurrent();
+				if (request.kind === "snapshot.png") {
+					if (request.projectId !== projectId)
+						throw new Error("project-conflict");
+					onProgress?.({ step: "rendering-png" });
+					const blob = await editor.renderer.captureSnapshot({
+						tick: request.tick,
+						signal,
+					});
+					await assertCurrent();
+					return {
+						blob,
+						tick: request.tick,
+						sourceRevision: request.expectedRevision,
+						sceneId: request.sceneId,
+					};
+				}
 				if (
 					request.kind === "history.undo" ||
 					request.kind === "history.redo"

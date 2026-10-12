@@ -5,6 +5,7 @@ import {
 	WasmRuntimeGraphicsQuery,
 } from "opencut-wasm";
 import type { EffectPass, EffectUniformValue } from "../../effects/types";
+import { BlazeNativeOutput } from "./blaze-native-output";
 
 export function initializeGpuRenderer(): Promise<void> {
 	return initializeGpu();
@@ -20,6 +21,9 @@ export function isGpuAvailable(): boolean {
 }
 
 export const gpuRenderer = {
+    createBlazeOutputOwner(): BlazeNativeOutput {
+        return new BlazeNativeOutput();
+    },
 	applyEffect({
 		source,
 		width,

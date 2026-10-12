@@ -11,6 +11,10 @@ use crate::gpu::{
     read_u32_property, render_texture_to_canvas, with_gpu_runtime,
 };
 
+#[path = "effects_output.rs"]
+mod output;
+pub use output::BlazeOutputOwner;
+
 pub(crate) struct ApplyEffectPassesOptions {
     source: wgpu::web_sys::OffscreenCanvas,
     pub(crate) width: u32,

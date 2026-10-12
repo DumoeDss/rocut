@@ -16,6 +16,7 @@ import { startHost } from "./host";
 import { resolveHostStaticDirectory } from "./host-static-directory";
 import { runAgentCli } from "./agent-cli";
 import type { ExportJob } from "./host-export";
+import { runSnapshotCli } from "./snapshot-cli";
 import {
 	parseVideoChromaFlag,
 	parseVideoQuantizerFlag,
@@ -134,6 +135,7 @@ export const USAGE_LINES: readonly string[] = [
 	"  rocut verify <tick> [--target <id|auto>] [--project <dir>]",
 	"  rocut apply <ops.json> [--target <id|auto>] [--project <dir>]",
 	"  rocut export [--out <file>] [--format mp4|webm] [--quality low|medium|high|very_high] [--video-chroma 420|444] [--video-quantizer <number>] [--no-audio] [--start-time <ticks> --end-time <ticks>] [--target <id|auto>] [--project <dir>]",
+	"  rocut snapshot --tick <mediaTicks> [--out <png>] [--surface <id>] [--revision <n>] [--target <id|auto>] [--project <dir>]",
 	"  rocut draft begin [--target <id|auto>] [--project <dir>]",
 	"  rocut draft stage <ops.json> --draft <id> [--target <id|auto>] [--project <dir>]",
 	"  rocut draft approve|reject|discard --draft <id> [--target <id|auto>] [--project <dir>]",
@@ -450,6 +452,19 @@ async function runCli(argv: readonly string[]): Promise<void> {
 				idempotencyKey?: string;
 			};
 			const result = await request(resolved.secret, "POST", "apply", batch);
+			process.stdout.write(JSON.stringify(result, null, "\t") + "\n");
+			return;
+		}
+		case "snapshot": {
+			const tick = flag(args, "tick");
+			if (tick === undefined || !/^\d+$/.test(tick)) throw new Error("snapshot requires --tick <non-negative integer mediaTicks>");
+			const revision = flag(args, "revision");
+			if (args.flags.has("revision") && (revision === undefined || !/^\d+$/.test(revision))) throw new Error("--revision requires a non-negative integer");
+			for (const key of ["out", "surface", "project", "target"]) if (args.flags.has(key) && flag(args, key) === undefined) throw new Error(`--${key} requires a value`);
+			const resolved = await resolveTarget(args, registry);
+			const project = flag(args, "project");
+			if (project !== undefined && normalizeProjectKey(project) !== normalizeProjectKey(resolved.entry.projectPath)) throw new Error("snapshot-project-target-conflict");
+			const result = await runSnapshotCli({ resolved, tick: Number(tick), out: flag(args, "out"), surfaceId: flag(args, "surface"), expectedRevision: revision === undefined ? undefined : Number(revision) });
 			process.stdout.write(JSON.stringify(result, null, "\t") + "\n");
 			return;
 		}

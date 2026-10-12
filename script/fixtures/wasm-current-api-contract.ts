@@ -7,6 +7,58 @@ type Equal<A, B> =
 		: false;
 type Assert<T extends true> = T;
 declare namespace Expected {
+	export interface NativeFramePng {
+		png: Uint8Array;
+		width: number;
+		height: number;
+		handle: number;
+		requestId: number;
+		owner: string;
+		generation: string;
+		peakBytes: number;
+		format: "rgba8unorm";
+		alphaMode: "straight";
+		colorSpace: "srgb";
+		mimeType: "image/png";
+		backend: "webgl" | "webgpu";
+	}
+	export interface BlazeOutputOptions {
+		source: OffscreenCanvas;
+		width: number;
+		height: number;
+		requestId: number;
+		passes: {
+			shader: "blaze";
+			uniforms: { name: string; value: number[] }[];
+		}[];
+	}
+	export interface NativeBlazeOutput {
+		width: number;
+		height: number;
+		requestId: number;
+		generation: number;
+		peakBytes: number;
+		format: "rgba8unorm";
+		alphaMode: "straight";
+		colorSpace: "srgb";
+		backend: "webgl" | "webgpu";
+	}
+	export interface NativeBlazeRgba extends NativeBlazeOutput {
+		rgba: Uint8Array;
+	}
+	export interface NativeBlazePng extends NativeBlazeOutput {
+		png: Uint8Array;
+		mimeType: "image/png";
+	}
+	export interface BlazeOutputOwner {
+		free(): void;
+		[Symbol.dispose](): void;
+		cancel(): void;
+		dispose(): void;
+		pending(): boolean;
+		render(options: BlazeOutputOptions): Promise<NativeBlazeRgba>;
+		renderPng(options: BlazeOutputOptions): Promise<NativeBlazePng>;
+	}
 	export interface LiquidObjectTransportOwner {
 		free(): void;
 		[Symbol.dispose](): void;
@@ -126,6 +178,33 @@ declare namespace Expected {
 }
 type LiquidObjectTransportOwnerExact = Assert<
 	Equal<wasm.LiquidObjectTransportOwner, Expected.LiquidObjectTransportOwner>
+>;
+type NativeFramePngExact = Assert<
+	Equal<wasm.NativeFramePng, Expected.NativeFramePng>
+>;
+type NativeFramePngCommitExact = Assert<
+	Equal<
+		typeof wasm.commitRenderFramePngForHandle,
+		(handle: number, request: number) => Promise<wasm.NativeFramePng>
+	>
+>;
+type BlazeOutputOwnerExact = Assert<
+	Equal<wasm.BlazeOutputOwner, Expected.BlazeOutputOwner>
+>;
+type BlazeOutputOwnerConstructorExact = Assert<
+	Equal<
+		ConstructorParameters<typeof wasm.BlazeOutputOwner>,
+		Parameters<() => void>
+	>
+>;
+type BlazeOutputOptionsExact = Assert<
+	Equal<wasm.BlazeOutputOptions, Expected.BlazeOutputOptions>
+>;
+type NativeBlazeRgbaExact = Assert<
+	Equal<wasm.NativeBlazeRgba, Expected.NativeBlazeRgba>
+>;
+type NativeBlazePngExact = Assert<
+	Equal<wasm.NativeBlazePng, Expected.NativeBlazePng>
 >;
 type LiquidObjectTransportOwnerConstructorExact = Assert<
 	Equal<

@@ -17,6 +17,8 @@ import {
 	normalizeRenderCancellation,
 	RenderCancelledError,
 	renderFrameRequest,
+	renderFramePngRequest,
+	type NativeFramePng,
 } from "./render-request";
 import type {
 	GpuResourceHandle,
@@ -208,6 +210,24 @@ export class WasmCompositor {
 			assertCurrent,
 		}: { signal?: AbortSignal; assertCurrent?: () => void } = {},
 	): Promise<void> {
+		await this.renderRequest(frame, { signal, assertCurrent }, false);
+	}
+
+	async renderPngAsync(
+		frame: FrameDescriptor,
+		options: { signal?: AbortSignal; assertCurrent?: () => void } = {},
+	): Promise<NativeFramePng> {
+		return this.renderRequest(frame, options, true) as Promise<NativeFramePng>;
+	}
+
+	private async renderRequest(
+		frame: FrameDescriptor,
+		{
+			signal,
+			assertCurrent,
+		}: { signal?: AbortSignal; assertCurrent?: () => void },
+		png: boolean,
+	): Promise<void | NativeFramePng> {
 		this.assertOpen();
 		this.assertGpuIdle();
 		assertRenderNotAborted(signal);
@@ -225,7 +245,7 @@ export class WasmCompositor {
 		});
 		this.requests.set(controller, drained);
 		try {
-			await renderFrameRequest({
+			const output = await (png ? renderFramePngRequest : renderFrameRequest)({
 				api: wasmRequestApi,
 				resources: this.resources,
 				handle,
@@ -234,6 +254,7 @@ export class WasmCompositor {
 				assertCurrent,
 			});
 			this.recordFrameProfile();
+			return output;
 		} finally {
 			signal?.removeEventListener("abort", abort);
 			this.requests.delete(controller);

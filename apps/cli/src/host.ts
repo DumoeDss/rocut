@@ -333,7 +333,7 @@ export async function startHost(args: StartHostArgs): Promise<RunningHost> {
 	});
 
 	const token = randomBytes(24).toString("hex");
-	const editorTasks = createEditorTaskRegistry();
+	const editorTasks = createEditorTaskRegistry({ projectDir: resolvedProject, currentRevision: async () => Number(await plane.automation().revision()) });
 	const programmaticFrames = createProgrammaticFrameService(
 		args.htmlBrowserExecutable,
 		args.htmlFrameConnectionFile,
@@ -606,6 +606,7 @@ async function handleApi(
 						"history.redo",
 						"captions.import",
 						"captions.transcribe",
+						"snapshot.png",
 					],
 					historyScope: "attached-session",
 					captionsReturnPlan: true,
@@ -824,6 +825,7 @@ async function handleApi(
 				taskSurfaceId === null
 					? () => undefined
 					: context.editorTasks.attach(taskSurfaceId, {
+							snapshotPng: url.searchParams.get("snapshotProtocol") === "1",
 							send: (frame) => {
 								response.write(`data: ${JSON.stringify(frame)}\n\n`);
 							},

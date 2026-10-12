@@ -11,19 +11,15 @@ use crate::{
     effects_readback_wait::MapWait,
 };
 
-struct CaptureBuffer(wgpu::Buffer);
-
-impl Drop for CaptureBuffer {
-    fn drop(&mut self) {
-        // Runs on success, map failure, timeout, or dropped job/future cancellation.
-        // Mapped ranges are scoped inside finish_rgba and are dropped first.
-        self.0.unmap();
-        self.0.destroy();
-    }
+#[path = "capture_buffer_retirement.rs"]
+mod retirement;
+use retirement::{CaptureBuffer, CaptureBufferResource};
+impl CaptureBufferResource for wgpu::Buffer {
+    fn destroy(&self) { wgpu::Buffer::destroy(self); }
 }
 
 pub(crate) struct CanvasCaptureReadback {
-    buffer: CaptureBuffer,
+    buffer: CaptureBuffer<wgpu::Buffer>,
     device: wgpu::Device,
     layout: ReadbackLayout,
     bgra: bool,

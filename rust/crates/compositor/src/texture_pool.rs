@@ -11,6 +11,20 @@ pub struct TexturePool {
 }
 
 impl TexturePool {
+    pub(crate) fn resident_rgba_bytes(&self) -> Option<u64> {
+        self.available
+            .values()
+            .flatten()
+            .chain(self.in_use.iter().map(|(_, texture)| texture))
+            .try_fold(0u64, |total, texture| {
+                total.checked_add(
+                    u64::from(texture.width())
+                        .checked_mul(u64::from(texture.height()))?
+                        .checked_mul(4)?,
+                )
+            })
+    }
+
     pub fn recycle_frame(&mut self) {
         for (key, texture) in self.in_use.drain(..) {
             self.available.entry(key).or_default().push(texture);

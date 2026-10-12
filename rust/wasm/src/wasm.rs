@@ -6,6 +6,17 @@ mod capture_poll;
 mod compositor;
 #[cfg(target_arch = "wasm32")]
 mod effects;
+// Production output pure owner/codec tests remain available to ordinary native
+// cargo test; the ABI itself is exported by effects on normal wasm32 builds.
+#[cfg(all(test, not(target_arch = "wasm32")))]
+#[path = "effects_output_state.rs"]
+mod effects_output_state_tests;
+#[cfg(any(target_arch = "wasm32", test))]
+#[path = "effects_output_png.rs"]
+mod native_output_png;
+#[cfg(all(test, not(target_arch = "wasm32")))]
+#[path = "capture_buffer_retirement.rs"]
+mod capture_buffer_retirement_tests;
 #[cfg(all(target_arch = "wasm32", feature = "browser-readback-tests"))]
 mod effects_readback;
 #[cfg(any(target_arch = "wasm32", test))]

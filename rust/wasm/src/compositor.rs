@@ -20,6 +20,8 @@ mod requests;
 pub use requests::*;
 #[path = "compositor_capture.rs"]
 mod capture;
+#[path = "compositor_output.rs"]
+mod output;
 #[path = "compositor_frame_preflight.rs"]
 mod frame_preflight;
 use capture::capture_next;

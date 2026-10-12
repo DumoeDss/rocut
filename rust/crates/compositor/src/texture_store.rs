@@ -33,4 +33,15 @@ impl TextureStore {
     pub fn remove(&mut self, id: &str) {
         self.textures.remove(id);
     }
+
+    pub(crate) fn resident_rgba_bytes(&self) -> Option<u64> {
+        self.textures.values().try_fold(0u64, |total, stored| {
+            let texture = stored.texture();
+            total.checked_add(
+                u64::from(texture.width())
+                    .checked_mul(u64::from(texture.height()))?
+                    .checked_mul(4)?,
+            )
+        })
+    }
 }

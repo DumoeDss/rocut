@@ -174,6 +174,7 @@ export function subscribeHostEvents(handlers: {
 	if (handlers.onCommand) advertiseExportProtocol(url.searchParams);
 	if (handlers.editorTaskSurface)
 		url.searchParams.set("editorTaskSurface", handlers.editorTaskSurface);
+	if (handlers.editorTaskSurface) url.searchParams.set("snapshotProtocol", "1");
 	const source = new EventSource(url.toString());
 	source.onerror = () => handlers.onDisconnect?.();
 	source.onmessage = (message) => {

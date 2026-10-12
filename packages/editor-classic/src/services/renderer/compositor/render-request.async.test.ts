@@ -1,6 +1,8 @@
 import { expect, test } from "bun:test";
 import {
 	renderFrameRequest,
+	renderFramePngRequest,
+	type NativeFramePng,
 	type RenderFrameRequestApi,
 } from "./render-request";
 
@@ -11,6 +13,76 @@ const frame: Args["frame"] = {
 	clear: { color: [0, 0, 0, 0] },
 	items: [],
 };
+const pngResult: NativeFramePng = {
+	png: new Uint8Array([137, 80, 78, 71, 13, 10, 26, 10]),
+	width: 8,
+	height: 8,
+	handle: 1,
+	requestId: 7,
+	owner: "1",
+	generation: "1",
+	peakBytes: 4096,
+	format: "rgba8unorm",
+	alphaMode: "straight",
+	colorSpace: "srgb",
+	mimeType: "image/png",
+	backend: "webgl",
+};
+test("native PNG abort cancels immediately but drains the actual commit", async () => {
+	const mock = api(() => true),
+		abort = new AbortController();
+	let resolve!: (value: NativeFramePng) => void;
+	const native = new Promise<NativeFramePng>((yes) => {
+		resolve = yes;
+	});
+	Object.assign(mock.value, { commitRenderFramePngForHandle: () => native });
+	let settled = false;
+	const task = renderFramePngRequest({
+		api: mock.value,
+		resources,
+		frame,
+		handle: 1,
+		signal: abort.signal,
+	});
+	const outcome = task.then(
+		() => {
+			settled = true;
+			return "published";
+		},
+		(error) => {
+			settled = true;
+			return error.name;
+		},
+	);
+	abort.abort();
+	await Promise.resolve();
+	expect(mock.calls).toEqual(["begin", "cancel"]);
+	expect(settled).toBe(false);
+	resolve(pngResult);
+	expect(await outcome).toBe("AbortError");
+});
+test("native PNG consumes the same prepared request and validates exact identity", async () => {
+	const mock = api(() => true);
+	Object.assign(mock.value, {
+		commitRenderFramePngForHandle: async () => pngResult,
+	});
+	expect(
+		await renderFramePngRequest({
+			api: mock.value,
+			resources,
+			frame,
+			handle: 1,
+		}),
+	).toBe(pngResult);
+	expect(mock.calls).toEqual(["begin"]);
+	Object.assign(mock.value, {
+		commitRenderFramePngForHandle: async () => ({ ...pngResult, requestId: 8 }),
+	});
+	await expect(
+		renderFramePngRequest({ api: mock.value, resources, frame, handle: 1 }),
+	).rejects.toThrow("Invalid native frame PNG");
+	expect(mock.calls.at(-1)).toBe("cancel");
+});
 const resources: Args["resources"] = {
 	setTimeout({ handler, ms }) {
 		const timer = setTimeout(handler, ms);

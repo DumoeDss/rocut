@@ -243,3 +243,85 @@ pub fn commit_render_frame_for_handle(handle: u32, request: u32) -> Result<(), J
 pub fn cancel_render_frame_for_handle(handle: u32, request: u32) {
     REQUESTS.with(|requests| requests.borrow_mut().cancel(handle, request));
 }
+
+#[wasm_bindgen(typescript_custom_section)]
+const FRAME_PNG_TYPES: &str = r#"
+export interface NativeFramePng { png: Uint8Array; width: number; height: number; handle: number; requestId: number; owner: string; generation: string; peakBytes: number; format: 'rgba8unorm'; alphaMode: 'straight'; colorSpace: 'srgb'; mimeType: 'image/png'; backend: 'webgl' | 'webgpu'; }
+"#;
+
+struct TerminalRequest {
+    handle: u32,
+    request: u32,
+}
+impl Drop for TerminalRequest {
+    fn drop(&mut self) {
+        REQUESTS.with(|requests| requests.borrow_mut().cancel(self.handle, self.request));
+    }
+}
+
+/// Commit the SAME prepared full graph to native pixels, not a presented Canvas.
+#[wasm_bindgen(js_name = commitRenderFramePngForHandle, unchecked_return_type = "NativeFramePng")]
+pub async fn commit_render_frame_png_for_handle(
+    handle: u32,
+    request: u32,
+) -> Result<JsValue, JsValue> {
+    let owner = identity(handle)?;
+    let preparation = REQUESTS.with(|requests| {
+        requests
+            .borrow_mut()
+            .take(handle, request, owner.0, owner.1)
+            .map_err(request_error)
+    })?;
+    let _terminal = TerminalRequest { handle, request };
+    let Preparation::Ready(frame) = preparation else {
+        return Err(error(
+            "RENDER_NOT_READY",
+            "Render request has not completed CPU preparation",
+        ));
+    };
+    frame.finalize_canvas().map_err(preparation_error)?;
+    if !is_current(handle, request, owner) {
+        return Err(cancelled());
+    }
+    let (readback, width, height, backend, budget) = super::output::capture_frame(handle, frame)?;
+    let rgba = readback
+        .finish_rgba(|| is_current(handle, request, owner))
+        .await?;
+    if !is_current(handle, request, owner) {
+        return Err(cancelled());
+    }
+    let png = crate::native_output_png::encode(width, height, &rgba, &budget)
+        .map_err(JsValue::from_str)?;
+    if !is_current(handle, request, owner) {
+        return Err(cancelled());
+    }
+    let result = js_sys::Object::new();
+    for (name, value) in [
+        ("width", width.into()),
+        ("height", height.into()),
+        ("handle", handle.into()),
+        ("requestId", request.into()),
+        ("owner", JsValue::from_str(&owner.0.to_string())),
+        ("generation", JsValue::from_str(&owner.1.to_string())),
+        ("peakBytes", JsValue::from_f64(budget.peak_bytes as f64)),
+        ("format", JsValue::from_str("rgba8unorm")),
+        ("alphaMode", JsValue::from_str("straight")),
+        ("colorSpace", JsValue::from_str("srgb")),
+        ("mimeType", JsValue::from_str("image/png")),
+        ("backend", JsValue::from_str(backend)),
+    ] {
+        js_sys::Reflect::set(&result, &JsValue::from_str(name), &value)?;
+    }
+    js_sys::Reflect::set(
+        &result,
+        &"png".into(),
+        &js_sys::Uint8Array::from(png.as_slice()),
+    )?;
+    REQUESTS.with(|requests| {
+        requests
+            .borrow_mut()
+            .finish(handle, request, owner.0, owner.1)
+            .map_err(request_error)
+    })?;
+    Ok(result.into())
+}

@@ -5,6 +5,12 @@ export type EditorTaskRequest = {
 } & (
 	| { readonly kind: "history.status" | "history.undo" | "history.redo" }
 	| {
+			readonly kind: "snapshot.png";
+			readonly projectId: string;
+			readonly sceneId: string;
+			readonly tick: number;
+	  }
+	| {
 			readonly kind: "captions.import";
 			readonly sceneId: string;
 			readonly trackId: string;
@@ -41,6 +47,17 @@ export function isEditorTaskRequest(
 		["history.status", "history.undo", "history.redo"].includes(String(v.kind))
 	) {
 		allowed = common;
+	} else if (v.kind === "snapshot.png") {
+		if (
+			typeof v.projectId !== "string" ||
+			!v.projectId ||
+			typeof v.sceneId !== "string" ||
+			!v.sceneId ||
+			!Number.isSafeInteger(v.tick) ||
+			Number(v.tick) < 0
+		)
+			return false;
+		allowed = [...common, "projectId", "sceneId", "tick"];
 	} else {
 		if (
 			typeof v.sceneId !== "string" ||

@@ -7,6 +7,16 @@
  */
 export const REVIEWED_API_ADDITIONS = [
 	[
+		"commitRenderFramePngForHandle",
+		"rust/wasm/src/compositor_output.rs",
+		"packages/editor-classic/src/services/renderer/compositor/wasm-compositor.ts",
+	],
+	[
+		"BlazeOutputOwner",
+		"rust/wasm/src/effects_output.rs",
+		"packages/editor-classic/src/services/renderer/effect-preview.ts",
+	],
+	[
 		"LiquidObjectTransportOwner",
 		"rust/wasm/src/liquid_object_transport.rs",
 		"apps/cli/src/programmatic/liquid-object-worker-entry.mjs",

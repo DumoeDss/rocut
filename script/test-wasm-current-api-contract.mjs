@@ -49,7 +49,11 @@ test("all public additions have explicit provider, consumer and type coverage", 
 		assert.ok(readFileSync(join(root, provider)).length > 0, provider);
 		assert.ok(readFileSync(join(root, consumer)).length > 0, consumer);
 		assert.ok(
-			fixture.replace(/\s+/g, "").includes(`type${name}Exact=Assert<Equal<`),
+			fixture
+				.replace(/\s+/g, "")
+				.includes(
+					`type${name === "commitRenderFramePngForHandle" ? "NativeFramePngCommit" : name}Exact=Assert<Equal<`,
+				),
 			name,
 		);
 	}
@@ -58,6 +62,21 @@ test("current additive signatures and original frozen contracts compile", () => 
 	assert.equal(runContract(["--pkg-dir", pkgDir]), 0);
 });
 const controls = [
+	[
+		"removed native wholegraph PNG commit",
+		"export function commitRenderFramePngForHandle(handle: number, request: number): Promise<NativeFramePng>;",
+		"",
+	],
+	[
+		"any widened native wholegraph PNG return",
+		"commitRenderFramePngForHandle(handle: number, request: number): Promise<NativeFramePng>;",
+		"commitRenderFramePngForHandle(handle: number, request: number): Promise<any>;",
+	],
+	[
+		"changed native wholegraph PNG handle width",
+		"commitRenderFramePngForHandle(handle: number, request: number): Promise<NativeFramePng>;",
+		"commitRenderFramePngForHandle(handle: bigint, request: number): Promise<NativeFramePng>;",
+	],
 	[
 		"removed current function",
 		"export function sampleScalarAnimationBatchJson(input: string): string;",
@@ -84,6 +103,30 @@ const controls = [
 		"step(id: number, max_pixels: number): boolean;",
 	],
 ];
+// Mutate only this interface: Blaze has similar owner/alpha fields and must not
+// accidentally be the declaration that proves the new contract rejects drift.
+const nativeFramePng = source.match(
+	/^export interface NativeFramePng \{[^\n]*\}/m,
+)?.[0];
+assert.ok(
+	nativeFramePng,
+	"NativeFramePng must be present in the actual package",
+);
+for (const [name, from, to] of [
+	["any widened wholegraph PNG bytes", "png: Uint8Array;", "png: any;"],
+	["narrowed wholegraph PNG owner", "owner: string;", "owner: number;"],
+	[
+		"changed wholegraph PNG alpha contract",
+		"alphaMode: 'straight';",
+		"alphaMode: string;",
+	],
+]) {
+	assert.ok(
+		nativeFramePng.includes(from),
+		"control must target exact native frame interface",
+	);
+	controls.push([name, nativeFramePng, nativeFramePng.replace(from, to)]);
+}
 for (const [name, from, to] of controls)
 	test(name, () => {
 		assert.ok(

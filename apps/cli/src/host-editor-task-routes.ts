@@ -13,7 +13,7 @@ async function body(request: IncomingMessage): Promise<unknown> {
 	return JSON.parse(Buffer.concat(chunks).toString("utf8"));
 }
 
-export async function handleEditorTaskRoute({
+async function handleRoute({
 	request,
 	route,
 	registry,
@@ -38,9 +38,47 @@ export async function handleEditorTaskRoute({
 		return respond(job ? 200 : 404, job ?? { error: "unknown-editor-task" });
 	}
 	if (route.length === 3 && request.method === "POST") {
+		if (route[2] === "output") {
+			const chunks: Buffer[] = [];
+			let size = 0;
+			for await (const chunk of request) {
+				const bytes = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk);
+				size += bytes.length;
+				if (size > 64_000_000) throw new Error("snapshot-body-too-large");
+				chunks.push(bytes);
+			}
+			return respond(
+				200,
+				await registry.completeOutput(
+					id,
+					request.headers["x-editor-task-token"],
+					Buffer.concat(chunks),
+				),
+			);
+		}
 		if (route[2] === "report")
 			return respond(200, registry.report(id, await body(request)));
 		if (route[2] === "cancel") return respond(200, registry.cancel(id));
 	}
 	respond(404, { error: "unknown-editor-task-route" });
+}
+
+export async function handleEditorTaskRoute(
+	args: Parameters<typeof handleRoute>[0],
+) {
+	try {
+		await handleRoute(args);
+	} catch (error) {
+		const code = error instanceof Error ? error.message : String(error);
+		const status =
+			code === "unknown-editor-task"
+				? 404
+				: code === "task-owner-mismatch"
+					? 403
+					: error instanceof SyntaxError ||
+						  /^(invalid-|.*body-too-large)/.test(code)
+						? 400
+						: 409;
+		args.respond(status, { code, error: code });
+	}
 }

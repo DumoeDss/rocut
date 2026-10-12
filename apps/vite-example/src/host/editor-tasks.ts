@@ -28,6 +28,30 @@ export function createHostEditorTasks(
 		);
 		if (!response.ok) throw new Error("editor-task-report-failed");
 	};
+	const upload = async (
+		jobId: string,
+		token: string,
+		blob: Blob,
+		signal: AbortSignal,
+	) => {
+		signal.throwIfAborted();
+		const response = await fetch(
+			new URL(
+				`api/editor-tasks/${encodeURIComponent(jobId)}/output`,
+				location.href,
+			),
+			{
+				method: "POST",
+				headers: { "content-type": "image/png", "x-editor-task-token": token },
+				body: blob,
+				signal,
+			},
+		);
+		if (!response.ok) throw new Error("snapshot-upload-failed");
+		const job = (await response.json()) as { status?: string; error?: string };
+		if (job.status !== "complete")
+			throw new Error(job.error ?? `snapshot-${job.status}`);
+	};
 	return {
 		surfaceId,
 		handle(command: HostCommand) {
@@ -50,16 +74,21 @@ export function createHostEditorTasks(
 						);
 					},
 				})
-				.then(
-					(result) => report({ jobId, payload: { token, result } }),
-					(error) =>
-						report({
-							jobId,
-							payload: {
-								token,
-								error: error instanceof Error ? error.message : String(error),
-							},
-						}),
+				.then(async (result) => {
+					if (request.kind === "snapshot.png") {
+						if (!("blob" in result) || !(result.blob instanceof Blob))
+							throw new Error("snapshot-result-missing-png");
+						await upload(jobId, token, result.blob, controller.signal);
+					} else await report({ jobId, payload: { token, result } });
+				})
+				.catch((error) =>
+					report({
+						jobId,
+						payload: {
+							token,
+							error: error instanceof Error ? error.message : String(error),
+						},
+					}),
 				)
 				.catch(() => undefined)
 				.finally(() => active.delete(jobId));

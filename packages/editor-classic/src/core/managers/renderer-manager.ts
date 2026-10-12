@@ -333,7 +333,17 @@ export class RendererManager {
 		}
 	}
 
-	private async createSnapshot(): Promise<SnapshotResult> {
+	/** Agent capture shares the native PNG path, but never changes the playhead or downloads. */
+	async captureSnapshot({ tick, signal }: { tick: number; signal: AbortSignal }): Promise<Blob> {
+		signal.throwIfAborted();
+		const snapshot = await this.createSnapshot({ tick, signal });
+		signal.throwIfAborted();
+		if (!snapshot.success) throw new Error(snapshot.error);
+		snapshot.publication.guard.assertCurrent({ token: snapshot.publication.token });
+		return snapshot.blob;
+	}
+
+	private async createSnapshot(options?: { tick: number; signal: AbortSignal }): Promise<SnapshotResult> {
 		const publication = this.capturePublication();
 		if (this.isDegraded) {
 			return { success: false, error: RASTERIZER_UNAVAILABLE_ERROR };
@@ -341,10 +351,10 @@ export class RendererManager {
 
 		try {
 			publication.guard.assertCurrent({ token: publication.token });
-			const renderTree = this.getRenderTree();
+			let renderTree = this.getRenderTree();
 			const activeProject = this.editor.project.getActive();
 
-			if (!renderTree || !activeProject) {
+			if ((!renderTree && !options) || !activeProject) {
 				return { success: false, error: "No project or scene to capture" };
 			}
 
@@ -354,7 +364,22 @@ export class RendererManager {
 			}
 
 			const { canvasSize, fps } = activeProject.settings;
-			const renderTime = Math.min(
+			if (options && (!Number.isSafeInteger(options.tick) || options.tick < 0 || options.tick > this.editor.timeline.getLastFrameTime())) {
+				return { success: false, error: "snapshot-tick-out-of-range" };
+			}
+			// Rebuild from committed session state, never a transient UI preview draft.
+			if (options) renderTree = buildScene({
+				programmaticFrames: this.programmaticFrames,
+				tracks: this.editor.scenes.getActiveScene().tracks,
+				mediaAssets: this.editor.media.getAssets(),
+				motionTextSequences: activeProject.motionTextSequences,
+				motionTextFontRuntime: this.motionTextFontRuntime,
+				motionTextProjectId: activeProject.metadata.id,
+				duration, canvasSize, background: activeProject.settings.background,
+				masterEffects: activeProject.settings.masterEffects,
+				assetResolver: this.assetResolver,
+			});
+			const renderTime = options?.tick ?? Math.min(
 				this.editor.playback.getCurrentTime(),
 				this.editor.timeline.getLastFrameTime(),
 			);
@@ -365,19 +390,10 @@ export class RendererManager {
 				fps,
 			});
 
-			const tempCanvas = document.createElement("canvas");
-			tempCanvas.width = canvasSize.width;
-			tempCanvas.height = canvasSize.height;
-
-			await renderer.renderToCanvas({
-				node: renderTree,
+			const blob = await renderer.renderSnapshotPng({
+				node: renderTree!,
 				time: renderTime,
-				targetCanvas: tempCanvas,
-			});
-			publication.guard.assertCurrent({ token: publication.token });
-
-			const blob = await new Promise<Blob | null>((resolve) => {
-				tempCanvas.toBlob((result) => resolve(result), "image/png");
+				...(options ? { signal: options.signal } : {}),
 			});
 			publication.guard.assertCurrent({ token: publication.token });
 

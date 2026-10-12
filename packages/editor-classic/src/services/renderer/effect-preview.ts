@@ -5,6 +5,7 @@ import {
 } from "../../effects";
 import type { ParamValues } from "../../params";
 import { gpuRenderer } from "./gpu-renderer";
+import type { BlazeNativeOutput, NativeBlazePng } from "./blaze-native-output";
 import type { AssetResolver } from "@opencut/editor-ports";
 import {
 	getEffectPreviewSource,
@@ -15,16 +16,36 @@ import {
 const PREVIEW_SIZE = 160;
 export class EffectPreviewService {
 	readonly PREVIEW_SIZE = PREVIEW_SIZE;
+    private pngOutput: BlazeNativeOutput | undefined;
+    private disposed = false;
 
 	constructor(private readonly source: EffectPreviewSource) {}
 
 	dispose(): void {
-		this.source.dispose();
+        if (this.disposed) return;
+        this.disposed = true;
+        if (this.pngOutput) void this.pngOutput.dispose().finally(() => this.source.dispose()).catch(error => console.warn("Native Blaze output retirement failed", error));
+        else this.source.dispose();
 	}
 
 	reset(): void {
+        this.pngOutput?.cancel();
 		this.source.reset();
 	}
+
+    /** Lossless production effect PNG: native straight pixels never traverse the
+     * preview/display Canvas. This does not claim timeline/codec export parity. */
+    async exportEffectPng({ effectType, params, source, width, height, localTime = 0, frameRate = { numerator: 30, denominator: 1 }, signal }: { effectType: "blaze"; params: ParamValues; source: OffscreenCanvas; width: number; height: number; localTime?: number; frameRate?: { numerator: number; denominator: number }; signal?: AbortSignal }): Promise<NativeBlazePng> {
+        if (this.disposed) throw new Error("Effect preview service is disposed.");
+        if (effectType !== "blaze") throw new Error("Native effect PNG currently supports Blaze only.");
+        const definition = effectsRegistry.get(effectType);
+        const effectParams = Object.keys(params).length > 0 ? params : buildDefaultEffectInstance({ effectType }).params;
+        const passes = resolveEffectPasses({ definition, effectParams, width, height, frame: { localTime, frameRate } });
+        const owner = this.pngOutput ??= gpuRenderer.createBlazeOutputOwner();
+        return owner.exportPng({ source, width, height, passes, signal });
+    }
+
+    drainEffectOutput(): Promise<void> { return this.pngOutput?.drain() ?? Promise.resolve(); }
 
 	get previewImageUrl(): string {
 		return this.source.previewImageUrl;
