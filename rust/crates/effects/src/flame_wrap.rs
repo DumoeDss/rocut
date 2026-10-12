@@ -13,6 +13,10 @@ mod uniforms;
 #[path = "flame_wrap/tests.rs"]
 mod tests;
 
+#[cfg(test)]
+#[path = "flame_wrap/topology_tests.rs"]
+mod topology_tests;
+
 use serde_json::{Value, json};
 use std::collections::BTreeMap;
 use time::{FrameRate, MediaTime};

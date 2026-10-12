@@ -10,18 +10,28 @@ export async function createCaptureServer({
 	runnerPath,
 	kind = "canvas",
 }) {
-	if (!["canvas", "flame-wrap"].includes(kind))
+	if (!["canvas", "canvas-lifecycle", "flame-wrap"].includes(kind))
 		throw Error("Unsupported capture fixture");
 	const paths = {
 		"/wasm-glue.mjs": join(resolve(pkg), "opencut_wasm_bg.js"),
 		"/wasm.wasm": join(resolve(pkg), "opencut_wasm_bg.wasm"),
-		"/probe.mjs": join(root, `script/fixtures/${kind}-capture-probe.mjs`),
+		"/probe.mjs": join(
+			root,
+			kind === "canvas-lifecycle"
+				? "script/fixtures/canvas-capture-lifecycle.mjs"
+				: `script/fixtures/${kind}-capture-probe.mjs`,
+		),
 		"/canvas-capture-support.mjs": join(
 			root,
 			"script/fixtures/canvas-capture-support.mjs",
 		),
 		"/runner-source.mjs": runnerPath,
 	};
+	if (kind === "canvas-lifecycle")
+		paths["/canvas-capture-wait-observer.mjs"] = join(
+			root,
+			"script/fixtures/canvas-capture-wait-observer.mjs",
+		);
 	const frozen = new Map();
 	for (const [route, path] of Object.entries(paths)) {
 		const bytes = await readFile(path);

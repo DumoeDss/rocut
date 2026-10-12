@@ -11,10 +11,10 @@ if (
 	!pkg ||
 	!parent ||
 	!["webgpu", "webgl"].includes(backend) ||
-	!["canvas", "flame-wrap"].includes(kind)
+	!["canvas", "canvas-lifecycle", "flame-wrap"].includes(kind)
 )
 	throw Error(
-		"Usage: node script/probe-canvas-capture.mjs <private-pkg> <artifact-parent> [webgpu|webgl] [canvas|flame-wrap]",
+		"Usage: node script/probe-canvas-capture.mjs <private-pkg> <artifact-parent> [webgpu|webgl] [canvas|canvas-lifecycle|flame-wrap]",
 	);
 const require = createRequire(join(root, "apps/vite-example/package.json"));
 const { chromium } = require("@playwright/test");
@@ -29,10 +29,12 @@ const { frozen, server } = await createCaptureServer({
 	runnerPath: fileURLToPath(import.meta.url),
 	kind,
 });
-const resultKey =
-	kind === "canvas" ? "__canvasCaptureResult" : "__flameWrapResult";
-const progressKey =
-	kind === "canvas" ? "__canvasCaptureProgress" : "__flameWrapProgress";
+const resultKey = kind.startsWith("canvas")
+	? "__canvasCaptureResult"
+	: "__flameWrapResult";
+const progressKey = kind.startsWith("canvas")
+	? "__canvasCaptureProgress"
+	: "__flameWrapProgress";
 const report = {
 	ok: false,
 	artifacts,

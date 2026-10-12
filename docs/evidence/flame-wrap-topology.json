@@ -1,0 +1,92 @@
+{
+	"effect": "flame-wrap",
+	"date": "2026-10-12",
+	"status": "bounded-alpha-topology-and-moving-source-verified",
+	"scope": "Current normal WASM compositor: concave L, disconnected components, alpha hole, translated concave source and reverse source replay. Fixed independent analytic alpha reference for a width-one, height-one flame-only pass; presentation RGBA retained. No production logic defect found or shader/model change made.",
+	"implementation": {
+		"boundary": "Every apply builds a fresh GPU mask from current source alpha >= 0.5 and eight neighbors, including transparent off-canvas samples",
+		"productionModelSha256": "e0aaf07be850df64bfc6562b9daf39028a36b8051515c07410a26e838284623d",
+		"productionPipelineSha256": "ed9be6fe3c8a89d715f51911eb13fe520f0e62a2fa4e9e7b1f293fbf1b4f1c42",
+		"productionShaderSha256": "7ebdaf4fa4ed40cb83a218ac369b40009aedfdd76a282894f8d633ab0b6760f0",
+		"newRegression": "rust/crates/effects/src/flame_wrap/topology_tests.rs",
+		"newRegressionSha256": "27b8ce0fbd12a3537d287e0562627e679ea7a28acfd779e6adcf80065179537d",
+		"testRegistration": "rust/crates/effects/src/flame_wrap.rs cfg(test) topology_tests module"
+	},
+	"cpuLayer": {
+		"seam": "Actual Flame Wrap model.rs compiled directly with the new topology_tests.rs via a private rustc --test harness; not a fresh full effects crate or WASM build",
+		"testsPassed": 4,
+		"tests": [
+			"concave inner corner versus rectangle/circle",
+			"disconnected edges and support-free gap",
+			"inner alpha-hole boundary and unfilled hole mask",
+			"translated input-frame mask, no old-position support and exact reverse replay"
+		],
+		"warnings": "Three unused standalone-model functions/methods; no production warning suppression",
+		"formatUtf8AndDiffChecksPassed": true
+	},
+	"gpuLayer": {
+		"receipt": "C:/tmps/flame-wrap-topology-20261012/gpu-2KA3dG/receipt-final.json",
+		"receiptSha256": "b887bf1c8110da9c3bd8295c499587c292f16da52527ed868d312f0bfb1914e7",
+		"normalPackage": "C:/tmps/rocut-recipe-catalog-wasm-20261012/pkg",
+		"actualFetchedCompiledCoreSha256": "91cb239afd1efd81fa36a700bea6436e3707532a8f3111b175d22ee61dfbca86",
+		"glueSha256": "569dbaf5f44d9e479a3f267646803b70d48c8d88d74c75457e008ec1cf9d0b0d",
+		"backendObserved": "webgl",
+		"width": 96,
+		"height": 64,
+		"sameTextureIdReplacedPerFrame": "moving-source",
+		"sequence": ["concave", "components", "hole", "moved", "concave"],
+		"params": {
+			"amount": 1,
+			"boundaryWidth": 1,
+			"flameHeight": 1,
+			"flameOpacity": 0.9,
+			"sparkOpacity": 0,
+			"refraction": 0,
+			"speed": 0,
+			"wind": 0,
+			"seed": 17
+		},
+		"fixedMaximumAlphaErrorGate": 2,
+		"maximumAlphaErrorEachFrame": [0, 0, 0, 0, 0],
+		"reverseSourceReplayAllRgbaExact": true,
+		"pageErrors": 0,
+		"externalRequests": 0,
+		"eightInputPinsUnchanged": true,
+		"ownedCompositorDisposed": true,
+		"graphicsQueryFreed": true,
+		"browserAndServerClosed": true,
+		"gpuReleased": true
+	},
+	"retainedFrameAudit": {
+		"receipt": "C:/tmps/flame-wrap-topology-20261012/audit-receipt.json",
+		"receiptSha256": "f653705969bb0840566edb7d8e2107a63344b39c3a1160155c90fde6b1d0b008",
+		"rgbaFrames": 5,
+		"independentAlphaReferenceAllExact": true,
+		"negativeControlsRejectedAtUnchangedGate": [
+			{ "actual": "concave", "wrong": "rectangle", "outOfGatePixels": 440 },
+			{ "actual": "concave", "wrong": "circle", "outOfGatePixels": 663 },
+			{ "actual": "components", "wrong": "bridged", "outOfGatePixels": 576 },
+			{ "actual": "hole", "wrong": "rectangle", "outOfGatePixels": 64 },
+			{
+				"actual": "moved",
+				"wrong": "concave stale source",
+				"outOfGatePixels": 1502
+			}
+		],
+		"sourceAndGpuInputPinsUnchanged": true,
+		"secondGpuRunPerformed": false
+	},
+	"preservation": {
+		"previousEvidenceUnchanged": true,
+		"defaultEncodingOrHistoryMatrixRepeated": false,
+		"fullWasmBuildPerformed": false,
+		"commitPushInstallOrSharedDependencyChangePerformed": false
+	},
+	"notProven": [
+		"Full RGB optical oracle or every boundary width, flame height, spark, wind and refraction combination",
+		"Arbitrary alpha topology or continuous shape deformation beyond these bounded fixtures",
+		"Host/editor moving-video source scheduling or encoded moving-topology parity; this checks real texture replacement within one compositor",
+		"Native raw GPU bytes, hardware/WebGPU, other hosts or installed acceptance",
+		"A new production implementation fix: the tested production topology path was already present and passed"
+	]
+}

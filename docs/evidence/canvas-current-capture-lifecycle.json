@@ -1,0 +1,397 @@
+{
+	"id": "canvas-current-capture-lifecycle",
+	"status": "passed-under-declared-webgl-fence-delay",
+	"overallGoalComplete": false,
+	"scope": "Actual current WASM Canvas capture and MapWait under a declared test-only WebGL fence delay. Six request/resource invalidations, stale-commit refusal and recovery. Not natural WebGPU wait, material oracle, Host or encoded output.",
+	"backend": "webgl",
+	"wasm": {
+		"bytes": 15194990,
+		"sha256": "91cb239afd1efd81fa36a700bea6436e3707532a8f3111b175d22ee61dfbca86"
+	},
+	"receipt": {
+		"path": "C:/tmps/canvas-lifecycle-capture-webgl-AMrRCm/evidence.json",
+		"sha256": "2ad9d814ef57a0d667457d4722c9ad49bdda1243e5dcfcbb60028320ef65e4bc"
+	},
+	"rawReceipt": {
+		"path": "C:/tmps/canvas-lifecycle-capture-webgl-AMrRCm/frames.json",
+		"sha256": "0ea162d7e126ec0f935f10708e8264759716541c0e800db9b02571a3734da0a4"
+	},
+	"predeclaredGate": {
+		"pending": "same real WebGL context, staged PBO and post-copy fence; real WASM 4ms timer scheduled before mapped data read; mutation before timer fired",
+		"cancellation": "AbortError / RENDER_CANCELLED",
+		"stalePublication": "raw baseline vs gray-prefixed old request; delta >16 negative and unchanged publication exact where dimensions/owner remain",
+		"recovery": "independent source RGBA maximum byte error 2",
+		"timers": "native poll timer eventually fired or cleared; Drop invokes clear; no premature GPU disposal"
+	},
+	"checks": 53,
+	"cases": [
+		{
+			"kind": "cancel",
+			"oldHandle": 1,
+			"newHandle": 1,
+			"request": 2,
+			"recoveryRequest": 3,
+			"outcome": {
+				"name": "AbortError",
+				"code": "RENDER_CANCELLED",
+				"message": "Canvas capture request is no longer current"
+			},
+			"pending": {
+				"injectedFenceDelay": true,
+				"fencePolls": [
+					{
+						"actual": 37145,
+						"returned": 37144
+					}
+				],
+				"copiedToStaging": true,
+				"mappedDataReads": 0,
+				"pendingTimer": 7,
+				"pendingObserved": true,
+				"mutationExecuted": true,
+				"mutationError": null,
+				"mutationMappedDataReads": 0,
+				"pendingTimerFiredBeforeMutation": false,
+				"pendingTimerClearedWhileUnfired": false,
+				"pendingTimerLifecycle": {
+					"fired": true,
+					"cleared": true
+				},
+				"matchedContextAndFence": true,
+				"wasmTimerCall": true,
+				"clearedTimers": [7]
+			},
+			"recovery": {
+				"max": 0,
+				"mean": 0,
+				"tolerance": 2
+			},
+			"noOldPublication": {
+				"max": 0,
+				"mean": 0,
+				"tolerance": 0
+			}
+		},
+		{
+			"kind": "withdraw",
+			"oldHandle": 1,
+			"newHandle": 1,
+			"request": 5,
+			"recoveryRequest": 6,
+			"outcome": {
+				"name": "AbortError",
+				"code": "RENDER_CANCELLED",
+				"message": "Canvas capture request is no longer current"
+			},
+			"pending": {
+				"injectedFenceDelay": true,
+				"fencePolls": [
+					{
+						"actual": 37145,
+						"returned": 37144
+					}
+				],
+				"copiedToStaging": true,
+				"mappedDataReads": 0,
+				"pendingTimer": 11,
+				"pendingObserved": true,
+				"mutationExecuted": true,
+				"mutationError": null,
+				"mutationMappedDataReads": 0,
+				"pendingTimerFiredBeforeMutation": false,
+				"pendingTimerClearedWhileUnfired": false,
+				"pendingTimerLifecycle": {
+					"fired": true,
+					"cleared": true
+				},
+				"matchedContextAndFence": true,
+				"wasmTimerCall": true,
+				"clearedTimers": [11]
+			},
+			"recovery": {
+				"max": 0,
+				"mean": 0,
+				"tolerance": 2
+			},
+			"noOldPublication": {
+				"max": 0,
+				"mean": 0,
+				"tolerance": 0
+			}
+		},
+		{
+			"kind": "replace-source",
+			"oldHandle": 1,
+			"newHandle": 1,
+			"request": 8,
+			"recoveryRequest": 9,
+			"outcome": {
+				"name": "AbortError",
+				"code": "RENDER_CANCELLED",
+				"message": "Canvas capture request is no longer current"
+			},
+			"pending": {
+				"injectedFenceDelay": true,
+				"fencePolls": [
+					{
+						"actual": 37145,
+						"returned": 37144
+					}
+				],
+				"copiedToStaging": true,
+				"mappedDataReads": 0,
+				"pendingTimer": 15,
+				"pendingObserved": true,
+				"mutationExecuted": true,
+				"mutationError": null,
+				"mutationMappedDataReads": 0,
+				"pendingTimerFiredBeforeMutation": false,
+				"pendingTimerClearedWhileUnfired": false,
+				"pendingTimerLifecycle": {
+					"fired": true,
+					"cleared": true
+				},
+				"matchedContextAndFence": true,
+				"wasmTimerCall": true,
+				"clearedTimers": [15]
+			},
+			"recovery": {
+				"max": 0,
+				"mean": 0,
+				"tolerance": 2
+			},
+			"noOldPublication": {
+				"max": 0,
+				"mean": 0,
+				"tolerance": 0
+			}
+		},
+		{
+			"kind": "resize",
+			"oldHandle": 1,
+			"newHandle": 1,
+			"request": 11,
+			"recoveryRequest": 12,
+			"outcome": {
+				"name": "AbortError",
+				"code": "RENDER_CANCELLED",
+				"message": "Canvas capture request is no longer current"
+			},
+			"pending": {
+				"injectedFenceDelay": true,
+				"fencePolls": [
+					{
+						"actual": 37145,
+						"returned": 37144
+					}
+				],
+				"copiedToStaging": true,
+				"mappedDataReads": 1,
+				"pendingTimer": 19,
+				"pendingObserved": true,
+				"mutationExecuted": true,
+				"mutationError": null,
+				"mutationMappedDataReads": 0,
+				"pendingTimerFiredBeforeMutation": false,
+				"pendingTimerClearedWhileUnfired": true,
+				"pendingTimerLifecycle": {
+					"fired": false,
+					"cleared": true
+				},
+				"matchedContextAndFence": true,
+				"wasmTimerCall": true,
+				"clearedTimers": [19]
+			},
+			"recovery": {
+				"max": 0,
+				"mean": 0,
+				"tolerance": 2
+			},
+			"noOldPublication": null
+		},
+		{
+			"kind": "dispose-owner",
+			"oldHandle": 1,
+			"newHandle": 2,
+			"request": 14,
+			"recoveryRequest": 15,
+			"outcome": {
+				"name": "AbortError",
+				"code": "RENDER_CANCELLED",
+				"message": "Canvas capture request is no longer current"
+			},
+			"pending": {
+				"injectedFenceDelay": true,
+				"fencePolls": [
+					{
+						"actual": 37145,
+						"returned": 37144
+					}
+				],
+				"copiedToStaging": true,
+				"mappedDataReads": 1,
+				"pendingTimer": 23,
+				"pendingObserved": true,
+				"mutationExecuted": true,
+				"mutationError": null,
+				"mutationMappedDataReads": 0,
+				"pendingTimerFiredBeforeMutation": false,
+				"pendingTimerClearedWhileUnfired": true,
+				"pendingTimerLifecycle": {
+					"fired": false,
+					"cleared": true
+				},
+				"matchedContextAndFence": true,
+				"wasmTimerCall": true,
+				"clearedTimers": [23]
+			},
+			"recovery": {
+				"max": 0,
+				"mean": 0,
+				"tolerance": 2
+			},
+			"noOldPublication": null
+		},
+		{
+			"kind": "replace-request",
+			"oldHandle": 2,
+			"newHandle": 2,
+			"request": 17,
+			"recoveryRequest": 18,
+			"outcome": {
+				"name": "AbortError",
+				"code": "RENDER_CANCELLED",
+				"message": "Canvas capture request is no longer current"
+			},
+			"pending": {
+				"injectedFenceDelay": true,
+				"fencePolls": [
+					{
+						"actual": 37145,
+						"returned": 37144
+					}
+				],
+				"copiedToStaging": true,
+				"mappedDataReads": 0,
+				"pendingTimer": 32,
+				"pendingObserved": true,
+				"mutationExecuted": true,
+				"mutationError": null,
+				"mutationMappedDataReads": 0,
+				"pendingTimerFiredBeforeMutation": false,
+				"pendingTimerClearedWhileUnfired": false,
+				"pendingTimerLifecycle": {
+					"fired": true,
+					"cleared": true
+				},
+				"matchedContextAndFence": true,
+				"wasmTimerCall": true,
+				"clearedTimers": [32]
+			},
+			"recovery": {
+				"max": 0,
+				"mean": 0,
+				"tolerance": 2
+			},
+			"noOldPublication": {
+				"max": 0,
+				"mean": 0,
+				"tolerance": 0
+			}
+		}
+	],
+	"executionInputPins": [
+		{
+			"route": "/wasm-glue.mjs",
+			"path": "C:\\tmps\\rocut-recipe-catalog-wasm-20261012\\pkg\\opencut_wasm_bg.js",
+			"bytes": 194990,
+			"sha256": "569dbaf5f44d9e479a3f267646803b70d48c8d88d74c75457e008ec1cf9d0b0d"
+		},
+		{
+			"route": "/wasm.wasm",
+			"path": "C:\\tmps\\rocut-recipe-catalog-wasm-20261012\\pkg\\opencut_wasm_bg.wasm",
+			"bytes": 15194990,
+			"sha256": "91cb239afd1efd81fa36a700bea6436e3707532a8f3111b175d22ee61dfbca86"
+		},
+		{
+			"route": "/probe.mjs",
+			"path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\script\\fixtures\\canvas-capture-lifecycle.mjs",
+			"bytes": 6898,
+			"sha256": "aa3b827fcac8e6321d31b33f36ee8db6672c2445fb620027cf1c50efb89de0b7"
+		},
+		{
+			"route": "/canvas-capture-support.mjs",
+			"path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\script\\fixtures\\canvas-capture-support.mjs",
+			"bytes": 4417,
+			"sha256": "02c6cda846b2e345411fae0d9c7219cddc7f56be57e0a618e970fc10f0c1ff61"
+		},
+		{
+			"route": "/runner-source.mjs",
+			"path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\script\\probe-canvas-capture.mjs",
+			"bytes": 6824,
+			"sha256": "13e6365b60a9507726589883a3c5de386b1b43fdf1664ae1a1a409e587753d7f"
+		},
+		{
+			"route": "/canvas-capture-wait-observer.mjs",
+			"path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\script\\fixtures\\canvas-capture-wait-observer.mjs",
+			"bytes": 4548,
+			"sha256": "f2017c61c628845db36424fb3918a582fd49cefcea5e002ba62a3d97c1ab2bd0"
+		},
+		{
+			"route": "/server-source.mjs",
+			"path": "file:///E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/_others/rocut/script/canvas-capture-server.mjs",
+			"bytes": 2132,
+			"sha256": "0250670ec667464d9d296bfd769efa1fd96c8cc087f466348ae3d6f5ec40989a"
+		}
+	],
+	"productionSourcePins": [
+		{
+			"path": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/_others/rocut/rust/wasm/src/canvas_capture_readback.rs",
+			"sha256": "20496b9d0fc0d8e3b0bafbdd81eb0ba0d2e2a1e20ec108c18a2a89b0fbe9b19c"
+		},
+		{
+			"path": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/_others/rocut/rust/wasm/src/capture_poll.rs",
+			"sha256": "eedfc8b337d7174c700ed1eb89da2375c57596243cc3ac408a7ef1a97d3654dd"
+		},
+		{
+			"path": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/_others/rocut/rust/wasm/src/compositor_requests.rs",
+			"sha256": "81d408fc2a2b010fce0373c56781da7dec4e39f5c882120f2223012bbc2c996b"
+		},
+		{
+			"path": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/_others/rocut/rust/wasm/src/effects_readback_wait.rs",
+			"sha256": "9c813fd41038e7c6386aebffa4f53233935581756bb15cb413e3158b33431b8e"
+		},
+		{
+			"path": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/_others/rocut/rust/wasm/src/effects_readback_state.rs",
+			"sha256": "692164965cffa030140b8839677bcd35b2ca33803fb79f3e33bd65531b238417"
+		},
+		{
+			"path": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/_others/rocut/rust/wasm/src/compositor.rs",
+			"sha256": "1a7c28f700b1fbdc8032d06a9420dc35dbbcb737c744ad5f04d0e4c73f813158"
+		},
+		{
+			"path": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/_others/rocut/rust/wasm/src/compositor_capture.rs",
+			"sha256": "0d6ad4c1a0042fa2c2439ad464ffb9dc497aadbfe11949d506bda084900360e2"
+		}
+	],
+	"retainedFirstAttempt": {
+		"path": "C:/tmps/canvas-lifecycle-capture-webgl-aQfsBZ/evidence.json",
+		"sha256": "2701c0e65dfd8f78c6c0330c96608f23ef8485e06ac798c2fea36b4e1f9ed845",
+		"accepted": false,
+		"cause": "Observer delayed clientWaitSync, but actual nonblocking wgpu Poll uses getSyncParameter. No pending boundary occurred; failed precondition retained, not a product failure. The correction holds the actual matched SYNC_STATUS at UNSIGNALED, leaving real MapWait and resources pending."
+	},
+	"cleanup": {
+		"browserClosed": true,
+		"serverClosed": true,
+		"gpuDisposed": true,
+		"pageErrors": [],
+		"externalRequests": [],
+		"httpErrors": []
+	},
+	"limitations": [
+		"Declared test-only GPU fence-status delay, not a natural WebGPU pending-mapping observation.",
+		"No production shader, pixels, request result or MapWait implementation replaced.",
+		"Actual source/resource invalidation and recovery; not a material optical reference, default export, installed runtime, hardware matrix or driver mapping-error/timeout injection acceptance.",
+		"Mapping timer may fire once to wake cancellation; no claim of an immediate cancellation waker or pre-fire clearing."
+	]
+}
