@@ -69,14 +69,15 @@ test("Nonzero proof cannot bypass absent seeked via loadeddata or canplay", asyn
 	assert.equal(f.scope.presentations.size, 0);
 	await unresolved(f, result);
 });
-test("Seeking callback cannot be retained by later seeked", async () => {
+test("Fresh seeking callback is retained as a candidate until seeked", async () => {
 	const f = controlled(),
 		result = start(f);
 	f.video.seeking = true;
 	submit(f);
-	f.video.land();
 	assert.equal(f.scope.presentations.size, 0);
-	await unresolved(f, result);
+	f.video.land();
+	assert.equal((await result).target, 0.37);
+	f.close();
 });
 test("Ready-low nonzero callback cannot be retained by readiness and seeked", async () => {
 	const f = controlled(),

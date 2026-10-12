@@ -69,7 +69,8 @@ test("Reset lifecycle stays pending through empty readiness and stale submission
 	f.video.networkState = 2;
 	f.video.emit("abort");
 	f.video.emit("emptied");
-	f.video.present(0);
+	// This is an old submission, not a fresh post-reset seeking candidate.
+	f.video.present(0, { presentationTime: 2, presentedFrames: 3 });
 	await Promise.resolve();
 	assert.equal(settled, false);
 	f.video.readyState = 2;
@@ -83,6 +84,42 @@ test("Reset lifecycle stays pending through empty readiness and stale submission
 	const result = await pending;
 	assert.equal(result, undefined);
 	assert.equal(settled, true);
+	await f.context.rocutMedia.drainNativeFrame();
+	f.close();
+});
+
+test("Fresh reset callback at readyState zero remains a candidate until readiness and seeked", async () => {
+	const f = fixture();
+	const scope = f.begin();
+	f.setNow(10);
+	let settled = false;
+	const pending = f.context.rocutMedia.nativeSeek(f.video, 0.18).then((value) => {
+		settled = true;
+		return value;
+	});
+	f.video.readyState = 0;
+	f.video.duration = NaN;
+	f.video.networkState = 2;
+	f.video.emit("abort");
+	f.video.emit("emptied");
+	f.setNow(12);
+	f.video.present(0.17, { presentationTime: 12, presentedFrames: 3 });
+	await Promise.resolve();
+	assert.equal(settled, false);
+	assert.equal(scope.presentations.size, 0);
+	f.video.readyState = 2;
+	f.video.duration = 0.6;
+	f.video.emit("canplay");
+	await Promise.resolve();
+	assert.equal(settled, false);
+	f.video.land();
+	const result = await pending;
+	assert.equal(result.target, 0.18);
+	assert.equal(result.mediaTime, 0.17);
+	assert.equal(result.presentationTime, 12);
+	assert.equal(result.presentedFrames, 3);
+	assert.equal(f.callbacks.size, 0);
+	assert.equal(f.liveListeners(), 0);
 	await f.context.rocutMedia.drainNativeFrame();
 	f.close();
 });

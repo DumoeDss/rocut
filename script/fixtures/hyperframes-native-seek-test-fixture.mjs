@@ -28,6 +28,8 @@ export function fixture({
 	const log = [];
 	const callbacks = new Map();
 	const listeners = new Map();
+	const listenerOwners = new WeakMap();
+	const callbackOwners = new Map();
 	let callbackSequence = 0;
 	let presentationSequence = 0;
 	let now = 0;
@@ -65,15 +67,21 @@ export function fixture({
 					this.present(value);
 				});
 		}
+		listenerMap() {
+			if (this === video) return listeners;
+			if (!listenerOwners.has(this)) listenerOwners.set(this, new Map());
+			return listenerOwners.get(this);
+		}
 		addEventListener(type, callback) {
+			const listeners = this.listenerMap();
 			if (!listeners.has(type)) listeners.set(type, new Set());
 			listeners.get(type).add(callback);
 		}
 		removeEventListener(type, callback) {
-			listeners.get(type)?.delete(callback);
+			this.listenerMap().get(type)?.delete(callback);
 		}
 		emit(type) {
-			for (const callback of [...(listeners.get(type) ?? [])])
+			for (const callback of [...(this.listenerMap().get(type) ?? [])])
 				callback({ type });
 		}
 		land() {
@@ -82,9 +90,12 @@ export function fixture({
 		}
 		present(mediaTime, overrides = {}) {
 			this.presentedMarker = Math.round(mediaTime * 100);
-			const pending = [...callbacks.values()];
-			callbacks.clear();
-			for (const cb of pending)
+			const pending = [...callbacks].filter(([id]) => callbackOwners.get(id) === this);
+			for (const [id] of pending) {
+				callbacks.delete(id);
+				callbackOwners.delete(id);
+			}
+			for (const [, cb] of pending)
 				cb(now, {
 					mediaTime,
 					presentationTime: now,
@@ -95,10 +106,12 @@ export function fixture({
 		requestVideoFrameCallback(callback) {
 			log.push(["observe", ++callbackSequence]);
 			callbacks.set(callbackSequence, callback);
+			callbackOwners.set(callbackSequence, this);
 			return callbackSequence;
 		}
 		cancelVideoFrameCallback(id) {
 			callbacks.delete(id);
+			callbackOwners.delete(id);
 		}
 	}
 	const video = new Video();
@@ -187,6 +200,8 @@ export function fixture({
 		audioEvents,
 		log,
 		callbacks,
+		callbacksFor: (item) => [...callbacks].filter(([id]) => callbackOwners.get(id) === item),
+		createVideo: () => new Video(),
 		listeners,
 		begin: (options) =>
 			context.rocutMedia.beginNativeFrame({

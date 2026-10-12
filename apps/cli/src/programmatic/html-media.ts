@@ -225,14 +225,17 @@ function nativeSeek(video, seconds) {
         state.callbackGate.landed = landed; state.callbackGate.initialZeroNoop = initialZeroNoop;
         state.callbackGate.reason = 'landing';
         const waitingLanding = !landed && !initialZeroNoop && seconds !== 0;
-        if ((!landed && !initialZeroNoop && !waitingLanding) ||
-            (state.callbackGate.reason = 'seeking', state.callbackGate.seekingRead = true, state.callbackGate.seeking = video.seeking)) { arm(); return; }
+        if (!landed && !initialZeroNoop && !waitingLanding) { arm(); return; }
+        state.callbackGate.reason = 'seeking'; state.callbackGate.seekingRead = true;
+        const callbackSeeking = state.callbackGate.seeking = video.seeking;
+        const waitingSeeking = waitingLanding && callbackSeeking;
+        if (callbackSeeking && !waitingSeeking) { arm(); return; }
         state.callbackGate.reason = 'ready-state'; state.callbackGate.readyStateRead = true;
         const waitingInitialReady = (state.callbackGate.readyState = video.readyState) < 2;
-        if (waitingInitialReady && !initialZeroNoop) { arm(); return; }
-        // Retain only a non-seeking, ready nonzero callback awaiting seeked,
-        // or the first eligible zero callback awaiting readiness. Neither
-        // pending proof is presentation admission before its missing event.
+        if (waitingInitialReady && !initialZeroNoop && !waitingSeeking) { arm(); return; }
+        // A seeking nonzero callback is only a candidate awaiting seeked.
+        // Final admission still requires landed, non-seeking, ready, source,
+        // target, assignment freshness and increasing frame count.
         if (waitingInitialReady || waitingLanding) assertNativeFrame(scope);
         state.callbackGate.reason = 'source';
         if (!ownsSource()) throw Error('HTML native video source changed before presentation (sameSource false)');
@@ -241,6 +244,17 @@ function nativeSeek(video, seconds) {
         // exact-frame oracle: source PTS/variable-frame-rate selection is native.
         state.callbackGate.reason = 'target';
         if (video.currentTime !== seconds) throw Error('HTML native video seek target changed before presentation');
+        if (waitingSeeking) {
+          // Browser metadata's own primitive data only: do not invoke getters
+          // on a callback that the original seeking gate would have skipped.
+          const snapshot = {};
+          for (const key of ['mediaTime', 'presentationTime', 'presentedFrames']) {
+            const descriptor = Object.getOwnPropertyDescriptor(metadata, key);
+            if (!descriptor || !Object.hasOwn(descriptor, 'value')) { arm(); return; }
+            snapshot[key] = descriptor.value;
+          }
+          metadata = Object.freeze(snapshot);
+        }
         state.callbackGate.reason = 'media-time';
         if (!Number.isFinite(metadata.mediaTime) || metadata.mediaTime < 0)
           throw Error('HTML native video callback omitted presentation metadata');
