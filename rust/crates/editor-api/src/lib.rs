@@ -90,6 +90,8 @@ mod scenes;
 pub use scenes::{plan_scene_mutation_json, validate_scene_state_json};
 mod video_export;
 pub use video_export::resolve_video_export_json;
+mod native_export;
+pub use native_export::resolve_native_export_job_json;
 
 use bridge::export;
 use model::*;

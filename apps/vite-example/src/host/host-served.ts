@@ -123,6 +123,8 @@ export type HostCommand =
 			readonly command: "export.start";
 			readonly jobId: string;
 			readonly options: HostExportOptions;
+			readonly token: string;
+			readonly receipt: unknown;
 	  }
 	| { readonly command: "export.cancel"; readonly jobId: string };
 
@@ -140,6 +142,8 @@ function parseHostCommand(parsed: Record<string, unknown>): HostCommand | null {
 	if (command === "export.cancel") return { command, jobId };
 	if (
 		command === "export.start" &&
+		typeof parsed.token === "string" &&
+		isRecord(parsed.receipt) &&
 		isRecord(parsed.options) &&
 		isHostExportOptions(parsed.options)
 	) {
@@ -147,6 +151,8 @@ function parseHostCommand(parsed: Record<string, unknown>): HostCommand | null {
 			command,
 			jobId,
 			options: parsed.options,
+			token: parsed.token,
+			receipt: parsed.receipt,
 		};
 	}
 	return null;
@@ -202,9 +208,11 @@ export function subscribeHostEvents(handlers: {
 export async function reportExportProgress({
 	jobId,
 	progress,
+	token,
 }: {
 	readonly jobId: string;
 	readonly progress: number;
+	readonly token: string;
 }): Promise<{ cancelRequested: boolean }> {
 	const response = await fetch(
 		new URL(
@@ -213,11 +221,14 @@ export async function reportExportProgress({
 		).toString(),
 		{
 			method: "POST",
-			headers: { "content-type": "application/json" },
+			headers: {
+				"content-type": "application/json",
+				"x-native-export-token": token,
+			},
 			body: JSON.stringify({ progress }),
 		},
 	);
-	if (!response.ok) return { cancelRequested: false };
+	if (!response.ok) throw new Error("native-export-progress-rejected");
 	const parsed: unknown = await response.json();
 	return {
 		cancelRequested: isRecord(parsed) && parsed.cancelRequested === true,
@@ -228,35 +239,50 @@ export async function reportExportProgress({
 export async function uploadExportResult({
 	jobId,
 	bytes,
+	token,
 }: {
 	readonly jobId: string;
 	readonly bytes: ArrayBuffer;
+	readonly token: string;
 }): Promise<void> {
-	await fetch(
+	const response = await fetch(
 		new URL(
 			`api/export/${encodeURIComponent(jobId)}/result`,
 			location.href,
 		).toString(),
 		{
 			method: "POST",
-			headers: { "content-type": "application/octet-stream" },
+			headers: {
+				"content-type": "application/octet-stream",
+				"x-native-export-token": token,
+			},
 			body: bytes,
 		},
 	);
+	if (!response.ok) throw new Error("native-export-result-rejected");
 }
 
 /** Tell the host this render failed, so the job settles instead of going stale. */
 export async function reportExportFailure({
 	jobId,
 	error,
+	token,
+	terminated = false,
 }: {
 	readonly jobId: string;
 	readonly error: string;
+	readonly token: string;
+	readonly terminated?: boolean;
 }): Promise<void> {
 	const url = new URL(
 		`api/export/${encodeURIComponent(jobId)}/result`,
 		location.href,
 	);
 	url.searchParams.set("error", error);
-	await fetch(url.toString(), { method: "POST" });
+	if (terminated) url.searchParams.set("terminated", "true");
+	const response = await fetch(url.toString(), {
+		method: "POST",
+		headers: { "x-native-export-token": token },
+	});
+	if (!response.ok) throw new Error("native-export-failure-rejected");
 }

@@ -134,7 +134,7 @@ export const USAGE_LINES: readonly string[] = [
 	"  rocut motion-text vary <sequence-id> <variation.json> [--apply] [--target <id|auto>] [--project <dir>]",
 	"  rocut verify <tick> [--target <id|auto>] [--project <dir>]",
 	"  rocut apply <ops.json> [--target <id|auto>] [--project <dir>]",
-	"  rocut export [--out <file>] [--format mp4|webm] [--quality low|medium|high|very_high] [--video-chroma 420|444] [--video-quantizer <number>] [--no-audio] [--start-time <ticks> --end-time <ticks>] [--target <id|auto>] [--project <dir>]",
+	"  rocut export --revision <n> --idempotency-key <key> [--out <file>] [--format mp4|webm] [--quality low|medium|high|very_high] [--video-chroma 420|444] [--video-quantizer <number>] [--no-audio] [--start-time <ticks> --end-time <ticks>] [--target <id|auto>] [--project <dir>]",
 	"  rocut snapshot --tick <mediaTicks> [--out <png>] [--surface <id>] [--revision <n>] [--target <id|auto>] [--project <dir>]",
 	"  rocut draft begin [--target <id|auto>] [--project <dir>]",
 	"  rocut draft stage <ops.json> --draft <id> [--target <id|auto>] [--project <dir>]",
@@ -523,37 +523,87 @@ async function runCli(argv: readonly string[]): Promise<void> {
 					"export range requires both --start-time and --end-time in media ticks",
 				);
 			}
+			const exportRevision = flag(args, "revision");
+			const exportKey = flag(args, "idempotency-key");
+			if (
+				exportRevision === undefined ||
+				!/^\d+$/.test(exportRevision) ||
+				!exportKey
+			)
+				throw new Error(
+					"export requires --revision <n> and --idempotency-key <key>",
+				);
+			const exportContext = (await request(
+				resolved.secret,
+				"GET",
+				"context",
+			)) as { project: { id: string } };
 			const started = (await request(resolved.secret, "POST", "export", {
-				format,
-				...(videoQuantizer === undefined ? {} : { videoQuantizer }),
-				...(videoChroma === undefined ? {} : { videoChroma }),
-				quality: flag(args, "quality") ?? "high",
-				...(args.flags.has("no-audio") ? { includeAudio: false } : {}),
-				...(startTime === undefined || endTime === undefined
-					? {}
-					: {
-							range: {
-								startTime: Number(startTime),
-								endTime: Number(endTime),
-							},
-						}),
-			})) as { id: string };
+				schemaVersion: 1,
+				projectId: exportContext.project.id,
+				expectedRevision: Number(exportRevision),
+				idempotencyKey: exportKey,
+				options: {
+					format,
+					...(videoQuantizer === undefined ? {} : { videoQuantizer }),
+					...(videoChroma === undefined ? {} : { videoChroma }),
+					quality: flag(args, "quality") ?? "high",
+					...(args.flags.has("no-audio") ? { includeAudio: false } : {}),
+					...(startTime === undefined || endTime === undefined
+						? {}
+						: {
+								range: {
+									startTime: Number(startTime),
+									endTime: Number(endTime),
+								},
+							}),
+				},
+			})) as { jobId: string };
+			const startedId = started.jobId;
 
-			// Poll until terminal. The host settles a job whose pane went silent
-			// (its staleness sweep runs on read), so this loop always ends.
+			// Poll the opaque receipt. Unknown outcomes stop here; never resubmit.
 			let job: ExportJob;
 			let lastShown = -1;
 			for (;;) {
-				job = (await request(
+				const receipt = (await request(
 					resolved.secret,
 					"GET",
-					`export/${started.id}`,
-				)) as ExportJob;
+					`export/${startedId}`,
+				)) as {
+					jobId: string;
+					phase: string;
+					progress: number;
+					request: { options: ExportJob["options"] };
+					output: null | { descriptor: string };
+					error: string | null;
+				};
+				job = {
+					id: receipt.jobId,
+					status:
+						receipt.phase === "reserved" || receipt.phase === "dispatched" || receipt.phase === "publishing"
+							? "pending"
+							: (receipt.phase as ExportJob["status"]),
+					options: receipt.request.options,
+					progress: receipt.progress,
+					startedAt: 0,
+					updatedAt: 0,
+					cancelRequested: false,
+					...(receipt.output
+						? {
+								outputPath: resolve(
+									resolved.entry.projectPath,
+									"exports",
+									receipt.output.descriptor.slice(5),
+								),
+							}
+						: {}),
+					...(receipt.error ? { error: receipt.error } : {}),
+				};
 				if (job.status !== "pending" && job.status !== "running") break;
 				const percent = Math.floor(job.progress * 100);
 				if (percent !== lastShown) {
 					// Progress on stderr keeps stdout a clean JSON result.
-					process.stderr.write(`export ${started.id}: ${percent}%\n`);
+					process.stderr.write(`export ${startedId}: ${percent}%\n`);
 					lastShown = percent;
 				}
 				await new Promise((wake) => setTimeout(wake, 1000));
@@ -561,7 +611,7 @@ async function runCli(argv: readonly string[]): Promise<void> {
 
 			if (job.status !== "completed" || job.outputPath === undefined) {
 				throw new Error(
-					`export ${started.id} ${job.status}: ${job.error ?? "no reason reported"}`,
+					`export ${startedId} ${job.status}: ${job.error ?? "no reason reported"}`,
 				);
 			}
 

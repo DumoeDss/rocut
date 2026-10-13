@@ -49,13 +49,10 @@ import {
 	type ActivityTracker,
 } from "./host-activity";
 import {
-	createExportRegistry,
-	NoSurfaceAttachedError,
-	NoCompatibleExportSurfaceError,
-	parseExportOptions,
-	type ExportRegistry,
-} from "./host-export";
-import { EXPORT_PROTOCOL, surfaceExportProtocol } from "./host-export-protocol";
+	createNativeExportRegistry,
+	NativeExportError,
+	type NativeExportRegistry,
+} from "./host-export-native";
 import {
 	classifyEntry,
 	normalizeProjectKey,
@@ -324,12 +321,21 @@ export async function startHost(args: StartHostArgs): Promise<RunningHost> {
 		void activitySync.note();
 	};
 
-	// Export borrows the attached pane's renderer (see `host-export.ts`): this
+	// Export borrows one attached pane's renderer (see `host-export-native.ts`): this
 	// process has no canvas, no WebGL and no WebCodecs, so the registry both
 	// tracks who is attached and is the only path that can start a render.
-	const exportRegistry = createExportRegistry({
+	const nativeExports = createNativeExportRegistry({
 		projectDir: resolvedProject,
-		noteActivity,
+		enqueue: (task) => plane.enqueue(task),
+		source: async () => {
+			const record = await plane.baseStore.load({ id: plane.projectId });
+			if (!record) throw new NativeExportError("no-record");
+			return {
+				projectId: String(plane.projectId),
+				revision: Number(await plane.automation().revision()),
+				data: record.data,
+			};
+		},
 	});
 
 	const token = randomBytes(24).toString("hex");
@@ -357,7 +363,7 @@ export async function startHost(args: StartHostArgs): Promise<RunningHost> {
 			staticDir: args.staticDir,
 			activity,
 			noteActivity,
-			exportRegistry,
+			nativeExports,
 			editorTasks,
 			programmaticFrames,
 			programmaticAudio,
@@ -451,8 +457,8 @@ interface HandleContext {
 	readonly activity: ActivityTracker;
 	/** Authenticated request start / revision-stream emission = activity. */
 	readonly noteActivity: () => void;
-	/** Attached-pane registry + export job book (see `host-export.ts`). */
-	readonly exportRegistry: ExportRegistry;
+	/** Durable Rust receipts and single-owner native renderer transport. */
+	readonly nativeExports: NativeExportRegistry;
 	readonly editorTasks: EditorTaskRegistry;
 	readonly programmaticFrames: ReturnType<
 		typeof createProgrammaticFrameService
@@ -518,29 +524,63 @@ async function handleApi(
 		response.end(JSON.stringify(body));
 	};
 	try {
-		if (request.method === "POST" && route.length === 2 && route[0] === "programmatic" && route[1] === "animation-inspect") {
-			await handleProgrammaticAnimationInspect(await readJsonBody(request), response, { store: plane.baseStore, projectId: plane.projectId }, context.animationInspectToolchainDirectory);
+		if (
+			request.method === "POST" &&
+			route.length === 2 &&
+			route[0] === "programmatic" &&
+			route[1] === "animation-inspect"
+		) {
+			await handleProgrammaticAnimationInspect(
+				await readJsonBody(request),
+				response,
+				{ store: plane.baseStore, projectId: plane.projectId },
+				context.animationInspectToolchainDirectory,
+			);
 			return;
 		}
-		if (request.method === "POST" && route.length === 2 && route[0] === "programmatic" && route[1] === "object-params") {
+		if (
+			request.method === "POST" &&
+			route.length === 2 &&
+			route[0] === "programmatic" &&
+			route[1] === "object-params"
+		) {
 			await handleProgrammaticObjectParamsRoute(request, response);
 			return;
 		}
 		if (
-			request.method === "POST" && route.length === 3 && route[0] === "programmatic" && route[1] === "build"
+			request.method === "POST" &&
+			route.length === 3 &&
+			route[0] === "programmatic" &&
+			route[1] === "build"
 		) {
 			await context.programmaticBuilds.handle(route[2], request, response);
 			return;
 		}
-		if (request.method === "POST" && route.length === 2 && route[0] === "programmatic" && route[1] === "audio") {
+		if (
+			request.method === "POST" &&
+			route.length === 2 &&
+			route[0] === "programmatic" &&
+			route[1] === "audio"
+		) {
 			await context.programmaticAudio.handle(request, response);
 			return;
 		}
-		if (request.method === "POST" && route.length === 2 && route[0] === "programmatic" && route[1] === "produced") {
+		if (
+			request.method === "POST" &&
+			route.length === 2 &&
+			route[0] === "programmatic" &&
+			route[1] === "produced"
+		) {
 			await context.programmaticAudio.handle(request, response, "produced");
 			return;
 		}
-		if (request.method === "POST" && route.length === 3 && route[0] === "programmatic" && route[1] === "audio" && route[2] === "identity") {
+		if (
+			request.method === "POST" &&
+			route.length === 3 &&
+			route[0] === "programmatic" &&
+			route[1] === "audio" &&
+			route[2] === "identity"
+		) {
 			await context.programmaticAudio.handle(request, response, "identity");
 			return;
 		}
@@ -554,14 +594,18 @@ async function handleApi(
 			return;
 		}
 		if (
-			request.method === "POST" && route.length === 3 &&
-			route[0] === "programmatic" && route[1] === "resources"
+			request.method === "POST" &&
+			route.length === 3 &&
+			route[0] === "programmatic" &&
+			route[1] === "resources"
 		) {
 			const input: unknown = await readJsonBody(request);
 			await handleProgrammaticResourceRoute({
-				action: route[2], input, response,
+				action: route[2],
+				input,
+				response,
 				resourceStore: { store: plane.baseStore, projectId: plane.projectId },
-				enqueue: task => plane.enqueue(task),
+				enqueue: (task) => plane.enqueue(task),
 			});
 			return;
 		}
@@ -586,7 +630,8 @@ async function handleApi(
 				programmaticParticleMotionControl:
 					getProgrammaticParticleMotionControlCapability(),
 				programmaticBuilds: context.programmaticBuilds.capability,
-				programmaticNativeVideo: context.programmaticFrames.nativeVideoCapability,
+				programmaticNativeVideo:
+					context.programmaticFrames.nativeVideoCapability,
 				programmaticNativeAudio: context.programmaticAudio.capability,
 				project: await automation.project(),
 				editing: {
@@ -869,17 +914,14 @@ async function handleApi(
 			// what makes this pane "a renderer this host can direct" — and the
 			// attached count is what lets `POST export` refuse up front when
 			// there is no pane to render with.
-			const detach = context.exportRegistry.attachSurface(
-				{
-					write: (chunk) => response.write(chunk),
-					...flush,
-				},
-				surfaceExportProtocol(url.searchParams),
+			const detachNative = context.nativeExports.attachSurface(
+				{ write: (chunk) => response.write(chunk), ...flush },
+				url.searchParams.get("nativeExportProtocol") === "1",
 			);
 			request.once("close", () => {
 				detachTasks();
 				unsubscribe();
-				detach();
+				detachNative();
 			});
 			return;
 		}
@@ -888,97 +930,60 @@ async function handleApi(
 		// it produces. `POST export` is the CLI's entry; `progress`/`result` are
 		// the pane reporting back; `cancel` is the CLI again.
 		if (route[0] === "export") {
-			if (request.method === "POST" && route.length === 1) {
-				const options = parseExportOptions(await readJsonBody(request));
-				if (typeof options === "string") {
-					respond(400, { error: options });
+			try {
+				if (request.method === "POST" && route.length === 1) {
+					respond(
+						202,
+						await context.nativeExports.start(await readJsonBody(request)),
+					);
 					return;
 				}
-				try {
-					respond(202, context.exportRegistry.start(options));
-				} catch (error) {
-					if (
-						error instanceof NoSurfaceAttachedError ||
-						error instanceof NoCompatibleExportSurfaceError
-					) {
-						// 409, not 500: nothing is broken — the precondition
-						// (a pane to render with) is simply not met.
-						respond(409, { error: error.message, code: error.code });
-						return;
-					}
-					throw error;
+				if (request.method === "GET" && route.length === 1) {
+					respond(200, await context.nativeExports.list());
+					return;
 				}
-				return;
-			}
-			if (request.method === "GET" && route.length === 1) {
-				respond(200, {
-					protocol: EXPORT_PROTOCOL,
-					surfaces: context.exportRegistry.surfaceCount(),
-					jobs: context.exportRegistry.list(),
-				});
-				return;
-			}
-			if (route.length >= 2) {
 				const jobId = route[1];
-				if (request.method === "GET" && route.length === 2) {
-					const job = context.exportRegistry.get(jobId);
-					if (job === undefined) {
-						respond(404, { error: `no export job ${jobId}` });
-						return;
-					}
-					respond(200, job);
-					return;
-				}
-				if (request.method === "POST" && route[2] === "progress") {
-					const body = await readJsonBody(request);
-					const progress = Number(body.progress);
-					if (!Number.isFinite(progress)) {
-						respond(400, { error: "progress must be a finite number" });
-						return;
-					}
-					const job = context.exportRegistry.reportProgress(jobId, progress);
-					if (job === undefined) {
-						respond(404, { error: `no export job ${jobId}` });
-						return;
-					}
-					// The pane polls this to drive its own `onCancel`.
-					respond(200, { cancelRequested: job.cancelRequested });
-					return;
-				}
-				if (request.method === "POST" && route[2] === "result") {
+				const token = request.headers["x-native-export-token"];
+				const ownerToken = typeof token === "string" ? token : undefined;
+				let job;
+				if (request.method === "GET" && route.length === 2)
+					job = await context.nativeExports.get(jobId);
+				else if (request.method === "POST" && route[2] === "cancel")
+					job = await context.nativeExports.cancel(jobId);
+				else if (request.method === "POST" && route[2] === "progress")
+					job = await context.nativeExports.report(jobId, ownerToken, {
+						kind: "running",
+						progress: (await readJsonBody(request)).progress,
+					});
+				else if (request.method === "POST" && route[2] === "result") {
 					const failure = url.searchParams.get("error");
-					if (failure !== null) {
-						const job = context.exportRegistry.fail(jobId, failure);
-						if (job === undefined) {
-							respond(404, { error: `no export job ${jobId}` });
-							return;
-						}
-						respond(200, job);
-						return;
-					}
-					const bytes = await readRawBody(request);
-					if (bytes.byteLength === 0) {
-						respond(400, { error: "export result body was empty" });
-						return;
-					}
-					const job = await context.exportRegistry.complete(jobId, bytes);
-					if (job === undefined) {
-						respond(404, { error: `no export job ${jobId}` });
-						return;
-					}
-					respond(200, job);
+					job =
+						failure === null
+							? await context.nativeExports.complete(
+									jobId,
+									ownerToken,
+									await readRawBody(request),
+								)
+							: await context.nativeExports.report(
+									jobId,
+									ownerToken,
+									url.searchParams.get("terminated") === "true"
+										? { kind: "cancelConfirmed" }
+										: { kind: "failed", error: failure },
+								);
+				} else {
+					respond(404, { error: "unknown-export-route" });
 					return;
 				}
-				if (request.method === "POST" && route[2] === "cancel") {
-					const job = context.exportRegistry.cancel(jobId);
-					if (job === undefined) {
-						respond(404, { error: `no export job ${jobId}` });
-						return;
-					}
-					respond(200, job);
+				respond(job ? 200 : 404, job ?? { error: "no-export-job" });
+			} catch (error) {
+				if (error instanceof NativeExportError) {
+					respond(409, { error: error.message, code: error.code });
 					return;
 				}
+				throw error;
 			}
+			return;
 		}
 		if (request.method === "GET" && route[0] === "attachments") {
 			// This wire route has always returned metadata only. Legacy stores

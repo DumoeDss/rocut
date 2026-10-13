@@ -13,7 +13,9 @@ export function supportsHighChromaProtocol(value: unknown): boolean {
 	if (!value || typeof value !== "object" || Array.isArray(value)) return false;
 	const protocol = value as Record<string, unknown>;
 	return (
-		(protocol.version === 2 || protocol.version === 3) &&
+		(protocol.version === 2 ||
+			protocol.version === 3 ||
+			(protocol.version === 4 && protocol.nativeExport === true)) &&
 		Array.isArray(protocol.videoChroma) &&
 		protocol.videoChroma.includes("444")
 	);
@@ -44,7 +46,10 @@ export function supportsQuantizerProtocol(value: unknown): boolean {
 	if (!value || typeof value !== "object" || Array.isArray(value)) return false;
 	return (
 		"version" in value &&
-		value.version === 3 &&
+		(value.version === 3 ||
+			(value.version === 4 &&
+				"nativeExport" in value &&
+				value.nativeExport === true)) &&
 		"videoQuantizer" in value &&
 		value.videoQuantizer === true
 	);

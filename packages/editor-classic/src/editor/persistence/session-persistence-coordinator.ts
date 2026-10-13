@@ -166,6 +166,14 @@ export class SessionPersistenceCoordinator {
 		return project ? cloneOpaque(project) : null;
 	}
 
+	/** Capture live native state using the exact existing persistence codec, without saving or fetching. */
+	captureNativeExportSourceData({ project }: { project: TProject }): unknown {
+		this.assertAlive();
+		const retained = this.projectSnapshots.get(project.metadata.id);
+		if (retained === undefined) throw new Error("Native export source has not been loaded");
+		return encodeProject({ project: cloneOpaque(project), retained });
+	}
+
 	async saveProject(args: {
 		project: TProject;
 		/** Read live state only after earlier project mutations have published. */

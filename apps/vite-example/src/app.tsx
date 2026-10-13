@@ -34,6 +34,8 @@ import { C4SessionHarness } from "./c4-session-harness";
 import { C6DisposalHarness } from "@opencut/editor-classic/evidence";
 import { BrowserProjectStore } from "@opencut/editor-classic/storage";
 import { mediaTime } from "@opencut/editor-classic";
+import * as nativeExportWasm from "opencut-wasm";
+import { verifyNativeExportSource } from "./host/host-export-protocol";
 
 const C4_BUILD_MARKER = import.meta.env.VITE_C4_BUILD_MARKER ?? "development";
 
@@ -201,21 +203,51 @@ function HostServedSync({ projectId }: { projectId: string }) {
 	 * living in this page is the only one either process can reach.
 	 */
 	const runExport = useCallback(
-		async (jobId: string, options: HostExportOptions) => {
+		async (
+			jobId: string,
+			options: HostExportOptions,
+			token: string,
+			receipt: unknown,
+		) => {
 			// One render at a time — the compositor is GPU-bound, and a second
 			// concurrent export would starve both.
 			if (exporting.current) {
 				await reportExportFailure({
 					jobId,
+					token,
 					error: "this editor pane is already rendering another export",
 				});
 				return;
 			}
 			exporting.current = true;
 			const waiter = new AbortController();
+			let progressReports: Promise<unknown> = Promise.resolve();
 			exportWaiters.current.set(jobId, waiter);
 			try {
 				await readiness.whenReady(waiter.signal);
+				await editor.command.whenIdle();
+				const assertSource = async () => {
+					const binding = (
+						nativeExportWasm as unknown as Record<string, unknown>
+					).resolveNativeExportJobJson;
+					const revision = Number(await editor.transactions.revision());
+					const project = editor.project.getActive();
+					const data = editor.persistence.captureNativeExportSourceData({
+						project: {
+							...project,
+							scenes: editor.scenes.getScenes(),
+							currentSceneId: editor.scenes.getActiveScene().id,
+						},
+					});
+					if (Number(await editor.transactions.revision()) !== revision)
+						throw new Error("native-export-source-changed-during-capture");
+					verifyNativeExportSource(binding, receipt, {
+						projectId: project.metadata.id,
+						revision,
+						data,
+					});
+				};
+				await assertSource();
 				if (cancelledJobs.current.has(jobId)) throw new Error("cancelled");
 				const result = await editor.renderer.exportProject({
 					options: {
@@ -240,31 +272,41 @@ function HostServedSync({ projectId }: { projectId: string }) {
 								}),
 					},
 					onProgress: ({ progress }) => {
-						void reportExportProgress({ jobId, progress })
+						progressReports = progressReports
+							.then(() => reportExportProgress({ jobId, progress, token }))
 							.then(({ cancelRequested }) => {
 								if (cancelRequested) cancelledJobs.current.add(jobId);
 							})
-							.catch(() => undefined);
+							.catch(() => cancelledJobs.current.add(jobId));
 					},
 					onCancel: () => cancelledJobs.current.has(jobId),
 				});
+				await progressReports;
 				if (result.cancelled === true) {
-					await reportExportFailure({ jobId, error: "cancelled" });
+					await reportExportFailure({
+						jobId,
+						token,
+						error: "cancelled",
+						terminated: true,
+					});
 					return;
 				}
 				if (result.success !== true || result.buffer === undefined) {
 					await reportExportFailure({
 						jobId,
+						token,
 						error: result.error ?? "export failed",
 					});
 					return;
 				}
-				await uploadExportResult({ jobId, bytes: result.buffer });
+				await assertSource();
+				await uploadExportResult({ jobId, token, bytes: result.buffer });
 			} catch (error) {
-				// The host must hear about every failure: a job nobody settles
-				// only ends when the staleness sweep kills it minutes later.
+				// Report termination explicitly; transport failure remains unknown.
 				await reportExportFailure({
 					jobId,
+					token,
+					terminated: cancelledJobs.current.has(jobId),
 					error: error instanceof Error ? error.message : String(error),
 				});
 			} finally {
@@ -285,7 +327,12 @@ function HostServedSync({ projectId }: { projectId: string }) {
 				return;
 			}
 			if (command.command === "export.start")
-				void runExport(command.jobId, command.options);
+				void runExport(
+					command.jobId,
+					command.options,
+					command.token,
+					command.receipt,
+				).catch(() => undefined);
 		},
 		[runExport, editorTasks],
 	);

@@ -2,7 +2,32 @@ import { expect, test } from "bun:test";
 import {
 	advertiseExportProtocol,
 	isHostExportOptions,
+	verifyNativeExportSource,
 } from "./host-export-protocol";
+
+test("native export guard refuses missing, trapped and malformed kernels before encode", () => {
+	const record = { jobId: "job", requestHash: "hash", sourceDigest: "source" };
+	for (const binding of [
+		undefined,
+		() => {
+			throw new Error("trap");
+		},
+		() => "not JSON",
+		() => JSON.stringify({ schemaVersion: 1, status: "verified" }),
+		() =>
+			JSON.stringify({
+				schemaVersion: 1,
+				status: "verified",
+				record: { ...record, sourceDigest: "changed" },
+			}),
+	])
+		expect(() => verifyNativeExportSource(binding, record, {})).toThrow();
+	verifyNativeExportSource(
+		() => JSON.stringify({ schemaVersion: 1, status: "verified", record }),
+		record,
+		{},
+	);
+});
 
 test("pane explicitly advertises wire support without claiming encoder capability", () => {
 	const query = new URLSearchParams("editorTaskSurface=pane-1");
@@ -10,6 +35,7 @@ test("pane explicitly advertises wire support without claiming encoder capabilit
 	expect(Object.fromEntries(query)).toEqual({
 		editorTaskSurface: "pane-1",
 		exportProtocol: "3",
+		nativeExportProtocol: "1",
 		exportVideoQuantizer: "true",
 		exportVideoChroma: "444",
 	});
