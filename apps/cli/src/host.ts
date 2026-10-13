@@ -328,11 +328,14 @@ export async function startHost(args: StartHostArgs): Promise<RunningHost> {
 		projectDir: resolvedProject,
 		enqueue: (task) => plane.enqueue(task),
 		source: async () => {
+			const revision = Number(await plane.automation().revision());
 			const record = await plane.baseStore.load({ id: plane.projectId });
 			if (!record) throw new NativeExportError("no-record");
+			if (Number(await plane.automation().revision()) !== revision)
+				throw new NativeExportError("native-export-source-changed-during-read");
 			return {
 				projectId: String(plane.projectId),
-				revision: Number(await plane.automation().revision()),
+				revision,
 				data: record.data,
 			};
 		},
@@ -931,6 +934,40 @@ async function handleApi(
 		// the pane reporting back; `cancel` is the CLI again.
 		if (route[0] === "export") {
 			try {
+				if (
+					request.method === "POST" &&
+					route.length === 2 &&
+					route[1] === "plan"
+				) {
+					respond(
+						200,
+						await context.nativeExports.plan(await readJsonBody(request)),
+					);
+					return;
+				}
+				if (
+					request.method === "GET" &&
+					route.length === 3 &&
+					["manifest", "artifact"].includes(route[2]!)
+				) {
+					if (url.search)
+						throw new NativeExportError(
+							"native-export-readback-query-not-allowed",
+						);
+					const result =
+						route[2] === "manifest"
+							? await context.nativeExports.manifest(route[1]!)
+							: await context.nativeExports.artifact(route[1]!);
+					response.writeHead(200, {
+						"content-type": result.mime,
+						"content-length": result.bytes.byteLength,
+						"x-content-sha256": result.sha256,
+						"cache-control": "no-store",
+						"x-content-type-options": "nosniff",
+					});
+					response.end(result.bytes);
+					return;
+				}
 				if (request.method === "POST" && route.length === 1) {
 					respond(
 						202,

@@ -46,7 +46,11 @@ function kernel(input: any): any {
 		};
 	}
 	if (input.action === "validateOutput") {
-		if (input.byteLength < 32 || input.bytes[0] !== 0x1a)
+		const validHeader =
+			input.format === "mp4"
+				? String.fromCharCode(...input.bytes.slice(4, 8)) === "ftyp"
+				: input.bytes[0] === 0x1a;
+		if (input.byteLength < 32 || !validHeader)
 			throw new NativeExportError("invalid-output");
 		return { schemaVersion: 1, status: "output-valid" };
 	}
@@ -92,6 +96,7 @@ function kernel(input: any): any {
 			)
 				throw new NativeExportError("output-conflict");
 			record.phase = "completed";
+			record.progress = 1;
 			record.output = record.publication.output;
 			record.publication = null;
 			break;
@@ -117,6 +122,298 @@ const request = {
 	idempotencyKey: "key",
 	options: { format: "webm", quality: "high" },
 };
+
+async function completedFixture(
+	projectDir: string,
+	onReadOpened?: (kind: "ledger" | "artifact") => Promise<void>,
+	format = "webm",
+) {
+	const registry = createNativeExportRegistry({
+		projectDir,
+		source: async () => ({ projectId: "project", revision: 7, data: {} }),
+		enqueue: (operation) => operation(),
+		onReadOpened,
+		kernel: (input) => {
+			const value = input as any;
+			if (
+				value.action === "verify" &&
+				(value.record.requestHash !== "request" ||
+					value.record.sourceDigest !== "source")
+			)
+				throw new NativeExportError("invalid-record");
+			return kernel(input);
+		},
+	});
+	let command: any;
+	registry.attachSurface(
+		{
+			write: (chunk) => {
+				command = JSON.parse(chunk.slice(6));
+			},
+		},
+		true,
+	);
+	const job = await registry.start({
+		...request,
+		options: { ...request.options, format },
+	});
+	const bytes = new Uint8Array(32);
+	bytes.set(
+		format === "mp4"
+			? [0, 0, 0, 32, 102, 116, 121, 112, 105, 115, 111, 109]
+			: [0x1a, 0x45, 0xdf, 0xa3],
+	);
+	const record = (await registry.complete(job.jobId, command.token, bytes))!;
+	return {
+		registry,
+		record,
+		bytes,
+		ledger: join(projectDir, "exports/native-export-jobs.json"),
+		output: join(projectDir, "exports", record.output!.descriptor.slice(5)),
+	};
+}
+
+test("readback retains MP4 MIME and enforces the 1GiB artifact ceiling without allocating it", () =>
+	fixture(async (projectDir) => {
+		const { registry, record, ledger } = await completedFixture(
+			projectDir,
+			undefined,
+			"mp4",
+		);
+		expect((await registry.artifact(record.jobId)).mime).toBe("video/mp4");
+		const oversized = {
+			...record,
+			output: { ...record.output!, bytes: 1024 * 1024 * 1024 + 1 },
+		};
+		await writeFile(
+			ledger,
+			JSON.stringify({ schemaVersion: 1, records: [oversized] }),
+		);
+		await expect(registry.artifact(record.jobId)).rejects.toThrow("read-limit");
+	}));
+
+test("readonly plan uses fresh canonical admission without ledger, queue or dispatch", () =>
+	fixture(async (projectDir) => {
+		let queued = 0;
+		let dispatched = 0;
+		let admissions = 0;
+		const registry = createNativeExportRegistry({
+			projectDir,
+			source: async () => ({
+				projectId: "project",
+				revision: 7,
+				data: { private: "not-returned" },
+			}),
+			enqueue: async (operation) => {
+				queued++;
+				return operation();
+			},
+			kernel: (input) => {
+				if ((input as any).action === "admit") admissions++;
+				return kernel(input);
+			},
+		});
+		await expect(registry.plan(request)).rejects.toThrow(
+			"no-compatible-export-surface",
+		);
+		registry.attachSurface(
+			{
+				write: () => {
+					dispatched++;
+				},
+			},
+			true,
+		);
+		const plan = await registry.plan(request);
+		expect(plan).toEqual({
+			schema: "rocut/native-export-plan/1",
+			request,
+			requestHash: "request",
+			sourceRevision: 7,
+			sourceDigest: "source",
+		});
+		await expect(
+			registry.plan({ ...request, projectId: "other" }),
+		).rejects.toThrow("project-mismatch");
+		await expect(
+			registry.plan({ ...request, expectedRevision: 8 }),
+		).rejects.toThrow("revision-conflict");
+		expect(admissions).toBe(2);
+		expect(queued).toBe(0);
+		expect(dispatched).toBe(0);
+		expect(await readdir(projectDir)).toEqual([]);
+	}));
+
+test("manifest is stable durable native JSON and artifact is the actual verified WebM", () =>
+	fixture(async (projectDir) => {
+		const { registry, record, bytes, ledger } =
+			await completedFixture(projectDir);
+		const manifest = await registry.manifest(record.jobId);
+		expect(JSON.parse(manifest.bytes.toString("utf8"))).toEqual(record);
+		expect(manifest.sha256).toBe(
+			createHash("sha256").update(manifest.bytes).digest("hex"),
+		);
+		// Transport ordering of ledger keys does not change stable manifest bytes.
+		const reversed = Object.fromEntries(Object.entries(record).reverse());
+		await writeFile(
+			ledger,
+			JSON.stringify({ schemaVersion: 1, records: [reversed] }),
+		);
+		expect((await registry.manifest(record.jobId)).bytes).toEqual(
+			manifest.bytes,
+		);
+		const artifact = await registry.artifact(record.jobId);
+		expect(artifact.bytes).toEqual(Buffer.from(bytes));
+		expect(artifact.mime).toBe("video/webm");
+		expect(artifact.sha256).toBe(record.output!.sha256);
+		// Returned in-memory objects are not trusted as durable receipts.
+		record.output!.sha256 = "forged";
+		expect((await registry.artifact(record.jobId)).sha256).not.toBe("forged");
+	}));
+
+test("durable readback rejects fake receipts, path overrides, incomplete jobs and output mismatch", () =>
+	fixture(async (projectDir) => {
+		const { registry, record, ledger, output } =
+			await completedFixture(projectDir);
+		for (const patch of [
+			{ requestHash: "forged" },
+			{ phase: "running" },
+			{ output: { ...record.output!, descriptor: "file:another.webm" } },
+			{ output: { ...record.output!, descriptor: "file:../outside.webm" } },
+		]) {
+			await writeFile(
+				ledger,
+				JSON.stringify({
+					schemaVersion: 1,
+					records: [{ ...record, ...patch }],
+				}),
+			);
+			await expect(registry.manifest(record.jobId)).rejects.toThrow();
+		}
+		await writeFile(
+			ledger,
+			JSON.stringify({ schemaVersion: 1, records: [record] }),
+		);
+		await expect(registry.artifact("../outside")).rejects.toThrow(
+			"job-id-invalid",
+		);
+		const changed = new Uint8Array(32);
+		changed.set([0x1a, 0x45, 0xdf, 0xa3]);
+		changed[20] = 1;
+		await writeFile(output, changed);
+		await expect(registry.artifact(record.jobId)).rejects.toThrow(
+			"output-mismatch",
+		);
+		await unlink(output);
+		await expect(registry.artifact(record.jobId)).rejects.toThrow(
+			"output-unavailable",
+		);
+	}));
+
+test("manifest drift during artifact reading is rejected without dispatch or synthetic completion", () =>
+	fixture(async (projectDir) => {
+		let enabled = false;
+		let ledger = "";
+		const { registry, record } = await completedFixture(
+			projectDir,
+			async (kind) => {
+				if (enabled && kind === "artifact") {
+					enabled = false;
+					const saved = JSON.parse(await readFile(ledger, "utf8"));
+					saved.records[0].cancelRequested = true;
+					await writeFile(ledger, JSON.stringify(saved));
+				}
+			},
+		);
+		ledger = join(projectDir, "exports/native-export-jobs.json");
+		enabled = true;
+		await expect(registry.artifact(record.jobId)).rejects.toThrow(
+			"manifest-changed",
+		);
+	}));
+
+test("artifact read detects in-place changes after handle acquisition", () =>
+	fixture(async (projectDir) => {
+		let output = "";
+		let enabled = false;
+		const { registry, record } = await completedFixture(
+			projectDir,
+			async (kind) => {
+				if (enabled && kind === "artifact") {
+					enabled = false;
+					await writeFile(output, new Uint8Array(33));
+				}
+			},
+		);
+		output = join(projectDir, "exports", record.output!.descriptor.slice(5));
+		enabled = true;
+		await expect(registry.artifact(record.jobId)).rejects.toThrow(
+			"read-changed",
+		);
+	}));
+
+test("fixed source guards reject same-revision drift before ledger or SSE and replay frozen identity after edits", () =>
+	fixture(async (projectDir) => {
+		const originalDigest = "a".repeat(64);
+		const originalHash = "b".repeat(64);
+		let digest = originalDigest;
+		let revision = 7;
+		let sent = 0;
+		const registry = createNativeExportRegistry({
+			projectDir,
+			source: async () => ({
+				projectId: "project",
+				revision,
+				data: { digest },
+			}),
+			enqueue: (operation) => operation(),
+			kernel: (input) => {
+				const result = kernel(input);
+				if ((input as any).action === "admit" && !(input as any).existing) {
+					result.record.sourceDigest = digest;
+					result.record.requestHash =
+						digest === originalDigest ? originalHash : "c".repeat(64);
+				}
+				return result;
+			},
+		});
+		registry.attachSurface(
+			{
+				write: () => {
+					sent++;
+				},
+			},
+			true,
+		);
+		const fixed = {
+			...request,
+			expectedSourceDigest: originalDigest,
+			expectedRequestHash: originalHash,
+		};
+		for (const bad of [null, "bad", "A".repeat(64), 42])
+			await expect(
+				registry.start({ ...fixed, expectedSourceDigest: bad }),
+			).rejects.toThrow("source-fence-invalid");
+		digest = "d".repeat(64);
+		await expect(registry.start(fixed)).rejects.toThrow(
+			"source-fence-conflict",
+		);
+		expect(await readdir(projectDir)).toEqual([]);
+		expect(sent).toBe(0);
+		digest = originalDigest;
+		const started = await registry.start(fixed);
+		expect(started.request).not.toHaveProperty("expectedSourceDigest");
+		expect(sent).toBe(1);
+		revision = 8;
+		digest = "e".repeat(64);
+		const replay = await registry.start(fixed);
+		expect(replay.jobId).toBe(started.jobId);
+		expect(sent).toBe(1);
+		await expect(
+			registry.start({ ...fixed, expectedRequestHash: "f".repeat(64) }),
+		).rejects.toThrow("source-fence-conflict");
+		expect(sent).toBe(1);
+	}));
 
 test("publication kernel trap or malformed response cannot write stage or mutate ledger", () =>
 	fixture(async (projectDir) => {

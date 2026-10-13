@@ -11,6 +11,14 @@ import {
 import { join } from "node:path";
 import * as wasm from "opencut-wasm";
 import type { ExportOptions } from "./host-export";
+import {
+	readNativeExportFile,
+	nativeExportManifestBytes,
+	nativeExportBytesSha256,
+	NativeExportReadbackError,
+	NATIVE_EXPORT_ARTIFACT_LIMIT,
+	NATIVE_EXPORT_LEDGER_LIMIT,
+} from "./native-export-readback";
 
 export interface NativeExportSource {
 	projectId: string;
@@ -100,6 +108,8 @@ export function createNativeExportRegistry(args: {
 			| "completed-persisted",
 		record: NativeExportRecord,
 	): Promise<void>;
+	/** Controlled read-race seam; never supplies bytes or receipt decisions. */
+	onReadOpened?(kind: "ledger" | "artifact"): Promise<void>;
 }) {
 	const kernel = args.kernel ?? nativeExportKernel;
 	const now = args.now ?? Date.now;
@@ -265,6 +275,86 @@ export function createNativeExportRegistry(args: {
 			throw new NativeExportError("native-export-output-unavailable");
 		resolve({ action: "verify", record, output }, ["verified"]);
 	}
+	async function readBounded(
+		path: string,
+		limit: number,
+		kind: "ledger" | "artifact",
+	) {
+		try {
+			return await readNativeExportFile(
+				path,
+				limit,
+				() => args.onReadOpened?.(kind) ?? Promise.resolve(),
+			);
+		} catch (error) {
+			if (error instanceof NativeExportReadbackError)
+				throw new NativeExportError(error.code);
+			if ((error as NodeJS.ErrnoException).code === "ENOENT")
+				throw new NativeExportError("native-export-output-unavailable");
+			throw error;
+		}
+	}
+	async function durableRecord(jobId: string) {
+		if (!/^[a-f0-9]{36}$/.test(jobId))
+			throw new NativeExportError("native-export-job-id-invalid");
+		const bytes = await readBounded(
+			ledger,
+			NATIVE_EXPORT_LEDGER_LIMIT,
+			"ledger",
+		);
+		let saved: { schemaVersion: number; records: NativeExportRecord[] };
+		try {
+			saved = JSON.parse(
+				new TextDecoder("utf-8", { fatal: true }).decode(bytes),
+			);
+		} catch {
+			throw new NativeExportError("native-export-ledger-malformed");
+		}
+		if (saved.schemaVersion !== 1 || !Array.isArray(saved.records))
+			throw new NativeExportError("native-export-ledger-malformed");
+		const matches = saved.records.filter((record) => record.jobId === jobId);
+		if (matches.length !== 1)
+			throw new NativeExportError("native-export-job-unavailable");
+		const record = matches[0]!;
+		resolve({ action: "verify", record }, ["verified"]);
+		if (record.phase !== "completed" || !record.output || record.publication)
+			throw new NativeExportError("native-export-not-completed");
+		if (
+			record.output.descriptor !==
+			`file:${jobId}.${record.request.options.format}`
+		)
+			throw new NativeExportError("native-export-output-path-mismatch");
+		return record;
+	}
+	async function completedReadback(jobId: string) {
+		const record = await durableRecord(jobId);
+		const source = await args.source();
+		if (record.request.projectId !== source.projectId)
+			throw new NativeExportError("native-export-project-mismatch");
+		const manifest = nativeExportManifestBytes(record);
+		const output = record.output!;
+		if (output.bytes > NATIVE_EXPORT_ARTIFACT_LIMIT)
+			throw new NativeExportError("native-export-read-limit");
+		const bytes = await readBounded(
+			filePath(output.descriptor),
+			NATIVE_EXPORT_ARTIFACT_LIMIT,
+			"artifact",
+		);
+		validateBytes(record, bytes);
+		resolve(
+			{ action: "verify", record, output: evidence(output.descriptor, bytes) },
+			["verified"],
+		);
+		if (!manifest.equals(nativeExportManifestBytes(await durableRecord(jobId))))
+			throw new NativeExportError("native-export-manifest-changed");
+		return {
+			manifest,
+			bytes,
+			sha256: output.sha256,
+			mime:
+				record.request.options.format === "webm" ? "video/webm" : "video/mp4",
+		};
+	}
 	function confirmed(
 		record: NativeExportRecord,
 		output: NonNullable<NativeExportRecord["output"]>,
@@ -381,6 +471,55 @@ export function createNativeExportRegistry(args: {
 		return owner;
 	}
 	return {
+		async plan(request: unknown) {
+			if (!surfaces.size)
+				throw new NativeExportError("no-compatible-export-surface");
+			const source = await args.source();
+			if (
+				(request as { projectId?: unknown } | null)?.projectId !==
+				source.projectId
+			)
+				throw new NativeExportError("native-export-project-mismatch");
+			const admitted = resolve(
+				{
+					action: "admit",
+					request,
+					source,
+					jobId: randomBytes(18).toString("hex"),
+					now: now(),
+				},
+				["reserved"],
+			);
+			resolve({ action: "verify", record: admitted.record }, ["verified"]);
+			const record = admitted.record!;
+			return {
+				schema: "rocut/native-export-plan/1",
+				request: record.request,
+				requestHash: record.requestHash,
+				sourceRevision: record.sourceRevision,
+				sourceDigest: record.sourceDigest,
+			};
+		},
+		async manifest(jobId: string) {
+			return args.enqueue(async () => {
+				const result = await completedReadback(jobId);
+				return {
+					bytes: result.manifest,
+					sha256: nativeExportBytesSha256(result.manifest),
+					mime: "application/json",
+				};
+			});
+		},
+		async artifact(jobId: string) {
+			return args.enqueue(async () => {
+				const result = await completedReadback(jobId);
+				return {
+					bytes: result.bytes,
+					sha256: result.sha256,
+					mime: result.mime,
+				};
+			});
+		},
 		attachSurface(surface: Surface, durable: boolean) {
 			if (durable) surfaces.add(surface);
 			return () => {
@@ -402,12 +541,24 @@ export function createNativeExportRegistry(args: {
 			};
 		},
 		async start(request: unknown) {
+			const envelope = request as Record<string, unknown> | null;
+			const guards = ["expectedSourceDigest", "expectedRequestHash"] as const;
+			for (const guard of guards)
+				if (
+					envelope &&
+					Object.hasOwn(envelope, guard) &&
+					(typeof envelope[guard] !== "string" ||
+						!/^[a-f0-9]{64}$/.test(envelope[guard] as string))
+				)
+					throw new NativeExportError("native-export-source-fence-invalid");
+			const { expectedSourceDigest, expectedRequestHash, ...admissionRequest } =
+				envelope ?? {};
 			return args.enqueue(async () => {
 				// Read-only recovery and replay lookup precede the current revision fence.
 				const source = await args.source();
 				const jobId = randomBytes(18).toString("hex");
 				await load();
-				const key = (request as { idempotencyKey?: unknown } | null)
+				const key = (admissionRequest as { idempotencyKey?: unknown } | null)
 					?.idempotencyKey;
 				const existing = records.find(
 					(item) => item.request.idempotencyKey === key,
@@ -415,7 +566,7 @@ export function createNativeExportRegistry(args: {
 				const admitted = resolve(
 					{
 						action: "admit",
-						request,
+						request: admissionRequest,
 						source,
 						jobId,
 						now: now(),
@@ -427,6 +578,14 @@ export function createNativeExportRegistry(args: {
 					"verified",
 					"unverified",
 				]);
+				// Guard the Rust-admitted fixed identity, including replay identity, never a TS rehash.
+				if (
+					(expectedSourceDigest !== undefined &&
+						expectedSourceDigest !== admitted.record!.sourceDigest) ||
+					(expectedRequestHash !== undefined &&
+						expectedRequestHash !== admitted.record!.requestHash)
+				)
+					throw new NativeExportError("native-export-source-fence-conflict");
 				await flushRecovery();
 				if (admitted.status === "replay")
 					return records.find((item) => item.jobId === admitted.record!.jobId)!;
@@ -476,6 +635,9 @@ export function createNativeExportRegistry(args: {
 					protocol: {
 						version: 4,
 						nativeExport: true,
+						nativeExportPlan: true,
+						nativeExportReadback: true,
+						nativeExportSourceFence: true,
 						videoQuantizer: true,
 						videoChroma: ["420", "444"],
 					},
