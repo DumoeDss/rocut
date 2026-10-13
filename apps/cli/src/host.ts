@@ -91,6 +91,12 @@ import {
 	readReplacementRequest,
 } from "./timeline-replacement";
 import {
+	commitTimelineUndo,
+	timelineUndoProbe,
+	timelineUndoReceipt,
+	readUndoRequest,
+} from "./timeline-undo";
+import {
 	createMotionText,
 	createMotionTextRequestJournal,
 	MotionTextApiError,
@@ -1144,6 +1150,34 @@ async function handleApi(
 				readBody: () => readJsonBody(request),
 				respond,
 			});
+			return;
+		}
+		if (route[0] === "timeline-undos") {
+			if (
+				request.method === "GET" && route.length === 2 &&
+				route[1] === "probe" && !url.search
+			) {
+				respond(200, timelineUndoProbe());
+				return;
+			}
+			if (
+				request.method === "POST" && route.length === 2 &&
+				["commit", "receipt"].includes(route[1]) && !url.search
+			) {
+				const body = await readUndoRequest(request);
+				const result = await plane.enqueue(() =>
+					route[1] === "commit"
+						? commitTimelineUndo({
+							request: body,
+							projectDirectory: context.projectDirectory,
+							automation: plane.automation(),
+						})
+						: timelineUndoReceipt(context.projectDirectory, body),
+				);
+				respond(200, result);
+				return;
+			}
+			respond(404, { error: "timeline-undo-route-unavailable" });
 			return;
 		}
 		if (route[0] === "timeline-replacements") {

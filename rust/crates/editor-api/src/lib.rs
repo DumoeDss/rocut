@@ -96,6 +96,8 @@ mod composition_production;
 pub use composition_production::resolve_composition_production_json;
 mod timeline_replacement;
 pub use timeline_replacement::resolve_timeline_replacement_bytes;
+mod timeline_undo;
+pub use timeline_undo::resolve_timeline_undo_bytes;
 
 use bridge::export;
 use model::*;
