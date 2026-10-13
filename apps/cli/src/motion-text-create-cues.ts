@@ -215,7 +215,7 @@ export async function createMotionTextCues(args: {
 			idempotencyKey,
 		});
 		if (!admission.accepted) rejected(admission.issues);
-		return { ...preview, applied: false };
+		return { ...preview, sequence: built.sequence, applied: false };
 	}
 	const applied = await args.automation.apply({
 		operations,

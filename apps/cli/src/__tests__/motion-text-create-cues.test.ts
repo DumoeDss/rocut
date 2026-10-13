@@ -17,6 +17,10 @@ describe("structured cues atomic transport", () => {
 			core,
 		});
 		expect(apply).not.toHaveBeenCalled();
+		expect(preview.sequence).toMatchObject({
+			source: { text: f.input.source },
+			id: preview.sequenceId,
+		});
 		expect(preview.candidateHash).toMatch(/^[a-f0-9]{64}$/);
 		const input = { ...f.input, candidateHash: preview.candidateHash };
 		const result = await createMotionTextCues({
