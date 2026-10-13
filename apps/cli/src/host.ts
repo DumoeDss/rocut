@@ -85,6 +85,12 @@ import {
 } from "./editor-plane";
 import { FileProjectStore } from "./file-store";
 import {
+	commitTimelineReplacement,
+	timelineReplacementProbe,
+	readReplacementMedia,
+	readReplacementRequest,
+} from "./timeline-replacement";
+import {
 	createMotionText,
 	createMotionTextRequestJournal,
 	MotionTextApiError,
@@ -384,6 +390,7 @@ export async function startHost(args: StartHostArgs): Promise<RunningHost> {
 		void handle(request, response, {
 			token,
 			plane,
+			projectDirectory: resolvedProject,
 			staticDir: args.staticDir,
 			activity,
 			noteActivity,
@@ -474,6 +481,7 @@ export function revisionEventWriter(args: {
 }
 
 interface HandleContext {
+	readonly projectDirectory: string;
 	readonly animationInspectToolchainDirectory?: string;
 	readonly programmaticAudio: ReturnType<typeof createProgrammaticAudioService>;
 	readonly programmaticBuilds: ReturnType<
@@ -1080,7 +1088,13 @@ async function handleApi(
 			return;
 		}
 		if (route[0] === "attachment" && route.length === 2) {
-			await handleAttachment(request, response, route[1], plane);
+			await handleAttachment(
+				request,
+				response,
+				route[1],
+				plane,
+				context.projectDirectory,
+			);
 			return;
 		}
 		if (route[0] === "library" && route.length >= 2) {
@@ -1096,6 +1110,35 @@ async function handleApi(
 				readBody: () => readJsonBody(request),
 				respond,
 			});
+			return;
+		}
+		if (route[0] === "timeline-replacements") {
+			if (
+				request.method === "GET" &&
+				route.length === 2 &&
+				route[1] === "probe"
+			) {
+				respond(200, timelineReplacementProbe());
+				return;
+			}
+			if (
+				request.method === "POST" &&
+				route.length === 2 &&
+				route[1] === "commit" &&
+				!url.search
+			) {
+				const body = await readReplacementRequest(request);
+				const receipt = await plane.enqueue(() =>
+					commitTimelineReplacement({
+						request: body,
+						projectDirectory: context.projectDirectory,
+						automation: plane.automation(),
+					}),
+				);
+				respond(200, receipt);
+				return;
+			}
+			respond(404, { error: "timeline-replacement-route-unavailable" });
 			return;
 		}
 		if (request.method === "POST" && route[0] === "apply") {
@@ -1286,12 +1329,17 @@ async function handleAttachment(
 	response: import("node:http").ServerResponse,
 	encodedKey: string,
 	plane: HostPlane,
+	projectDirectory: string,
 ): Promise<void> {
 	const key = decodeURIComponent(encodedKey);
 	if (request.method === "GET") {
-		const attachment = await plane.baseStore.loadAttachment({
-			projectId: plane.projectId,
-			key,
+		const attachment = await plane.enqueue(async () => {
+			const headers = await plane.baseStore.listAttachmentHeaders?.({
+				projectId: plane.projectId,
+			});
+			if (!headers?.some((item) => item.key === key)) return null;
+			const result = await readReplacementMedia(projectDirectory, key);
+			return { metadata: result.metadata, body: result.bytes };
 		});
 		if (attachment === null) {
 			response.writeHead(404, { "content-type": "application/json" });
@@ -1300,6 +1348,7 @@ async function handleAttachment(
 		}
 		response.writeHead(200, {
 			"content-type": "application/octet-stream",
+			"content-length": attachment.body.byteLength,
 			[ATTACHMENT_METADATA_HEADER]: encodeAttachmentMetadata(
 				attachment.metadata,
 			),

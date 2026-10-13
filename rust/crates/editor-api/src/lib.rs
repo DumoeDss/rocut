@@ -94,6 +94,8 @@ mod native_export;
 pub use native_export::resolve_native_export_job_json;
 mod composition_production;
 pub use composition_production::resolve_composition_production_json;
+mod timeline_replacement;
+pub use timeline_replacement::resolve_timeline_replacement_bytes;
 
 use bridge::export;
 use model::*;
