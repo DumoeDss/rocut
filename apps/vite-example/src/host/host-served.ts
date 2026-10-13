@@ -10,6 +10,10 @@ import {
 	RecordingDiagnostics,
 } from "@opencut/editor-ports/in-memory";
 import { HttpProjectStore } from "./http-project-store";
+import {
+	parseCompositionExportCommand,
+	type CompositionExportCommand,
+} from "./host-composition-export";
 import { createHttpDraftReview } from "./http-draft-review";
 import { createHttpProgrammaticFrames } from "./http-programmatic-frames";
 import {
@@ -112,6 +116,7 @@ export type { HostExportOptions } from "./host-export-protocol";
  * these frames are how the host borrows it.
  */
 export type HostCommand =
+	| CompositionExportCommand
 	| {
 			readonly command: "editor-task.start";
 			readonly jobId: string;
@@ -129,6 +134,11 @@ export type HostCommand =
 	| { readonly command: "export.cancel"; readonly jobId: string };
 
 function parseHostCommand(parsed: Record<string, unknown>): HostCommand | null {
+	if (
+		parsed.command === "composition.export.start" ||
+		parsed.command === "composition.export.cancel"
+	)
+		return parseCompositionExportCommand(parsed);
 	const { command, jobId } = parsed;
 	if (typeof jobId !== "string" || jobId === "") return null;
 	if (command === "editor-task.cancel") return { command, jobId };

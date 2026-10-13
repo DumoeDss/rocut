@@ -92,6 +92,8 @@ mod video_export;
 pub use video_export::resolve_video_export_json;
 mod native_export;
 pub use native_export::resolve_native_export_job_json;
+mod composition_production;
+pub use composition_production::resolve_composition_production_json;
 
 use bridge::export;
 use model::*;

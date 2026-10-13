@@ -4,6 +4,8 @@ import { useEmbeddedHostTheme } from "./host/use-embedded-host-theme";
 import { bindEmbeddedHostLifecycle } from "./host/embedded-host-lifecycle";
 import { createHostEditorTasks } from "./host/editor-tasks";
 import { createProjectReadiness } from "./host/project-readiness";
+import { createCompositionExportController } from "./host/composition-export-controller";
+import { createCompositionExportTransport } from "./host/host-composition-export";
 import { Toaster } from "@opencut/editor-classic/ui";
 import { TooltipProvider } from "@opencut/editor-classic/ui";
 import { MobileGate } from "@opencut/editor-classic/ui";
@@ -196,6 +198,56 @@ function HostServedSync({ projectId }: { projectId: string }) {
 	const cancelledJobs = useRef(new Set<string>());
 	const exportWaiters = useRef(new Map<string, AbortController>());
 	const exporting = useRef(false);
+	const compositionExports = useRef<ReturnType<
+		typeof createCompositionExportController
+	> | null>(null);
+	useEffect(() => {
+		const controller = createCompositionExportController({
+			isBusy: () => exporting.current,
+			setBusy: (value) => {
+				exporting.current = value;
+			},
+			verify: (command) => {
+				if (
+					typeof command.receipt !== "object" ||
+					command.receipt === null ||
+					!("jobId" in command.receipt) ||
+					command.receipt.jobId !== command.jobId
+				)
+					throw new Error("composition-export-job-mismatch");
+				verifyNativeExportSource(
+					Reflect.get(nativeExportWasm, "resolveNativeExportJobJson"),
+					command.receipt,
+					command.source,
+				);
+			},
+			render: ({ source, options, onProgress, onCancel }) => {
+				const { range, ...renderOptions } = options;
+				return editor.renderer.exportIsolatedProject({
+					source,
+					options: {
+						...renderOptions,
+						...(range === undefined
+							? {}
+							: {
+									range: {
+										startTime: mediaTime({ ticks: range.startTime }),
+										endTime: mediaTime({ ticks: range.endTime }),
+									},
+								}),
+					},
+					onProgress,
+					onCancel,
+				});
+			},
+			transport: createCompositionExportTransport(),
+		});
+		compositionExports.current = controller;
+		return () => {
+			controller.disconnect();
+			compositionExports.current = null;
+		};
+	}, [editor]);
 
 	/**
 	 * Render an export the host asked for. THIS is why the pane matters: the
@@ -320,6 +372,13 @@ function HostServedSync({ projectId }: { projectId: string }) {
 
 	const onCommand = useCallback(
 		(command: HostCommand) => {
+			if (
+				command.command === "composition.export.start" ||
+				command.command === "composition.export.cancel"
+			) {
+				compositionExports.current?.handle(command);
+				return;
+			}
 			if (editorTasks.handle(command)) return;
 			if (command.command === "export.cancel") {
 				cancelledJobs.current.add(command.jobId);
@@ -340,7 +399,10 @@ function HostServedSync({ projectId }: { projectId: string }) {
 	useEffect(() => {
 		const dispose = subscribeHostEvents({
 			editorTaskSurface: editorTasks.surfaceId,
-			onDisconnect: () => editorTasks.disconnect(),
+			onDisconnect: () => {
+				editorTasks.disconnect();
+				compositionExports.current?.disconnect();
+			},
 			onRevision: () => readiness.changed(),
 			onCommand,
 		});
@@ -348,6 +410,7 @@ function HostServedSync({ projectId }: { projectId: string }) {
 			dispose();
 			editorTasks.disconnect();
 			readiness.cancelPending();
+			compositionExports.current?.disconnect();
 		};
 	}, [readiness, onCommand, editorTasks]);
 	return null;

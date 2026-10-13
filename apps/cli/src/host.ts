@@ -54,6 +54,11 @@ import {
 	type NativeExportRegistry,
 } from "./host-export-native";
 import {
+	createCompositionProductionRegistry,
+	type CompositionProductionRegistry,
+} from "./composition-production";
+import { handleCompositionProductionRoute } from "./composition-production-route";
+import {
 	classifyEntry,
 	normalizeProjectKey,
 	projectIdDigest,
@@ -342,7 +347,16 @@ export async function startHost(args: StartHostArgs): Promise<RunningHost> {
 	});
 
 	const token = randomBytes(24).toString("hex");
-	const editorTasks = createEditorTaskRegistry({ projectDir: resolvedProject, currentRevision: async () => Number(await plane.automation().revision()) });
+	const compositionProductions = createCompositionProductionRegistry({
+		projectDir: resolvedProject,
+		context: { store: plane.baseStore, projectId: plane.projectId },
+		enqueue: (task) => plane.enqueue(task),
+		toolchainDirectory: args.engineToolchainDirectory,
+	});
+	const editorTasks = createEditorTaskRegistry({
+		projectDir: resolvedProject,
+		currentRevision: async () => Number(await plane.automation().revision()),
+	});
 	const programmaticFrames = createProgrammaticFrameService(
 		args.htmlBrowserExecutable,
 		args.htmlFrameConnectionFile,
@@ -350,13 +364,20 @@ export async function startHost(args: StartHostArgs): Promise<RunningHost> {
 		args.nativeVideoDecoder,
 	);
 	const programmaticBuilds = createProgrammaticBuildService(
-		{ store: plane.baseStore, projectId: plane.projectId }, task => plane.enqueue(task), args.engineToolchainDirectory,
-		{ executable: args.htmlBrowserExecutable, connectionFile: args.htmlFrameConnectionFile },
+		{ store: plane.baseStore, projectId: plane.projectId },
+		(task) => plane.enqueue(task),
+		args.engineToolchainDirectory,
+		{
+			executable: args.htmlBrowserExecutable,
+			connectionFile: args.htmlFrameConnectionFile,
+		},
 	);
 	const programmaticAudio = createProgrammaticAudioService({
 		resourceStore: { store: plane.baseStore, projectId: plane.projectId },
 		projectDir: resolvedProject,
-		executable: args.htmlBrowserExecutable, connectionFile: args.htmlFrameConnectionFile, decoder: args.nativeVideoDecoder,
+		executable: args.htmlBrowserExecutable,
+		connectionFile: args.htmlFrameConnectionFile,
+		decoder: args.nativeVideoDecoder,
 		toolchainDirectory: args.engineToolchainDirectory,
 	});
 	const server = createServer((request, response) => {
@@ -367,6 +388,7 @@ export async function startHost(args: StartHostArgs): Promise<RunningHost> {
 			activity,
 			noteActivity,
 			nativeExports,
+			compositionProductions,
 			editorTasks,
 			programmaticFrames,
 			programmaticAudio,
@@ -412,6 +434,7 @@ export async function startHost(args: StartHostArgs): Promise<RunningHost> {
 			await programmaticAudio.dispose();
 			await programmaticFrames.dispose();
 			await programmaticBuilds.dispose();
+			await compositionProductions.dispose();
 			editorTasks.dispose();
 			await args.registry.remove(targetId).catch(() => undefined);
 			// Bun 1.2.18 can lose the close callback if active fetch connections
@@ -453,7 +476,9 @@ export function revisionEventWriter(args: {
 interface HandleContext {
 	readonly animationInspectToolchainDirectory?: string;
 	readonly programmaticAudio: ReturnType<typeof createProgrammaticAudioService>;
-	readonly programmaticBuilds: ReturnType<typeof createProgrammaticBuildService>;
+	readonly programmaticBuilds: ReturnType<
+		typeof createProgrammaticBuildService
+	>;
 	readonly token: string;
 	readonly plane: HostPlane;
 	readonly staticDir: string | undefined;
@@ -462,6 +487,7 @@ interface HandleContext {
 	readonly noteActivity: () => void;
 	/** Durable Rust receipts and single-owner native renderer transport. */
 	readonly nativeExports: NativeExportRegistry;
+	readonly compositionProductions: CompositionProductionRegistry;
 	readonly editorTasks: EditorTaskRegistry;
 	readonly programmaticFrames: ReturnType<
 		typeof createProgrammaticFrameService
@@ -609,6 +635,17 @@ async function handleApi(
 				response,
 				resourceStore: { store: plane.baseStore, projectId: plane.projectId },
 				enqueue: (task) => plane.enqueue(task),
+			});
+			return;
+		}
+		if (route[0] === "composition-productions") {
+			await handleCompositionProductionRoute({
+				request,
+				response,
+				route,
+				url,
+				registry: context.compositionProductions,
+				respond,
 			});
 			return;
 		}
@@ -921,10 +958,15 @@ async function handleApi(
 				{ write: (chunk) => response.write(chunk), ...flush },
 				url.searchParams.get("nativeExportProtocol") === "1",
 			);
+			const detachComposition = context.compositionProductions.attachSurface(
+				{ write: (chunk) => response.write(chunk), ...flush },
+				url.searchParams.get("compositionExportProtocol") === "1",
+			);
 			request.once("close", () => {
 				detachTasks();
 				unsubscribe();
 				detachNative();
+				detachComposition();
 			});
 			return;
 		}

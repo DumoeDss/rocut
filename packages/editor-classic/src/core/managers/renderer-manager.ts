@@ -27,6 +27,12 @@ import { cancelPendingRenderFrames } from "../../services/renderer/cancel-tree";
 import { RenderResidencyDomain } from "../../services/renderer/render-residency-domain";
 import { ImagePreprocessOwner } from "../../services/renderer/programmatic/image-preprocess-owner";
 import { isRenderCancelledError } from "../../services/renderer/compositor/render-request";
+import { calculateTotalDuration } from "../../timeline";
+import type { TProject } from "../../project/types";
+import {
+	decodeIsolatedExportSource,
+	type IsolatedExportSource,
+} from "./isolated-export-source";
 
 interface RendererActivityLifecycle {
 	getActivityGeneration(): number;
@@ -431,6 +437,39 @@ export class RendererManager {
 		onProgress?: ({ progress }: { progress: number }) => void;
 		onCancel?: () => boolean;
 	}): Promise<ExportResult> {
+		return this.exportProjectView({ options, onProgress, onCancel });
+	}
+
+	async exportIsolatedProject({
+		source,
+		options,
+		onProgress,
+		onCancel,
+	}: {
+		source: IsolatedExportSource;
+		options: ExportOptions;
+		onProgress?: ({ progress }: { progress: number }) => void;
+		onCancel?: () => boolean;
+	}): Promise<ExportResult> {
+		return this.exportProjectView({
+			isolatedProject: decodeIsolatedExportSource(source),
+			options,
+			onProgress,
+			onCancel,
+		});
+	}
+
+	private async exportProjectView({
+		isolatedProject,
+		options,
+		onProgress,
+		onCancel,
+	}: {
+		isolatedProject?: TProject;
+		options: ExportOptions;
+		onProgress?: ({ progress }: { progress: number }) => void;
+		onCancel?: () => boolean;
+	}): Promise<ExportResult> {
 		if (this.isDegraded) {
 			return { success: false, error: RASTERIZER_UNAVAILABLE_ERROR };
 		}
@@ -453,15 +492,19 @@ export class RendererManager {
 
 		try {
 			publication.guard.assertCurrent({ token: publication.token });
-			const tracks = this.editor.scenes.getActiveScene().tracks;
-			const mediaAssets = this.editor.media.getAssets();
-			const activeProject = this.editor.project.getActive();
+			const tracks = isolatedProject
+				? isolatedProject.scenes[0].tracks
+				: this.editor.scenes.getActiveScene().tracks;
+			const mediaAssets = isolatedProject ? [] : this.editor.media.getAssets();
+			const activeProject = isolatedProject ?? this.editor.project.getActive();
 
 			if (!activeProject) {
 				return { success: false, error: "No active project" };
 			}
 
-			const duration = this.editor.timeline.getTotalDuration();
+			const duration = isolatedProject
+				? calculateTotalDuration({ tracks })
+				: this.editor.timeline.getTotalDuration();
 			if (duration === 0) {
 				return { success: false, error: "Project is empty" };
 			}

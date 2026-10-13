@@ -89,6 +89,7 @@ export function isHostExportOptions(
 
 /** Advertise wire support, not browser/encoder capabilities. */
 export function advertiseExportProtocol(query: URLSearchParams) {
+	query.set("compositionExportProtocol", "1");
 	query.set("nativeExportProtocol", "1");
 	query.set("exportProtocol", "3");
 	query.set("exportVideoQuantizer", "true");

@@ -34,6 +34,7 @@ test("pane explicitly advertises wire support without claiming encoder capabilit
 	advertiseExportProtocol(query);
 	expect(Object.fromEntries(query)).toEqual({
 		editorTaskSurface: "pane-1",
+		compositionExportProtocol: "1",
 		exportProtocol: "3",
 		nativeExportProtocol: "1",
 		exportVideoQuantizer: "true",
