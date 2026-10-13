@@ -22,7 +22,7 @@ interface StreamMetadata extends NativeVideoColorMetadata {
  * Timing is supplied by native Remotion; byte/dimension limits by resolved Rust.
  * No Html5Video fallback, remote URL, arbitrary input path or independent export.
  */
-export async function decodeNativeVideoFrame({ decoder, body, mimeType, seconds, transparent, signal, limits, selection = "containing", toneMapped = true }: {
+export async function decodeNativeVideoFrame({ decoder, body, mimeType, seconds, transparent, signal, limits, selection = "containing", toneMapped = true, thumbnail }: {
 	decoder: NativeVideoDecoder;
 	body: Uint8Array;
 	mimeType: "video/mp4" | "video/webm";
@@ -31,13 +31,16 @@ export async function decodeNativeVideoFrame({ decoder, body, mimeType, seconds,
 	toneMapped?: boolean;
 	signal: AbortSignal;
 	limits: { maxBytes: number; maxDimension: number };
-	selection?: "containing" | "nearest";
+	selection?: "containing" | "nearest" | "first";
+	/** Host-only bounded poster output; absent preserves native compositor pixels. */
+	thumbnail?: { maxDimension: number; maxBytes: number };
 }): Promise<{ png: Buffer; index: number; sourceTime: number; width: number; height: number }> {
 	signal.throwIfAborted();
 	if (!isAbsolute(decoder.ffmpeg) || !isAbsolute(decoder.ffprobe)) throw Error("Native video decoder paths must be host-configured absolute paths");
 	if (!Number.isFinite(seconds) || seconds < 0) throw Error("Native video time must be finite and nonnegative");
 	if (!Number.isSafeInteger(Math.round(seconds * 1e6))) throw Error("Native video time is not representable");
-	if (selection !== "containing" && selection !== "nearest") throw Error("Invalid native video selection");
+	if (!["containing", "nearest", "first"].includes(selection)) throw Error("Invalid native video selection");
+	if (thumbnail && (!Number.isSafeInteger(thumbnail.maxDimension) || thumbnail.maxDimension < 1 || !Number.isSafeInteger(thumbnail.maxBytes) || thumbnail.maxBytes < 1)) throw Error("Invalid native thumbnail limits");
 	if (typeof toneMapped !== "boolean") throw Error("Invalid native video tone-mapping option");
 	if (!Number.isSafeInteger(limits.maxBytes) || limits.maxBytes < 1 || !Number.isSafeInteger(limits.maxDimension) || limits.maxDimension < 1)
 		throw Error("Missing Rust video decode limits");
@@ -60,7 +63,10 @@ export async function decodeNativeVideoFrame({ decoder, body, mimeType, seconds,
 		if (!Number.isSafeInteger(width) || !Number.isSafeInteger(height) || width! < 1 || height! < 1
 			|| width! > limits.maxDimension || height! > limits.maxDimension) throw Error("Native video metadata exceeds the Rust decode limits");
 		const colorFilters = nativeVideoColorFilters(stream!, toneMapped);
-		const timing = await probe(["-select_streams", "v:0", "-show_frames", "-show_entries", "frame=best_effort_timestamp_time"], 8_000_000);
+		// Frame zero needs no whole-file frame index. The decoder still proves a
+		// real first frame through its bounded PNG output (including B-frame input).
+		const timing = selection === "first" ? { frames: [{ best_effort_timestamp_time: stream?.start_time ?? "0" }] }
+			: await probe(["-select_streams", "v:0", "-show_frames", "-show_entries", "frame=best_effort_timestamp_time"], 8_000_000);
 		if (!Array.isArray(timing.frames) || !timing.frames.length) throw Error("Native video has no decoded frames");
 		// Generic extraction contains the timestamp. Native Remotion Offthread
 		// instead selects the nearest decoded PTS, ties going to the later frame
@@ -82,7 +88,10 @@ export async function decodeNativeVideoFrame({ decoder, body, mimeType, seconds,
 		}
 		const alphaDecoder = transparent && stream?.codec_name === "vp9" && stream.tags?.alpha_mode === "1" ? ["-c:v", "libvpx-vp9"] : [];
 		const select = `select=eq(n\\,${index})`;
-		const pngFilters = nativeVideoPngFilters(transparent);
+		// Poster PNGs use square pixels and preserve the displayed aspect ratio,
+		// including anamorphic SAR and the decoder's automatic display rotation.
+		const shrink = thumbnail ? `min(1,min(${thumbnail.maxDimension}/(iw*sar),${thumbnail.maxDimension}/ih))` : "";
+		const pngFilters = [...(thumbnail ? [`scale=w='max(1,trunc(iw*sar*${shrink}))':h='max(1,trunc(ih*${shrink}))'`, "setsar=1"] : []), ...nativeVideoPngFilters(transparent)];
 		const filterArgs = colorFilters.length && transparent
 			? ["-filter_complex", `[0:v:0]${select},split[nativeColor][nativeAlpha];` +
 				"[nativeAlpha]format=rgba,alphaextract[nativeMask];" +
@@ -90,7 +99,7 @@ export async function decodeNativeVideoFrame({ decoder, body, mimeType, seconds,
 				`[nativeRgb][nativeMask]alphamerge,format=rgba,${pngFilters.join(",")}[nativeFrame]`, "-map", "[nativeFrame]"]
 			: ["-map", "0:v:0", "-vf", [select, ...colorFilters, transparent ? "format=rgba" : "format=rgb24", ...pngFilters].join(",")];
 		const png = await runVideoDecoderProcess({
-			executable: decoder.ffmpeg, signal, maxBytes: width! * height! * 5 + 65536,
+			executable: decoder.ffmpeg, signal, maxBytes: thumbnail?.maxBytes ?? width! * height! * 5 + 65536,
 			args: ["-hide_banner", "-loglevel", "error", "-nostdin", "-threads", "1", ...inputArgs, ...alphaDecoder,
 				"-i", input, ...filterArgs, "-an", "-sn", "-dn",
 				"-fps_mode", "passthrough", "-frames:v", "1", "-threads", "1", "-f", "image2pipe", "-c:v", "png", "pipe:1"],
@@ -102,6 +111,7 @@ export async function decodeNativeVideoFrame({ decoder, body, mimeType, seconds,
 		const outputWidth = png.readUInt32BE(16), outputHeight = png.readUInt32BE(20);
 		if (outputWidth < 1 || outputHeight < 1 || outputWidth > limits.maxDimension || outputHeight > limits.maxDimension)
 			throw Error("Native decoded frame exceeds the Rust decode limits");
+		if (thumbnail && (outputWidth > thumbnail.maxDimension || outputHeight > thumbnail.maxDimension)) throw Error("Native decoded thumbnail exceeds output limits");
 		return { png, index, sourceTime, width: outputWidth, height: outputHeight };
 	} finally {
 		if (dirname(root) !== parent || !basename(root).startsWith("rocut-native-decode-")) throw Error("Unsafe native decoder cleanup");

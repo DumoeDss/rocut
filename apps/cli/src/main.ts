@@ -15,6 +15,7 @@ import { fileURLToPath } from "node:url";
 import { startHost } from "./host";
 import { resolveHostStaticDirectory } from "./host-static-directory";
 import { runAgentCli } from "./agent-cli";
+import { runVideoPosterCli } from "./video-poster-cli";
 import type { ExportJob } from "./host-export";
 import { runSnapshotCli } from "./snapshot-cli";
 import {
@@ -108,6 +109,7 @@ export const USAGE_LINES: readonly string[] = [
 	"  rocut host start <project-dir> [--static <dist>] [--port <n>]",
 	"  rocut host ensure <project-dir> [--static <dist>] [--port <n>] [--timeout <ms>] [--log <file>]",
 	"  rocut target list",
+	"  rocut video-poster capabilities|create (offline; create reads fixed JSON from stdin)",
 	"  rocut target reap [--project <dir>] [--dry-run]",
 	"  rocut read [--target <id|auto>] [--project <dir>]",
 	"  rocut editing catalog [--target <id|auto>] [--project <dir>]",
@@ -148,6 +150,10 @@ async function runCli(argv: readonly string[]): Promise<void> {
 		return;
 	}
 	const [command, ...rest] = argv;
+	if (command === "video-poster") {
+		await runVideoPosterCli(rest);
+		return;
+	}
 	const args = parseArgs(rest);
 	const registry = new TargetRegistry(
 		flag(args, "targets-root") ?? defaultRegistryRoot(),
