@@ -42,6 +42,11 @@ import { PreviewToolbar } from "./toolbar";
 import { usePreviewResourceIssues } from "../resource-diagnostics";
 import { PreviewResourceNotice } from "./resource-notice";
 import {
+	cancelStalePreviewRender,
+	subscribePreviewRenderInvalidation,
+	type PreviewRenderRequest,
+} from "./preview-render-invalidation";
+import {
 	PreviewViewportProvider,
 	usePreviewViewportState,
 } from "./preview-viewport";
@@ -229,12 +234,9 @@ function PreviewCanvas({
 	const lastPreviewRevisionRef = useRef(-1);
 	const lastSceneRef = useRef<RootNode | null>(null);
 	const renderingRef = useRef(false);
-	const renderRequestRef = useRef<{
-		controller: AbortController;
-		frame: number;
-		tree: RootNode;
-		revision: number;
-	} | null>(null);
+	const renderRequestRef = useRef<
+		(PreviewRenderRequest<RootNode> & { frame: number }) | null
+	>(null);
 	const { width: nativeWidth, height: nativeHeight } = usePreviewSize();
 	const viewportSize = useContainerSize({ containerRef: viewportRef });
 	const editor = useEditorInstance();
@@ -329,42 +331,16 @@ function PreviewCanvas({
 		};
 	}, [activityGeneration, activityLifecycle, renderer]);
 
-	useLayoutEffect(() => {
-		const cancel = () => renderRequestRef.current?.controller.abort();
-		const cancelIfStale = () => {
-			const request = renderRequestRef.current;
-			if (!request || !renderer) return;
-			const ticksPerFrame = Math.round(
-				(TICKS_PER_SECOND * renderer.fps.denominator) / renderer.fps.numerator,
-			);
-			const time = Math.min(
-				editor.playback.getCurrentTime(),
-				editor.timeline.getLastFrameTime(),
-			);
-			if (
-				Math.floor(time / ticksPerFrame) !== request.frame ||
-				rendererManager.getRenderTree() !== request.tree ||
-				rendererManager.getPreviewRevision() !== request.revision
-			)
-				cancel();
-		};
-		const detach = [
-			editor.playback.onUpdate(cancelIfStale),
-			editor.playback.onSeek(cancelIfStale),
-			rendererManager.subscribe(cancelIfStale),
-			activityLifecycle.subscribeActivityLifecycle({ onSuspend: cancel }),
-		];
-		return () => {
-			cancel();
-			for (const unsubscribe of detach) unsubscribe();
-		};
-	}, [
-		activityLifecycle,
-		editor.playback,
-		editor.timeline,
-		renderer,
-		rendererManager,
-	]);
+	useLayoutEffect(
+		() =>
+			subscribePreviewRenderInvalidation({
+				getRequest: () => renderRequestRef.current,
+				playback: editor.playback,
+				rendererManager,
+				activityLifecycle,
+			}),
+		[activityLifecycle, editor.playback, renderer, rendererManager],
+	);
 
 	const render = useCallback(() => {
 		if (isDegraded || !renderer || !renderTree) return;
@@ -384,14 +360,11 @@ function PreviewCanvas({
 		);
 		const frame = Math.floor(renderTime / ticksPerFrame);
 		if (renderingRef.current) {
-			const pending = renderRequestRef.current;
-			if (
-				pending &&
-				(pending.frame !== frame ||
-					pending.tree !== renderTree ||
-					pending.revision !== previewRevision)
-			)
-				pending.controller.abort();
+			cancelStalePreviewRender({
+				request: renderRequestRef.current,
+				tree: renderTree,
+				revision: previewRevision,
+			});
 			return;
 		}
 
