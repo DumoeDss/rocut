@@ -101,6 +101,10 @@ import {
 	type MotionTextRequestJournal,
 } from "./motion-text";
 import type { TargetEntry, TargetSecret } from "./target-registry";
+import {
+	createMotionTextCues,
+	structuredCuesCapability,
+} from "./motion-text-create-cues";
 import type { TargetRegistry } from "./target-registry";
 
 const MIME: Readonly<Record<string, string>> = {
@@ -672,6 +676,11 @@ async function handleApi(
 				capabilities: await automation.capabilities(),
 				supportedOperations: await automation.supportedOperations(),
 				mediaImport: MEDIA_IMPORT_CAPABILITY,
+				motionText: {
+					structuredCues: structuredCuesCapability(
+						context.motionTextCores?.structuredCues,
+					),
+				},
 				programmaticResources: getProgrammaticResourceCapability(),
 				programmaticObjectParams: getProgrammaticObjectParamsCapability(),
 				programmaticAnimationInspect: PROGRAMMATIC_ANIMATION_INSPECT_CAPABILITY,
@@ -801,7 +810,32 @@ async function handleApi(
 			route[1] === "catalog" &&
 			route.length === 2
 		) {
-			respond(200, motionTextCatalog());
+			respond(200, {
+				...motionTextCatalog(),
+				structuredCues: structuredCuesCapability(
+					context.motionTextCores?.structuredCues,
+				),
+			});
+			return;
+		}
+		if (
+			request.method === "POST" &&
+			route[0] === "motion-text" &&
+			route.length === 2 &&
+			(route[1] === "create-cues" || route[1] === "create-cues-preview")
+		) {
+			const body: unknown = await readJsonBody(request);
+			respond(
+				200,
+				await plane.enqueue(() =>
+					createMotionTextCues({
+						automation: plane.automation(),
+						input: body,
+						preview: route[1] === "create-cues-preview",
+						core: context.motionTextCores?.structuredCues,
+					}),
+				),
+			);
 			return;
 		}
 		if (

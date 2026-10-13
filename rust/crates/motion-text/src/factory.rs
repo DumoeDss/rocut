@@ -2,7 +2,9 @@ use std::collections::{BTreeMap, BTreeSet};
 use std::sync::OnceLock;
 
 mod preset_application;
+mod structured_cues;
 mod text_edit;
+pub use structured_cues::*;
 
 use bridge::export;
 use serde::{Deserialize, Serialize};
@@ -543,6 +545,7 @@ struct MotionTextCueDocument {
 enum MotionTextCueTimingSourceDocument {
     Lrc,
     Estimated,
+    Manual,
 }
 
 #[derive(Clone, Debug, Serialize)]
@@ -641,6 +644,14 @@ pub fn create_motion_text_sequence(
             };
         }
     };
+    build_timed_sequence(options, timed_cues, diagnostics)
+}
+
+fn build_timed_sequence(
+    options: CreateMotionTextSequenceOptions,
+    timed_cues: Vec<TimedSourceCue>,
+    mut diagnostics: Vec<MotionTextSequenceBuildDiagnostic>,
+) -> CreateMotionTextSequenceResult {
     let preset = starter_preset(options.starter_preset);
     let seed = options
         .seed

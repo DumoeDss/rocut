@@ -132,6 +132,7 @@ export const USAGE_LINES: readonly string[] = [
 	"  rocut motion-text catalog [--target <id|auto>] [--project <dir>]",
 	"  rocut motion-text list [--target <id|auto>] [--project <dir>]",
 	"  rocut motion-text create <spec.json> [--target <id|auto>] [--project <dir>]",
+	"  rocut motion-text create-cues <spec.json> [--preview] [--target <id|auto>] [--project <dir>]",
 	"  rocut motion-text mutate <sequence-id> <mutation.json> [--preview] [--target <id|auto>] [--project <dir>]",
 	"  rocut motion-text vary <sequence-id> <variation.json> [--apply] [--target <id|auto>] [--project <dir>]",
 	"  rocut verify <tick> [--target <id|auto>] [--project <dir>]",
@@ -356,7 +357,15 @@ async function runCli(argv: readonly string[]): Promise<void> {
 				);
 				return;
 			}
-			if (subcommand === "create") {
+			if (subcommand === "create" || subcommand === "create-cues") {
+				if (
+					subcommand === "create-cues" &&
+					args.flags.has("preview") &&
+					args.flags.has("apply")
+				)
+					throw new Error(
+						"create-cues --preview cannot be combined with --apply",
+					);
 				const specFile = args.positional[1];
 				if (specFile === undefined) {
 					throw new Error("motion-text create requires a spec JSON file");
@@ -365,7 +374,9 @@ async function runCli(argv: readonly string[]): Promise<void> {
 				const outcome = await request(
 					resolved.secret,
 					"POST",
-					"motion-text/sequences",
+					subcommand === "create-cues"
+						? `motion-text/create-cues${args.flags.has("preview") ? "-preview" : ""}`
+						: "motion-text/sequences",
 					spec,
 				);
 				process.stdout.write(JSON.stringify(outcome, null, "\t") + "\n");
@@ -586,7 +597,9 @@ async function runCli(argv: readonly string[]): Promise<void> {
 				job = {
 					id: receipt.jobId,
 					status:
-						receipt.phase === "reserved" || receipt.phase === "dispatched" || receipt.phase === "publishing"
+						receipt.phase === "reserved" ||
+						receipt.phase === "dispatched" ||
+						receipt.phase === "publishing"
 							? "pending"
 							: (receipt.phase as ExportJob["status"]),
 					options: receipt.request.options,

@@ -342,7 +342,9 @@ function decodeDiagnostics(
 	});
 }
 
-function decodeSequenceBuildResult(raw: unknown): CreatedMotionTextSequence {
+export function decodeSequenceBuildResult(
+	raw: unknown,
+): CreatedMotionTextSequence {
 	if (!isRecord(raw)) {
 		throw new TypeError(
 			"Motion-text sequence factory returned a non-object result.",

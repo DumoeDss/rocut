@@ -8,6 +8,7 @@
  * same supported preset set as the Classic renderer.
  */
 export * from "../wasm/motion-text-factory";
+export * from "../wasm/motion-text-structured-cues";
 export {
 	MOTION_TEXT_RENDERER_SUPPORT,
 	MOTION_TEXT_RENDERER_SUPPORT_VERSION,

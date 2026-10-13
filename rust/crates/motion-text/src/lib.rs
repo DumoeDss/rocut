@@ -24,12 +24,14 @@ pub use audio::{
 };
 pub use factory::{
     CreateMotionTextSequenceOptions, CreateMotionTextSequenceResult,
+    CreateMotionTextStructuredCuesOptions, CreateMotionTextStructuredCuesResult,
     CreateMotionTextVariationCandidateOptions, JIZURA_CATALOG_HASH, JIZURA_ENGINE_VERSION,
-    MotionTextSequenceBuildDiagnostic, MotionTextSequenceBuildDiagnosticSeverity,
-    MotionTextSourceFormat, MotionTextStarterPreset, MotionTextVariationCandidateResult,
-    MutateMotionTextSequenceOptions, RestyleMotionTextSequenceOptions, create_motion_text_sequence,
-    create_motion_text_variation_candidate, mutate_motion_text_sequence,
-    restyle_motion_text_sequence,
+    MotionTextLineMapping, MotionTextSequenceBuildDiagnostic,
+    MotionTextSequenceBuildDiagnosticSeverity, MotionTextSourceFormat, MotionTextStarterPreset,
+    MotionTextStructuredCue, MotionTextVariationCandidateResult, MutateMotionTextSequenceOptions,
+    RestyleMotionTextSequenceOptions, create_motion_text_sequence,
+    create_motion_text_structured_cues, create_motion_text_variation_candidate,
+    mutate_motion_text_sequence, restyle_motion_text_sequence,
 };
 pub use font::{
     InspectMotionTextFontOptions, MotionTextFontInspection, MotionTextFontInspectionResult,

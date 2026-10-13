@@ -26,6 +26,7 @@ import {
 	type CreateMotionTextVariationCandidateCore,
 	type ImportJizuraMotionTextProjectCore,
 	type MutateMotionTextSequenceCore,
+	type CreateMotionTextStructuredCuesCore,
 } from "@opencut/editor-classic/motion-text/factory";
 import {
 	integer,
@@ -54,6 +55,7 @@ export {
 } from "./motion-text-request";
 
 export interface MotionTextFactoryCores {
+	readonly structuredCues?: CreateMotionTextStructuredCuesCore;
 	readonly create?: CreateMotionTextSequenceCore;
 	readonly importJizura?: ImportJizuraMotionTextProjectCore;
 	readonly mutate?: MutateMotionTextSequenceCore;
@@ -355,17 +357,22 @@ export async function mutateMotionText(args: {
 	if (built.sequence === null) rejected(built.diagnostics);
 	if (args.preview) {
 		return {
-			accepted: true, operation: "mutate", applied: false,
+			accepted: true,
+			operation: "mutate",
+			applied: false,
 			projectRevision: Number(await args.automation.revision()),
 			baseSequenceRevision: sequence.revision,
 			candidateSequenceRevision: built.sequence.revision,
 			sequenceId: built.sequence.id,
 			affected: affected(sequence, built.sequence),
-			diagnostics: built.diagnostics, candidate: built.sequence,
+			diagnostics: built.diagnostics,
+			candidate: built.sequence,
 		};
 	}
 	if (expectedRevision === undefined || idempotencyKey === undefined) {
-		return invalid("Applied mutations require expectedRevision and idempotencyKey.");
+		return invalid(
+			"Applied mutations require expectedRevision and idempotencyKey.",
+		);
 	}
 	const result = await args.automation.apply({
 		operations: [
