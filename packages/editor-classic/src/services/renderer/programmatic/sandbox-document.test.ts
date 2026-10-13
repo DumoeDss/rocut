@@ -1,12 +1,16 @@
 import { expect, test } from "bun:test";
 import { runInNewContext } from "node:vm";
-import { PROGRAMMATIC_SANDBOX_DOCUMENT } from "./sandbox-document";
+import {
+	AUTHORED_CANVAS_SANDBOX_DOCUMENT,
+	PROGRAMMATIC_SANDBOX_DOCUMENT,
+} from "./sandbox-document";
 import { SandboxBitmap } from "./sandbox-runtime-test-fixture";
 
 function broker({
 	startupFailure = false,
 	terminateFailure = false,
 	revokeFailure = false,
+	authored = false,
 } = {}) {
 	const listeners = new Map<string, (event: object) => void>();
 	const blobs: Blob[] = [];
@@ -16,10 +20,15 @@ function broker({
 	const parent = {};
 	let replyFailure = false;
 	let closed = 0;
+	let retiredBeforeBitmap = false;
 	const port = {
 		onmessage: (_event: { data: unknown }) => {},
 		onmessageerror: () => {},
 		postMessage(data: unknown) {
+			if (data && typeof data === "object" && "bitmap" in data)
+				retiredBeforeBitmap =
+					workers.every((worker) => worker.terminated === 1) &&
+					revoked.length === workers.length;
 			if (replyFailure) {
 				replyFailure = false;
 				throw Error("Reply transfer failed");
@@ -45,9 +54,10 @@ function broker({
 			if (terminateFailure) throw Error("Worker termination failed");
 		}
 	}
-	const script = PROGRAMMATIC_SANDBOX_DOCUMENT.match(
-		/<script>([\s\S]*)<\/script>/,
-	)?.[1];
+	const document = authored
+		? AUTHORED_CANVAS_SANDBOX_DOCUMENT
+		: PROGRAMMATIC_SANDBOX_DOCUMENT;
+	const script = document.match(/<script>([\s\S]*)<\/script>/)?.[1];
 	if (!script) throw Error("Missing sandbox script");
 	runInNewContext(
 		script,
@@ -90,8 +100,21 @@ function broker({
 		get closed() {
 			return closed;
 		},
+		get retiredBeforeBitmap() {
+			return retiredBeforeBitmap;
+		},
 		failReply() {
 			replyFailure = true;
+		},
+		reconnect() {
+			const nextPort = { ...port };
+			listeners.get("message")?.({
+				source: parent,
+				data: "rocut-frame-v1",
+				ports: [nextPort],
+			});
+			nextPort.onmessage({ data: { source: {}, frame: {} } });
+			return nextPort;
 		},
 	};
 }
@@ -108,7 +131,8 @@ test("Worker start is relayed without terminating the worker or releasing its Bl
 	expect(transport.revoked).toEqual([]);
 	const bitmap = new SandboxBitmap();
 	transport.workers[0].onmessage({ data: { bitmap } });
-	expect(transport.messages[2]).toEqual({ bitmap });
+	expect(transport.messages[2]).toEqual({ bitmap, brokerRetired: true });
+	expect(transport.retiredBeforeBitmap).toBe(true);
 	expect(transport.workers[0].terminated).toBe(1);
 	expect(transport.revoked).toEqual(["blob:fixture"]);
 });
@@ -284,67 +308,115 @@ test("generated Worker request messageerror publishes a failure without starting
 	]);
 });
 
-for (const transferFails of [false, true])
-	test(`generated Worker bitmap transfer ${transferFails ? "failure closes ownership" : "success preserves caller ownership"}`, async () => {
-		const transport = broker();
-		const messages: unknown[] = [];
-		const bitmap = new SandboxBitmap();
-		const onmessage = runInNewContext(
-			(await transport.blobs[0].text()) + "\n;onmessage",
-			{
-				self: {},
-				performance,
-				OffscreenCanvas: class {
-					constructor(
-						public width: number,
-						public height: number,
-					) {}
-					transferToImageBitmap() {
-						return bitmap;
-					}
-				},
-				postMessage(data: { bitmap?: unknown }) {
-					if (transferFails && data.bitmap)
-						throw Error("Worker bitmap transfer failed");
-					messages.push(data);
-				},
-			},
-		);
-		await onmessage({
-			data: {
-				source: { width: 64, height: 48, resources: [], code: "" },
-				frame: {
-					seed: 1,
-					imageDecodeLimits: {
-						maxDimension: 8192,
-						maxDecodedBytes: 128 * 1024 * 1024,
+for (const authored of [false, true])
+	for (const transferFails of [false, true])
+		test(`generated ${authored ? "authored" : "recipe"} Worker bitmap transfer ${transferFails ? "failure closes ownership" : "success preserves caller ownership"}`, async () => {
+			const transport = broker({ authored });
+			const messages: unknown[] = [];
+			const bitmap = new SandboxBitmap();
+			const onmessage = runInNewContext(
+				(await transport.blobs[0].text()) + "\n;onmessage",
+				{
+					self: {},
+					performance,
+					OffscreenCanvas: class {
+						width: number;
+						height: number;
+						constructor(...[width, height]: [number, number]) {
+							this.width = width;
+							this.height = height;
+						}
+						transferToImageBitmap() {
+							return bitmap;
+						}
+					},
+					postMessage(data: { bitmap?: unknown }) {
+						if (transferFails && data.bitmap)
+							throw Error("Worker bitmap transfer failed");
+						messages.push(data);
 					},
 				},
-				resources: [],
-			},
+			);
+			await onmessage({
+				data: {
+					source: { width: 64, height: 48, resources: [], code: "" },
+					frame: {
+						seed: 1,
+						imageDecodeLimits: {
+							maxDimension: 8192,
+							maxDecodedBytes: 128 * 1024 * 1024,
+						},
+					},
+					resources: [],
+				},
+			});
+			expect(messages[0]).toEqual({ sandboxStage: "worker-started" });
+			expect(
+				messages.flatMap((message) =>
+					message && typeof message === "object" && "sandboxStage" in message
+						? [message.sandboxStage]
+						: [],
+				),
+			).toEqual([
+				"worker-started",
+				"worker-font-resources",
+				"worker-image-decode",
+				"worker-sequence-decode",
+				"worker-render",
+				"worker-bitmap-transfer",
+			]);
+			expect(messages.at(-1)).toEqual(
+				transferFails
+					? { error: "Error: Worker bitmap transfer failed" }
+					: { bitmap },
+			);
+			expect(bitmap.closed).toBe(transferFails);
 		});
-		expect(messages[0]).toEqual({ sandboxStage: "worker-started" });
-		expect(
-			messages.flatMap((message) =>
-				message && typeof message === "object" && "sandboxStage" in message
-					? [message.sandboxStage]
-					: [],
-			),
-		).toEqual([
-			"worker-started",
-			"worker-font-resources",
-			"worker-image-decode",
-			"worker-sequence-decode",
-			"worker-render",
-			"worker-bitmap-transfer",
-		]);
-		expect(messages.at(-1)).toEqual(
-			transferFails
-				? { error: "Error: Worker bitmap transfer failed" }
-				: { bitmap },
-		);
-		expect(bitmap.closed).toBe(transferFails);
+
+test("authored broker omits recipe parsing while retaining isolated Worker and post/resource helpers", async () => {
+	const full = await broker().blobs[0].text();
+	const authored = broker({ authored: true });
+	const lean = await authored.blobs[0].text();
+	expect(lean.length).toBeLessThan(full.length / 2);
+	expect(lean).not.toContain("function* renderMvRecipeSteps");
+	expect(lean).toContain("createRoadPostBackend");
+	expect(lean).toContain("loadProgrammaticFont");
+	expect(AUTHORED_CANVAS_SANDBOX_DOCUMENT).toContain("connect-src 'none'");
+	const bitmap = new SandboxBitmap();
+	authored.workers[0].onmessage({ data: { bitmap } });
+	expect(authored.workers[0].terminated).toBe(1);
+	expect(bitmap.closed).toBe(false);
+	expect(authored.revoked).toHaveLength(1);
+});
+
+test("reconnecting the broker starts a distinct Worker and closes stale output without publishing it", () => {
+	const transport = broker({ authored: true });
+	transport.workers[0].onmessage({ data: { bitmap: new SandboxBitmap() } });
+	expect(transport.workers[0].terminated).toBe(1);
+	transport.port.onmessage({ data: "dispose" });
+	transport.reconnect();
+	expect(transport.workers).toHaveLength(2);
+	expect(transport.workers[1].terminated).toBe(0);
+	const stale = new SandboxBitmap();
+	const count = transport.messages.length;
+	transport.workers[0].onmessage({ data: { bitmap: stale } });
+	expect(stale.closed).toBe(true);
+	expect(transport.messages).toHaveLength(count);
+	const current = new SandboxBitmap();
+	transport.workers[1].onmessage({ data: { bitmap: current } });
+	expect(transport.messages.at(-1)).toEqual({
+		bitmap: current,
+		brokerRetired: true,
 	});
+	expect(transport.workers[1].terminated).toBe(1);
+});
+
+test("failed Worker retirement cannot claim a healthy reusable broker", () => {
+	const transport = broker({ terminateFailure: true });
+	const bitmap = new SandboxBitmap();
+	transport.workers[0].onmessage({ data: { bitmap } });
+	expect(transport.messages.at(-1)).toEqual({ bitmap, brokerRetired: false });
+});
 
 test("generated Worker stages identify deferred font preparation and user eval before bitmap failure", async () => {
 	const transport = broker();
@@ -367,10 +439,12 @@ test("generated Worker stages identify deferred font preparation and user eval b
 			messages.push(message);
 		},
 		OffscreenCanvas: class {
-			constructor(
-				public width: number,
-				public height: number,
-			) {}
+			width: number;
+			height: number;
+			constructor(...[width, height]: [number, number]) {
+				this.width = width;
+				this.height = height;
+			}
 			transferToImageBitmap() {
 				throw Error("deterministic bitmap failure");
 			}

@@ -7,11 +7,10 @@ import { MV_ROAD_REFERENCE_POST_SOURCE } from "./mv-road-reference-post";
 import { MV_ROAD_POST_BACKEND_SOURCE } from "./mv-road-post-backend";
 import { SANDBOX_WORKER_STAGES } from "./sandbox-failure";
 
-const WORKER_SOURCE =
+const WORKER_COMMON_SOURCE =
 	SEQUENCE_IMAGE_DECODER_SOURCE +
 	IMAGE_DIMENSIONS_WORKER_SOURCE +
 	FONT_METRICS_WORKER_SOURCE +
-	MV_RECIPE_RENDERER_SOURCE +
 	MV_REFERENCE_POST_SOURCE +
 	MV_ROAD_REFERENCE_POST_SOURCE +
 	MV_ROAD_POST_BACKEND_SOURCE +
@@ -130,21 +129,27 @@ onmessage = async ({data}) => {
  * only brokers a private MessagePort to a fresh Worker. Blob Workers inherit this
  * document's CSP; source code receives no DOM, network, filesystem or host bridge.
  */
-export const PROGRAMMATIC_SANDBOX_DOCUMENT = `<!doctype html>
+function sandboxDocument({ recipe }: { recipe: boolean }): string {
+	// Authored Canvas code never executes the built-in recipe interpreter. Keep
+	// its fresh Worker small without changing the opaque origin or resource API.
+	const workerSource =
+		(recipe ? MV_RECIPE_RENDERER_SOURCE : "") + WORKER_COMMON_SOURCE;
+	return `<!doctype html>
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' 'unsafe-eval' blob:; worker-src blob:; connect-src 'none'; img-src 'none'; style-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'none'">
 <script>
 "use strict";
 addEventListener("message", function connect(event) {
   if (event.source !== parent || event.data !== "rocut-frame-v1" || !event.ports[0]) return;
-  removeEventListener("message", connect);
+  // Reconnect with a new private port, never with a retained Worker or request.
   const port = event.ports[0];
   let worker;
   let url;
+  let retired = true;
   const cleanup = () => {
     const currentWorker = worker, currentUrl = url;
     worker = undefined; url = undefined;
-    try { if (currentWorker) currentWorker.terminate(); } catch {}
-    try { if (currentUrl) URL.revokeObjectURL(currentUrl); } catch {}
+    try { if (currentWorker) currentWorker.terminate(); } catch { retired = false; }
+    try { if (currentUrl) URL.revokeObjectURL(currentUrl); } catch { retired = false; }
   };
   let terminal = false;
   const stages = ${JSON.stringify(SANDBOX_WORKER_STAGES)};
@@ -158,7 +163,7 @@ addEventListener("message", function connect(event) {
     if (data === "dispose") { terminal = true; cleanup(); try { port.close(); } catch {} return; }
     if (terminal || worker) return;
     try {
-    url = URL.createObjectURL(new Blob([${JSON.stringify(WORKER_SOURCE)}], {type:"text/javascript"}));
+    url = URL.createObjectURL(new Blob([${JSON.stringify(workerSource)}], {type:"text/javascript"}));
     worker = new Worker(url);
     worker.onmessage = ({data}) => {
       if (terminal) { if (data?.bitmap instanceof ImageBitmap) { try { data.bitmap.close(); } catch {} } return; }
@@ -174,7 +179,10 @@ addEventListener("message", function connect(event) {
         }
         return;
       }
-      if (data.bitmap instanceof ImageBitmap) port.postMessage({bitmap:data.bitmap}, [data.bitmap]);
+      // Retirement precedes publication: a reusable broker cannot admit the
+      // next frame until the old Worker and Blob are already gone.
+      cleanup();
+      if (data.bitmap instanceof ImageBitmap) port.postMessage({bitmap:data.bitmap,brokerRetired:retired}, [data.bitmap]);
       else if (Array.isArray(data.fontMetrics) && Array.isArray(data.imageDimensions)) port.postMessage({fontMetrics:data.fontMetrics,imageDimensions:data.imageDimensions});
       else if (Array.isArray(data.fontMetrics)) port.postMessage({fontMetrics:data.fontMetrics});
       else if (Array.isArray(data.tunnelFontMeasurements)) port.postMessage({tunnelFontMeasurements:data.tunnelFontMeasurements});
@@ -194,3 +202,9 @@ addEventListener("message", function connect(event) {
   port.postMessage("ready");
 });
 </script>`;
+}
+
+export const PROGRAMMATIC_SANDBOX_DOCUMENT = sandboxDocument({ recipe: true });
+export const AUTHORED_CANVAS_SANDBOX_DOCUMENT = sandboxDocument({
+	recipe: false,
+});

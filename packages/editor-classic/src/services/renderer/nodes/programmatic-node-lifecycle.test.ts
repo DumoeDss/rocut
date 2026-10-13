@@ -17,6 +17,7 @@ if (process.env.ROCUT_PROGRAMMATIC_NODE_LIFECYCLE_ISOLATED !== "1") {
 	}, 15000);
 } else {
 	let visualActive = true;
+	let frameResolutions = 0;
 	let owners: TestOwner[] = [];
 	let closes = 0;
 	let holdResources = false;
@@ -76,10 +77,12 @@ if (process.env.ROCUT_PROGRAMMATIC_NODE_LIFECYCLE_ISOLATED !== "1") {
 		ImagePreprocessOwner: TestOwner,
 	}));
 	mock.module("../programmatic/frame", () => ({
-		resolveProgrammaticFrame: ({ timelineTime }: { timelineTime: number }) =>
-			timelineTime >= 0 && timelineTime < 1
+		resolveProgrammaticFrame: ({ timelineTime }: { timelineTime: number }) => {
+			frameResolutions++;
+			return timelineTime >= 0 && timelineTime < 1
 				? { index: Math.floor(timelineTime * 60) }
-				: null,
+				: null;
+		},
 	}));
 	mock.module("../resolve-visual-state", () => ({
 		resolveVisualState: () => (visualActive ? { opacity: 1 } : null),
@@ -144,8 +147,18 @@ if (process.env.ROCUT_PROGRAMMATIC_NODE_LIFECYCLE_ISOLATED !== "1") {
 		domain = new RenderResidencyDomain({ preprocessor: new TestOwner() });
 		closes = 0;
 		visualActive = true;
+		frameResolutions = 0;
 		holdResources = false;
 		finishResources = undefined;
+	});
+	test("visual-inactive sources never enter frame encoding, but active validation still runs", async () => {
+		const node = fixture(async () => bitmap());
+		visualActive = false;
+		expect(await node.resolve(context(0))).toBeNull();
+		expect(frameResolutions).toBe(0);
+		visualActive = true;
+		expect(await node.resolve(context(0))).not.toBeNull();
+		expect(frameResolutions).toBe(1);
 	});
 	test("active cached frame reuses owner and canvas; inactive drops both references", async () => {
 		let renders = 0;

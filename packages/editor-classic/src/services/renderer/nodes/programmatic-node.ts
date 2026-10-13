@@ -8,6 +8,7 @@ import {
 import type { ResolveContext } from "../resolve-context";
 import { resolveVisualState } from "../resolve-visual-state";
 import { resolveProgrammaticFrame } from "../programmatic/frame";
+import { ProgrammaticSandboxRealm } from "../programmatic/sandbox-realm";
 import { resolveCanvasResources } from "../programmatic/resources";
 import {
 	renderProgrammaticCanvas,
@@ -42,6 +43,7 @@ export class ProgrammaticNode extends VisualNode<
 	} | null = null;
 	private version = 0;
 	private rasterClient: RenderRasterClient | undefined;
+	private sandboxRealm: ProgrammaticSandboxRealm | undefined;
 
 	/** Cancels pending work but keeps the node usable after session resume. */
 	cancelPendingFrames(): void {
@@ -52,6 +54,8 @@ export class ProgrammaticNode extends VisualNode<
 		this.resolved = null;
 		this.rasterClient?.close();
 		this.rasterClient = undefined;
+		this.sandboxRealm?.close();
+		this.sandboxRealm = undefined;
 	}
 
 	async resolve(
@@ -69,11 +73,6 @@ export class ProgrammaticNode extends VisualNode<
 			trimStart: this.params.trimStart,
 			timelineTime: context.time,
 		};
-		const frame = resolveProgrammaticFrame(request);
-		if (!frame) {
-			this.cancelPendingFrames();
-			return null;
-		}
 		const visual = resolveVisualState({
 			params: this.params,
 			context,
@@ -81,6 +80,13 @@ export class ProgrammaticNode extends VisualNode<
 			sourceHeight: source.height,
 		});
 		if (!visual) {
+			this.cancelPendingFrames();
+			return null;
+		}
+		// Use the existing visual admission before encoding an inactive source's
+		// authored code/resources. Rust still owns active-frame validation/mapping.
+		const frame = resolveProgrammaticFrame(request);
+		if (!frame) {
 			this.cancelPendingFrames();
 			return null;
 		}
@@ -141,6 +147,14 @@ export class ProgrammaticNode extends VisualNode<
 					resourceWork = loading;
 					const resources = await loading;
 					signal.throwIfAborted();
+					if (
+						!source.recipe &&
+						!this.params.renderFrame &&
+						this.sandboxRealm?.isClosed !== false
+					)
+						this.sandboxRealm = new ProgrammaticSandboxRealm(
+							this.rasterClient.signal,
+						);
 					bitmap = await (this.params.renderFrame ?? renderProgrammaticCanvas)({
 						source,
 						frame,
@@ -148,6 +162,7 @@ export class ProgrammaticNode extends VisualNode<
 						provider: this.params.programmaticFrames,
 						signal,
 						imagePreprocessOwner: this.rasterClient.preprocessor,
+						sandboxRealm: this.sandboxRealm,
 					});
 				}
 				try {

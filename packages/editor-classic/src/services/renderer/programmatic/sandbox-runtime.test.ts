@@ -2,6 +2,7 @@ import { afterEach, expect, test } from "bun:test";
 import type { ProgrammaticSource } from "@opencut/editor-contracts";
 import type { ProgrammaticFrame } from "./frame";
 import { runProgrammaticSandbox } from "./sandbox-runtime";
+import { ProgrammaticSandboxRealm } from "./sandbox-realm";
 import {
 	installSandboxHarness,
 	SandboxBitmap,
@@ -45,6 +46,68 @@ async function start(signal?: AbortSignal) {
 	expect(harness.channels).toHaveLength(1);
 	return { result, transport: harness };
 }
+
+test("a confirmed retired broker is reused with a fresh private port, then closed by its node lifecycle", async () => {
+	harness = installSandboxHarness();
+	const lifetime = new AbortController();
+	const realm = new ProgrammaticSandboxRealm(lifetime.signal);
+	for (let index = 0; index < 2; index++) {
+		const result = runProgrammaticSandbox({
+			source,
+			frame,
+			resources: [],
+			operation: "render",
+			realm,
+		});
+		for (let i = 0; i < 12; i++) await Promise.resolve();
+		if (index === 0) harness.iframe.onload();
+		const port = harness.channels[index].port1;
+		port.onmessage?.({ data: "ready" });
+		const bitmap = new SandboxBitmap();
+		port.onmessage?.({ data: { bitmap, brokerRetired: true } });
+		expect(await result).toBe(bitmap);
+		expect(bitmap.closed).toBe(false);
+		expect(port.closed).toBe(true);
+		expect(harness.channels[index].port2.closed).toBe(true);
+		expect(harness.removeCalls).toBe(0);
+		expect(realm.isClosed).toBe(false);
+	}
+	expect(harness.connections).toBe(2);
+	expect(harness.channels).toHaveLength(2);
+	lifetime.abort();
+	expect(harness.removeCalls).toBe(1);
+	expect(realm.isClosed).toBe(true);
+});
+
+for (const outcome of ["unconfirmed", "failed-retirement", "abort", "timeout"])
+	test(`${outcome} closes the broker instead of retaining it for the next frame`, async () => {
+		harness = installSandboxHarness();
+		const controller = new AbortController();
+		const realm = new ProgrammaticSandboxRealm(new AbortController().signal);
+		const pending = runProgrammaticSandbox({
+			source,
+			frame,
+			resources: [],
+			operation: "render",
+			realm,
+			signal: controller.signal,
+		});
+		const result = pending.catch((error: unknown) => error);
+		for (let i = 0; i < 12; i++) await Promise.resolve();
+		harness.iframe.onload();
+		harness.send("ready");
+		if (outcome === "abort") controller.abort(Error("owned cancel"));
+		else if (outcome === "timeout") harness.deadlines[0].callback();
+		else
+			harness.send({
+				bitmap: new SandboxBitmap(),
+				...(outcome === "failed-retirement" ? { brokerRetired: false } : {}),
+			});
+		await result;
+		expect(realm.isClosed).toBe(true);
+		expect(harness.removeCalls).toBe(1);
+		expect(harness.disposed).toBe(true);
+	});
 
 for (const workerStage of [
 	"worker-font-resources",

@@ -14,6 +14,7 @@ import {
 	type ImagePreprocessAccess,
 } from "./image-preprocess-owner";
 import { awaitImagePreprocessDeadline } from "./image-preprocess-deadline";
+import type { ProgrammaticSandboxRealm } from "./sandbox-realm";
 
 export interface ProgrammaticRenderRequest {
 	source: ProgrammaticSource;
@@ -22,6 +23,7 @@ export interface ProgrammaticRenderRequest {
 	resources?: readonly ResolvedProgrammaticResource[];
 	provider?: ProgrammaticFrameProvider;
 	imagePreprocessOwner?: ImagePreprocessAccess;
+	sandboxRealm?: ProgrammaticSandboxRealm;
 }
 
 /** One isolated execution per frame: random seek cannot inherit earlier state.
@@ -34,6 +36,7 @@ export async function renderProgrammaticCanvas({
 	resources = [],
 	provider,
 	imagePreprocessOwner,
+	sandboxRealm,
 }: ProgrammaticRenderRequest): Promise<ImageBitmap> {
 	// Native MV scenes need HTMLCanvas clip coverage, including internal
 	// surfaces. Keep authored JavaScript on the separate, terminable Worker.
@@ -42,10 +45,13 @@ export async function renderProgrammaticCanvas({
 	if (
 		source.recipe?.nodes.some(
 			(node) =>
-                node.scene.kind === "jz" || node.scene.kind === "panelsNative" ||
-                node.scene.kind === "freeze" || node.scene.kind === "rewind" || node.scene.kind === "melt" ||
-                node.scene.kind === "burst" ||
-                node.scene.kind === "illustNative" ||
+				node.scene.kind === "jz" ||
+				node.scene.kind === "panelsNative" ||
+				node.scene.kind === "freeze" ||
+				node.scene.kind === "rewind" ||
+				node.scene.kind === "melt" ||
+				node.scene.kind === "burst" ||
+				node.scene.kind === "illustNative" ||
 				node.scene.kind === "night" ||
 				node.scene.kind === "memories" ||
 				node.scene.kind === "ember" ||
@@ -72,7 +78,7 @@ export async function renderProgrammaticCanvas({
 			flame ||
 			source.recipe.nodes.some((node) =>
 				[
-                    "jz",
+					"jz",
 					"night",
 					"memories",
 					"heartShatter",
@@ -145,5 +151,6 @@ export async function renderProgrammaticCanvas({
 		sequenceImages,
 		operation: "render",
 		signal,
+		realm: sandboxRealm,
 	});
 }

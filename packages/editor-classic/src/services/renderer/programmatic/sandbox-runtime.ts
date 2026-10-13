@@ -4,7 +4,12 @@ import type {
 	ResolvedSequenceImage,
 	MvTunnelMeasurement,
 } from "@opencut/editor-contracts";
-import { PROGRAMMATIC_SANDBOX_DOCUMENT } from "./sandbox-document";
+import {
+	AUTHORED_CANVAS_SANDBOX_DOCUMENT,
+	PROGRAMMATIC_SANDBOX_DOCUMENT,
+} from "./sandbox-document";
+import { recordSpan } from "../../../diagnostics/render-perf";
+import type { ProgrammaticSandboxRealm } from "./sandbox-realm";
 import type { ProgrammaticFrame } from "./frame";
 import type { FontMeasurement } from "./font-metrics-contract";
 import { verifyProgrammaticFontResources } from "./font-resources";
@@ -34,14 +39,19 @@ interface SandboxRequest {
 	imageAdmissions?: readonly ImageDecodeAdmission[];
 	operation: ProgrammaticSandboxOperation;
 	onStage?: (event: SandboxStageEvent) => void | Promise<void>;
+	/** Only the node-owned trusted broker is reused, never an authored Worker. */
+	realm?: ProgrammaticSandboxRealm;
 }
 
 /** Digests cannot be interrupted, but a cancelled preparation must not retain
  * the caller or advance into a new realm when its late result arrives. */
-function awaitPreparation<T>(
-	pending: Promise<T>,
-	signal?: AbortSignal,
-): Promise<T> {
+function awaitPreparation<T>({
+	pending,
+	signal,
+}: {
+	pending: Promise<T>;
+	signal?: AbortSignal;
+}): Promise<T> {
 	if (!signal) return pending;
 	return new Promise((resolve, reject) => {
 		const abort = () => {
@@ -64,8 +74,9 @@ function awaitPreparation<T>(
 	});
 }
 
-/** One private realm per operation, with the same cancellation and watchdog
- * rules for glyph measurement and rendering. The caller owns result bitmaps.
+/** One fresh Worker per operation, with the same cancellation and watchdog
+ * rules for glyph measurement and rendering. Only a node-owned broker may be
+ * reused after confirmed retirement. The caller owns result bitmaps.
  */
 export function runProgrammaticSandbox(
 	request: SandboxRequest & { operation: "render" },
@@ -82,6 +93,7 @@ export function runProgrammaticSandbox(
 export async function runProgrammaticSandbox({
 	signal,
 	onStage,
+	realm,
 	...request
 }: SandboxRequest): Promise<
 	| ImageBitmap
@@ -97,8 +109,8 @@ export async function runProgrammaticSandbox({
 		resources: snapshotImageResources(request.resources),
 		sequenceImages: snapshotImageResources(request.sequenceImages ?? []),
 	};
-	const imageAdmissions = await awaitPreparation(
-		prepareImageAdmissions({
+	const imageAdmissions = await awaitPreparation({
+		pending: prepareImageAdmissions({
 			...request,
 			operation:
 				request.operation === "measure-tunnel-fonts"
@@ -108,17 +120,17 @@ export async function runProgrammaticSandbox({
 			signal,
 		}),
 		signal,
-	);
+	});
 	request = {
 		...request,
 		imageAdmissions,
-		resources: await awaitPreparation(
-			verifyProgrammaticFontResources({
+		resources: await awaitPreparation({
+			pending: verifyProgrammaticFontResources({
 				resources: request.resources,
 				signal,
 			}),
 			signal,
-		),
+		}),
 	};
 	return new Promise((resolve, reject) => {
 		if (request.source.runtime !== "canvas-worker") {
@@ -133,7 +145,11 @@ export async function runProgrammaticSandbox({
 			reject(Error("Programmatic canvas requires a browser rasterizer"));
 			return;
 		}
-		const iframe = document.createElement("iframe");
+		const sandboxDocument = request.source.recipe
+			? PROGRAMMATIC_SANDBOX_DOCUMENT
+			: AUTHORED_CANVAS_SANDBOX_DOCUMENT;
+		const lease = realm?.acquire(sandboxDocument);
+		const iframe = lease?.iframe ?? document.createElement("iframe");
 		iframe.sandbox.add("allow-scripts");
 		iframe.hidden = true;
 		iframe.setAttribute("aria-hidden", "true");
@@ -146,6 +162,7 @@ export async function runProgrammaticSandbox({
 		let workerStage: SandboxWorkerStage | undefined;
 		let workerElapsedMs: number | undefined;
 		let elapsedMs = 0;
+		let healthy = false;
 		const diagnostics = () => {
 			const elapsed = performance.now() - startedAt;
 			if (Number.isFinite(elapsed) && elapsed >= 0)
@@ -172,7 +189,11 @@ export async function runProgrammaticSandbox({
 				() => channel.port1.postMessage("dispose"),
 				() => channel.port1.close(),
 				() => channel.port2.close(),
-				() => iframe.remove(),
+				() => {
+					iframe.onload = null;
+					if (lease) lease.release(healthy);
+					else iframe.remove();
+				},
 			]) {
 				try {
 					release();
@@ -199,6 +220,10 @@ export async function runProgrammaticSandbox({
 		channel.port1.onmessage = ({ data }: MessageEvent<unknown>) => {
 			if (data === "ready") {
 				if (!settled && connected && !dispatched) {
+					recordSpan({
+						name: "sandboxReady",
+						durationMs: performance.now() - startedAt,
+					});
 					dispatched = true;
 					phase = "worker-start";
 					try {
@@ -269,6 +294,13 @@ export async function runProgrammaticSandbox({
 					return;
 				}
 				settled = true;
+				healthy = Reflect.get(data, "brokerRetired") === true;
+				recordSpan({
+					name: "sandboxTotal",
+					durationMs: performance.now() - startedAt,
+				});
+				if (workerElapsedMs !== undefined)
+					recordSpan({ name: "sandboxWorker", durationMs: workerElapsedMs });
 				cleanup();
 				resolve(bitmap);
 				return;
@@ -332,8 +364,11 @@ export async function runProgrammaticSandbox({
 			}
 		};
 		try {
-			iframe.srcdoc = PROGRAMMATIC_SANDBOX_DOCUMENT;
-			document.body.appendChild(iframe);
+			if (lease?.loaded) iframe.onload?.(new Event("load"));
+			else {
+				iframe.srcdoc = sandboxDocument;
+				document.body.appendChild(iframe);
+			}
 		} catch (error) {
 			fail(error);
 		}

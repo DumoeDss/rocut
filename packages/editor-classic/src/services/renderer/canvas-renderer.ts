@@ -128,6 +128,7 @@ export class CanvasRenderer {
 				);
 			},
 		});
+		onRenderPerfFrameComplete();
 	}
 
 	async renderSnapshotPng({

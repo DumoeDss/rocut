@@ -34,11 +34,21 @@ let framesSinceFlush = 0;
 declare global {
 	interface Window {
 		__renderPerf?: boolean;
+		__rocutRenderPerf?: {
+			reports: Array<{
+				frames: number;
+				spans: Array<Record<string, number | string>>;
+				counters: Array<Record<string, number | string>>;
+			}>;
+		};
 	}
 }
 
 export function isRenderPerfEnabled(): boolean {
-	return typeof window !== "undefined" && window.__renderPerf === true;
+	return (
+		typeof window !== "undefined" &&
+		(window.__renderPerf === true || !!window.__rocutRenderPerf)
+	);
 }
 
 export function recordSpan({
@@ -55,6 +65,7 @@ export function recordSpan({
 		spans.set(name, stats);
 	}
 	stats.samples.push(durationMs);
+	if (stats.samples.length > 512) stats.samples.shift();
 }
 
 export async function measureSpanAsync<T>({
@@ -134,7 +145,7 @@ export function onRenderPerfFrameComplete(): void {
 	pendingCountersThisFrame.clear();
 
 	framesSinceFlush += 1;
-	if (framesSinceFlush >= FLUSH_EVERY) {
+	if (framesSinceFlush >= (window.__rocutRenderPerf ? 10 : FLUSH_EVERY)) {
 		flush();
 	}
 }
@@ -169,12 +180,22 @@ function flush(): void {
 	}
 	counterRows.sort((a, b) => Number(b.perFrame) - Number(a.perFrame));
 
-	console.groupCollapsed(
-		`[render-perf] summary over ${framesSinceFlush} frames`,
-	);
-	if (spanRows.length > 0) console.table(spanRows);
-	if (counterRows.length > 0) console.table(counterRows);
-	console.groupEnd();
+	const observer = window.__rocutRenderPerf;
+	if (observer) {
+		observer.reports.push({
+			frames: framesSinceFlush,
+			spans: spanRows,
+			counters: counterRows,
+		});
+		if (observer.reports.length > 32) observer.reports.shift();
+	} else {
+		console.groupCollapsed(
+			`[render-perf] summary over ${framesSinceFlush} frames`,
+		);
+		if (spanRows.length > 0) console.table(spanRows);
+		if (counterRows.length > 0) console.table(counterRows);
+		console.groupEnd();
+	}
 
 	spans.clear();
 	counters.clear();
