@@ -175,6 +175,8 @@ function assetProjection(asset: OpenCutAssetCatalogEntry): Asset {
 		...(asset.width !== undefined && { width: asset.width }),
 		...(asset.height !== undefined && { height: asset.height }),
 		...(asset.hasAudio !== undefined && { hasAudio: asset.hasAudio }),
+		...(asset.sourceSha256 !== undefined && { sourceSha256: asset.sourceSha256 }),
+		...(asset.mediaFacts !== undefined && { mediaFacts: asset.mediaFacts }),
 	};
 }
 

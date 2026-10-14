@@ -14,6 +14,8 @@ mod effect_stack;
 pub use effect_stack::validate_master_effects_json;
 mod image_sequence;
 mod model;
+mod media_facts;
+pub use media_facts::{inspect_media_facts_bytes, validate_media_facts_json};
 pub use image_sequence::{
     validate_image_sequence_image_bytes, validate_image_sequence_manifest_json,
 };

@@ -296,6 +296,8 @@ export type AssetKind = "image" | "video" | "audio";
  * image has no duration).
  */
 export interface Asset {
+	readonly sourceSha256?: string;
+	readonly mediaFacts?: import("./media-facts").MediaFacts;
 	readonly id: AssetId;
 	readonly kind: AssetKind;
 	readonly name: string;

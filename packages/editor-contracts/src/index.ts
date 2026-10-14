@@ -8,6 +8,7 @@
  * The contract wires nothing. Commands keep committing exactly as they do today.
  * T1/T3 connect the real engine behind these types at the seam.
  */
+export type { MediaFacts } from "./media-facts";
 export { isProgrammaticResource } from "./programmatic-resources";
 export type {
 	ProgrammaticBuild,

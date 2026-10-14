@@ -7,6 +7,7 @@ import type { SessionResources } from "../editor/session/resources";
 import { readVideoFile } from "./mediabunny";
 import type { VideoFileData } from "./mediabunny";
 import { renderThumbnailDataUrl } from "./thumbnail";
+import { probeSourceMediaFacts, sourceBytesSha256 } from "./media-facts";
 
 export type ProcessedMediaAsset = Omit<MediaAsset, "id">;
 
@@ -243,7 +244,19 @@ export async function processMediaAssets({
 				);
 			}
 
+			const sourceBytes = new Uint8Array(await file.arrayBuffer());
+			const sourceSha256 = await sourceBytesSha256(sourceBytes);
+			const mediaFacts = await probeSourceMediaFacts({
+				bytes: sourceBytes,
+				mimeType: file.type,
+			});
+			if (mediaFacts && mediaFacts.sha256 !== sourceSha256)
+				throw new Error("Media facts do not match the imported source bytes");
+			if (!publication.isCurrent())
+				throw new Error("Media processing was invalidated");
 			processedAssets.push({
+				sourceSha256,
+				...(mediaFacts !== undefined && { mediaFacts }),
 				name: file.name,
 				type: fileType,
 				file,

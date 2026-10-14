@@ -11,7 +11,11 @@ import {
 	type Asset,
 } from "@opencut/editor-contracts";
 import type { ProjectStore, ProjectId } from "@opencut/editor-ports";
-import { probeMediaImport } from "@opencut/editor-classic/media-import";
+import {
+	probeMediaImport,
+	probeSourceMediaFacts,
+	supportsMediaFacts,
+} from "@opencut/editor-classic/media-import";
 
 export const MEDIA_IMPORT_CAPABILITY = {
 	route: "media/import",
@@ -21,9 +25,11 @@ export const MEDIA_IMPORT_CAPABILITY = {
 	images: "explicit-mime-and-dimensions",
 	createsTimelineClip: false,
 	recovery: { route: "media/import-status", readOnly: true },
+	mediaFactsVersions: supportsMediaFacts() ? [1] : [],
 } as const;
 
 interface ImportSpec {
+	mediaFactsVersion?: 1;
 	filePath: string;
 	expectedRevision: number;
 	idempotencyKey: string;
@@ -37,9 +43,13 @@ function parseSpec(value: unknown): ImportSpec {
 	if (
 		Object.keys(spec).some(
 			(key) =>
-				!["filePath", "expectedRevision", "idempotencyKey", "image"].includes(
-					key,
-				),
+				![
+					"filePath",
+					"expectedRevision",
+					"idempotencyKey",
+					"image",
+					"mediaFactsVersion",
+				].includes(key),
 		) ||
 		typeof spec.filePath !== "string" ||
 		!path.isAbsolute(spec.filePath) ||
@@ -49,6 +59,10 @@ function parseSpec(value: unknown): ImportSpec {
 		!spec.idempotencyKey.trim()
 	)
 		throw new Error("invalid-media-import");
+	if (spec.mediaFactsVersion !== undefined && spec.mediaFactsVersion !== 1)
+		throw new Error("invalid-media-facts-version");
+	if (spec.mediaFactsVersion === 1 && !supportsMediaFacts())
+		throw new Error("media-facts-runtime-unavailable");
 	if (spec.image !== undefined) {
 		const image = spec.image;
 		if (
@@ -116,13 +130,39 @@ async function prepareLocalMediaImport(input: unknown) {
 				height: spec.image.height,
 			}
 		: await probeMediaImport(bytes);
+	// Versionless imports must reconstruct the exact historical identity, asset,
+	// attachment metadata and transaction. Never add facts to an old receipt.
+	const mediaFacts =
+		spec.mediaFactsVersion === 1
+			? await probeSourceMediaFacts({ bytes, mimeType: probed.mimeType })
+			: undefined;
+	if (
+		spec.mediaFactsVersion === 1 &&
+		(!mediaFacts || mediaFacts.sha256 !== sourceSha256)
+	)
+		throw new Error("media-facts-source-unverified");
+	const facts =
+		spec.mediaFactsVersion === 1 ? { sourceSha256, mediaFacts } : {};
 	const name = path.basename(spec.filePath);
 	// The identity binds BOTH bytes and declared metadata to durable batch replay.
 	const id = assetId(
-		`media-${digest(JSON.stringify([spec.idempotencyKey, sourceSha256, name, probed]))}`,
+		`media-${digest(
+			JSON.stringify(
+				spec.mediaFactsVersion === 1
+					? [
+							spec.idempotencyKey,
+							sourceSha256,
+							name,
+							probed,
+							{ mediaFactsVersion: 1, ...facts },
+						]
+					: [spec.idempotencyKey, sourceSha256, name, probed],
+			),
+		)}`,
 	);
-	const metadata = { id, name, ...probed, lastModified: 0 };
+	const metadata = { id, name, ...probed, lastModified: 0, ...facts };
 	const asset: Asset = {
+		...facts,
 		id,
 		name,
 		kind: probed.type,

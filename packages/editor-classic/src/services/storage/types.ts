@@ -15,6 +15,8 @@ export interface StorageAdapter<T> {
 }
 
 export interface MediaAssetData {
+	sourceSha256?: string;
+	mediaFacts?: import("@opencut/editor-contracts").MediaFacts;
 	id: string;
 	name: string;
 	type: MediaType;

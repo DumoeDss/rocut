@@ -10,6 +10,8 @@ export type OpenCutCommitToken = string & {
 };
 
 export interface OpenCutAssetCatalogEntry {
+	readonly sourceSha256?: string;
+	readonly mediaFacts?: MediaAsset["mediaFacts"];
 	readonly id: string;
 	readonly name: string;
 	readonly type: MediaAsset["type"];
@@ -49,5 +51,7 @@ export function assetCatalogFromMedia(
 		...(asset.width !== undefined && { width: asset.width }),
 		...(asset.height !== undefined && { height: asset.height }),
 		...(asset.hasAudio !== undefined && { hasAudio: asset.hasAudio }),
+		...(asset.sourceSha256 !== undefined && { sourceSha256: asset.sourceSha256 }),
+		...(asset.mediaFacts !== undefined && { mediaFacts: asset.mediaFacts }),
 	}));
 }

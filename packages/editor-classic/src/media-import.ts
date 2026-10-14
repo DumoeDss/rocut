@@ -1,5 +1,6 @@
 /** @opencutSurface provider — Node-safe media I/O; no codec, canvas or session required. */
 import { ALL_FORMATS, BufferSource, Input } from "mediabunny";
+export { probeSourceMediaFacts, supportsMediaFacts } from "./media/media-facts";
 
 export async function probeMediaImport(bytes: Uint8Array) {
 	const input = new Input({

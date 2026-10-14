@@ -6,8 +6,12 @@ import { ProjectStoreError } from "@opencut/editor-ports";
 import type { SessionPersistenceCoordinator } from "../editor/persistence";
 import type { MediaAsset, MediaType } from "./types";
 import type { SessionResources } from "../editor/session/resources";
+import type { MediaFacts } from "@opencut/editor-contracts";
+import { decodeMediaFacts, sourceBytesSha256 } from "./media-facts";
 
 interface PersistedMediaMetadata {
+	readonly sourceSha256?: string;
+	readonly mediaFacts?: MediaFacts;
 	readonly id: string;
 	readonly name: string;
 	readonly type: MediaType;
@@ -48,8 +52,15 @@ export function decodePersistedMediaMetadata(
 		throw new Error("Persisted media attachment metadata is corrupt");
 	}
 
+	const mediaFacts =
+		"mediaFacts" in value ? decodeMediaFacts(value.mediaFacts) : undefined;
 	return {
 		id: value.id,
+		...("sourceSha256" in value &&
+			typeof value.sourceSha256 === "string" && {
+				sourceSha256: value.sourceSha256,
+			}),
+		...(mediaFacts !== undefined && { mediaFacts }),
 		name: value.name,
 		type: value.type,
 		mimeType:
@@ -107,6 +118,10 @@ export function mediaAttachmentsForHydration<
 function metadataFor(asset: MediaAsset): PersistedMediaMetadata {
 	return {
 		id: asset.id,
+		...(asset.sourceSha256 !== undefined && {
+			sourceSha256: asset.sourceSha256,
+		}),
+		...(asset.mediaFacts !== undefined && { mediaFacts: asset.mediaFacts }),
 		name: asset.name,
 		type: asset.type,
 		mimeType: asset.file.type,
@@ -129,15 +144,22 @@ export async function savePersistedMediaAsset({
 	projectId,
 	asset,
 }: {
-	persistence: SessionPersistenceCoordinator;
+	persistence: Pick<SessionPersistenceCoordinator, "saveAttachment">;
 	projectId: string;
 	asset: MediaAsset;
 }): Promise<void> {
+	const bytes = await asset.file.arrayBuffer();
+	const sourceSha256 = await sourceBytesSha256(new Uint8Array(bytes));
+	if (
+		(asset.sourceSha256 !== undefined && asset.sourceSha256 !== sourceSha256) ||
+		(asset.mediaFacts !== undefined && asset.mediaFacts.sha256 !== sourceSha256)
+	)
+		throw new Error("Media attachment does not match its source fingerprint");
 	await persistence.saveAttachment({
 		projectId,
 		key: asset.id,
-		metadata: metadataFor(asset),
-		body: asset.file.arrayBuffer(),
+		metadata: metadataFor({ ...asset, sourceSha256 }),
+		body: bytes,
 	});
 }
 
@@ -148,9 +170,19 @@ export async function mediaAssetFromAttachment({
 	attachment: Omit<ProjectAttachment, "metadata"> & {
 		metadata: PersistedMediaMetadata;
 	};
-	resources: SessionResources;
+	resources: Pick<SessionResources, "createObjectUrl">;
 }): Promise<MediaAsset> {
 	const { metadata } = attachment;
+	const sourceSha256 = await sourceBytesSha256(new Uint8Array(attachment.body));
+	if (
+		(metadata.sourceSha256 !== undefined &&
+			metadata.sourceSha256 !== sourceSha256) ||
+		(metadata.mediaFacts !== undefined &&
+			metadata.mediaFacts.sha256 !== sourceSha256)
+	)
+		throw new Error(
+			"Persisted media bytes do not match their source fingerprint",
+		);
 	const file = new File([attachment.body], metadata.name, {
 		type: metadata.mimeType,
 		lastModified: metadata.lastModified,
@@ -174,6 +206,10 @@ export async function mediaAssetFromAttachment({
 
 	return {
 		id: metadata.id,
+		sourceSha256,
+		...(metadata.mediaFacts !== undefined && {
+			mediaFacts: metadata.mediaFacts,
+		}),
 		name: metadata.name,
 		type: metadata.type,
 		file,
