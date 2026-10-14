@@ -11,7 +11,7 @@ import {
 } from "node:fs/promises";
 import { basename, dirname, join } from "node:path";
 
-import { expect, test } from "bun:test";
+import { expect, spyOn, test } from "bun:test";
 
 import {
 	commitTimelineUndo,
@@ -19,6 +19,7 @@ import {
 	timelineUndoReceipt,
 } from "../timeline-undo";
 import { reserveUndo } from "../timeline-undo-journal";
+import * as undoJournal from "../timeline-undo-journal";
 
 async function fixture(run: (root: string) => Promise<void>) {
 	const base = await realpath(
@@ -329,6 +330,40 @@ test("directory replacement after reservation prevents completion evidence", () 
 				}),
 			).rejects.toThrow("redirected");
 		} finally {
+			await rmdir(root);
+			await rename(moved, root);
+		}
+	}));
+test("replayed receipt cannot escape the initial commit directory capture", () =>
+	fixture(async (root) => {
+		const h = harness(),
+			args = {
+				request: request(),
+				projectDirectory: root,
+				automation: h.automation,
+			};
+		await commitTimelineUndo(args, h.kernel);
+		const filename = `.timeline-undo-${createHash("sha256").update(request().intentId).digest("hex")}.jsonl`,
+			bytes = await readFile(join(root, filename)),
+			moved = root + "-moved",
+			capture = undoJournal.captureUndoDirectory;
+		const spy = spyOn(undoJournal, "captureUndoDirectory").mockImplementation(
+			async (...input) => {
+				const guard = await capture(...input);
+				await rename(root, moved);
+				await mkdir(root);
+				await writeFile(join(root, filename), bytes);
+				return guard;
+			},
+		);
+		try {
+			expect(await commitTimelineUndo(args, h.kernel)).toMatchObject({
+				status: "reconciliation-required",
+			});
+			expect(h.calls()).toBe(1);
+		} finally {
+			spy.mockRestore();
+			await rm(join(root, filename));
 			await rmdir(root);
 			await rename(moved, root);
 		}

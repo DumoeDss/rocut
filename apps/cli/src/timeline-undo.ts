@@ -161,6 +161,12 @@ export async function commitTimelineUndo(
 		r,
 		undoRequestDigest(r),
 	);
+	if (!(await directoryUnchanged()))
+		return {
+			status: "reconciliation-required" as const,
+			intentId: r.intentId,
+			executionHash: r.executionHash,
+		};
 	if (existing.status === "recorded" || existing.retainedIntent)
 		return existing;
 	if (!kernel) throw Error("undo-kernel-unavailable");
