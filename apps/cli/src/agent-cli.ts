@@ -26,14 +26,15 @@ export async function runAgentCli({
 			return;
 		}
 		case "media": {
-			if (args.positional[0] !== "import" || !args.positional[1])
-				throw new Error("usage: rocut media import <spec.json>");
+			const action = args.positional[0];
+			if (!["import", "import-status"].includes(action) || !args.positional[1])
+				throw new Error("usage: rocut media import|import-status <spec.json>");
 			const spec = JSON.parse(
 				await readFile(resolve(args.positional[1]), "utf8"),
 			);
 			process.stdout.write(
 				JSON.stringify(
-					await request(resolved.secret, "POST", "media/import", spec),
+					await request(resolved.secret, "POST", `media/${action}`, spec),
 					null,
 					"\t",
 				) + "\n",

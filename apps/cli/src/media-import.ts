@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 import { open } from "node:fs/promises";
 import path from "node:path";
+import { isDeepStrictEqual } from "node:util";
 import type { AutomationApi } from "@opencut/editor-automation";
 import {
 	assetId,
@@ -19,6 +20,7 @@ export const MEDIA_IMPORT_CAPABILITY = {
 	probe: "audio-video-container",
 	images: "explicit-mime-and-dimensions",
 	createsTimelineClip: false,
+	recovery: { route: "media/import-status", readOnly: true },
 } as const;
 
 interface ImportSpec {
@@ -74,18 +76,7 @@ function parseSpec(value: unknown): ImportSpec {
 const digest = (bytes: Uint8Array | string) =>
 	createHash("sha256").update(bytes).digest("hex");
 
-/** Local filesystem transport only. Assets still commit through the shared engine. */
-export async function importLocalMedia({
-	input,
-	store,
-	projectId,
-	automation,
-}: {
-	input: unknown;
-	store: ProjectStore;
-	projectId: ProjectId;
-	automation: AutomationApi;
-}) {
+async function prepareLocalMediaImport(input: unknown) {
 	const spec = parseSpec(input);
 	const file = await open(spec.filePath, "r");
 	let bytes: Buffer;
@@ -147,6 +138,26 @@ export async function importLocalMedia({
 		idempotencyKey: spec.idempotencyKey,
 		operations: [{ kind: "create-asset" as const, asset }],
 	};
+	return { spec, bytes, sourceSha256, metadata, asset, batch };
+}
+
+interface LocalMediaTransport {
+	input: unknown;
+	store: ProjectStore;
+	projectId: ProjectId;
+	automation: AutomationApi;
+}
+
+/** Local filesystem transport only. Assets still commit through the shared engine. */
+export async function importLocalMedia({
+	input,
+	store,
+	projectId,
+	automation,
+}: LocalMediaTransport) {
+	const { spec, bytes, sourceSha256, metadata, asset, batch } =
+		await prepareLocalMediaImport(input);
+	const id = asset.id;
 	const preview = await automation.engine.dryRun(batch);
 	if (!preview.accepted) {
 		const issue = preview.issues[0];
@@ -199,5 +210,47 @@ export async function importLocalMedia({
 		metadataSource: spec.image ? "caller" : "container",
 		replayed: false,
 		result,
+	};
+}
+
+/** Observe the exact durable batch; never repair an attachment or apply a transaction. */
+export async function inspectLocalMediaImport({
+	input,
+	store,
+	projectId,
+	automation,
+}: LocalMediaTransport) {
+	const { spec, sourceSha256, metadata, asset, batch } =
+		await prepareLocalMediaImport(input);
+	const preview = await automation.engine.dryRun(batch);
+	if (!preview.accepted || !preview.replayed)
+		return {
+			status: "unknown" as const,
+			reason: "original-transaction-unverified",
+		};
+	const existing = await store.loadAttachment({ projectId, key: asset.id });
+	if (
+		!existing ||
+		digest(new Uint8Array(existing.body)) !== sourceSha256 ||
+		!isDeepStrictEqual(existing.metadata, metadata)
+	)
+		return {
+			status: "unknown" as const,
+			reason: "original-attachment-unverified",
+		};
+	const current = (await automation.assets()).find(
+		(item) => item.id === asset.id,
+	);
+	if (!isDeepStrictEqual(current, asset))
+		return { status: "unknown" as const, reason: "original-asset-unverified" };
+	return {
+		status: "committed" as const,
+		projectId,
+		asset,
+		sourceSha256,
+		metadataSource: spec.image ? "caller" : "container",
+		idempotencyKey: spec.idempotencyKey,
+		beforeRevision: spec.expectedRevision,
+		result: preview.result,
 	};
 }

@@ -56,6 +56,13 @@ test("MV Agent CLI imports real files, composes lyrics/layers and reopens withou
 			idempotencyKey: "mv-song",
 		});
 		const song = await cli("media", "import", songSpec);
+		expect(await cli("media", "import-status", songSpec)).toMatchObject({
+			status: "committed",
+			asset: song.asset,
+			idempotencyKey: "mv-song",
+			beforeRevision: 0,
+			result: song.result,
+		});
 		expect(song.asset).toMatchObject({ kind: "audio", hasAudio: true });
 		expect(song.asset.duration).toBeGreaterThan(120000);
 		expect(song.metadataSource).toBe("container");
@@ -166,9 +173,16 @@ test("MV Agent CLI imports real files, composes lyrics/layers and reopens withou
 		await host.close();
 		host = await startHost({ projectRoot, registry });
 		expect((await cli("read")).entities.assets).toHaveLength(3);
+		expect(await cli("media", "import-status", songSpec)).toMatchObject({
+			status: "committed",
+			result: song.result,
+		});
 		expect((await cli("media", "import", songSpec)).replayed).toBe(true);
 		expect((await cli("read")).revision).toBe(5);
 		await writeFile(localSong, await readFile(fixture("fixture-tone-a5.wav")));
+		expect((await cli("media", "import-status", songSpec)).status).toBe(
+			"unknown",
+		);
 		await expect(cli("media", "import", songSpec)).rejects.toThrow("409");
 		// A new source or stale intent must not leave attachments behind.
 		const before = await readdir(path.join(projectRoot, "attachments"));

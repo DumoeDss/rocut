@@ -31,7 +31,11 @@ import { PROGRAMMATIC_ANIMATION_INSPECT_CAPABILITY } from "./programmatic/animat
 import { createProgrammaticBuildService } from "./programmatic/engines/build-service";
 import { editingCatalog } from "@opencut/editor-classic/editing";
 import { planSceneEdit } from "./scene-editing";
-import { importLocalMedia, MEDIA_IMPORT_CAPABILITY } from "./media-import";
+import {
+	importLocalMedia,
+	inspectLocalMediaImport,
+	MEDIA_IMPORT_CAPABILITY,
+} from "./media-import";
 import {
 	createEditorTaskRegistry,
 	type EditorTaskRegistry,
@@ -774,13 +778,13 @@ async function handleApi(
 			request.method === "POST" &&
 			route.length === 2 &&
 			route[0] === "media" &&
-			route[1] === "import"
+			(route[1] === "import" || route[1] === "import-status")
 		) {
 			const input: unknown = await readJsonBody(request);
 			respond(
 				200,
 				await plane.enqueue(() =>
-					importLocalMedia({
+					(route[1] === "import" ? importLocalMedia : inspectLocalMediaImport)({
 						input,
 						store: plane.baseStore,
 						projectId: plane.projectId,

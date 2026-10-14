@@ -115,6 +115,7 @@ export const USAGE_LINES: readonly string[] = [
 	"  rocut editing catalog [--target <id|auto>] [--project <dir>]",
 	"  rocut capabilities [--target <id|auto>] [--project <dir>]",
 	"  rocut media import <spec.json> [--target <id|auto>] [--project <dir>]",
+	"  rocut media import-status <original-spec.json> [--target <id|auto>] [--project <dir>] (read-only)",
 	"  rocut resource import <spec.json> [--target <id|auto>] [--project <dir>]",
 	"  rocut programmatic compile|rebuild <spec.json> [--target <id|auto>] [--project <dir>]",
 	"  rocut programmatic revise <spec.json> [--target <id|auto>] [--project <dir>]",
