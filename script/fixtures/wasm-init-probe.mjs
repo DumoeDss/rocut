@@ -8,6 +8,7 @@
  *   --specifier=opencut-wasm/opencut_wasm.js    the --target bundler entry, by deep path
  */
 import { runTransitionGraphProbe } from "../probe-transition-graph-browser.mjs";
+import { runNativeExportProbe } from "../probe-native-export.mjs";
 
 const argument = process.argv.find((value) => value.startsWith("--specifier="));
 const specifier = argument ? argument.slice("--specifier=".length) : "opencut-wasm";
@@ -24,6 +25,7 @@ const report = {
 	mediaTimeFromSeconds2: null,
 	roundToFrame: null,
 	transitionGraphChecks: 0,
+	nativeExportChecks: 0,
 	error: null,
 };
 
@@ -43,6 +45,7 @@ try {
 		time: 12345,
 		rate: { numerator: 30, denominator: 1 },
 	});
+	report.nativeExportChecks = runNativeExportProbe(wasm).length;
 } catch (error) {
 	report.error = error instanceof Error ? error.message : String(error);
 }

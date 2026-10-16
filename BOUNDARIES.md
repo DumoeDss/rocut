@@ -68,10 +68,11 @@ portability claim that nothing here supports.
 
 ### The root `package.json` quirks are **not** repaired
 
-The root manifest declares a self-dependency `"opencut": "."` and application dependencies `next` and
-`better-auth` that belong to `apps/web` (defects D-1 and D-2 in `SBOM.md`). They are left in place,
-because repairing them would be an unlogged behavioural change to the baseline this work exists to
-compare against.
+The upstream root manifest declared a self-dependency `"opencut": "."` (defect D-1 in `SBOM.md`).
+It was removed on 2026-10-13, with the locked root resolution and installed copy, because no source
+module imports the bare `opencut` package; patches P-615/P-616 record the repair. Rust build caches
+are retained. The root application dependencies `next` and `better-auth` that belong to `apps/web`
+(defect D-2) remain unchanged and recorded against the baseline.
 
 **This does not weaken the boundary check.** The check operates on the emitted module graph, so a
 package that is _declared_ but never _imported_ cannot make it pass or fail. A declared-only `next`

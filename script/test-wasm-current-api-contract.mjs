@@ -23,6 +23,17 @@ const { pkgDir, remaining } = packageDirectoryArguments(
 );
 assert.deepEqual(remaining, []);
 const source = readFileSync(join(pkgDir, "opencut_wasm.d.ts"), "utf8");
+// The October 11 contract refresh already absorbed these additions into its
+// binary pins. Its frozen evidence retains their origins relative to C0b;
+// comparing only with the refreshed binary set incorrectly drops their review.
+const earlierAdditions = new Set(
+	JSON.parse(
+		readFileSync(
+			join(root, "docs", "evidence", "wasm-authority-20261011.json"),
+			"utf8",
+		),
+	).apiDelta.publicJsOrigins.map(({ name }) => name),
+);
 test("all public additions have explicit provider, consumer and type coverage", () => {
 	const wrapper = readFileSync(join(pkgDir, "opencut_wasm.js"), "utf8");
 	const exports = wrapper
@@ -32,10 +43,11 @@ test("all public additions have explicit provider, consumer and type coverage", 
 		.filter(Boolean);
 	const additions = exports.filter(
 		(name) =>
-			!HISTORICAL.wasmExportsAsRecorded.includes(`${name}|function`) &&
-			!["WasmRuntimeGraphicsQuery", "WasmRuntimeGpuResourceQuery"].includes(
-				name,
-			),
+			earlierAdditions.has(name) ||
+			(!HISTORICAL.wasmExportsAsRecorded.includes(`${name}|function`) &&
+				!["WasmRuntimeGraphicsQuery", "WasmRuntimeGpuResourceQuery"].includes(
+					name,
+				)),
 	);
 	assert.deepEqual(
 		additions.sort(),
@@ -62,6 +74,21 @@ test("current additive signatures and original frozen contracts compile", () => 
 	assert.equal(runContract(["--pkg-dir", pkgDir]), 0);
 });
 const controls = [
+	[
+		"removed native export job binding",
+		"export function resolveNativeExportJobJson(input: string): string;",
+		"",
+	],
+	[
+		"changed native export job transport",
+		"resolveNativeExportJobJson(input: string): string;",
+		"resolveNativeExportJobJson(input: Uint8Array): string;",
+	],
+	[
+		"any widened composition production return",
+		"resolveCompositionProductionJson(input: string): string;",
+		"resolveCompositionProductionJson(input: string): any;",
+	],
 	[
 		"removed native wholegraph PNG commit",
 		"export function commitRenderFramePngForHandle(handle: number, request: number): Promise<NativeFramePng>;",

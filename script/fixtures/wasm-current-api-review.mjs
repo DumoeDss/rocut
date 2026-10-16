@@ -102,6 +102,11 @@ export const REVIEWED_API_ADDITIONS = [
 		"apps/cli/src/programmatic/remotion-audio-render.ts",
 	],
 	[
+		"resolveCompositionProductionJson",
+		"rust/crates/editor-api/src/composition_production.rs",
+		"apps/cli/src/composition-production.ts",
+	],
+	[
 		"resolveEffectLayerParamsJson",
 		"rust/crates/editor-api/src/effect_layer_animation.rs",
 		"packages/editor-classic/src/wasm/effect-layer-animation.ts",
@@ -120,6 +125,11 @@ export const REVIEWED_API_ADDITIONS = [
 		"resolveLiquidObjectParamsJson",
 		"rust/crates/editor-api/src/liquid_object_params.rs",
 		"apps/cli/src/programmatic/object-params.ts",
+	],
+	[
+		"resolveNativeExportJobJson",
+		"rust/crates/editor-api/src/native_export.rs",
+		"apps/cli/src/host-export-native.ts",
 	],
 	[
 		"resolveProgrammaticFrameTunnelJson",

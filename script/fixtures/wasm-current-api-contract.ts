@@ -330,6 +330,12 @@ type resolveEffectLayerParamsJsonExact = Assert<
 type resolveGlassObjectParamsJsonExact = Assert<
 	Equal<typeof wasm.resolveGlassObjectParamsJson, (input: string) => string>
 >;
+type resolveCompositionProductionJsonExact = Assert<
+	Equal<typeof wasm.resolveCompositionProductionJson, (input: string) => string>
+>;
+type resolveNativeExportJobJsonExact = Assert<
+	Equal<typeof wasm.resolveNativeExportJobJson, (input: string) => string>
+>;
 type resolveInkObjectParamsJsonExact = Assert<
 	Equal<typeof wasm.resolveInkObjectParamsJson, (input: string) => string>
 >;

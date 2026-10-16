@@ -1,5 +1,3 @@
-import type { ProgrammaticResource } from "@opencut/editor-contracts";
-
 /** Same-origin authenticated transport only; never passes browser filesystem paths. */
 export async function inspectHttpProgrammaticAnimation({
 	base,
@@ -7,7 +5,7 @@ export async function inspectHttpProgrammaticAnimation({
 	signal,
 }: {
 	base: string;
-	resource: ProgrammaticResource;
+	resource: unknown;
 	signal: AbortSignal;
 }): Promise<unknown> {
 	signal.throwIfAborted();

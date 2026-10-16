@@ -164,6 +164,7 @@ import { execFileSync } from "node:child_process";
 import { readFileSync, readdirSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
+import { moduleSpecifiers } from "./package-import-specifiers.mjs";
 
 const REPO_ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const BOUNDARY_PATH = join(REPO_ROOT, "packages", "boundary.json");
@@ -709,18 +710,19 @@ function noElftiaImportRule({ files }) {
 	for (const file of files) {
 		if (/\.(?:ts|tsx|js|jsx|mjs|cjs)$/.test(file.path)) {
 			scanned += 1;
+			// Scene templates are compiler input, not imports of this Host module.
+			// AST traversal still catches real imports inside template interpolations.
+			for (const { specifier, line } of moduleSpecifiers(file)) {
+				if (!isElftiaSpecifier(specifier)) continue;
+				violations.push({
+					rule: "no-elftia-import",
+					path: file.path,
+					line,
+					detail: `Elftia import specifier "${specifier}"`,
+				});
+			}
 			file.text.split(/\r?\n/).forEach((line, index) => {
 				if (isComment(line)) return;
-				const spec = extractSpecifier(line);
-				if (spec && isElftiaSpecifier(spec)) {
-					violations.push({
-						rule: "no-elftia-import",
-						path: file.path,
-						line: index + 1,
-						detail: `Elftia import specifier "${spec}"`,
-					});
-					return;
-				}
 				if (ELFTIA_PROTOCOL_PATTERN.test(line)) {
 					violations.push({
 						rule: "no-elftia-import",
@@ -1671,6 +1673,14 @@ const NEGATIVE_FIXTURES = [
 ];
 
 const CONVERSE_FIXTURES = [
+	{
+		rule: "no-elftia-import",
+		label: "scene source stored in strings is not a dependency of its Host module",
+		files: [{
+			path: "apps/cli/src/scene-driver.ts",
+			text: "const scene = String.raw`\nimport { loadModel } from '@elftia/three-assets';\n`;\nconst replacement = \"import { loadModel } from '@elftia/three-assets';\";\n",
+		}],
+	},
 	{
 		rule: "acyclic-direction",
 		label: "a legal downward edge (classic importing ports)",

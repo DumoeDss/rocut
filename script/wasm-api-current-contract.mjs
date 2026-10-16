@@ -1,30 +1,32 @@
-/** Reviewed current surface at Rocut ba07e1e6 (2026-10-12).
+/** Reviewed current surface from the Rocut worktree (2026-10-14).
  * Historical C0b pins remain in wasm-api-surface-contract.mjs.
  * See fixtures/wasm-current-api-contract.ts for exact public signatures.
  * Metadata is the normal wasm-pack + emitSyncEntry manifest, not the compact
  * diagnostic producer manifest. No observed package is accepted dynamically.
- * 28 public additions; 104 stable low-level additions; one closure signature.
+ * 30 public additions; 106 stable low-level additions; one closure signature.
+ * The October 14 rebuild adds the existing native export job and composition
+ * production JSON bindings; all previous declarations and imports are retained.
  */
 import { EXPECTED as HISTORICAL } from "./wasm-api-surface-contract.mjs";
 
 export const EXPECTED = {
 	...HISTORICAL,
 	...{
-		dtsSha: "1af4879944fc45eafb60ef458b50adbe63cd7ce619d9fdd8923683fd23893c30",
+		dtsSha: "5f4ecfa92a45c09f34809010e4d58818a6f7d17f4346626c190b2985e610c2cd",
 		wrapperSha:
-			"52f93e0a4dd7564926579ca3f9d1b48d7f8a0d250919b10496bf26aa55974f9d",
+			"862b472a793e604621dfcabb1fb060390624019f98a4bab321250f75ce2e199c",
 		wasmDtsNormalizedSignature:
-			"6504d4d5c501eae83c1aa57f542692e5a408704b630f0b18762cbf9243f021cd",
-		wasmDtsLineCount: 237,
+			"ab7f1cccb249491f934a05892b22899811adc208d34f6d7a2c5890651d1f6d74",
+		wasmDtsLineCount: 239,
 		wrapperExportSignature:
-			"e526effc1d5585ce4b5e2b63389b0c769730940a25a8bf99f7e61652addf135e",
-		wrapperExportCount: 138,
+			"34b46e5676e6c36e18b6ede18e627293aea524a8e1a2144df160ba733fa00b96",
+		wrapperExportCount: 140,
 		bgExportSignature:
-			"9e6f462ac370c358cf027f396ae2ae85c26799aad8f47c1543d801701a76ca46",
-		bgExportCount: 757,
+			"4ea6fa7031b0e8f621d513432464a4e8e9e201296fda151735b19f5e5468d448",
+		bgExportCount: 759,
 		stableWasmExportSignature:
-			"ea33ed21239b5dd2a12fcab117d37d12595749d900f7b9621f80c03cfe057990",
-		stableWasmExportCount: 231,
+			"ef0219ed745647f0f6277ddb6f61bd581a41326ad0722070c18967297fea3d5e",
+		stableWasmExportCount: 233,
 		trampolineExportCount: 4,
 		wasmExportsAsRecorded: [
 			"memory|memory",
@@ -196,6 +198,8 @@ export const EXPECTED = {
 			"resolveRemotionProducedFramesJson|function",
 			"resolveProgrammaticAudioSourceJson|function",
 			"resolveVideoExportJson|function",
+			"resolveNativeExportJobJson|function",
+			"resolveCompositionProductionJson|function",
 			"createMotionTextSequence|function",
 			"restyleMotionTextSequence|function",
 			"mutateMotionTextSequence|function",
@@ -272,7 +276,7 @@ export const EXPECTED = {
 			"package.json":
 				"60502f95b49df31dd41e5be0ada1826e0693b30a525d3b49da73f4e106a1a4b4",
 			"opencut_wasm_sync.js":
-				"2da277586eb1cb41458bf8f3369033b410da13de58dd17bd0c5222882c0b5dc8",
+				"05a9aa5b0ef01082f98acb48ba8030fdaf28b1ac173038b051d4aa4aa4e4e687",
 		},
 	},
 };

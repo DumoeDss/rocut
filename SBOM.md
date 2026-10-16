@@ -13,10 +13,10 @@ Per-file content hashes of the inherited source are in [`SOURCE_INVENTORY.md`](S
 
 | Ecosystem | Count | Source |
 | --- | ---: | --- |
-| npm packages resolved | 1391 | `bun.lock` |
+| npm packages resolved | 1390 | `bun.lock` |
 | bun workspace members | 9 | `bun.lock` (`<root>`, `apps/cli`, `apps/electron-host`, `apps/vite-example`, `apps/web`, `packages/editor-automation`, `packages/editor-classic`, `packages/editor-contracts`, `packages/editor-ports`) |
-| Rust crates in the workspace lockfile | 766 | `Cargo.lock` (includes `apps/desktop`'s `gpui` graph, which is **not** built for wasm) |
-| Rust crates in the `opencut-wasm` wasm32 graph | 94 | `cargo tree -p opencut-wasm --target wasm32-unknown-unknown` |
+| Rust crates in the workspace lockfile | 767 | `Cargo.lock` (includes `apps/desktop`'s `gpui` graph, which is **not** built for wasm) |
+| Rust crates in the `opencut-wasm` wasm32 graph | 95 | `cargo tree -p opencut-wasm --target wasm32-unknown-unknown` |
 
 `apps/desktop` has no `package.json`, so it is a Cargo workspace member only and is not a bun
 workspace member despite the `apps/*` glob. It is excluded from the distributable graph entirely.
@@ -31,7 +31,6 @@ workspace member despite the `apps/*` glob. It is excluded from the distributabl
 | `@types/react-dom` | `18.3.7` |
 | `better-auth` | `^1.4.15` |
 | `next` | `^16.1.3` |
-| `opencut` | `.` |
 | `opencut-wasm` | `file:./rust/wasm/pkg` |
 | `react` | `18.3.1` |
 | `react-dom` | `18.3.1` |
@@ -144,7 +143,7 @@ workspace member despite the `apps/*` glob. It is excluded from the distributabl
 
 ### Rust crates in the wasm32 build graph
 
-94 crates. First-party crates are `opencut-wasm`, `bridge`, `compositor`, `effects`, `gpu`, `masks`, `motion-text`, `time` and `transaction-identity` (in `rust/`); the rest are third-party.
+95 crates. First-party crates are `opencut-wasm`, `bridge`, `compositor`, `effects`, `gpu`, `masks`, `motion-text`, `time` and `transaction-identity` (in `rust/`); the rest are third-party.
 
 - `aho-corasick v1.1.4`
 - `arrayvec v0.7.6`
@@ -163,6 +162,7 @@ workspace member despite the `apps/*` glob. It is excluded from the distributabl
 - `crypto-common v0.1.7`
 - `digest v0.10.7`
 - `document-features v0.2.12`
+- `editor-api v0.1.0`
 - `effects v0.1.0`
 - `equivalent v1.0.2`
 - `foldhash v0.2.0`
@@ -301,7 +301,7 @@ always did, and a **re**-introduction of a repaired defect now fails the same wa
 one-sided "every defect present" assertion could not detect. Repairing a defect never means deleting
 its entry; the record of what upstream shipped survives the repair.
 
-Current dispositions: D-1, D-2, D-3, D-4 recorded; D-5 repaired.
+Current dispositions: D-2, D-3, D-4 recorded; D-1, D-5 repaired.
 
 ### Known before this Slice began
 
@@ -311,9 +311,13 @@ Current dispositions: D-1, D-2, D-3, D-4 recorded; D-5 repaired.
 "opencut": "."
 ```
 
-The root package (itself named `opencut`) lists itself as a dependency resolving to the repository root. bun installs it as a symlink to the repo root inside `node_modules`.
+At the upstream baseline, the root package (itself named `opencut`) listed itself as a dependency resolving to the repository root. On the measured Bun 1.4.2 install, `node_modules/opencut` linked to `node_modules/.bun/opencut@root/node_modules/opencut`, which also included repository metadata and build artifacts. Removed on 2026-10-13 because no source module imports the bare `opencut` package; the workspace packages and locally built `opencut-wasm` remain the declared dependencies.
 
-Disposition: **recorded, not repaired**. Probe confirms it is still present: **yes**
+Disposition: **repaired**, by self-dependency cleanup (2026-10-13); patches **P-615**/**P-616** remove the manifest entry and locked root resolution.
+
+Evidence: `package.json` no longer declares `opencut` as a dependency and `bun.lock` no longer resolves `opencut@root`; `bun run check:sbom` asserts the original defect remains absent.
+
+Probe confirms it is absent: **yes**
 
 #### D-2 — Root `package.json` declares application dependencies `next` and `better-auth`
 

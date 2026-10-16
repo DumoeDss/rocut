@@ -146,11 +146,15 @@ const RUNTIME_ASSETS = [
 const UPSTREAM_DEFECTS = [
 	{
 		id: "D-1",
-		disposition: "recorded",
+		disposition: "repaired",
+		repairedBy:
+			"self-dependency cleanup (2026-10-13); patches **P-615**/**P-616** remove the manifest entry and locked root resolution",
+		evidence:
+			"`package.json` no longer declares `opencut` as a dependency and `bun.lock` no longer resolves `opencut@root`; `bun run check:sbom` asserts the original defect remains absent",
 		title: 'Root `package.json` declares a self-dependency `"opencut": "."`',
 		verbatim: '"opencut": "."',
 		detail:
-			"The root package (itself named `opencut`) lists itself as a dependency resolving to the repository root. bun installs it as a symlink to the repo root inside `node_modules`.",
+			"At the upstream baseline, the root package (itself named `opencut`) listed itself as a dependency resolving to the repository root. On the measured Bun 1.4.2 install, `node_modules/opencut` linked to `node_modules/.bun/opencut@root/node_modules/opencut`, which also included repository metadata and build artifacts. Removed on 2026-10-13 because no source module imports the bare `opencut` package; the workspace packages and locally built `opencut-wasm` remain the declared dependencies.",
 		probe: () => rootPkg.dependencies?.opencut === ".",
 	},
 	{
