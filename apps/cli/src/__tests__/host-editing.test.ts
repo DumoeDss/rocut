@@ -36,7 +36,7 @@ test("HTTP Agent discovers rich editing, plans scenes without mutation, applies/
 		});
 	try {
 		const tasks = await (await fetch(url("editor-tasks"))).json();
-		expect(tasks).toEqual({ surfaces: [], jobs: [] });
+		expect(tasks).toEqual({ surfaces: [], snapshotSurfaces: [], jobs: [] });
 		const refusedTask = await post("editor-tasks", {
 			request: {
 				kind: "history.status",
@@ -45,10 +45,18 @@ test("HTTP Agent discovers rich editing, plans scenes without mutation, applies/
 			},
 		});
 		expect(refusedTask.status).toBe(409);
-		expect((await refusedTask.json()).message).toBe("no-task-surface");
+		expect(await refusedTask.json()).toEqual({
+			code: "no-task-surface",
+			error: "no-task-surface",
+		});
 		expect((await fetch(url("editor-tasks/missing"))).status).toBe(404);
 		const catalog = await (await fetch(url("editing/catalog"))).json();
 		expect(catalog.version).toBe(1);
+		expect(catalog.transcription.outputTrack).toContain("new unused trackId");
+		expect(catalog.semantics.numericParameters).toMatchObject({
+			input: "stored-units; default is already in stored units",
+			bounds: "min/max/step are display units",
+		});
 		expect(
 			catalog.transcription.models.some(
 				(model: { id: string }) =>

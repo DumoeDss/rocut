@@ -2,7 +2,8 @@ import type { WrappedCanvas } from "mediabunny";
 import type { VideoCache } from "../video-cache/service";
 import { createCanvasSurface } from "./canvas-utils";
 
-type Decoder = Pick<VideoCache, "getFrameAt">;
+type Decoder = Pick<VideoCache, "getFrameAt"> &
+	Partial<Pick<VideoCache, "retain">>;
 type Request = Parameters<Decoder["getFrameAt"]>[0];
 type Sample = Promise<WrappedCanvas | null>;
 
@@ -25,16 +26,21 @@ function snapshot({
 	}
 	const previous = mediaQueues.get(request.mediaId) ?? Promise.resolve();
 	const sample = previous.then(async () => {
-		const frame = await decoder.getFrameAt(request);
-		if (!frame) return null;
-		// Copy before releasing the queue, not after Promise.all: a later seek
-		// can repaint the pooled canvas even when its object identity is unchanged.
-		const { canvas, context } = createCanvasSurface({
-			width: frame.canvas.width,
-			height: frame.canvas.height,
-		});
-		context.drawImage(frame.canvas, 0, 0);
-		return { ...frame, canvas };
+		const release = decoder.retain?.({ mediaId: request.mediaId });
+		try {
+			const frame = await decoder.getFrameAt(request);
+			if (!frame) return null;
+			// Copy before releasing the queue, not after Promise.all: a later seek
+			// can repaint the pooled canvas even when its object identity is unchanged.
+			const { canvas, context } = createCanvasSurface({
+				width: frame.canvas.width,
+				height: frame.canvas.height,
+			});
+			context.drawImage(frame.canvas, 0, 0);
+			return { ...frame, canvas };
+		} finally {
+			release?.();
+		}
 	});
 	const settled = sample.then(
 		() => {},

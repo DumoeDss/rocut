@@ -40,7 +40,7 @@ if (process.env.OPENCUT_AUDIO_CLOCK_TEST_ISOLATED !== "1") {
 		for (let i = 0; i < 8; i++) await Promise.resolve();
 	}
 
-	function fixture({ suspended = false } = {}) {
+	function fixture({ suspended = false, contextFailure = false } = {}) {
 		const previousWindow = Object.getOwnPropertyDescriptor(
 			globalThis,
 			"window",
@@ -55,11 +55,22 @@ if (process.env.OPENCUT_AUDIO_CLOCK_TEST_ISOLATED !== "1") {
 		let playing = false;
 		let time = 0;
 		const resume = deferred<void>();
+		const stateListeners = new Set<() => void>();
+		let resumeDeadline: (() => void) | null = null;
+		const resumeTimerCancel = mock(() => {
+			resumeDeadline = null;
+		});
 		const node = () => ({ gain: { value: 1 }, connect() {} });
 		const context = {
 			currentTime: 0,
 			state: suspended ? "suspended" : "running",
 			destination: {},
+			// eslint-disable-next-line opencut/prefer-object-params -- mirrors AudioContext EventTarget API.
+			addEventListener: (_event: string, listener: () => void) =>
+				stateListeners.add(listener),
+			// eslint-disable-next-line opencut/prefer-object-params -- mirrors AudioContext EventTarget API.
+			removeEventListener: (_event: string, listener: () => void) =>
+				stateListeners.delete(listener),
 			resume: () =>
 				resume.promise.then(() => {
 					context.state = "running";
@@ -83,8 +94,16 @@ if (process.env.OPENCUT_AUDIO_CLOCK_TEST_ISOLATED !== "1") {
 		};
 		const editor = {
 			resources: {
-				createAudioContext: () => ({ context, close }),
+				createAudioContext: () => {
+					if (contextFailure)
+						throw new Error("fixture context creation failed");
+					return { context, close };
+				},
 				setInterval: () => ({ cancel() {} }),
+				setTimeout: ({ handler }: { handler: () => void }) => {
+					resumeDeadline = handler;
+					return { cancel: resumeTimerCancel };
+				},
 			},
 			playback: {
 				getVolume: () => 1,
@@ -106,7 +125,11 @@ if (process.env.OPENCUT_AUDIO_CLOCK_TEST_ISOLATED !== "1") {
 				getTotalDuration: () => 24_000_000,
 			},
 			media: { subscribe: () => () => {}, getAssets: () => [] },
-			scenes: { getActiveScene: () => ({ tracks: { main: { elements: [] }, overlay: [], audio: [] } }) },
+			scenes: {
+				getActiveScene: () => ({
+					tracks: { main: { elements: [] }, overlay: [], audio: [] },
+				}),
+			},
 		};
 		const manager = new AudioManager(editor as never);
 		return {
@@ -114,6 +137,13 @@ if (process.env.OPENCUT_AUDIO_CLOCK_TEST_ISOLATED !== "1") {
 			context,
 			resume,
 			close,
+			changeAudioState(state: string) {
+				context.state = state;
+				for (const listener of stateListeners) listener();
+			},
+			stateListenerCount: () => stateListeners.size,
+			expireResume: () => resumeDeadline?.(),
+			resumeTimerCancel,
 			collect() {
 				const pending = deferred<unknown[]>();
 				collections.push(pending);
@@ -147,6 +177,79 @@ if (process.env.OPENCUT_AUDIO_CLOCK_TEST_ISOLATED !== "1") {
 		duration: 2,
 		muted: false,
 	};
+
+	test("a device resume that never settles cannot leave playback starting forever", async () => {
+		const f = fixture({ suspended: true });
+		const log = spyOn(console, "error").mockImplementation(() => {});
+		try {
+			f.play(3);
+			f.expireResume();
+			await settle();
+			expect(f.isPlaying()).toBe(false);
+			expect(f.manager.getPlaybackClockTime()).toBeNull();
+			expect(f.resumeTimerCancel).toHaveBeenCalledTimes(1);
+			// Late native completion cannot resurrect a stopped playback generation.
+			f.resume.resolve();
+			await settle();
+			expect(f.isPlaying()).toBe(false);
+			expect(log).toHaveBeenCalledTimes(1);
+		} finally {
+			await f.dispose();
+			log.mockRestore();
+		}
+	});
+
+	test("device interruption pauses instead of leaving a frozen playing clock", async () => {
+		const f = fixture();
+		const log = spyOn(console, "warn").mockImplementation(() => {});
+		try {
+			const collection = f.collect();
+			f.play(3);
+			collection.resolve([futureClip]);
+			await settle();
+			f.changeAudioState("suspended");
+			expect(f.isPlaying()).toBe(false);
+			expect(f.manager.getPlaybackClockTime()).toBeNull();
+			expect(log).toHaveBeenCalledTimes(1);
+		} finally {
+			await f.dispose();
+			log.mockRestore();
+		}
+		expect(f.stateListenerCount()).toBe(0);
+	});
+
+	test("device loss during async preparation cannot publish a frozen running clock", async () => {
+		const f = fixture();
+		const log = spyOn(console, "error").mockImplementation(() => {});
+		try {
+			const collection = f.collect();
+			f.play(3);
+			f.changeAudioState("suspended");
+			collection.resolve([futureClip]);
+			await settle();
+			expect(f.isPlaying()).toBe(false);
+			expect(f.manager.getPlaybackClockTime()).toBeNull();
+			expect(log).toHaveBeenCalledTimes(1);
+		} finally {
+			await f.dispose();
+			log.mockRestore();
+		}
+	});
+
+	test("context acquisition failure is caught and pauses instead of rejecting unobserved", async () => {
+		const f = fixture({ contextFailure: true });
+		const log = spyOn(console, "error").mockImplementation(() => {});
+		try {
+			f.play();
+			await settle();
+			expect(f.isPlaying()).toBe(false);
+			expect(f.manager.getPlaybackClockTime()).toBeNull();
+			expect(log).toHaveBeenCalledTimes(1);
+		} finally {
+			await f.dispose();
+			log.mockRestore();
+		}
+	});
 
 	test("pending collection holds the seek position, then follows the native clock", async () => {
 		const f = fixture();

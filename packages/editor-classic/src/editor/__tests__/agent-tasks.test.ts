@@ -183,6 +183,38 @@ test("ASR task uses timeline audio, consent/model/language, and returns an unapp
 	}
 });
 
+test("ASR rejects occupied output tracks before extraction, decode or model work", async () => {
+	const h = await commandHarness();
+	let calls = 0;
+	const unexpected = async (): Promise<never> => {
+		calls++;
+		throw new Error("expensive work must not start");
+	};
+	Object.assign(h.editor, { transcription: { transcribe: unexpected } });
+	const runner = createEditorTaskRunner({
+		editor: h.editor,
+		audio: { extract: unexpected, decode: unexpected },
+	});
+	await expect(
+		runner.run({
+			request: {
+				kind: "captions.transcribe",
+				expectedRevision: 0,
+				idempotencyKey: "occupied-asr",
+				sceneId: "scene-main",
+				trackId: h.getScenes()[0].tracks.main.id,
+				allowModelDownload: true,
+			},
+			signal: new AbortController().signal,
+		}),
+	).rejects.toThrow(
+		"caption-track-already-exists: choose a new unused output trackId",
+	);
+	expect(calls).toBe(0);
+	expect(h.fixture.getSaveCount()).toBe(0);
+	expect(await h.transactions.clips()).toHaveLength(0);
+});
+
 test("revision change during audio extraction refuses ASR before model work starts", async () => {
 	const h = await commandHarness();
 	const runner = createEditorTaskRunner({

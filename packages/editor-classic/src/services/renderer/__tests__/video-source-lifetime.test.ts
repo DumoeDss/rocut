@@ -107,6 +107,42 @@ test("same-media layers cannot supersede one another's seeks", async () => {
 	expect(pixel(b)).toBe(5);
 });
 
+test("production frame scopes retain pooled canvases until their immutable copy exists", async () => {
+	installCanvas();
+	const underlying = pooledCache();
+	let retained = 0,
+		released = 0;
+	const decoder = {
+		retain: () => {
+			retained++;
+			return () => {
+				released++;
+				underlying.canvas.pixel = -99;
+			};
+		},
+		getFrameAt: underlying.getFrameAt,
+	};
+	const sample = await createVideoFrameScope(decoder).getFrameAt({
+		mediaId: "shared",
+		file,
+		time: 3,
+	});
+	expect(sample?.canvas instanceof PixelCanvas && sample.canvas.pixel).toBe(3);
+	expect(retained).toBe(1);
+	expect(released).toBe(1);
+	const failed = createVideoFrameScope({
+		...decoder,
+		getFrameAt: async () => {
+			throw new Error("decode failed");
+		},
+	});
+	await expect(
+		failed.getFrameAt({ mediaId: "shared", file, time: 1 }),
+	).rejects.toThrow("decode failed");
+	expect(retained).toBe(2);
+	expect(released).toBe(2);
+});
+
 test("every sampled frame survives pool reuse and later renders", async () => {
 	installCanvas();
 	const cache = pooledCache();

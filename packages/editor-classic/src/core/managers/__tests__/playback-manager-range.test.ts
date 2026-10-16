@@ -110,6 +110,44 @@ if (process.env.OPENCUT_PLAYBACK_RANGE_TEST_ISOLATED !== "1") {
 	});
 
 	describe("PlaybackManager audio clock", () => {
+		test("a throwing update subscriber cannot stop peer notifications or subsequent frames", () => {
+			const f = createFixture();
+			const log = spyOn(console, "error").mockImplementation(() => {});
+			try {
+				f.playback.onUpdate(() => {
+					throw new Error("fixture UI failed");
+				});
+				const updates: number[] = [];
+				f.playback.onUpdate((time) => updates.push(time));
+				f.playback.play();
+				now = 1_000;
+				f.flushAnimationFrame();
+				now = 2_000;
+				f.flushAnimationFrame();
+				expect(updates).toEqual([0, 120_000, 240_000]);
+				expect(f.playback.getIsPlaying()).toBe(true);
+			} finally {
+				f.playback.dispose();
+				log.mockRestore();
+			}
+		});
+
+		test("a throwing seek subscriber does not block the audio subscriber", () => {
+			const f = createFixture();
+			const log = spyOn(console, "error").mockImplementation(() => {});
+			try {
+				f.playback.onSeek(() => {
+					throw new Error("fixture seek UI failed");
+				});
+				const audioSeek = mock(() => {});
+				f.playback.onSeek(audioSeek);
+				f.playback.seek({ time: 120_000 as never });
+				expect(audioSeek).toHaveBeenCalledWith(120_000);
+			} finally {
+				f.playback.dispose();
+				log.mockRestore();
+			}
+		});
 		test("a delayed device does not consume or truncate a short clip", () => {
 			const fixture = createFixture();
 			fixture.setDuration(240_000);

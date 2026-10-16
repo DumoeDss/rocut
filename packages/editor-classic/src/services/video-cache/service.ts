@@ -28,6 +28,8 @@ interface VideoSinkData {
 
 export class VideoCache {
 	private sinks = new Map<string, VideoSinkData>();
+	private readonly retainedMedia = new Map<string, number>();
+	private readonly maxIdleSinks = 3;
 	private initPromises = new Map<string, Promise<void>>();
 	private frameChain = new Map<string, Promise<unknown>>();
 	private seekGenerations = new Map<string, number>();
@@ -35,6 +37,33 @@ export class VideoCache {
 	private pendingOperations = new Set<Promise<unknown>>();
 	private cacheGeneration = 0;
 	private disposed = false;
+
+	/** Hold the decoder until its pooled canvas has been copied by the consumer. */
+	retain({ mediaId }: { mediaId: string }): () => void {
+		this.retainedMedia.set(mediaId, (this.retainedMedia.get(mediaId) ?? 0) + 1);
+		let released = false;
+		return () => {
+			if (released) return;
+			released = true;
+			const count = (this.retainedMedia.get(mediaId) ?? 1) - 1;
+			if (count > 0) this.retainedMedia.set(mediaId, count);
+			else this.retainedMedia.delete(mediaId);
+			this.trimIdleSinks();
+		};
+	}
+
+	private trimIdleSinks(): void {
+		const idle = [...this.sinks].filter(([id]) => !this.retainedMedia.has(id));
+		for (const [mediaId, sink] of idle.slice(
+			0,
+			Math.max(0, idle.length - this.maxIdleSinks),
+		)) {
+			this.sinks.delete(mediaId);
+			this.teardownSink(sink);
+			this.frameChain.delete(mediaId);
+			this.seekGenerations.delete(mediaId);
+		}
+	}
 
 	async getFrameAt({
 		mediaId,
@@ -57,6 +86,9 @@ export class VideoCache {
 		) {
 			return null;
 		}
+		// Map insertion order is the LRU; active consumers are never evicted.
+		this.sinks.delete(mediaId);
+		this.sinks.set(mediaId, sinkData);
 
 		const generation = (this.seekGenerations.get(mediaId) ?? 0) + 1;
 		this.seekGenerations.set(mediaId, generation);
@@ -151,6 +183,10 @@ export class VideoCache {
 			sinkData.currentFrame &&
 			this.isFrameValid({ frame: sinkData.currentFrame, time })
 		) {
+			// Cached promotion is forward progress too. Without this, the sequential
+			// window stays anchored to the original seek and a dropped frame after
+			// two seconds unnecessarily restarts the decoder from a random seek.
+			sinkData.lastTime = sinkData.currentFrame.timestamp;
 			if (!sinkData.nextFrame && !sinkData.prefetching) {
 				this.startPrefetch({ sinkData });
 			}

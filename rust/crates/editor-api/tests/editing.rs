@@ -24,7 +24,37 @@ fn known_params_and_display_units() {
     r["catalog"]["elements"]["text"][0]["displayMultiplier"] = json!(100);
     assert!(issues(&r).is_empty());
     r["editing"]["params"]["opacity"] = json!(2);
-    assert!(!issues(&r).is_empty());
+    let invalid = issues(&r);
+    assert_eq!(invalid[0]["path"], "editing.params.opacity");
+    let message = invalid[0]["message"].as_str().unwrap();
+    assert!(message.contains("stored units, range [0.01, 1]"));
+    assert!(message.contains("stored value * 100"));
+    assert!(message.contains("display units [1, 100]"));
+}
+
+#[test]
+fn mask_centers_report_normalized_storage_units_without_relaxing_validation() {
+    let mut r = request();
+    r["editing"]["type"] = json!("graphic");
+    r["editing"]["definitionId"] = json!("rectangle");
+    r["editing"]["params"] = json!({});
+    r["trackKind"] = json!("graphic");
+    r["catalog"]["graphics"]["rectangle"] = json!([]);
+    r["catalog"]["masks"]["rectangle"] = json!({
+        "params":[{"key":"centerX","type":"number","min":-100,"max":100,"displayMultiplier":100}],
+        "required":["centerX"]
+    });
+    r["editing"]["masks"] = json!([{"id":"mask", "type":"rectangle", "params":{"centerX":16}}]);
+    let invalid = issues(&r);
+    assert_eq!(invalid[0]["path"], "editing.masks.mask.params.centerX");
+    assert!(
+        invalid[0]["message"]
+            .as_str()
+            .unwrap()
+            .contains("stored units, range [-1, 1]")
+    );
+    r["editing"]["masks"][0]["params"]["centerX"] = json!(0.16);
+    assert!(issues(&r).is_empty());
 }
 
 #[test]

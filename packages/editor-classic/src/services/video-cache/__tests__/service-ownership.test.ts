@@ -42,6 +42,8 @@ if (process.env.OPENCUT_VIDEO_CACHE_TEST_ISOLATED !== "1") {
 	const queuedTracks: Array<Promise<MockTrack>> = [];
 	const inputs: MockInput[] = [];
 	const sinkOptions: CanvasSinkOptions[] = [];
+	const continuousSinks: boolean[] = [];
+	const canvasRequests: number[] = [];
 	const originalDecoder = Object.getOwnPropertyDescriptor(
 		globalThis,
 		"VideoDecoder",
@@ -73,12 +75,29 @@ if (process.env.OPENCUT_VIDEO_CACHE_TEST_ISOLATED !== "1") {
 	}
 
 	class MockCanvasSink {
+		private readonly continuous = continuousSinks.shift() ?? false;
 		constructor(...args: [MockTrack, CanvasSinkOptions]) {
 			sinkOptions.push(args[1]);
 		}
 
 		canvases(time: number) {
+			canvasRequests.push(time);
+			const continuous = this.continuous;
 			return (async function* () {
+				if (continuous) {
+					for (
+						let timestamp = Math.floor(time * 4) / 4;
+						timestamp < 10;
+						timestamp += 0.25
+					) {
+						yield {
+							timestamp,
+							duration: 0.25,
+							canvas: { width: 1, height: 1 },
+						};
+					}
+					return;
+				}
 				yield {
 					timestamp: time,
 					duration: 1,
@@ -97,6 +116,87 @@ if (process.env.OPENCUT_VIDEO_CACHE_TEST_ISOLATED !== "1") {
 
 	const { VideoCache } = await import("../service");
 	const file = () => new File([Uint8Array.of(1)], "clip.mp4");
+
+	test("cached forward playback does not reset the decoder after a late frame beyond two seconds", async () => {
+		continuousSinks.push(true);
+		const cache = new VideoCache();
+		const before = canvasRequests.length;
+		const source = file();
+		try {
+			for (let time = 0; time <= 4; time += 0.25) {
+				expect(
+					(
+						await cache.getFrameAt({
+							mediaId: "continuous",
+							file: source,
+							time,
+						})
+					)?.timestamp,
+				).toBe(time);
+				await Promise.resolve();
+			}
+			expect(
+				(
+					await cache.getFrameAt({
+						mediaId: "continuous",
+						file: source,
+						time: 4.75,
+					})
+				)?.timestamp,
+			).toBe(4.75);
+			expect(canvasRequests.slice(before)).toEqual([0]);
+		} finally {
+			await cache.dispose();
+		}
+	});
+
+	test("sixteen sequential shots retain at most three idle decoders", async () => {
+		const cache = new VideoCache();
+		const before = inputs.length;
+		try {
+			for (let i = 0; i < 16; i++) {
+				const mediaId = `shot-${i}`;
+				const release = cache.retain({ mediaId });
+				expect(
+					await cache.getFrameAt({ mediaId, file: file(), time: 0 }),
+				).not.toBeNull();
+				release();
+				release(); // Idempotent consumer cleanup.
+				expect(cache.getStats().totalSinks).toBeLessThanOrEqual(3);
+			}
+			expect(
+				inputs.slice(before).filter((input) => input.disposeCalls === 1),
+			).toHaveLength(13);
+		} finally {
+			await cache.dispose();
+		}
+		expect(
+			inputs.slice(before).every((input) => input.disposeCalls === 1),
+		).toBe(true);
+	});
+
+	test("in-flight canvas consumers are pinned while idle LRU decoders are released", async () => {
+		const cache = new VideoCache();
+		const releaseHeld = cache.retain({ mediaId: "held" });
+		const heldIndex = inputs.length;
+		await cache.getFrameAt({ mediaId: "held", file: file(), time: 0 });
+		try {
+			for (let i = 0; i < 7; i++) {
+				const mediaId = `idle-${i}`;
+				const release = cache.retain({ mediaId });
+				await cache.getFrameAt({ mediaId, file: file(), time: 0 });
+				release();
+			}
+			expect(inputs[heldIndex]!.disposeCalls).toBe(0);
+			expect(cache.getStats().totalSinks).toBe(4);
+			releaseHeld();
+			expect(inputs[heldIndex]!.disposeCalls).toBe(1);
+			expect(cache.getStats().totalSinks).toBe(3);
+		} finally {
+			releaseHeld();
+			await cache.dispose();
+		}
+	});
 
 	test("supported software preference reaches the actual CanvasSink", async () => {
 		Object.defineProperty(globalThis, "VideoDecoder", {

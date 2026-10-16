@@ -1,11 +1,15 @@
 import type { EditorCore } from "..";
 import type { AudioContextHandle } from "@opencut/editor-ports";
 import type { TimerHandle } from "../../editor/session/resources";
+import { resumeAudioContext } from "./resume-audio-context";
 import { TICKS_PER_SECOND } from "../../wasm";
 import { clampRetimeRate, shouldMaintainPitch } from "../../retime/rate";
 import type { AudioClipSource } from "../../media/audio";
 import { collectAudioClips } from "../../media/audio";
-import { collectProgrammaticAudio, programmaticAudioClips } from "../../media/programmatic-audio";
+import {
+	collectProgrammaticAudio,
+	programmaticAudioClips,
+} from "../../media/programmatic-audio";
 import {
 	buildAudioGainAutomation,
 	hasAnimatedVolume,
@@ -74,6 +78,10 @@ export class AudioManager {
 		this.preparedClipBuffers.clear();
 		this.decodedBuffers.clear();
 		const handle = this.audioContextHandle;
+		this.audioContext?.removeEventListener(
+			"statechange",
+			this.handleAudioStateChange,
+		);
 		this.audioContextHandle = null;
 		this.audioContext = null;
 		this.masterGain = null;
@@ -100,7 +108,7 @@ export class AudioManager {
 		if (isPlaying !== this.lastIsPlaying) {
 			this.lastIsPlaying = isPlaying;
 			if (isPlaying) {
-				void this.startPlayback({
+				this.requestPlayback({
 					time: this.editor.playback.getCurrentTime() / TICKS_PER_SECOND,
 				});
 			} else {
@@ -116,7 +124,7 @@ export class AudioManager {
 		}
 
 		if (this.editor.playback.getIsPlaying()) {
-			void this.startPlayback({ time: time / TICKS_PER_SECOND });
+			this.requestPlayback({ time: time / TICKS_PER_SECOND });
 			return;
 		}
 
@@ -130,7 +138,7 @@ export class AudioManager {
 
 		if (!this.editor.playback.getIsPlaying()) return;
 
-		void this.startPlayback({
+		this.requestPlayback({
 			time: this.editor.playback.getCurrentTime() / TICKS_PER_SECOND,
 		});
 	};
@@ -147,6 +155,7 @@ export class AudioManager {
 		}
 		this.audioContextHandle = handle;
 		this.audioContext = context;
+		context.addEventListener("statechange", this.handleAudioStateChange);
 		const { input } = createAudioMasteringChain({
 			audioContext: context,
 			destination: context.destination,
@@ -176,6 +185,40 @@ export class AudioManager {
 			: this.getPlaybackTime();
 	}
 
+	private handleAudioStateChange = (): void => {
+		if (
+			this.playbackClockState !== "running" ||
+			this.audioContext?.state === "running"
+		)
+			return;
+		// A suspended/interrupted device has a stationary clock. Never leave a
+		// false playing state or silently replace its clock with wall-clock play.
+		this.editor.playback.pause();
+		console.warn(
+			"Audio device stopped; playback paused. Press play to resume.",
+		);
+	};
+
+	private requestPlayback({ time }: { time: number }): void {
+		const operation = this.startPlayback({ time });
+		const sessionId = this.playbackSessionId;
+		void operation.catch((error: unknown) =>
+			this.failPlayback({ error, sessionId }),
+		);
+	}
+
+	private failPlayback({
+		error,
+		sessionId,
+	}: {
+		error: unknown;
+		sessionId: number;
+	}): void {
+		if (sessionId !== this.playbackSessionId) return;
+		this.editor.playback.pause();
+		console.error("Audio playback failed:", error);
+	}
+
 	private async startPlayback({ time }: { time: number }): Promise<void> {
 		const audioContext = this.ensureAudioContext();
 		if (!audioContext) return;
@@ -196,21 +239,39 @@ export class AudioManager {
 		this.playbackClockState = "starting";
 
 		try {
-			if (audioContext.state === "suspended") {
-				await audioContext.resume();
+			if (audioContext.state !== "running") {
+				await resumeAudioContext({
+					context: audioContext,
+					resources: this.editor.resources,
+					signal: preparation.signal,
+				});
 				if (sessionId !== this.playbackSessionId) return;
 			}
 			const clips = await collectAudioClips({ tracks, mediaAssets });
 			preparation.signal.throwIfAborted();
-			clips.push(...programmaticAudioClips(await collectProgrammaticAudio({
-				tracks, runtime: this.editor.renderer?.programmaticAudio, audioContext, signal: preparation.signal,
-			})));
+			clips.push(
+				...programmaticAudioClips(
+					await collectProgrammaticAudio({
+						tracks,
+						runtime: this.editor.renderer?.programmaticAudio,
+						audioContext,
+						signal: preparation.signal,
+					}),
+				),
+			);
 			// Finish source rendering and clip trimming before the preview clock runs.
-			for (const clip of clips) if (clip.buffer) {
-				await this.getPreparedClipBuffer({ clip });
-				preparation.signal.throwIfAborted();
-			}
+			for (const clip of clips)
+				if (clip.buffer) {
+					await this.getPreparedClipBuffer({ clip });
+					preparation.signal.throwIfAborted();
+				}
 			if (sessionId !== this.playbackSessionId) return;
+			if (
+				clips.some((clip) => !clip.muted) &&
+				audioContext.state !== "running"
+			) {
+				throw new Error("Audio device stopped during playback preparation.");
+			}
 			this.clips = clips;
 		} catch (error) {
 			if (sessionId !== this.playbackSessionId) return;
@@ -259,17 +320,19 @@ export class AudioManager {
 
 			this.activeClipIds.add(clip.id);
 			if (this.shouldUsePreparedClipBuffer({ clip })) {
+				const sessionId = this.playbackSessionId;
 				void this.schedulePreparedClip({
 					clip,
 					startTime: currentTime,
-					sessionId: this.playbackSessionId,
-				});
+					sessionId,
+				}).catch((error: unknown) => this.failPlayback({ error, sessionId }));
 			} else {
+				const sessionId = this.playbackSessionId;
 				void this.runClipIterator({
 					clip,
 					startTime: currentTime,
-					sessionId: this.playbackSessionId,
-				});
+					sessionId,
+				}).catch((error: unknown) => this.failPlayback({ error, sessionId }));
 			}
 		}
 	}
@@ -284,7 +347,7 @@ export class AudioManager {
 		for (const settle of [...this.playbackWaiters]) settle();
 
 		for (const iterator of this.clipIterators.values()) {
-			void iterator.return();
+			void iterator.return().catch(() => {});
 		}
 		this.clipIterators.clear();
 		this.activeClipIds.clear();
@@ -392,7 +455,9 @@ export class AudioManager {
 							clip,
 							startTime: resyncStartTime,
 							sessionId,
-						});
+						}).catch((error: unknown) =>
+							this.failPlayback({ error, sessionId }),
+						);
 						return;
 					}
 					continue;
@@ -527,7 +592,7 @@ export class AudioManager {
 
 	private disposeSinks(): void {
 		for (const iterator of this.clipIterators.values()) {
-			void iterator.return();
+			void iterator.return().catch(() => {});
 		}
 		this.clipIterators.clear();
 		this.activeClipIds.clear();
@@ -581,7 +646,10 @@ export class AudioManager {
 		clipGain.gain.cancelScheduledValues(startTimestamp);
 		clipGain.gain.setValueAtTime(clip.volume, startTimestamp);
 
-		if (clip.timelineElement.type === "graphic" || !hasAnimatedVolume({ element: clip.timelineElement })) {
+		if (
+			clip.timelineElement.type === "graphic" ||
+			!hasAnimatedVolume({ element: clip.timelineElement })
+		) {
 			return;
 		}
 

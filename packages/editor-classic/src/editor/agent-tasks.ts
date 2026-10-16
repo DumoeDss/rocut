@@ -97,6 +97,17 @@ export function createEditorTaskRunner({
 						scope: "attached-session",
 					};
 				}
+				// These tasks create a new track in their unapplied plan. Reject
+				// collisions before audio extraction/model work, not after a long ASR.
+				if (
+					(await editor.transactions.tracks()).some(
+						(track) => track.id === request.trackId,
+					)
+				)
+					throw new Error(
+						"caption-track-already-exists: choose a new unused output trackId; do not pre-create or delete an existing track",
+					);
+				await assertCurrent();
 				let parsed;
 				if (request.kind === "captions.import") {
 					parsed = parseSubtitleFile(request);

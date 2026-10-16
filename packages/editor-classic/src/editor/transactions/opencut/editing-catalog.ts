@@ -65,6 +65,8 @@ export function editingCatalog({
 			requiresAttachedPane: true,
 			requiresModelDownloadConsent: true,
 			returns: "caption-plan",
+			outputTrack:
+				"new unused trackId; the unapplied plan creates the track; do not pre-create or delete an existing track",
 		},
 		semantics: {
 			programmatic: "replace-self-contained-source",
@@ -75,6 +77,12 @@ export function editingCatalog({
 			masterEffects:
 				"update-project.patch.masterEffects; ordered-replace; [] clears; complete-scene post including backdrop; scene-timeline clock",
 			masks: "ordered-replace",
+			numericParameters: {
+				input: "stored-units; default is already in stored units",
+				bounds: "min/max/step are display units",
+				conversion:
+					"displayValue = storedValue * (displayMultiplier ?? 1); divide display values by the multiplier before sending params or keyframe values",
+			},
 			keyTime: "element-relative-ticks",
 			volume: "dB",
 		},

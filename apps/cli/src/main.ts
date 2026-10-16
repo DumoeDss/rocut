@@ -437,22 +437,30 @@ async function runCli(argv: readonly string[]): Promise<void> {
 				revision: number | null;
 				digest: string;
 				description: {
+					schemaVersion: number;
 					frameIndex: number;
 					elements: { id: string; type: string; z: number }[];
+					audio: { id: string; type: string }[];
 					assets: { id: string; kind: string }[];
 				};
 			};
+			if (proof.description.schemaVersion !== 2)
+				throw new Error("verify requires frame-proof schema 2; update and restart the target daemon. Schema 1 reports reversed visual stacking.");
 			process.stdout.write(
 				JSON.stringify(
 					{
 						target: resolved.entry.id,
 						revision: proof.revision,
+						schemaVersion: proof.description.schemaVersion,
+						visualOrder: "bottom-to-top",
+						compositionOnly: true,
 						at: Number(at),
 						frameIndex: proof.description.frameIndex,
 						digest: proof.digest,
 						elements: proof.description.elements.map(
 							(element) => `${element.z}:${element.type}:${element.id}`,
 						),
+						audio: proof.description.audio.map((element) => `${element.type}:${element.id}`),
 						assets: proof.description.assets.map(
 							(asset) => `${asset.kind}:${asset.id}`,
 						),

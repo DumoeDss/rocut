@@ -14,6 +14,7 @@ mod effect_stack;
 pub use effect_stack::validate_master_effects_json;
 mod image_sequence;
 mod model;
+mod param_diagnostics;
 mod media_facts;
 pub use media_facts::{inspect_media_facts_bytes, validate_media_facts_json};
 pub use image_sequence::{
@@ -153,7 +154,7 @@ pub(crate) fn validate_value(value: &Value, param: &Param, path: &str, issues: &
         _ => false,
     };
     if !valid {
-        issues.push(Issue::new(path, "Invalid parameter type, option or range"));
+        issues.push(Issue::new(path, &param_diagnostics::invalid_value_message(param)));
     }
 }
 

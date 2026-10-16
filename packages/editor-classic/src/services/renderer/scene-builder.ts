@@ -28,18 +28,9 @@ import type { AssetResolver } from "@opencut/editor-ports";
 import type { ProgrammaticFrameProvider } from "@opencut/editor-ports/host";
 import type { MotionTextFontRuntime } from "./motion-text/font-runtime";
 import type { Effect } from "../../effects/types";
+import { visibleElementsInDrawOrder, visibleTracksBottomToTop } from "./render-order";
 
 const PREVIEW_MAX_IMAGE_SIZE = 2048;
-
-function getVisibleSortedElements({ track }: { track: TimelineTrack }) {
-	return track.elements
-		.filter((element) => !("hidden" in element && element.hidden))
-		.slice()
-		.sort((a, b) => {
-			if (a.startTime !== b.startTime) return a.startTime - b.startTime;
-			return a.id.localeCompare(b.id);
-		});
-}
 
 function buildTrackNodes({
 	programmaticFrames,
@@ -67,7 +58,7 @@ function buildTrackNodes({
 	const nodes: AnyBaseNode[] = [];
 
 	for (const track of tracks) {
-		const elements = getVisibleSortedElements({ track });
+		const elements = visibleElementsInDrawOrder({ track });
 
 		for (const element of elements) {
 			if (element.type === "effect") {
@@ -237,7 +228,7 @@ function buildBlurBackgroundNodes({
 	}
 
 	const nodes: AnyBaseNode[] = [];
-	const elements = getVisibleSortedElements({ track });
+	const elements = visibleElementsInDrawOrder({ track });
 
 	for (const element of elements) {
 		if (element.type !== "video" && element.type !== "image") {
@@ -312,11 +303,7 @@ export function buildScene({
 		motionTextSequences.map((sequence) => [sequence.id, sequence]),
 	);
 
-	const visibleTracks = [
-		...tracks.overlay.filter((track) => !("hidden" in track && track.hidden)),
-		...(!tracks.main.hidden ? [tracks.main] : []),
-	];
-	const orderedTracksBottomToTop = visibleTracks.slice().reverse();
+	const orderedTracksBottomToTop = visibleTracksBottomToTop({ tracks });
 	if (background.type === "color" && background.color !== "transparent") {
 		rootNode.add(new ColorNode({ color: background.color }));
 	}

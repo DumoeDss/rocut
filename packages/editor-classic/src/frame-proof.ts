@@ -21,6 +21,7 @@ import type { ProjectId } from "@opencut/editor-ports";
 import type { TProject } from "./project/types";
 import type { TScene, TimelineTrack } from "./timeline/types";
 import type { MediaAsset } from "./media/types";
+import { visibleElementsInDrawOrder, visibleTracksBottomToTop } from "./services/renderer/render-order";
 
 /** Mirrors the wasm module's `TICKS_PER_SECOND` (media_time.rs). */
 export const TICKS_PER_SECOND = 120_000;
@@ -49,7 +50,7 @@ export interface FrameProofElement {
 }
 
 export interface FrameProofDescription {
-	readonly schemaVersion: 1;
+	readonly schemaVersion: 2;
 	readonly projectId: ProjectId;
 	readonly projectName: string;
 	readonly frameRate: { readonly numerator: number; readonly denominator: number };
@@ -58,6 +59,8 @@ export interface FrameProofDescription {
 	readonly at: number;
 	readonly frameIndex: number;
 	readonly elements: readonly FrameProofElement[];
+	/** Audio is not a visual layer and never receives a z coordinate. */
+	readonly audio: readonly Omit<FrameProofElement, "z">[];
 	readonly assets: readonly FrameProofAssetEntry[];
 }
 
@@ -106,15 +109,14 @@ function activeTracks(args: {
 		(candidate) => candidate.id === args.currentSceneId,
 	);
 	if (scene === undefined) return [];
-	const { main, overlay, audio } = scene.tracks;
-	return [...overlay, main, ...audio];
+	return [...visibleTracksBottomToTop({ tracks: scene.tracks }), ...scene.tracks.audio];
 }
 
 /**
  * Compose the frame at a tick: the elements whose [startTime, startTime +
  * duration) contains the tick, on visible tracks, z-ordered bottom-up by
- * track position (overlay, then main, then audio — the editor's own
- * stacking), with timing, geometry params and referenced asset identities.
+ * the renderer's shared draw order. Audio is described separately, never
+ * assigned a visual z. Schema 2 invalidates the reversed ordering of schema 1.
  *
  * Ordering and every id comparison are codepoint-stable (never
  * `localeCompare`) so the digest cannot vary by machine locale.
@@ -129,6 +131,7 @@ export function composeFrameDescription(args: {
 		currentSceneId: args.project.currentSceneId,
 	});
 	const elements: FrameProofElement[] = [];
+	const audio: Omit<FrameProofElement, "z">[] = [];
 	let z = 0;
 	const referencedAssets = new Map<string, FrameProofAssetEntry>();
 	const knownAssets = new Map(
@@ -136,19 +139,13 @@ export function composeFrameDescription(args: {
 	);
 	for (const track of tracks) {
 		if ("hidden" in track && track.hidden) continue;
-		const trackElements = [...track.elements]
+		const trackElements = visibleElementsInDrawOrder({ track })
 			.filter((element) => {
 				if ("hidden" in element && element.hidden) return false;
 				return (
 					element.startTime <= args.at &&
 					args.at < element.startTime + element.duration
 				);
-			})
-			.sort((left, right) => {
-				if (left.startTime !== right.startTime) {
-					return left.startTime - right.startTime;
-				}
-				return left.id < right.id ? -1 : left.id > right.id ? 1 : 0;
 			});
 		for (const element of trackElements) {
 			const mediaId =
@@ -167,11 +164,10 @@ export function composeFrameDescription(args: {
 					},
 				);
 			}
-			elements.push({
+			const entry = {
 				id: element.id,
 				type: element.type,
 				trackId: track.id,
-				z,
 				startTime: element.startTime,
 				duration: element.duration,
 				trimStart: element.trimStart,
@@ -181,12 +177,13 @@ export function composeFrameDescription(args: {
 					? { sequenceId: element.sequenceId }
 					: {}),
 				params: canonicalize("params" in element ? element.params : {}),
-			});
-			z += 1;
+			};
+			if (track.type === "audio") audio.push(entry);
+			else elements.push({ ...entry, z: z++ });
 		}
 	}
 	return {
-		schemaVersion: 1,
+		schemaVersion: 2,
 		projectId: args.project.metadata.id,
 		projectName: args.project.metadata.name,
 		frameRate: {
@@ -204,6 +201,7 @@ export function composeFrameDescription(args: {
 			frameRate: args.project.settings.fps,
 		}),
 		elements,
+		audio,
 		assets: [...referencedAssets.values()].sort((left, right) =>
 			left.id < right.id ? -1 : left.id > right.id ? 1 : 0,
 		),

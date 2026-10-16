@@ -260,20 +260,29 @@ export class PlaybackManager {
 
 	private notify(): void {
 		this.listeners.forEach((fn) => {
-			fn();
+			this.notifySafely(() => fn());
 		});
 	}
 
 	private notifyUpdate(time: MediaTime): void {
 		this.updateListeners.forEach((fn) => {
-			fn(time);
+			this.notifySafely(() => fn(time));
 		});
 	}
 
 	private notifySeek(time: MediaTime): void {
 		this.seekListeners.forEach((fn) => {
-			fn(time);
+			this.notifySafely(() => fn(time));
 		});
+	}
+
+	private notifySafely(notify: () => void): void {
+		try {
+			notify();
+		} catch (error) {
+			// UI subscribers must not break the next RAF or prevent audio/seek peers.
+			console.error("Playback subscriber failed:", error);
+		}
 	}
 
 	private startTimer(): void {
