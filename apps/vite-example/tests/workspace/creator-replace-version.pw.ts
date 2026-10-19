@@ -56,3 +56,36 @@ test("replace-version prepares a plan and confirms through the native dialog con
 	) as { clipIds?: string[] };
 	expect(prepare.clipIds).toContain("existing-clip");
 });
+
+test("locate-in-canvas sends the locate command when the host advertises it", async ({
+	page,
+}) => {
+	await page.evaluate(() => {
+		(
+			window as unknown as {
+				__creatorWorkspaceFixture: { enableLocateInCanvas(): void };
+			}
+		).__creatorWorkspaceFixture.enableLocateInCanvas();
+	});
+	await page.getByTestId("creator-asset-card").first().click();
+	await expect(page.getByTestId("creator-locate-canvas")).toBeVisible();
+	await page.getByTestId("creator-locate-canvas").click();
+	await expect(page.getByTestId("creator-operation-status")).toContainText(
+		"已在画布中定位",
+	);
+	const commands = await page.evaluate(
+		() =>
+			(
+				window as unknown as {
+					__creatorWorkspaceFixture: { getCommands(): unknown[] };
+				}
+			).__creatorWorkspaceFixture.getCommands(),
+	);
+	expect(commands).toContainEqual(
+		expect.objectContaining({
+			type: "context.locate-canvas",
+			assetId: "character",
+			versionId: "v1",
+		}),
+	);
+});

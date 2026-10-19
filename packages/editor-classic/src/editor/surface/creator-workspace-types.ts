@@ -66,6 +66,7 @@ export interface CreatorWorkspaceSnapshot {
 		readonly placeVersion: boolean;
 		readonly mention: boolean;
 		readonly replaceVersion?: boolean;
+		readonly locateInCanvas?: boolean;
 	};
 	readonly jobs?: readonly { id: string; status: string; stage: string }[];
 	readonly documents: readonly CreatorDocument[];
@@ -116,6 +117,7 @@ export type CreatorWorkspaceCommand =
 			native?: CreatorNativePlacement;
 	  }
 	| { type: "context.mention"; assetId: string; versionId?: string }
+	| { type: "context.locate-canvas"; assetId: string; versionId: string }
 	| {
 			type: "asset.replace-version.prepare";
 			assetId: string;

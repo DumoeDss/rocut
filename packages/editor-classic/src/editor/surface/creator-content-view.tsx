@@ -405,6 +405,23 @@ export function CreatorAssetView({
 							替换已保存片段
 						</Button>
 					)}
+					{capabilities?.locateInCanvas && (
+						<Button
+							size="sm"
+							variant="ghost"
+							disabled={busy}
+							data-testid="creator-locate-canvas"
+							onClick={() =>
+								void executeWithResult?.({
+									type: "context.locate-canvas",
+									assetId: asset.id,
+									versionId: version.id,
+								})
+							}
+						>
+							在画布中定位
+						</Button>
+					)}
 				</div>
 				{capabilities?.placeVersion && (
 					<label className="flex flex-wrap gap-2 items-center text-xs">
