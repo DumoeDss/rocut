@@ -39,6 +39,9 @@ if (process.env.OPENCUT_MEDIA_PERSISTENCE_TEST_ISOLATED !== "1") {
 		const reportedFailures: string[] = [];
 		const editor = {
 			persistence,
+			transactions: {
+				commitUi: async () => {},
+			},
 			reportPersistenceFailure: ({ operation }: { operation: string }) => {
 				reportedFailures.push(operation);
 			},

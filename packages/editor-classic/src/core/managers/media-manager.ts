@@ -3,10 +3,13 @@ import type {
 	MediaFolder,
 	MediaFolderMutation,
 } from "@opencut/editor-contracts";
-import {
-	isMediaFolderEditingAvailable,
-} from "../../editor/transactions/opencut/media-folder-policy";
+import { isMediaFolderEditingAvailable } from "../../editor/transactions/opencut/media-folder-policy";
 import { MutateMediaFoldersCommand } from "../../commands/project/mutate-media-folders";
+import { assetCatalogFromMedia } from "../../editor/transactions/opencut/types";
+import {
+	diffOpenCutProjection,
+	projectOpenCutDraft,
+} from "../../editor/transactions/opencut/projection";
 import type { MediaPreviewProvider } from "@opencut/editor-ports/host";
 import { toast } from "sonner";
 import type { MediaAsset } from "../../media/types";
@@ -80,7 +83,32 @@ export class MediaManager {
 				});
 				return null;
 			}
+			await this.editor.transactions.commitUi({
+				returnCommittedDraft: false,
+				baseDraft: () => {
+					const project = this.editor.project.getActive();
+					if (!canPublish() || project.metadata.id !== projectId)
+						throw new Error("The media import project is no longer active");
+					return {
+						project: { ...project, scenes: this.editor.scenes.getScenes() },
+						assetCatalog: assetCatalogFromMedia([...this.assets, newAsset]),
+					};
+				},
+				prepare: ({ draft, baseRevision, baseDocument }) => ({
+					draft,
+					operations: diffOpenCutProjection({
+						before: baseDocument,
+						after: projectOpenCutDraft(draft, {
+							revision: baseRevision,
+							idempotency: [],
+						}),
+					}),
+					payload: undefined,
+				}),
+			});
 		} catch (error) {
+			// A store may commit before losing its acknowledgement. Preserve saved
+			// source bytes on failure; a later open reconciles missing catalog entries.
 			this.editor.reportPersistenceFailure({
 				operation: "save-media-attachment",
 				error,

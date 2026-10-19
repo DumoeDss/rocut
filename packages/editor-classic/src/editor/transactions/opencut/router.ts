@@ -128,6 +128,37 @@ export class SessionOpenCutTransactions {
 					],
 					normalizeOperationFingerprint,
 				});
+				// Hydration owns verified persisted attachments. Repair only absent
+				// identities, never overwrite author metadata with attachment metadata.
+				// We already own the project arbiter: use the engine directly, not commitUi.
+				const existingIds = new Set(
+					(await engine.assets()).map((asset) => asset.id),
+				);
+				const missing = projectOpenCutDraft(
+					{
+						...adapter.currentDraft(),
+						assetCatalog: assetCatalogFromMedia(assets),
+					},
+					{ revision: await engine.revision(), idempotency: [] },
+				).assets.filter((asset) => !existingIds.has(asset.id));
+				if (missing.length > 0) {
+					await engine.apply({
+						operations: missing.map((asset) => ({
+							kind: "create-asset" as const,
+							asset,
+						})),
+						expectedRevision: await engine.revision(),
+						idempotencyKey: commitToken(),
+					});
+					const receipt = adapter.consumeReceipt();
+					if (!receipt)
+						throw new Error("The media catalog repair receipt is missing");
+					await this.options.persistence.adoptCommittedProjectRecord({
+						record: receipt.record,
+						returnProject: false,
+						takeOwnership: true,
+					});
+				}
 				const active: ActiveOpenCutRouter = {
 					projectId: portProjectId,
 					engine,
