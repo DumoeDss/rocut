@@ -132,12 +132,14 @@ const english = {
 	programmatic: "Programmatic",
 	generationTasks: "Generation tasks",
 	projectTools: "Project assets and tools",
+	versionCandidates: "Candidate versions",
+	currentVersionUsage: "This selected version is used by",
 } as const;
 
 export type EditorMessages = { readonly [Key in keyof typeof english]: string };
 const chinese: EditorMessages = {
 	projectName: "工程名称",
-	focusAssets: "计划与素材",
+	focusAssets: "工程素材与工具",
 	commonProperties: "共同属性",
 	noCommonProperties: "所选片段没有可共同编辑的数值属性。",
 	animatedProperty: "（含关键帧，请单独编辑）",
@@ -267,6 +269,8 @@ const chinese: EditorMessages = {
 	programmatic: "程序化",
 	generationTasks: "生成任务",
 	projectTools: "工程素材与工具",
+	versionCandidates: "候选版本",
+	currentVersionUsage: "此选用版本用于",
 };
 
 export function getEditorMessages(locale?: string): EditorMessages {

@@ -11,6 +11,7 @@ import type {
 	CreatorWorkspaceBridge,
 } from "./creator-workspace-types";
 import { useEditor, useEditorInstance } from "../use-editor";
+import { useEditorMessages } from "../host/editor-host-context";
 import { DEFAULT_NEW_ELEMENT_DURATION } from "../../timeline/creation";
 import { mediaTimeFromSeconds } from "../../wasm";
 import {
@@ -229,6 +230,7 @@ export function CreatorAssetView({
 }) {
 	const editor = useEditorInstance();
 	const scene = useEditor((current) => current.scenes.getActiveSceneOrNull());
+	const messages = useEditorMessages();
 	const [trackId, setTrackId] = useState("");
 	const [versionId, setVersionId] = useState(
 		initialVersionId ?? asset.selectedVersionId ?? asset.versions[0]?.id,
@@ -276,7 +278,7 @@ export function CreatorAssetView({
 						{asset.selectedVersionId === version.id ? " · 已选用" : " · 候选"}
 					</span>
 				</div>
-				<div className="flex gap-1 flex-wrap" aria-label="候选版本">
+				<div className="flex gap-1 flex-wrap" aria-label={messages.versionCandidates}>
 					{asset.versions.map((candidate) => (
 						<Button
 							key={candidate.id}
@@ -473,6 +475,11 @@ export function CreatorAssetView({
 				)}
 				<div className="border-t pt-3 text-xs text-muted-foreground">
 					<h3 className="mb-2">使用位置</h3>
+					<p className="mb-1">
+						{messages.currentVersionUsage}{" "}
+						{asset.usages?.filter((usage) => usage.versionId === version.id)
+							.length ?? 0}
+					</p>
 					{asset.usages?.length ? (
 						asset.usages.map((usage) => (
 							<p key={usage.id} className="py-1">
