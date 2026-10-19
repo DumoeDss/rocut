@@ -250,6 +250,7 @@ export function CreatorAssetView({
 	const [replaceOpen, setReplaceOpen] = useState(false);
 	const [registeredTargetId, setRegisteredTargetId] = useState("");
 	const [nativeRevision, setNativeRevision] = useState("");
+	const [explicitClipIds, setExplicitClipIds] = useState("");
 	const [replacePlanId, setReplacePlanId] = useState<string | null>(null);
 	const tracks = scene
 		? [
@@ -431,15 +432,24 @@ export function CreatorAssetView({
 							const nativeProjectId =
 								editor.project.getActive().metadata.id;
 							const sceneId = scene?.id ?? "";
-							const clipIds = (asset.usages ?? [])
+							const usageClipIds = (asset.usages ?? [])
 								.filter(
 									(usage) =>
 										usage.versionId === version.id &&
-										usage.projectId === nativeProjectId &&
-										usage.sceneId === sceneId &&
+										(usage.projectId === undefined ||
+											usage.projectId === nativeProjectId) &&
+										(usage.sceneId === undefined ||
+											usage.sceneId === sceneId) &&
 										Boolean(usage.id),
 								)
 								.map((usage) => usage.id);
+							const manualClipIds = explicitClipIds
+								.split(/[,,]/)
+								.map((clipId) => clipId.trim())
+								.filter(Boolean);
+							const clipIds = manualClipIds.length
+								? Array.from(new Set([...usageClipIds, ...manualClipIds]))
+								: usageClipIds;
 							void executeWithResult?.({
 								type: "asset.replace-version.prepare",
 								assetId: asset.id,
@@ -476,7 +486,17 @@ export function CreatorAssetView({
 							value={nativeRevision}
 							onChange={(event) => setNativeRevision(event.target.value)}
 						/>
-						<Button size="sm" type="submit" disabled={busy}>
+						<label className="text-xs block" htmlFor="creator-replace-clips">
+							要替换的片段 ID（逗号分隔，留空使用当前场景的所有已保存使用位置）
+						</label>
+						<input
+							id="creator-replace-clips"
+							className="creator-type"
+							data-testid="creator-replace-prepare"
+							value={explicitClipIds}
+							onChange={(event) => setExplicitClipIds(event.target.value)}
+						/>
+						<Button size="sm" type="submit" disabled={busy} data-testid="creator-replace-submit">
 							准备只读预览
 						</Button>
 					</form>

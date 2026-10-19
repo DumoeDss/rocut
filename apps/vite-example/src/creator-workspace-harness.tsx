@@ -16,7 +16,7 @@ import { resolveVideoSourceTime, planVideoFreezeFrame, isVideoReverseSupported }
 
 const thumbnail = "data:image/svg+xml," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="320" height="180"><rect width="320" height="180" fill="#586f8c"/><circle cx="160" cy="90" r="45" fill="#d4e2ed"/></svg>');
 function content(projectId: string): CreatorWorkspaceSnapshot {
-	return { projectId, revision: "1", capabilities: { saveDocument: true, selectVersion: true, regenerate: true, generate: true, placeVersion: false, mention: false }, documents: [{ id: "plan", title: `${projectId} 制作计划`, group: "项目计划", revision: "1:hash", content: "第一段制作计划。\n保留已有片段的固定版本。" }], assets: [
+	return { projectId, revision: "1", capabilities: { saveDocument: true, selectVersion: true, regenerate: true, generate: true, placeVersion: false, mention: false, replaceVersion: true }, documents: [{ id: "plan", title: `${projectId} 制作计划`, group: "项目计划", revision: "1:hash", content: "第一段制作计划。\n保留已有片段的固定版本。" }], assets: [
 		{ id: "character", name: "角色设定", selectedVersionId: "v1", versions: [{ id: "v1", label: "V1", mediaType: "image", previewUrl: thumbnail, canRegenerate: true, source: "项目图片", model: "记录的模型", prompt: "角色参考图" }, { id: "v2", label: "V2", mediaType: "image", previewUrl: thumbnail }], usages: [{ id: "existing-clip", label: "已有片段", versionId: "v1" }] },
 		{ id: "music", name: "背景音乐", versions: [{ id: "audio-v1", label: "V1", mediaType: "audio" }] },
 	] };
@@ -71,6 +71,14 @@ export function CreatorWorkspaceHarness() {
 						const revision = String(Number(snapshot.revision) + 1);
 						snapshot = { ...snapshot, revision, documents: snapshot.documents.map((document) => document.id === command.documentId ? { ...document, revision: `${revision}:hash`, content: command.content } : document) };
 					} else if (command.type === "asset.select-version") snapshot = { ...snapshot, assets: snapshot.assets.map((asset) => asset.id === command.assetId ? { ...asset, selectedVersionId: command.versionId } : asset) };
+					else if (command.type === "asset.replace-version.prepare") {
+						if (!command.registeredTargetId || !command.nativeRevision) throw new Error("replacement target and native revision are required");
+						return { snapshot, planId: "fixture-replace-plan" };
+					}
+					else if (command.type === "asset.replace-version.confirm") {
+						if (command.planId !== "fixture-replace-plan") throw new Error("replace plan is missing");
+						snapshot = { ...snapshot, revision: String(Number(snapshot.revision) + 1), assets: snapshot.assets.map((asset) => asset.id === "character" ? { ...asset, selectedVersionId: "v2", usages: asset.usages?.map((usage) => usage.versionId === "v1" ? { ...usage, versionId: "v2" } : usage) } : asset) };
+					}
 					publish();
 					return { snapshot };
 				},
