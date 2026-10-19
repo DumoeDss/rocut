@@ -25,7 +25,7 @@ export function CreatorWorkspace({
 		contentActivation: number;
 	}) => ReactNode;
 }) {
-	const { bridge, snapshot, setSnapshot, error } = useCreatorWorkspace();
+	const { bridge, snapshot, setSnapshot } = useCreatorWorkspace();
 	const operationScope = useRef<{
 		bridge: typeof bridge;
 		active: boolean;
@@ -156,7 +156,10 @@ export function CreatorWorkspace({
 			}),
 		[editor, snapshot],
 	);
-	const execute = async (command: CreatorWorkspaceCommand) => {
+	type ExecuteResult = { planId?: string; message?: string };
+	const executeWithResult = async (
+		command: CreatorWorkspaceCommand,
+	): Promise<false | ExecuteResult> => {
 		const scope = operationScope.current;
 		if (!bridge || !scope?.active || scope.bridge !== bridge || scope.running)
 			return false;
@@ -185,7 +188,12 @@ export function CreatorWorkspace({
 				await editor.project.loadProject({
 					id: editor.project.getActive().metadata.id,
 				});
-			return true;
+			return {
+				...(typeof result.planId === "string"
+					? { planId: result.planId }
+					: {}),
+				...(result.message ? { message: result.message } : {}),
+			};
 		} catch (failure) {
 			if (!scope.active) return false;
 			setOperationError(
@@ -198,7 +206,8 @@ export function CreatorWorkspace({
 		}
 	};
 	// Event handlers render failures locally; the returned promise remains usable by editors.
-	const run = execute;
+	const run = async (command: CreatorWorkspaceCommand) =>
+		Boolean(await executeWithResult(command));
 	if (!bridge) return <>{children({ assets, preview, contentActivation })}</>;
 	const selectedDocument = snapshot?.documents.find(
 		(document) => view?.type === "document" && document.id === view.id,
@@ -271,6 +280,7 @@ export function CreatorWorkspace({
 					asset={selectedAsset}
 					initialVersionId={view?.versionId}
 					execute={run}
+					executeWithResult={executeWithResult}
 					busy={busy}
 					capabilities={snapshot?.capabilities}
 					openAsset={(id) => setView({ type: "asset", id })}

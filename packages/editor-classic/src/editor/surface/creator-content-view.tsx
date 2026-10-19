@@ -217,6 +217,7 @@ export function CreatorAssetView({
 	asset,
 	initialVersionId,
 	execute,
+	executeWithResult,
 	busy,
 	openAsset,
 	capabilities,
@@ -224,6 +225,9 @@ export function CreatorAssetView({
 	asset: CreatorAsset;
 	initialVersionId?: string;
 	execute: (command: CreatorWorkspaceCommand) => Promise<boolean>;
+	executeWithResult?: (
+		command: CreatorWorkspaceCommand,
+	) => Promise<false | { planId?: string; message?: string }>;
 	busy: boolean;
 	openAsset: (id: string) => void;
 	capabilities?: CreatorWorkspaceSnapshot["capabilities"];
@@ -243,6 +247,10 @@ export function CreatorAssetView({
 	const [generationOptions, setGenerationOptions] = useState<GenerationOptions>(
 		{},
 	);
+	const [replaceOpen, setReplaceOpen] = useState(false);
+	const [registeredTargetId, setRegisteredTargetId] = useState("");
+	const [nativeRevision, setNativeRevision] = useState("");
+	const [replacePlanId, setReplacePlanId] = useState<string | null>(null);
 	const tracks = scene
 		? [
 				scene.tracks.main,
@@ -316,7 +324,7 @@ export function CreatorAssetView({
 						}
 						onClick={() => {
 							if (!scene || !selectedTrack) return;
-							void execute({
+							void executeWithResult?.({
 								type: "asset.place-version",
 								assetId: asset.id,
 								versionId: version.id,
@@ -349,7 +357,7 @@ export function CreatorAssetView({
 							version.status === "failed"
 						}
 						onClick={() =>
-							void execute({
+							void executeWithResult?.({
 								type: "asset.select-version",
 								assetId: asset.id,
 								versionId: version.id,
@@ -386,6 +394,16 @@ export function CreatorAssetView({
 					>
 						@ 提问
 					</Button>
+					{capabilities?.replaceVersion && (
+						<Button
+							size="sm"
+							variant="ghost"
+							disabled={busy}
+							onClick={() => setReplaceOpen((value) => !value)}
+						>
+							替换已保存片段
+						</Button>
+					)}
 				</div>
 				{capabilities?.placeVersion && (
 					<label className="flex flex-wrap gap-2 items-center text-xs">
@@ -404,6 +422,81 @@ export function CreatorAssetView({
 						</select>
 						<span className="text-muted-foreground">从当前播放头放置</span>
 					</label>
+				)}
+				{replaceOpen && capabilities?.replaceVersion && (
+					<form
+						className="space-y-2 border rounded-md p-3"
+						onSubmit={(event) => {
+							event.preventDefault();
+							const nativeProjectId =
+								editor.project.getActive().metadata.id;
+							const sceneId = scene?.id ?? "";
+							const clipIds = (asset.usages ?? [])
+								.filter(
+									(usage) =>
+										usage.versionId === version.id &&
+										usage.projectId === nativeProjectId &&
+										usage.sceneId === sceneId &&
+										Boolean(usage.id),
+								)
+								.map((usage) => usage.id);
+							void executeWithResult?.({
+								type: "asset.replace-version.prepare",
+								assetId: asset.id,
+								versionId: version.id,
+								expectedSha256: version.sha256,
+								clipIds,
+								registeredTargetId,
+								nativeProjectId,
+								nativeRevision,
+							}).then((result) => {
+								if (result && typeof result === "object" && result.planId)
+									setReplacePlanId(result.planId);
+							});
+						}}
+					>
+						<p className="text-xs text-muted-foreground">
+							准备只读预览后，宿主会打开原生确认对话框；只有该对话框能授权替换。准备不会修改工程。
+						</p>
+						<label className="text-xs block" htmlFor="creator-replace-target">
+							已注册目标 ID（非 auto）
+						</label>
+						<input
+							id="creator-replace-target"
+							className="creator-type"
+							value={registeredTargetId}
+							onChange={(event) => setRegisteredTargetId(event.target.value)}
+						/>
+						<label className="text-xs block" htmlFor="creator-replace-revision">
+							回读中的当前原生修订
+						</label>
+						<input
+							id="creator-replace-revision"
+							className="creator-type"
+							value={nativeRevision}
+							onChange={(event) => setNativeRevision(event.target.value)}
+						/>
+						<Button size="sm" type="submit" disabled={busy}>
+							准备只读预览
+						</Button>
+					</form>
+				)}
+				{replacePlanId && capabilities?.replaceVersion && (
+					<Button
+						size="sm"
+						disabled={busy}
+						onClick={() => {
+							const plan = replacePlanId;
+							setReplacePlanId(null);
+							setReplaceOpen(false);
+							void executeWithResult?.({
+								type: "asset.replace-version.confirm",
+								planId: plan,
+							});
+						}}
+					>
+						请求原生确认并替换
+					</Button>
 				)}
 				{regenerating && (
 					<form

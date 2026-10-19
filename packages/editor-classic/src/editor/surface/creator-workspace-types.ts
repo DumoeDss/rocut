@@ -65,6 +65,7 @@ export interface CreatorWorkspaceSnapshot {
 		readonly generate?: boolean;
 		readonly placeVersion: boolean;
 		readonly mention: boolean;
+		readonly replaceVersion?: boolean;
 	};
 	readonly jobs?: readonly { id: string; status: string; stage: string }[];
 	readonly documents: readonly CreatorDocument[];
@@ -114,7 +115,18 @@ export type CreatorWorkspaceCommand =
 			versionId: string;
 			native?: CreatorNativePlacement;
 	  }
-	| { type: "context.mention"; assetId: string; versionId?: string };
+	| { type: "context.mention"; assetId: string; versionId?: string }
+	| {
+			type: "asset.replace-version.prepare";
+			assetId: string;
+			versionId: string;
+			expectedSha256?: string;
+			clipIds: string[];
+			registeredTargetId: string;
+			nativeProjectId: string;
+			nativeRevision: string;
+	  }
+	| { type: "asset.replace-version.confirm"; planId: string };
 
 export interface CreatorNativePlacement {
 	readonly projectId: string;
@@ -132,6 +144,7 @@ export interface CreatorNativePlacement {
 }
 
 export interface CreatorWorkspaceCommandResult {
+	readonly planId?: string;
 	readonly catalog?: {
 		status: "ready" | "unavailable";
 		providers: readonly {
