@@ -1,34 +1,50 @@
-/** Reviewed current surface from the Rocut worktree (2026-10-14).
+/** Reviewed current surface from the Rocut worktree (2026-10-17).
  * Historical C0b pins remain in wasm-api-surface-contract.mjs.
  * See fixtures/wasm-current-api-contract.ts for exact public signatures.
  * Metadata is the normal wasm-pack + emitSyncEntry manifest, not the compact
  * diagnostic producer manifest. No observed package is accepted dynamically.
- * 30 public additions; 106 stable low-level additions; one closure signature.
+ * Reviewed additive public and stable low-level APIs; original contracts retained.
  * The October 14 rebuild adds the existing native export job and composition
  * production JSON bindings; all previous declarations and imports are retained.
+ * The October 17 rebuild also records structured cues, byte-bound media facts,
+ * timeline replacement and undo; no previous stable export or import is removed.
+ * The workspace rebuild adds directional source time, source trim mapping and
+ * reversed PCM; its only three binary additions introduce no new imports.
+ * Track-lock validation adds only validateTrackLocksJson (string -> string):
+ * reviewed against the preceding reverse build, with no removals or import delta.
+ * Media folders add only their mutation planner and validator (string -> string),
+ * reviewed against the preceding track-lock build with no removals or import delta.
  */
 import { EXPECTED as HISTORICAL } from "./wasm-api-surface-contract.mjs";
 
 export const EXPECTED = {
 	...HISTORICAL,
 	...{
-		dtsSha: "5f4ecfa92a45c09f34809010e4d58818a6f7d17f4346626c190b2985e610c2cd",
+		dtsSha: "965bc39bfbf11930851d1029e92681a3b1c31bdf08f39aa16703c4913bdbde0a",
 		wrapperSha:
-			"862b472a793e604621dfcabb1fb060390624019f98a4bab321250f75ce2e199c",
+			"94f213cb3dab88bdfa0c73056e7b0a87039267cbcc86f496e27fefb67eff86d5",
 		wasmDtsNormalizedSignature:
-			"ab7f1cccb249491f934a05892b22899811adc208d34f6d7a2c5890651d1f6d74",
-		wasmDtsLineCount: 239,
+			"7582c7c1b18f01640cd6c4ddf0023938e2900412f3c8ea962c584de082d00dca",
+		wasmDtsLineCount: 250,
 		wrapperExportSignature:
-			"34b46e5676e6c36e18b6ede18e627293aea524a8e1a2144df160ba733fa00b96",
-		wrapperExportCount: 140,
+			"0bf7f80861b940e9294a39ecf238a255f9659fda5f36b9a9345ff32e06c40291",
+		wrapperExportCount: 151,
 		bgExportSignature:
-			"4ea6fa7031b0e8f621d513432464a4e8e9e201296fda151735b19f5e5468d448",
-		bgExportCount: 759,
+			"f07fb803da57dd7a0a02acf79e795dac82377b1509d83e6e81d1315b3e4c9231",
+		bgExportCount: 770,
 		stableWasmExportSignature:
-			"ef0219ed745647f0f6277ddb6f61bd581a41326ad0722070c18967297fea3d5e",
-		stableWasmExportCount: 233,
+			"f51781e6a85fba58b990939a2908f94daf17eb41882438b7ce1cb8fc679a9c19",
+		stableWasmExportCount: 244,
 		trampolineExportCount: 4,
 		wasmExportsAsRecorded: [
+			"planMediaFolderMutationJson|function",
+			"validateMediaFoldersJson|function",
+			"validateTrackLocksJson|function",
+			"createMotionTextStructuredCues|function",
+			"inspectMediaFactsBytes|function",
+			"resolveTimelineReplacementBytes|function",
+			"resolveTimelineUndoBytes|function",
+			"validateMediaFactsJson|function",
 			"memory|memory",
 			"createCompositor|function",
 			"initCompositor|function",
@@ -248,6 +264,9 @@ export const EXPECTED = {
 			"formatTimecode|function",
 			"parseTimecode|function",
 			"resolveVideoSourceTime|function",
+			"resolveDirectionalVideoSourceTime|function",
+			"reverseAudioSamples|function",
+			"directionalSourceTrims|function",
 			"planVideoFreezeFrame|function",
 			"planAudioSampleWindow|function",
 			"planAudioMixWindow|function",
@@ -276,7 +295,7 @@ export const EXPECTED = {
 			"package.json":
 				"60502f95b49df31dd41e5be0ada1826e0693b30a525d3b49da73f4e106a1a4b4",
 			"opencut_wasm_sync.js":
-				"05a9aa5b0ef01082f98acb48ba8030fdaf28b1ac173038b051d4aa4aa4e4e687",
+				"e0651502c0d5bb6ce3da192ad2cde6689adf37a69dfe9c9e5c6598167ebe9479",
 		},
 	},
 };

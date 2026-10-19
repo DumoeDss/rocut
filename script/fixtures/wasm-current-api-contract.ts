@@ -7,6 +7,20 @@ type Equal<A, B> =
 		: false;
 type Assert<T extends true> = T;
 declare namespace Expected {
+	export interface DirectionalSourceTrims {
+		trimStart: number;
+		trimEnd: number;
+		reverse?: boolean;
+	}
+	export interface DirectionalVideoSourceTimeOptions {
+		clipTime: number;
+		clipDuration: number;
+		trimStart: number;
+		playbackRate: number;
+		reverse?: boolean;
+		freezeFrame?: number | undefined;
+		sourceDuration?: number | undefined;
+	}
 	export interface NativeFramePng {
 		png: Uint8Array;
 		width: number;
@@ -366,7 +380,68 @@ type sampleScalarAnimationBatchJsonExact = Assert<
 type validateMasterEffectsJsonExact = Assert<
 	Equal<typeof wasm.validateMasterEffectsJson, (input: string) => string>
 >;
+type validateTrackLocksJsonExact = Assert<
+	Equal<typeof wasm.validateTrackLocksJson, (input: string) => string>
+>;
+type planMediaFolderMutationJsonExact = Assert<
+	Equal<typeof wasm.planMediaFolderMutationJson, (input: string) => string>
+>;
+type validateMediaFoldersJsonExact = Assert<
+	Equal<typeof wasm.validateMediaFoldersJson, (input: string) => string>
+>;
 // Binary versus JSON transport must not silently collapse.
+type createMotionTextStructuredCuesExact = Assert<
+	Equal<
+		typeof wasm.createMotionTextStructuredCues,
+		(
+			options: wasm.CreateMotionTextStructuredCuesOptions,
+		) => wasm.CreateMotionTextStructuredCuesResult
+	>
+>;
+type inspectMediaFactsBytesExact = Assert<
+	Equal<typeof wasm.inspectMediaFactsBytes, (input: Uint8Array) => string>
+>;
+type resolveTimelineReplacementBytesExact = Assert<
+	Equal<
+		typeof wasm.resolveTimelineReplacementBytes,
+		(input: Uint8Array) => string
+	>
+>;
+type resolveTimelineUndoBytesExact = Assert<
+	Equal<typeof wasm.resolveTimelineUndoBytes, (input: Uint8Array) => string>
+>;
+type validateMediaFactsJsonExact = Assert<
+	Equal<typeof wasm.validateMediaFactsJson, (input: string) => string>
+>;
+type DirectionalVideoSourceTimeOptionsExact = Assert<
+	Equal<
+		wasm.DirectionalVideoSourceTimeOptions,
+		Expected.DirectionalVideoSourceTimeOptions
+	>
+>;
+type DirectionalSourceTrimsExact = Assert<
+	Equal<wasm.DirectionalSourceTrims, Expected.DirectionalSourceTrims>
+>;
+type resolveDirectionalVideoSourceTimeExact = Assert<
+	Equal<
+		typeof wasm.resolveDirectionalVideoSourceTime,
+		(options: Expected.DirectionalVideoSourceTimeOptions) => number | undefined
+	>
+>;
+type directionalSourceTrimsExact = Assert<
+	Equal<
+		typeof wasm.directionalSourceTrims,
+		(
+			options: Expected.DirectionalSourceTrims,
+		) => Expected.DirectionalSourceTrims | undefined
+	>
+>;
+type reverseAudioSamplesExact = Assert<
+	Equal<
+		typeof wasm.reverseAudioSamples,
+		(samples: Float32Array) => Float32Array
+	>
+>;
 // @ts-expect-error Produced PCM is binary, never a JSON/string envelope.
 wasm.mixRemotionProducedAudioPcm("{}");
 // @ts-expect-error Tunnel layout requires the independently admitted font byte snapshot.

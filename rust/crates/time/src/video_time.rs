@@ -18,6 +18,110 @@ pub struct VideoSourceTimeOptions {
     pub source_duration: Option<MediaTime>,
 }
 
+#[cfg_attr(feature = "wasm", derive(tsify_next::Tsify))]
+#[cfg_attr(feature = "wasm", tsify(from_wasm_abi, into_wasm_abi))]
+#[derive(Serialize, Deserialize, Clone, Copy, Debug)]
+#[serde(rename_all = "camelCase")]
+pub struct DirectionalVideoSourceTimeOptions {
+    pub clip_time: MediaTime,
+    pub clip_duration: MediaTime,
+    pub trim_start: MediaTime,
+    pub playback_rate: f64,
+    #[serde(default)]
+    pub reverse: bool,
+    #[serde(default)]
+    pub freeze_frame: Option<MediaTime>,
+    #[serde(default)]
+    pub source_duration: Option<MediaTime>,
+}
+
+/// Direction changes traversal of the same half-open trimmed source interval.
+#[export]
+pub fn resolve_directional_video_source_time(
+    options: DirectionalVideoSourceTimeOptions,
+) -> Option<MediaTime> {
+    if options.clip_time < MediaTime::ZERO || options.clip_time >= options.clip_duration {
+        return None;
+    }
+    resolve_directional_video_source_time_offset(options)
+}
+
+pub(crate) fn resolve_directional_video_source_time_offset(
+    options: DirectionalVideoSourceTimeOptions,
+) -> Option<MediaTime> {
+    if options.clip_duration <= MediaTime::ZERO || options.trim_start < MediaTime::ZERO {
+        return None;
+    }
+    let clip_time = if options.reverse && options.freeze_frame.is_none() {
+        let span = playback_elapsed(options.clip_duration, options.playback_rate)?;
+        let mut elapsed = playback_elapsed(options.clip_time, options.playback_rate)?;
+        if span <= 0 {
+            return None;
+        }
+        if options.clip_time >= MediaTime::ZERO && options.clip_time < options.clip_duration {
+            elapsed = elapsed.min(span - 1);
+        }
+        MediaTime::from_ticks(span.checked_sub(1)?.checked_sub(elapsed)?)
+    } else {
+        options.clip_time
+    };
+    resolve_video_source_time_offset(VideoSourceTimeOptions {
+        clip_time,
+        trim_start: options.trim_start,
+        playback_rate: if options.reverse && options.freeze_frame.is_none() {
+            1.0
+        } else {
+            options.playback_rate
+        },
+        freeze_frame: options.freeze_frame,
+        source_duration: options.source_duration,
+    })
+}
+
+fn playback_elapsed(time: MediaTime, rate: f64) -> Option<i64> {
+    let safe_rate = if rate.is_finite() && rate > 0.0 {
+        rate.clamp(0.01, 5.0)
+    } else {
+        1.0
+    };
+    (time.as_ticks() as f64 * safe_rate).round().to_i64()
+}
+
+/// Reverse rendered PCM so preview and export share the exact sample ordering.
+#[export]
+pub fn reverse_audio_samples(mut samples: Vec<f32>) -> Vec<f32> {
+    samples.reverse();
+    samples
+}
+
+#[cfg_attr(feature = "wasm", derive(tsify_next::Tsify))]
+#[cfg_attr(feature = "wasm", tsify(from_wasm_abi, into_wasm_abi))]
+#[derive(Serialize, Deserialize, Clone, Copy, Debug, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct DirectionalSourceTrims {
+    pub trim_start: MediaTime,
+    pub trim_end: MediaTime,
+    #[serde(default)]
+    pub reverse: bool,
+}
+
+/// Convert between source-order and playback-order handles; this is an involution.
+#[export]
+pub fn directional_source_trims(options: DirectionalSourceTrims) -> Option<DirectionalSourceTrims> {
+    if options.trim_start < MediaTime::ZERO || options.trim_end < MediaTime::ZERO {
+        return None;
+    }
+    Some(if options.reverse {
+        DirectionalSourceTrims {
+            trim_start: options.trim_end,
+            trim_end: options.trim_start,
+            ..options
+        }
+    } else {
+        options
+    })
+}
+
 /// One source-time policy for normal playback and a non-destructive frame hold.
 #[export]
 pub fn resolve_video_source_time(options: VideoSourceTimeOptions) -> Option<MediaTime> {
@@ -34,15 +138,7 @@ pub(crate) fn resolve_video_source_time_offset(
     let source = if let Some(frame) = options.freeze_frame {
         frame
     } else {
-        // Match the editor's existing supported playback-rate range.
-        let rate = if options.playback_rate.is_finite() && options.playback_rate > 0.0 {
-            options.playback_rate.clamp(0.01, 5.0)
-        } else {
-            1.0
-        };
-        let elapsed = (options.clip_time.as_ticks() as f64 * rate)
-            .round()
-            .to_i64()?;
+        let elapsed = playback_elapsed(options.clip_time, options.playback_rate)?;
         MediaTime::from_ticks(options.trim_start.as_ticks().checked_add(elapsed)?)
     };
     if source < MediaTime::ZERO || source.as_ticks() > 9_007_199_254_740_991 {

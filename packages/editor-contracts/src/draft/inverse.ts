@@ -22,6 +22,7 @@ const PROJECT_PATCH_KEYS = [
 	"sceneState",
 	"background",
 	"masterEffects",
+	"mediaFolders",
 ] as const satisfies readonly (keyof ProjectPatch)[];
 
 interface EntityRepair {
@@ -569,7 +570,10 @@ function planProjectCompensation(args: {
 	const patch: ProjectPatch = {};
 	for (const key of PROJECT_PATCH_KEYS) {
 		if (!sameDraftData(args.base[key], args.candidate[key])) {
-			(patch as Record<string, unknown>)[key] = args.base[key];
+			(patch as Record<string, unknown>)[key] =
+				key === "mediaFolders" && !Object.hasOwn(args.base, key)
+					? null
+					: args.base[key];
 		}
 	}
 	if (Object.keys(patch).length === 0) {
@@ -583,6 +587,7 @@ function planProjectCompensation(args: {
 		...patch,
 		id: args.candidate.id,
 	};
+	if (patch.mediaFolders === null) delete restored.mediaFolders;
 	if (!sameDraftData(restored, args.base)) {
 		throw new Error("Project inverse does not restore the exact base Project");
 	}

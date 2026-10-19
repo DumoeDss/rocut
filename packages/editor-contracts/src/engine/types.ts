@@ -110,6 +110,8 @@ export interface TransactionEngineDocument {
 
 export interface PlacementPolicyContext {
 	readonly document: TransactionEngineDocument;
+	/** Detached pre-batch state for native cross-revision admission rules. */
+	readonly previousDocument?: TransactionEngineDocument;
 	/** Detached pre-batch project metadata for topology invariants. */
 	readonly previousProject?: Project | null;
 	readonly batch: TransactionBatch;
@@ -117,6 +119,10 @@ export interface PlacementPolicyContext {
 }
 
 export interface TransactionPlacementPolicy {
+	/** Host-owned native validator for the complete project media-folder state. */
+	readonly validatesMediaFolders?: true;
+	/** Opt in to the extra detached snapshot only for cross-revision rules. */
+	readonly requiresPreviousDocument?: true;
 	evaluate(
 		context: PlacementPolicyContext,
 	):

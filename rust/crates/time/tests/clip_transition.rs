@@ -11,6 +11,7 @@ fn video(trim: i64, duration: i64, rate: f64) -> TransitionSource {
         trim_start: tick(trim),
         source_duration: tick(duration),
         playback_rate: rate,
+        reverse: false,
         freeze_frame: None,
     }
 }
@@ -123,6 +124,7 @@ fn images_and_explicit_freezes_need_no_extra_source_frames() {
         source_duration: tick(10),
         playback_rate: 1.0,
         freeze_frame: Some(tick(9)),
+        reverse: false,
     };
     let plan = plan_clip_transition(input).unwrap();
     for time in [300_000, 360_000, 419_999] {
@@ -130,6 +132,27 @@ fn images_and_explicit_freezes_need_no_extra_source_frames() {
         assert_eq!(sample.outgoing_source, None);
         assert_eq!(sample.incoming_source, Some(tick(9)));
     }
+}
+
+#[test]
+fn reverse_transitions_read_opposite_source_handles() {
+    let mut input = options();
+    for clip in [&mut input.outgoing, &mut input.incoming] {
+        if let TransitionSource::Video { reverse, .. } = &mut clip.source {
+            *reverse = true;
+        }
+    }
+    let plan = plan_clip_transition(input.clone()).unwrap();
+    let first = plan.sample(tick(300_000)).unwrap();
+    assert_eq!(first.outgoing_source, Some(tick(179_999)));
+    assert_eq!(first.incoming_source, Some(tick(539_999)));
+    let cut = plan.sample(tick(360_000)).unwrap();
+    assert_eq!(cut.outgoing_source, Some(tick(119_999)));
+    assert_eq!(cut.incoming_source, Some(tick(479_999)));
+    if let TransitionSource::Video { trim_start, .. } = &mut input.outgoing.source {
+        *trim_start = tick(0);
+    }
+    failure(input, TransitionPlanError::MissingOutgoingHandle);
 }
 
 #[test]
@@ -233,6 +256,7 @@ fn rejects_invalid_media_metadata_and_unsafe_source_ticks() {
             source_duration: tick(600_000),
             playback_rate: 1.0,
             freeze_frame: Some(tick(frame)),
+            reverse: false,
         };
         failure(input, TransitionPlanError::InvalidSource);
     }

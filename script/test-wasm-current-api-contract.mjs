@@ -75,6 +75,71 @@ test("current additive signatures and original frozen contracts compile", () => 
 });
 const controls = [
 	[
+		"removed media folder planner binding",
+		"export function planMediaFolderMutationJson(input: string): string;",
+		"",
+	],
+	[
+		"changed media folder planner input transport",
+		"planMediaFolderMutationJson(input: string): string;",
+		"planMediaFolderMutationJson(input: Uint8Array): string;",
+	],
+	[
+		"any widened media folder validator result",
+		"validateMediaFoldersJson(input: string): string;",
+		"validateMediaFoldersJson(input: string): any;",
+	],
+	[
+		"removed media folder validator binding",
+		"export function validateMediaFoldersJson(input: string): string;",
+		"",
+	],
+	[
+		"removed track lock validator binding",
+		"export function validateTrackLocksJson(input: string): string;",
+		"",
+	],
+	[
+		"changed track lock validator input transport",
+		"validateTrackLocksJson(input: string): string;",
+		"validateTrackLocksJson(input: Uint8Array): string;",
+	],
+	[
+		"any widened track lock validator result",
+		"validateTrackLocksJson(input: string): string;",
+		"validateTrackLocksJson(input: string): any;",
+	],
+	[
+		"removed directional video time binding",
+		"export function resolveDirectionalVideoSourceTime(options: DirectionalVideoSourceTimeOptions): MediaTime | undefined;",
+		"",
+	],
+	[
+		"widened directional trim result",
+		"directionalSourceTrims(options: DirectionalSourceTrims): DirectionalSourceTrims | undefined;",
+		"directionalSourceTrims(options: DirectionalSourceTrims): any;",
+	],
+	[
+		"changed reverse PCM transport",
+		"reverseAudioSamples(samples: Float32Array): Float32Array;",
+		"reverseAudioSamples(samples: Uint8Array): Float32Array;",
+	],
+	[
+		"changed byte-bound media facts transport",
+		"inspectMediaFactsBytes(input: Uint8Array): string;",
+		"inspectMediaFactsBytes(input: string): string;",
+	],
+	[
+		"any widened timeline replacement return",
+		"resolveTimelineReplacementBytes(input: Uint8Array): string;",
+		"resolveTimelineReplacementBytes(input: Uint8Array): any;",
+	],
+	[
+		"removed timeline undo binding",
+		"export function resolveTimelineUndoBytes(input: Uint8Array): string;",
+		"",
+	],
+	[
 		"removed native export job binding",
 		"export function resolveNativeExportJobJson(input: string): string;",
 		"",

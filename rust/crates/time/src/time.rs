@@ -45,6 +45,8 @@ pub use transition_graph::{
 };
 
 pub use video_time::{
+    DirectionalVideoSourceTimeOptions, resolve_directional_video_source_time, reverse_audio_samples,
+    DirectionalSourceTrims, directional_source_trims,
     VideoFreezeFrameOptions, VideoSourceTimeOptions, plan_video_freeze_frame,
     resolve_video_source_time,
 };

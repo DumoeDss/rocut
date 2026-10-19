@@ -90,6 +90,8 @@ mod programmatic_resources;
 pub use programmatic::resolve_programmatic_frame_json;
 pub use programmatic_resources::validate_programmatic_resources_json;
 mod scenes;
+mod media_folders;
+pub use media_folders::{plan_media_folder_mutation_json, validate_media_folders_json};
 pub use scenes::{plan_scene_mutation_json, validate_scene_state_json};
 mod video_export;
 pub use video_export::resolve_video_export_json;
@@ -101,6 +103,8 @@ mod timeline_replacement;
 pub use timeline_replacement::resolve_timeline_replacement_bytes;
 mod timeline_undo;
 pub use timeline_undo::resolve_timeline_undo_bytes;
+mod track_locks;
+pub use track_locks::validate_track_locks_json;
 
 use bridge::export;
 use model::*;

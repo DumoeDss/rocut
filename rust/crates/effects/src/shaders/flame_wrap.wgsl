@@ -27,7 +27,7 @@ fn mask(p:vec2i) -> f32 {
 }
 
 fn hash(p:vec2i,salt:u32) -> f32 {
-    var h=u32(p.x)*0x9e3779b9u ^ u32(p.y)*0x85ebca6bu ^ u32(uniforms.motion.z) ^ salt;
+    var h=(u32(p.x)*0x9e3779b9u) ^ (u32(p.y)*0x85ebca6bu) ^ u32(uniforms.motion.z) ^ salt;
     h=(h^(h>>16u))*0x7feb352du; h=(h^(h>>15u))*0x846ca68bu; h=h^(h>>16u);
     return f32(h>>8u)/16777216.0;
 }

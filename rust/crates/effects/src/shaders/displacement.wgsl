@@ -8,7 +8,7 @@ struct EffectUniforms {
 @group(1) @binding(0) var<uniform> uniforms: EffectUniforms;
 
 fn displacement_hash(cell: vec2u) -> u32 {
-    var value = cell.x * 1597334677u ^ cell.y * 3812015801u ^ u32(uniforms.clock_seed.y) * 2798796415u;
+    var value = (cell.x * 1597334677u) ^ (cell.y * 3812015801u) ^ (u32(uniforms.clock_seed.y) * 2798796415u);
     value = (value ^ (value >> 16u)) * 2246822519u;
     value = (value ^ (value >> 13u)) * 3266489917u;
     return value ^ (value >> 16u);

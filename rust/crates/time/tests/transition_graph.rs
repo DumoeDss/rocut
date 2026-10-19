@@ -166,6 +166,7 @@ fn changed_media_handles_use_the_same_planner_as_render_sampling() {
         source_duration: MediaTime::from_ticks(120_000),
         playback_rate: 1.0,
         freeze_frame: None,
+        reverse: false,
     };
     let result = evaluate_transition_graph(&clips, &links, FrameRate::FPS_30);
     assert_eq!(
@@ -177,6 +178,7 @@ fn changed_media_handles_use_the_same_planner_as_render_sampling() {
         source_duration: MediaTime::from_ticks(120_000),
         playback_rate: 1.0,
         freeze_frame: Some(MediaTime::ZERO),
+        reverse: false,
     };
     let result = evaluate_transition_graph(&clips, &links, FrameRate::FPS_30);
     assert!(result.rejected.is_empty());

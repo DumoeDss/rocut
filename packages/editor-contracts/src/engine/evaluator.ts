@@ -38,6 +38,7 @@ const PROJECT_PATCH_KEYS = new Set([
 	"sceneState",
 	"background",
 	"masterEffects",
+	"mediaFolders",
 ]);
 const FRAME_RATE_KEYS = ["numerator", "denominator"] as const;
 
@@ -327,6 +328,7 @@ function mutateOperations(args: {
 					...parsed.patch,
 					id: project.id,
 				};
+				if (parsed.patch.mediaFolders === null) delete updated.mediaFolders;
 				if (!isValidProject(updated, project.id)) {
 					issues.push(
 						issue({
@@ -400,6 +402,8 @@ function mutateOperations(args: {
 					break;
 				}
 				const updated = { ...existing, ...operation.patch };
+				// Undo restores the pre-lock shape of legacy tracks; JSON omits this key.
+				if (updated.locked === undefined) delete updated.locked;
 				if (!isValidTrack(updated)) {
 					issues.push(
 						issue({
@@ -1106,9 +1110,25 @@ export async function evaluateTransactionBatch(args: {
 	};
 	const placementIssues = evaluateBasePlacementPolicy(placementContext);
 	const providerIssues: TransactionEngineIssue[] = [];
+	if (
+		(document.project?.mediaFolders !== undefined ||
+			candidate.project?.mediaFolders !== undefined) &&
+		!args.placementPolicies?.some((policy) => policy.validatesMediaFolders)
+	) {
+		providerIssues.push(
+			issue({
+				code: "provider:media-folders",
+				message:
+					"Media folder transactions require the host native validation policy",
+			}),
+		);
+	}
 	for (const policy of args.placementPolicies ?? []) {
 		const providerContext = deepFreezeTransactionValue(
-			cloneTransactionValue(placementContext),
+			cloneTransactionValue({
+				...placementContext,
+				...(policy.requiresPreviousDocument && { previousDocument: document }),
+			}),
 		);
 		providerIssues.push(
 			...cloneTransactionValue(await policy.evaluate(providerContext)),

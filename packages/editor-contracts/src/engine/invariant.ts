@@ -79,6 +79,7 @@ export function isValidTrack(value: unknown): value is Track {
 		) &&
 		isNonEmptyString(value.name) &&
 		typeof value.hidden === "boolean" &&
+		(value.locked === undefined || typeof value.locked === "boolean") &&
 		(value.muted === undefined ||
 			(typeof value.muted === "boolean" &&
 				(value.kind === "video" || value.kind === "audio")))
@@ -132,12 +133,13 @@ function isValidRetime(value: unknown): boolean {
 	return (
 		isRecord(value) &&
 		Reflect.ownKeys(value).every(
-			(key) => key === "rate" || key === "maintainPitch",
+			(key) => key === "rate" || key === "maintainPitch" || key === "reverse",
 		) &&
 		typeof value.rate === "number" &&
 		Number.isFinite(value.rate) &&
 		value.rate >= 0.01 &&
 		value.rate <= 5 &&
+		(value.reverse === undefined || typeof value.reverse === "boolean") &&
 		(value.maintainPitch === undefined ||
 			typeof value.maintainPitch === "boolean")
 	);

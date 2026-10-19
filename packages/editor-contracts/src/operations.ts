@@ -32,7 +32,10 @@ export type ProjectPatch = Partial<
 		| "background"
 		| "masterEffects"
 	>
->;
+> & {
+	/** null removes the optional state, including its own property, across JSON transports. */
+	readonly mediaFolders?: Project["mediaFolders"] | null;
+};
 
 /** Update the selected Project without exposing provider-private settings. */
 export interface UpdateProjectOperation {

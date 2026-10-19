@@ -3,8 +3,8 @@
 //! changes their geometry or synthesizes missing source handles by freezing.
 use serde::{Deserialize, Serialize};
 
-use crate::video_time::resolve_video_source_time_offset;
-use crate::{FrameRate, MediaTime, VideoSourceTimeOptions};
+use crate::video_time::resolve_directional_video_source_time_offset;
+use crate::{DirectionalVideoSourceTimeOptions, FrameRate, MediaTime};
 
 const MAX_SAFE_TICK: i64 = 9_007_199_254_740_991;
 
@@ -22,6 +22,8 @@ pub enum TransitionSource {
         trim_start: MediaTime,
         source_duration: MediaTime,
         playback_rate: f64,
+        #[serde(default)]
+        reverse: bool,
         #[serde(default)]
         freeze_frame: Option<MediaTime>,
     },
@@ -123,6 +125,7 @@ fn validate_source(source: TransitionSource) -> Result<(), TransitionPlanError> 
         source_duration,
         playback_rate,
         freeze_frame,
+        ..
     } = source
     {
         let duration = source_duration.as_ticks();
@@ -148,13 +151,16 @@ fn source_at(clip: &TransitionClip, time: i64) -> Option<Option<MediaTime>> {
         source_duration,
         playback_rate,
         freeze_frame,
+        reverse,
     } = clip.source
     else {
         return Some(None);
     };
-    resolve_video_source_time_offset(VideoSourceTimeOptions {
+    resolve_directional_video_source_time_offset(DirectionalVideoSourceTimeOptions {
         clip_time: MediaTime::from_ticks(time.checked_sub(clip.start.as_ticks())?),
         trim_start,
+        clip_duration: clip.duration,
+        reverse,
         playback_rate,
         freeze_frame,
         source_duration: Some(source_duration),

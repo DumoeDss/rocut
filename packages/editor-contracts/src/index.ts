@@ -9,6 +9,11 @@
  * T1/T3 connect the real engine behind these types at the seam.
  */
 export type { MediaFacts } from "./media-facts";
+export type {
+	MediaFolder,
+	MediaFolderState,
+	MediaFolderMutation,
+} from "./media-folders";
 export { isProgrammaticResource } from "./programmatic-resources";
 export type {
 	ProgrammaticBuild,

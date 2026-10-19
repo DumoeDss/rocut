@@ -132,6 +132,23 @@ pub(crate) fn pack_uniforms(
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn displacement_shader_naga_validation() {
+        let source = format!(
+            "{}\n{}\n{}",
+            include_str!("shaders/spatial_region.wgsl"),
+            include_str!("shaders/lens_sampling.wgsl"),
+            include_str!("shaders/displacement.wgsl")
+        );
+        let module = wgpu::naga::front::wgsl::parse_str(&source).unwrap();
+        wgpu::naga::valid::Validator::new(
+            wgpu::naga::valid::ValidationFlags::all(),
+            wgpu::naga::valid::Capabilities::empty(),
+        )
+        .validate(&module)
+        .unwrap();
+    }
+
     use super::*;
     use crate::UniformValue;
 

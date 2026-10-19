@@ -7,6 +7,61 @@
  */
 export const REVIEWED_API_ADDITIONS = [
 	[
+		"planMediaFolderMutationJson",
+		"rust/crates/editor-api/src/media_folders.rs",
+		"packages/editor-classic/src/editor/transactions/opencut/media-folder-policy.ts",
+	],
+	[
+		"validateMediaFoldersJson",
+		"rust/crates/editor-api/src/media_folders.rs",
+		"packages/editor-classic/src/editor/transactions/opencut/media-folder-policy.ts",
+	],
+	[
+		"validateTrackLocksJson",
+		"rust/crates/editor-api/src/track_locks.rs",
+		"packages/editor-classic/src/editor/transactions/opencut/track-lock-runtime.ts",
+	],
+	[
+		"resolveDirectionalVideoSourceTime",
+		"rust/crates/time/src/video_time.rs",
+		"packages/editor-classic/src/wasm/video-time.ts",
+	],
+	[
+		"directionalSourceTrims",
+		"rust/crates/time/src/video_time.rs",
+		"packages/editor-classic/src/wasm/video-time.ts",
+	],
+	[
+		"reverseAudioSamples",
+		"rust/crates/time/src/video_time.rs",
+		"packages/editor-classic/src/retime/audio-stretch.ts",
+	],
+	[
+		"createMotionTextStructuredCues",
+		"rust/crates/motion-text/src/factory/structured_cues.rs",
+		"packages/editor-classic/src/wasm/motion-text-structured-cues.ts",
+	],
+	[
+		"inspectMediaFactsBytes",
+		"rust/crates/editor-api/src/media_facts.rs",
+		"packages/editor-classic/src/media/media-facts.ts",
+	],
+	[
+		"resolveTimelineReplacementBytes",
+		"rust/crates/editor-api/src/timeline_replacement.rs",
+		"apps/cli/src/timeline-replacement.ts",
+	],
+	[
+		"resolveTimelineUndoBytes",
+		"rust/crates/editor-api/src/timeline_undo.rs",
+		"apps/cli/src/timeline-undo.ts",
+	],
+	[
+		"validateMediaFactsJson",
+		"rust/crates/editor-api/src/media_facts.rs",
+		"packages/editor-classic/src/media/media-facts.ts",
+	],
+	[
 		"commitRenderFramePngForHandle",
 		"rust/wasm/src/compositor_output.rs",
 		"packages/editor-classic/src/services/renderer/compositor/wasm-compositor.ts",

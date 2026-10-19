@@ -13,7 +13,7 @@ struct FrostUniforms {
 @group(1) @binding(0) var<uniform> uniforms: FrostUniforms;
 
 fn frost_hash(cell:vec2i,salt:u32)->u32 {
-    var value=bitcast<u32>(cell.x)*0x8da6b343u ^ bitcast<u32>(cell.y)*0xd8163841u ^ uniforms.metadata.x*0xcb1ab31fu ^ salt*0x9e3779b9u;
+    var value=(bitcast<u32>(cell.x)*0x8da6b343u) ^ (bitcast<u32>(cell.y)*0xd8163841u) ^ (uniforms.metadata.x*0xcb1ab31fu) ^ (salt*0x9e3779b9u);
     value=value ^ (value>>16u);value=value*0x7feb352du;
     value=value ^ (value>>15u);value=value*0x846ca68bu;
     return value ^ (value>>16u);

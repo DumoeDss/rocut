@@ -183,6 +183,7 @@ export type TrackKind = "video" | "audio" | "text" | "graphic" | "effect";
  * needs — not a mirror of the full donor `TProject` schema.
  */
 export interface Project {
+	readonly mediaFolders?: import("./media-folders").MediaFolderState;
 	readonly id: ProjectId;
 	readonly name: string;
 	readonly frameRate: FrameRate;
@@ -217,6 +218,8 @@ export interface Track {
 	readonly kind: TrackKind;
 	readonly name: string;
 	readonly hidden: boolean;
+	/** Missing in legacy projects means unlocked. */
+	readonly locked?: boolean;
 	/** Audio/video track mute. Other lane kinds do not carry audio. */
 	readonly muted?: boolean;
 }
@@ -267,6 +270,7 @@ export interface Clip {
 	/** Source playback configuration; absence means the original playback rate. */
 	readonly retime?: {
 		readonly rate: number;
+		readonly reverse?: boolean;
 		readonly maintainPitch?: boolean;
 	};
 	/** Hold an absolute video-source tick; absence means ordinary playback. */

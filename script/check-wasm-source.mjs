@@ -27,12 +27,14 @@
  *   node script/check-wasm-source.mjs                    # full check (also `bun run check:wasm`)
  *   node script/check-wasm-source.mjs --preflight        # `preinstall` guard: is the build output there at all?
  *   node script/check-wasm-source.mjs --resolved <dir>   # negative control
+ *   node script/check-wasm-source.mjs --pkg-dir <absolute-dir> --resolved <dir>
  */
 import { createHash } from "node:crypto";
 import { createRequire } from "node:module";
 import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join, relative, resolve } from "node:path";
+import { packageDirectoryArguments } from "./wasm-package-directory.mjs";
 
 import {
 	RUSTC_VERSION,
@@ -40,7 +42,25 @@ import {
 } from "./wasm-toolchain.mjs";
 
 const REPO_ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
-const PKG_DIR = join(REPO_ROOT, "rust", "wasm", "pkg");
+let selection;
+let override = null;
+let preflight = false;
+try {
+	selection = packageDirectoryArguments(process.argv.slice(2), "--pkg-dir", REPO_ROOT);
+	for (let index = 0; index < selection.remaining.length; index++) {
+		const arg = selection.remaining[index];
+		if (arg === "--preflight" && !preflight) preflight = true;
+		else if (arg === "--resolved" && override === null) {
+			const value = selection.remaining[++index];
+			if (!value || value.startsWith("--")) throw Error("--resolved requires a directory");
+			override = resolve(value);
+		} else throw Error(`unknown or duplicate argument: ${arg}`);
+	}
+} catch (error) {
+	console.error(`check-wasm-source: ${error.message}`);
+	process.exit(2);
+}
+const PKG_DIR = selection.pkgDir;
 const REBUILD = "bun run build:wasm   (node script/build-wasm.mjs), then bun install";
 
 /** Hosts that resolve `opencut-wasm` independently. */
@@ -51,10 +71,6 @@ const IGNORED_IN_PKG = new Set([".gitignore"]);
 
 const sha = (p) => createHash("sha256").update(readFileSync(p)).digest("hex");
 const rel = (p) => relative(REPO_ROOT, p).replaceAll("\\", "/");
-
-const overrideIndex = process.argv.indexOf("--resolved");
-const override = overrideIndex === -1 ? null : resolve(process.argv[overrideIndex + 1] ?? "");
-const preflight = process.argv.includes("--preflight");
 
 /**
  * `--preflight` runs as root `preinstall`, BEFORE `bun install` resolves anything.
@@ -87,7 +103,7 @@ if (preflight) {
 	process.exit(1);
 }
 
-if (!existsSync(PKG_DIR)) {
+if (!existsSync(PKG_DIR) || !statSync(PKG_DIR).isDirectory()) {
 	console.error(`check-wasm-source: no build output at ${rel(PKG_DIR)}`);
 	console.error(`Produce it with: ${REBUILD}`);
 	process.exit(2);
