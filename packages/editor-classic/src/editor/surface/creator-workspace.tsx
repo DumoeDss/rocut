@@ -220,9 +220,11 @@ export function CreatorWorkspace({
 				<span className="truncate text-xs">
 					{view?.type === "generate"
 						? messages.generateAsset
-						: (selectedDocument?.title ??
-							selectedAsset?.name ??
-							messages.monitor)}
+						: selectedDocument
+							? `${messages.documentBreadcrumb} / ${selectedDocument.title}`
+							: selectedAsset
+								? `${messages.assetBreadcrumb} / ${selectedAsset.name}`
+								: messages.monitor}
 				</span>
 				{view && (
 					<Button variant="ghost" size="sm" onClick={() => setView(null)}>

@@ -134,6 +134,8 @@ const english = {
 	projectTools: "Project assets and tools",
 	versionCandidates: "Candidate versions",
 	currentVersionUsage: "This selected version is used by",
+	documentBreadcrumb: "Plan",
+	assetBreadcrumb: "Asset",
 } as const;
 
 export type EditorMessages = { readonly [Key in keyof typeof english]: string };
@@ -271,6 +273,8 @@ const chinese: EditorMessages = {
 	projectTools: "工程素材与工具",
 	versionCandidates: "候选版本",
 	currentVersionUsage: "此选用版本用于",
+	documentBreadcrumb: "计划",
+	assetBreadcrumb: "素材",
 };
 
 export function getEditorMessages(locale?: string): EditorMessages {
