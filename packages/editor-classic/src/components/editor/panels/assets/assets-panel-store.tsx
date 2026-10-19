@@ -4,7 +4,9 @@ import { persist } from "zustand/middleware";
 import {
 	ArrowRightDoubleIcon,
 	ClosedCaptionIcon,
+	FileEditIcon,
 	Folder03Icon,
+	FolderLibraryIcon,
 	Happy01Icon,
 	HeadphonesIcon,
 	MagicWand05Icon,
@@ -16,6 +18,8 @@ import {
 import { HugeiconsIcon, type IconSvgElement } from "@hugeicons/react";
 
 export const TAB_KEYS = [
+	"plans",
+	"project-assets",
 	"media",
 	"sounds",
 	"text",
@@ -37,6 +41,14 @@ const createHugeiconsIcon =
 	};
 
 export const tabs = {
+	plans: {
+		icon: createHugeiconsIcon({ icon: FileEditIcon }),
+		label: "Plans",
+	},
+	"project-assets": {
+		icon: createHugeiconsIcon({ icon: FolderLibraryIcon }),
+		label: "Project library",
+	},
 	media: {
 		icon: createHugeiconsIcon({ icon: Folder03Icon }),
 		label: "Media",

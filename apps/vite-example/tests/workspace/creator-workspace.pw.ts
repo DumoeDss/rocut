@@ -1,4 +1,12 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
+
+async function openPlans(page: Page) {
+	await page.getByTestId("assets-tab-plans").click();
+}
+
+async function openProjectLibrary(page: Page) {
+	await page.getByTestId("assets-tab-project-assets").click();
+}
 
 declare global {
 	interface Window {
@@ -32,6 +40,9 @@ declare global {
 
 test.beforeEach(async ({ page }) => {
 	await page.goto("/?creator-workspace-harness=1");
+	await expect(page.getByTestId("assets-tab-plans")).toBeVisible();
+	await expect(page.getByTestId("assets-tab-project-assets")).toBeVisible();
+	await openPlans(page);
 	await expect(page.getByRole("button", { name: "A 制作计划" })).toBeVisible();
 });
 
@@ -73,6 +84,7 @@ test("an external document update cannot move the revision of an existing draft"
 
 test("preview and selecting a candidate keep native clips and their pinned version", async ({ page }) => {
 	const nativeBefore = await page.evaluate(() => window.__creatorWorkspaceFixture.getNativeScenes());
+	await openProjectLibrary(page);
 	await page.locator(".creator-project-card").filter({ hasText: "角色设定" }).click();
 	await page.getByRole("button", { name: "V2", exact: true }).click();
 	await expect(page.getByRole("button", { name: "选用此版本" })).toBeEnabled();
@@ -120,6 +132,7 @@ test("text input owns deletion and cut keys instead of the selected clip", async
 	await page.getByRole("button", { name: "编辑文档", exact: true }).click();
 	const content = page.getByRole("textbox", { name: "文档内容" });
 	await content.fill("abcdef"); await content.press("Backspace"); await content.press("Delete"); await content.press("Control+x");
+	await page.getByTestId("assets-tab-project-assets").click();
 	const search = page.getByRole("searchbox", { name: "搜索项目素材" });
 	await search.fill("abcdef"); await search.press("Backspace"); await search.press("Delete"); await search.press("Control+x");
 	expect(await page.evaluate(() => window.__creatorWorkspaceFixture.getNativeScenes())).toBe(scenes);
@@ -138,6 +151,7 @@ test("automatic save failure remains visible and timeline fit persists view stat
 });
 
 test("host catalog and bounded audio summary drive real controls", async ({ page }) => {
+	await openProjectLibrary(page);
 	await expect(page.getByRole("img", { name: "音频波形" })).toBeVisible();
 	await page.locator(".creator-project-card").filter({ hasText: "角色设定" }).click();
 	await page.getByRole("button", { name: "重新生成", exact: true }).click();
@@ -151,6 +165,7 @@ test("host catalog and bounded audio summary drive real controls", async ({ page
 
 test("catalog failure retries and scoped replacement removes old controls", async ({ page }) => {
 	await page.evaluate(() => window.__creatorWorkspaceFixture.setCatalogFailure(true));
+	await openProjectLibrary(page);
 	await page.locator(".creator-project-card").filter({ hasText: "角色设定" }).click();
 	await page.getByRole("button", { name: "重新生成", exact: true }).click();
 	await expect(page.getByRole("button", { name: "重试读取模型" })).toBeVisible();
@@ -158,15 +173,19 @@ test("catalog failure retries and scoped replacement removes old controls", asyn
 	await page.getByRole("button", { name: "重试读取模型" }).click();
 	await expect(page.getByRole("combobox", { name: "生成服务", exact: true })).toBeVisible();
 	await page.evaluate(() => window.__creatorWorkspaceFixture.changeBridge());
+	await openPlans(page);
 	await expect(page.getByRole("button", { name: "B 制作计划" })).toBeVisible();
 	await expect(page.getByRole("combobox", { name: "生成服务", exact: true })).toHaveCount(0);
 });
 
 test("audio derivative failure can retry without downloading source media", async ({ page }) => {
+	await openProjectLibrary(page);
 	await page.getByRole("combobox", { name: "素材类型", exact: true }).selectOption("image");
 	await page.evaluate(() => window.__creatorWorkspaceFixture.setAudioFailure(true));
 	await page.evaluate(() => window.__creatorWorkspaceFixture.changeBridge());
+	await openPlans(page);
 	await expect(page.getByRole("button", { name: "B 制作计划" })).toBeVisible();
+	await openProjectLibrary(page);
 	await page.getByRole("combobox", { name: "素材类型", exact: true }).selectOption("audio");
 	await expect(page.getByText("音频摘要暂不可用", { exact: true })).toBeVisible();
 	await page.evaluate(() => window.__creatorWorkspaceFixture.setAudioFailure(false));
@@ -176,7 +195,7 @@ test("audio derivative failure can retry without downloading source media", asyn
 
 test("native short media derives a real poster, distinct samples and waveform", async ({ page }) => {
 	await page.evaluate(() => window.__creatorWorkspaceFixture.loadNativeFixtures());
-	await page.locator(".creator-native-library summary").click();
+	await page.getByTestId("assets-tab-media").click();
 	const video = page.getByTestId("native-media-card").filter({ hasText: "short-motion.mp4" });
 	await expect(video.locator("img")).toBeVisible();
 	await expect.poll(() => video.locator("img").evaluate((image: HTMLImageElement) => image.naturalWidth)).toBeGreaterThan(0);
@@ -193,6 +212,7 @@ test("native short media derives a real poster, distinct samples and waveform", 
 });
 
 test("filters, saved collapse, reset, narrow focus and save retry remain usable", async ({ page }) => {
+	await openProjectLibrary(page);
 	await page.getByRole("searchbox", { name: "搜索项目素材" }).fill("角色");
 	await expect(page.locator(".creator-project-card")).toHaveCount(1);
 	await page.getByRole("searchbox", { name: "搜索项目素材" }).fill("");
@@ -203,6 +223,7 @@ test("filters, saved collapse, reset, narrow focus and save retry remain usable"
 	await page.getByRole("button", { name: "收起属性", exact: true }).click();
 	await expect(page.getByRole("button", { name: "展开属性", exact: true })).toBeVisible();
 	await page.reload();
+	await openProjectLibrary(page);
 	await expect(page.getByRole("button", { name: "展开属性", exact: true })).toBeVisible();
 	await page.getByRole("button", { name: "恢复布局", exact: true }).click();
 	await expect(page.getByRole("button", { name: "收起属性", exact: true })).toBeVisible();

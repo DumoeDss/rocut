@@ -8,6 +8,7 @@ async function configure(page: import("@playwright/test").Page, mode: string) {
 
 test.beforeEach(async ({ page }) => {
 	await page.goto("/?creator-workspace-harness=1&fixed-reference-fixture=1");
+	await page.getByTestId("assets-tab-project-assets").click();
 	await expect(page.getByTestId("creator-asset-card").first()).toBeVisible();
 });
 
@@ -48,6 +49,7 @@ test("missing asset, mismatched hash, and legacy missing version clear previous 
 test("unrelated scene and unknown native clips preserve manual document reading", async ({ page }) => {
 	for (const mode of ["unknown", "foreign", "foreign-project"]) {
 		await configure(page, mode);
+		await page.getByTestId("assets-tab-plans").click();
 		await page.locator(".creator-document-row").first().click();
 		await page.locator('[data-element-id="existing-clip"]').click();
 		await expect(page.getByTestId("creator-document-view")).toBeVisible();

@@ -10,10 +10,17 @@ import {
 	tabs,
 	useAssetsPanelStore,
 } from "../../../../editor/use-session-store";
-const toolLabels: Record<string, string> = { media: "素材", sounds: "音效", text: "文字", "motion-text": "动态文字", motionText: "动态文字", stickers: "贴纸", effects: "特效", transitions: "转场", captions: "字幕", adjustment: "调整", settings: "工程设置" };
+import { useCreatorWorkspaceBridge } from "../../../../editor/surface/creator-workspace-context";
+const toolLabels: Record<string, string> = { plans: "\u8ba1\u5212", "project-assets": "\u9879\u76ee\u7d20\u6750\u5e93", media: "\u7d20\u6750", sounds: "\u97f3\u6548", text: "\u6587\u672c", "motion-text": "\u52a8\u6001\u6587\u5b57", motionText: "\u52a8\u6001\u6587\u5b57", stickers: "\u8d34\u7eb8", effects: "\u7279\u6548", transitions: "\u8f6c\u573a", captions: "\u5b57\u5e55", adjustment: "\u8c03\u6574", settings: "\u9879\u76ee\u8bbe\u7f6e" };
 
 export function TabBar() {
 	const { activeTab, setActiveTab } = useAssetsPanelStore();
+	const creatorBridge = useCreatorWorkspaceBridge();
+	const visibleTabs = creatorBridge
+		? TAB_KEYS
+		: TAB_KEYS.filter(
+				(tabKey) => tabKey !== "plans" && tabKey !== "project-assets",
+			);
 	const [showTopFade, setShowTopFade] = useState(false);
 	const [showBottomFade, setShowBottomFade] = useState(false);
 	const scrollRef = useRef<HTMLDivElement>(null);
@@ -50,7 +57,7 @@ export function TabBar() {
 					ref={scrollRef}
 					className="scrollbar-hidden relative flex size-full p-1 flex-col items-center justify-start gap-0.5 overflow-y-auto"
 				>
-					{TAB_KEYS.map((tabKey) => {
+					{visibleTabs.map((tabKey) => {
 						const tab = tabs[tabKey];
 						const label = toolLabels[tabKey] ?? tab.label;
 						return (
@@ -60,6 +67,7 @@ export function TabBar() {
 										variant={activeTab === tabKey ? "secondary" : "ghost"}
 										size="icon"
 										aria-label={label}
+										data-testid={`assets-tab-${tabKey}`}
 										className={cn(
 											"shrink-0",
 											"h-8 w-8",
@@ -113,3 +121,4 @@ function FadeOverlay({
 		/>
 	);
 }
+

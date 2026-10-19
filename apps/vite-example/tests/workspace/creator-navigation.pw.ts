@@ -55,7 +55,7 @@ test("explicit native preview reveals content while single selection stays in th
 		window.__creatorWorkspaceFixture.loadNativeFixtures(),
 	);
 	await page.locator("#focus-tab-assets").click();
-	await page.locator(".creator-native-library summary").click();
+	await page.getByTestId("assets-tab-media").click();
 	const video = page
 		.getByTestId("native-media-card")
 		.filter({ hasText: "short-motion.mp4" });
@@ -86,12 +86,13 @@ test("narrow document asset and generate activation reveal content with visible 
 	await page.getByTestId("timeline-toolbar").evaluate((node) => {
 		window.__creatorNavigationTimeline = node;
 	});
-	for (const selector of [
-		".creator-document-row",
-		".creator-project-card",
-		"[data-testid='creator-generate-new']",
-	]) {
+	for (const [tab, selector] of [
+		["plans", ".creator-document-row"],
+		["project-assets", ".creator-project-card"],
+		["project-assets", "[data-testid='creator-generate-new']"],
+	] as const) {
 		await page.locator("#focus-tab-assets").click();
+		await page.getByTestId(`assets-tab-${tab}`).click();
 		await page.locator(selector).first().focus();
 		await page.keyboard.press("Enter");
 		await expect(page.locator("#focus-tab-preview")).toBeFocused();
@@ -122,6 +123,7 @@ test("narrow document asset and generate activation reveal content with visible 
 		"data-layout",
 		"wide",
 	);
+	await page.getByTestId("assets-tab-plans").click();
 	const document = page.locator(".creator-document-row").first();
 	await document.focus();
 	await page.keyboard.press("Enter");

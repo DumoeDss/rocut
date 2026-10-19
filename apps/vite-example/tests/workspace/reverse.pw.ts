@@ -2,6 +2,7 @@ import { expect, test } from "@playwright/test";
 
 test("reverse capability gates the control and reverses real filmstrip samples", async ({ page }) => {
 	await page.goto("/?creator-workspace-harness=1");
+	await page.getByTestId("assets-tab-plans").click();
 	await expect(page.getByRole("button", { name: "A 制作计划" })).toBeVisible();
 	await page.evaluate(async () => { await window.__creatorWorkspaceFixture.loadNativeFixtures(); await window.__creatorWorkspaceFixture.insertNativeVideo(); });
 	await page.getByRole("button", { name: "速度", exact: true }).click();

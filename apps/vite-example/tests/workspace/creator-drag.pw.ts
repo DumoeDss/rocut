@@ -2,7 +2,9 @@ import { expect, test } from "@playwright/test";
 
 test.beforeEach(async ({ page }) => {
 	await page.goto("/?creator-workspace-harness=1");
-	await expect(page.getByRole("button", { name: "A 制作计划" })).toBeVisible();
+	await expect(page.getByTestId("assets-tab-project-assets")).toBeVisible();
+	await page.getByTestId("assets-tab-project-assets").click();
+	await expect(page.getByTestId("creator-asset-card").first()).toBeVisible();
 });
 
 test("one action clears query, media type and used filters", async ({
@@ -123,3 +125,4 @@ for (const stale of [false, true]) {
 		},
 	);
 }
+
