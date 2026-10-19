@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, test } from "bun:test";
+import { afterEach, describe, expect, mock, spyOn, test } from "bun:test";
 
 import { downloadBuffer } from "../../export";
 import { downloadBlob } from "../browser";
@@ -19,6 +19,19 @@ function createResources() {
 		created: () => created,
 		revoked: () => revoked,
 	};
+}
+
+const nativeSetTimeout = globalThis.setTimeout;
+
+function installDownloadTimer() {
+	const deferred: { delay: number | undefined; run: () => void }[] = [];
+	spyOn(globalThis, "setTimeout").mockImplementation(
+		(handler, delay, ...args) => {
+			deferred.push({ delay, run: () => handler(...args) });
+			return nativeSetTimeout(() => {}, 0);
+		},
+	);
+	return deferred;
 }
 
 function installDocument({
@@ -68,6 +81,7 @@ const documentDescriptor = Object.getOwnPropertyDescriptor(
 );
 
 afterEach(() => {
+	mock.restore();
 	if (documentDescriptor) {
 		Object.defineProperty(globalThis, "document", documentDescriptor);
 	} else {
@@ -76,9 +90,10 @@ afterEach(() => {
 });
 
 describe("transient download object-URL ownership", () => {
-	test("successful utility and export downloads each revoke exactly once", () => {
+	test("export retains its URL through asynchronous download handoff then releases it", async () => {
 		const fixture = createResources();
 		const dom = installDocument();
+		const deferred = installDownloadTimer();
 		downloadBlob({
 			blob: new Blob(["utility"]),
 			filename: "utility.bin",
@@ -91,9 +106,15 @@ describe("transient download object-URL ownership", () => {
 			resources: fixture.resources,
 		});
 		expect(fixture.created()).toBe(2);
-		expect(fixture.revoked()).toBe(2);
+		expect(fixture.revoked()).toBe(1);
 		expect(dom.appendCalls()).toBe(2);
 		expect(dom.removeCalls()).toBe(2);
+		await new Promise<void>((resolve) => nativeSetTimeout(resolve, 0));
+		expect(fixture.revoked()).toBe(1);
+		expect(deferred).toHaveLength(1);
+		expect(deferred[0]?.delay).toBe(60_000);
+		deferred[0]?.run();
+		expect(fixture.revoked()).toBe(2);
 	});
 
 	test("a click error still removes the utility anchor and revokes its URL", () => {
@@ -111,7 +132,8 @@ describe("transient download object-URL ownership", () => {
 		expect(fixture.revoked()).toBe(1);
 	});
 
-	test("an aborted export click and a removal failure both revoke terminally", () => {
+	test("a failed export click revokes immediately, but removal failure preserves a started download", () => {
+		const deferred = installDownloadTimer();
 		const cancellation = new DOMException("download cancelled", "AbortError");
 		const cancelledFixture = createResources();
 		installDocument({ clickError: cancellation });
@@ -124,6 +146,7 @@ describe("transient download object-URL ownership", () => {
 			}),
 		).toThrow(cancellation);
 		expect(cancelledFixture.revoked()).toBe(1);
+		expect(deferred).toHaveLength(0);
 
 		const removeError = new Error("remove failed");
 		const removeFixture = createResources();
@@ -136,6 +159,9 @@ describe("transient download object-URL ownership", () => {
 				resources: removeFixture.resources,
 			}),
 		).toThrow(removeError);
+		expect(removeFixture.revoked()).toBe(0);
+		expect(deferred).toHaveLength(1);
+		deferred[0]?.run();
 		expect(removeFixture.revoked()).toBe(1);
 	});
 });

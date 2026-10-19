@@ -72,19 +72,27 @@ export function downloadBuffer({
 	const blob = new Blob([buffer], { type: mimeType });
 	const urlHandle = resources.createObjectUrl({ blob });
 	let downloadLink: HTMLAnchorElement | null = null;
+	let downloadStarted = false;
 	try {
 		downloadLink = document.createElement("a");
 		downloadLink.href = urlHandle.url;
 		downloadLink.download = filename;
 		document.body.appendChild(downloadLink);
 		downloadLink.click();
+		downloadStarted = true;
 	} finally {
 		try {
 			if (downloadLink?.parentNode === document.body) {
 				document.body.removeChild(downloadLink);
 			}
 		} finally {
-			urlHandle.revoke();
+			if (downloadStarted) {
+				// Embedded browsers may consume the blob asynchronously after click.
+				// Anchor removal is immediate; keep its session-owned URL alive for handoff.
+				setTimeout(() => urlHandle.revoke(), 60_000);
+			} else {
+				urlHandle.revoke();
+			}
 		}
 	}
 }
