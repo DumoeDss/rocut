@@ -101,6 +101,27 @@ export class CommandManager {
 	private pendingHistory: Promise<void> | null = null;
 	private reactors: CommandReactor[] = [];
 	private readonly context: EditorCommandContext;
+	private readonly historyListeners = new Set<() => void>();
+	private historySnapshot: Readonly<{ canUndo: boolean; canRedo: boolean }> = {
+		canUndo: false,
+		canRedo: false,
+	};
+
+	subscribe = (listener: () => void): (() => void) => {
+		this.historyListeners.add(listener);
+		return () => {
+			this.historyListeners.delete(listener);
+		};
+	};
+
+	getHistorySnapshot = () => this.historySnapshot;
+
+	private publishHistory(): void {
+		// Durable project/scene publication precedes history finalization. History
+		// consumers therefore need their own notification after the stacks change.
+		this.historySnapshot = { canUndo: this.canUndo(), canRedo: this.canRedo() };
+		for (const listener of this.historyListeners) listener();
+	}
 
 	constructor(private editor: EditorCore) {
 		this.context = { editor };
@@ -131,6 +152,7 @@ export class CommandManager {
 						selectionOverride,
 					});
 					this.redoStack = [];
+					this.publishHistory();
 					return Promise.resolve(command);
 				}
 				return this.executeRouted({ command, recordHistory: true });
@@ -299,6 +321,7 @@ export class CommandManager {
 						selectionOverride,
 					});
 					this.redoStack = [];
+					this.publishHistory();
 				},
 			})
 			.then(() => command)
@@ -347,6 +370,7 @@ export class CommandManager {
 			previousSelection: this.getSelectionSnapshot(),
 		});
 		this.redoStack = [];
+		this.publishHistory();
 	}
 
 	registerReactor(reactor: CommandReactor): void {
@@ -369,6 +393,7 @@ export class CommandManager {
 				});
 			}
 			this.redoStack.push(entry);
+			this.publishHistory();
 			return;
 		}
 		await this.commitHistorySnapshot({ entry, direction: "undo" });
@@ -392,6 +417,7 @@ export class CommandManager {
 				selectionPatch: result?.selection,
 				selectionOverride,
 			});
+			this.publishHistory();
 			return;
 		}
 		await this.commitHistorySnapshot({ entry, direction: "redo" });
@@ -442,6 +468,7 @@ export class CommandManager {
 	clear(): void {
 		this.history = [];
 		this.redoStack = [];
+		this.publishHistory();
 	}
 
 	getHistoryCount(): number {
@@ -528,6 +555,7 @@ export class CommandManager {
 						});
 					}
 					this.redoStack.push(entry);
+					this.publishHistory();
 					return;
 				}
 				this.redoStack.pop();
@@ -541,6 +569,7 @@ export class CommandManager {
 					previousSelection,
 					selectionOverride,
 				});
+				this.publishHistory();
 			},
 		});
 	}

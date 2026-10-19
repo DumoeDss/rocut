@@ -2,7 +2,7 @@
 
 import { useState, useSyncExternalStore } from "react";
 import { Button } from "../ui/button";
-import { useEditor, useEditorInstance } from "../../editor/use-editor";
+import { useEditorInstance } from "../../editor/use-editor";
 import { useEditorMessages } from "../../editor/host/editor-host-context";
 import { Dialog, DialogContent, DialogTitle } from "../ui/dialog";
 import { SettingsView } from "./panels/assets/views/settings";
@@ -10,8 +10,11 @@ import { SettingsView } from "./panels/assets/views/settings";
 export function ProjectOperations() {
 	const editor = useEditorInstance();
 	const messages = useEditorMessages();
-	const canUndo = useEditor((current) => current.command.canUndo());
-	const canRedo = useEditor((current) => current.command.canRedo());
+	const { canUndo, canRedo } = useSyncExternalStore(
+		editor.command.subscribe,
+		editor.command.getHistorySnapshot,
+		editor.command.getHistorySnapshot,
+	);
 	const save = useSyncExternalStore(
 		editor.save.subscribe,
 		editor.save.getState,

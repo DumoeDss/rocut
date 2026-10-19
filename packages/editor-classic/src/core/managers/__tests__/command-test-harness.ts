@@ -20,7 +20,10 @@ const { projectFixture, recordFixture, storeFixture, TEST_PROJECT_ID } =
 export async function commandHarness(
 	project = projectFixture(),
 	assets: MediaAsset[] = [],
-	options: { committedAssetCatalog?: OpenCutAssetCatalogEntry[] } = {},
+	options: {
+		committedAssetCatalog?: OpenCutAssetCatalogEntry[];
+		onPublish?: () => void;
+	} = {},
 ) {
 	const fixture = await storeFixture(project);
 	if (options.committedAssetCatalog) {
@@ -93,6 +96,7 @@ export async function commandHarness(
 		publish: (draft) => {
 			liveProject = cloneOpaque(draft.project);
 			liveScenes = cloneOpaque(draft.project.scenes);
+			options.onPublish?.();
 		},
 	});
 	Object.assign(editor, { transactions });
