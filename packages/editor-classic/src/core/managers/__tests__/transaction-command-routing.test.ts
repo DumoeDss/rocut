@@ -972,7 +972,7 @@ describe("transaction-routed command manager", () => {
 			],
 		});
 		const harness = await commandHarness(project, [asset]);
-		const media = new MediaManager(harness.editor);
+		const media = new MediaManager({ editor: harness.editor });
 		media.setAssets({ assets: [asset] });
 		Object.assign(harness.editor, { media });
 		await savePersistedMediaAsset({

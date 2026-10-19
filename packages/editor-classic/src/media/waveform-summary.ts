@@ -2,6 +2,7 @@
 
 import { getSourceTimeAtClipTime } from "../retime";
 import type { RetimeConfig } from "../timeline";
+import { TICKS_PER_SECOND } from "../wasm/media-time";
 
 const RMS_ANALYSIS_WINDOW_SECONDS = 0.02;
 const DEFAULT_SOURCE_WAVEFORM_BUCKET_SIZE = 128;
@@ -44,6 +45,26 @@ export interface SourceWaveformSummary {
 	totalSamples: number;
 	bucketSize: number;
 	amplitudes: Float32Array;
+	/** Render-only peak pyramid; source time still indexes the finest available layer. */
+	levels?: Float32Array[];
+}
+
+export function withWaveformLevels(
+	summary: SourceWaveformSummary,
+): SourceWaveformSummary {
+	const levels: Float32Array[] = [];
+	let previous = summary.amplitudes;
+	while (previous.length > 48) {
+		const next = new Float32Array(Math.ceil(previous.length / 16));
+		for (let i = 0; i < previous.length; i++)
+			next[Math.floor(i / 16)] = Math.max(
+				next[Math.floor(i / 16)],
+				previous[i],
+			);
+		levels.push(next);
+		previous = next;
+	}
+	return { ...summary, levels };
 }
 
 export function buildWaveformSourceKey({
@@ -65,7 +86,11 @@ export function buildSourceWaveformSummary({
 	buffer: AudioBuffer;
 	bucketSize?: number;
 }): SourceWaveformSummary {
-	const safeBucketSize = Math.max(1, Math.floor(bucketSize));
+	const safeBucketSize = Math.max(
+		1,
+		Math.floor(bucketSize),
+		Math.ceil(buffer.length / 262144),
+	);
 	const bucketCount = Math.max(1, Math.ceil(buffer.length / safeBucketSize));
 	const amplitudes = computePeakBuckets({
 		buffer,
@@ -76,13 +101,13 @@ export function buildSourceWaveformSummary({
 		}),
 	});
 
-	return {
+	return withWaveformLevels({
 		sourceKey,
 		sampleRate: buffer.sampleRate,
 		totalSamples: buffer.length,
 		bucketSize: safeBucketSize,
 		amplitudes: Float32Array.from(amplitudes),
-	};
+	});
 }
 
 export function buildWaveformSampleBuckets({
@@ -123,20 +148,37 @@ export function buildWaveformSampleBuckets({
 			sourceStartSec +
 			getSourceTimeAtClipTime({
 				clipTime: clipStartSec,
+				clipDuration: clipDurationSec,
 				retime,
 			});
 		const sourceBucketEndSec =
 			sourceStartSec +
 			getSourceTimeAtClipTime({
-				clipTime: clipEndSec,
+				clipTime: retime?.reverse
+					? Math.min(
+							clipEndSec,
+							Math.max(0, clipDurationSec - 1 / TICKS_PER_SECOND),
+						)
+					: clipEndSec,
+				clipDuration: clipDurationSec,
 				retime,
 			});
 
 		return {
-			bucketStart: Math.max(0, Math.floor(sourceBucketStartSec * sampleRate)),
+			bucketStart: Math.max(
+				0,
+				Math.floor(
+					Math.min(sourceBucketStartSec, sourceBucketEndSec) * sampleRate,
+				),
+			),
 			bucketEnd: Math.min(
 				maxSampleExclusive,
-				Math.max(0, Math.ceil(sourceBucketEndSec * sampleRate)),
+				Math.max(
+					0,
+					Math.ceil(
+						Math.max(sourceBucketStartSec, sourceBucketEndSec) * sampleRate,
+					),
+				),
 			),
 		};
 	});
@@ -164,11 +206,20 @@ export function sampleSourceWaveformSummary({
 		);
 
 		let maxAmplitude = 0;
-		for (let i = startIndex; i < endIndex; i++) {
-			const amplitude = summary.amplitudes[i] ?? 0;
+		for (let i = startIndex; i < endIndex; ) {
+			let stride = 1;
+			let data = summary.amplitudes;
+			for (const level of summary.levels ?? []) {
+				const nextStride = stride * 16;
+				if (i % nextStride !== 0 || i + nextStride > endIndex) break;
+				stride = nextStride;
+				data = level;
+			}
+			const amplitude = data[Math.floor(i / stride)] ?? 0;
 			if (amplitude > maxAmplitude) {
 				maxAmplitude = amplitude;
 			}
+			i += stride;
 		}
 
 		return maxAmplitude;

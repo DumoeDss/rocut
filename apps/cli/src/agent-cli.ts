@@ -168,21 +168,22 @@ export async function runAgentCli({
 			);
 			return;
 		}
+		case "media-folders":
 		case "scenes": {
 			const verb = args.positional[0];
 			let result: unknown;
 			if (verb === "list")
-				result = await request(resolved.secret, "GET", "scenes");
+				result = await request(resolved.secret, "GET", command);
 			else if (verb === "plan" && args.positional[1])
 				result = await request(
 					resolved.secret,
 					"POST",
-					"scenes/plan",
+					`${command}/plan`,
 					JSON.parse(await readFile(args.positional[1], "utf8")),
 				);
 			else
 				throw new Error(
-					"usage: rocut scenes list | rocut scenes plan <spec.json>",
+					`usage: rocut ${command} list | rocut ${command} plan <spec.json>`,
 				);
 			process.stdout.write(JSON.stringify(result, null, "\t") + "\n");
 			return;

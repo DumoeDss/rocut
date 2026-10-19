@@ -18,6 +18,8 @@
 
 import type { EditorHostPorts } from "..";
 import type { DraftReviewPort } from "./draft-review";
+import type { MediaPreviewProvider } from "./media-previews";
+export type { MediaPreviewProvider } from "./media-previews";
 import type { ProgrammaticFrameProvider } from "./programmatic-frames";
 export type { ProgrammaticFrameProvider, ProgrammaticAudioData, ProgrammaticAudioIdentity } from "./programmatic-frames";
 export { isProgrammaticAudioIdentity } from "./programmatic-frames";
@@ -92,6 +94,10 @@ export interface EditorHostLinks {
  * port-bearing runtime code receives the complete Host through its session.
  */
 export interface EditorHostBase {
+	/** Host language preference; editor-owned catalogs provide their own fallback. */
+	locale?: string;
+	/** Absent means browser-only previews; never receives arbitrary source paths. */
+	mediaPreviews?: MediaPreviewProvider;
 	/** Absent on hosts without an isolated DOM rasterizer. Never a global singleton. */
 	programmaticFrames?: ProgrammaticFrameProvider;
 	/** Present only when this host supports reviewable agent drafts. */

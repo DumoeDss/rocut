@@ -3,6 +3,7 @@ import type { TransactionErrorCode } from "@opencut/editor-contracts";
 
 const failureCodes = new Set<string>([
 	"aborted",
+	"readonly",
 	"quota-exceeded",
 	"unavailable",
 	"corrupt",

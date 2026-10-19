@@ -61,6 +61,9 @@ function projectProjection(draft: OpenCutProjectDraft): Project {
 	return {
 		id: projectId(project.metadata.id),
 		name: project.metadata.name,
+		...(project.mediaFolders && {
+			mediaFolders: cloneOpaque(project.mediaFolders),
+		}),
 		frameRate: {
 			numerator: project.settings.fps.numerator,
 			denominator: project.settings.fps.denominator,
@@ -103,6 +106,7 @@ function trackProjection(track: TimelineTrack): Track {
 		id: trackId(track.id),
 		kind: track.type,
 		name: track.name,
+		...(track.locked !== undefined && { locked: track.locked }),
 		...("muted" in track &&
 			track.muted !== undefined && { muted: track.muted }),
 		hidden:
@@ -175,7 +179,9 @@ function assetProjection(asset: OpenCutAssetCatalogEntry): Asset {
 		...(asset.width !== undefined && { width: asset.width }),
 		...(asset.height !== undefined && { height: asset.height }),
 		...(asset.hasAudio !== undefined && { hasAudio: asset.hasAudio }),
-		...(asset.sourceSha256 !== undefined && { sourceSha256: asset.sourceSha256 }),
+		...(asset.sourceSha256 !== undefined && {
+			sourceSha256: asset.sourceSha256,
+		}),
 		...(asset.mediaFacts !== undefined && { mediaFacts: asset.mediaFacts }),
 	};
 }
@@ -303,7 +309,7 @@ export function diffOpenCutProjection({
 	const beforeMotionTextSequences = mapById(before.motionTextSequences ?? []);
 	const afterMotionTextSequences = mapById(after.motionTextSequences ?? []);
 	const operations: TransactionOperation[] = [];
-	const projectPatch = changedPatch(before.project, after.project, [
+	const changedProject = changedPatch(before.project, after.project, [
 		"name",
 		"frameRate",
 		"canvasWidth",
@@ -311,7 +317,15 @@ export function diffOpenCutProjection({
 		"sceneState",
 		"background",
 		"masterEffects",
-	]) as ProjectPatch;
+		"mediaFolders",
+	]);
+	// Project patches use null to clear optional metadata; undefined is omitted on the wire.
+	const projectPatch: ProjectPatch = {
+		...changedProject,
+		...(before.project.mediaFolders && !after.project.mediaFolders
+			? { mediaFolders: null }
+			: {}),
+	};
 	if (Object.keys(projectPatch).length > 0) {
 		operations.push({
 			kind: "update-project",
@@ -384,6 +398,7 @@ export function diffOpenCutProjection({
 			"name",
 			"hidden",
 			"muted",
+			"locked",
 			"sceneId",
 		]);
 		if (Object.keys(patch).length > 0)

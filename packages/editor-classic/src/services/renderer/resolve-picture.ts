@@ -33,6 +33,8 @@ export async function resolveVideoNode({
 				clipTime,
 				trimStart: node.params.trimStart,
 				playbackRate: node.params.retime?.rate ?? 1,
+				reverse: node.params.retime?.reverse,
+				clipDuration: node.params.duration,
 				freezeFrame: node.params.freezeFrame,
 			});
 	if (sourceTimeTicks == null) return null;
@@ -149,6 +151,8 @@ async function resolveBackdropSource({
 					clipTime,
 					trimStart: node.params.trimStart,
 					playbackRate: node.params.retime?.rate ?? 1,
+					reverse: node.params.retime?.reverse,
+					clipDuration: node.params.duration,
 					freezeFrame: node.params.freezeFrame,
 				});
 		if (sourceTimeTicks == null) return null;

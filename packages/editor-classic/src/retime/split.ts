@@ -8,7 +8,13 @@ export function getSourceSpanAtClipTime({
 	clipTime: number;
 	retime?: RetimeConfig;
 }): number {
-	return Math.max(0, getSourceTimeAtClipTime({ clipTime, retime }));
+	return Math.max(
+		0,
+		getSourceTimeAtClipTime({
+			clipTime,
+			retime: retime ? { ...retime, reverse: false } : undefined,
+		}),
+	);
 }
 
 export function splitRetimeAtClipTime({

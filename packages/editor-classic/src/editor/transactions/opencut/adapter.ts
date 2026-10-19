@@ -13,6 +13,11 @@ import type {
 } from "@opencut/editor-ports";
 import { cloneOpaque } from "../../persistence/opaque-value";
 import { applyEditingState } from "./editing-state";
+import {
+	assertNativeTrackLocks,
+	assertPublicTrackLocks,
+} from "./track-lock-policy";
+import { assertTrackLockRuntime } from "./track-lock-runtime";
 import { overlaySceneState } from "./scene-state";
 import { decodeProject, encodeProject } from "../../persistence/project-codec";
 import type { TProject } from "../../../project/types";
@@ -38,10 +43,10 @@ import type {
 } from "./types";
 
 const ENVELOPE_KEY = "__opencutTransaction";
-const ENVELOPE_VERSION = 1;
+const ENVELOPE_VERSION = 2;
 
 interface OpenCutTransactionEnvelope {
-	readonly version: typeof ENVELOPE_VERSION;
+	readonly version: 1 | typeof ENVELOPE_VERSION;
 	readonly revision: number;
 	readonly idempotency: readonly TransactionIdempotencyEntry[];
 	readonly assetCatalog: readonly OpenCutAssetCatalogEntry[];
@@ -56,7 +61,7 @@ function readEnvelope(data: unknown): OpenCutTransactionEnvelope | null {
 	const raw = data[ENVELOPE_KEY];
 	if (!isRecord(raw)) return null;
 	if (
-		raw.version !== ENVELOPE_VERSION ||
+		(raw.version !== 1 && raw.version !== ENVELOPE_VERSION) ||
 		typeof raw.revision !== "number" ||
 		!Number.isInteger(raw.revision) ||
 		raw.revision < 0 ||
@@ -166,6 +171,7 @@ function newTrack(track: Track): TimelineTrack {
 	const base = {
 		id: track.id,
 		name: track.name,
+		...(track.locked !== undefined && { locked: track.locked }),
 		type: track.kind,
 		elements: [],
 	};
@@ -180,14 +186,18 @@ function overlayTrack(
 	previous: TimelineTrack | undefined,
 ): TimelineTrack {
 	const base = previous ?? newTrack(track);
-	return {
+	const result = {
 		...base,
 		id: track.id,
 		name: track.name,
 		type: track.kind,
+		...(track.locked !== undefined && { locked: track.locked }),
 		...("hidden" in base && { hidden: track.hidden }),
 		...("muted" in base && { muted: track.muted ?? base.muted }),
 	} as TimelineTrack;
+	// Undo may restore a legacy track without an explicit lock field.
+	if (track.locked === undefined) delete result.locked;
+	return result;
 }
 
 function assetById(document: TransactionEngineDocument): Map<string, Asset> {
@@ -337,6 +347,9 @@ function applyPublicDocument({
 		throw new Error("OpenCut projects require transaction project metadata");
 	const project = cloneOpaque(base.project);
 	project.metadata = { ...project.metadata, name: document.project.name };
+	project.mediaFolders = document.project.mediaFolders
+		? cloneOpaque(document.project.mediaFolders)
+		: undefined;
 	project.settings = {
 		...project.settings,
 		masterEffects: (document.project.masterEffects ?? []).map((effect) => ({
@@ -388,7 +401,9 @@ function applyPublicDocument({
 			...(asset.width !== undefined && { width: asset.width }),
 			...(asset.height !== undefined && { height: asset.height }),
 			...(asset.hasAudio !== undefined && { hasAudio: asset.hasAudio }),
-			...(asset.sourceSha256 !== undefined && { sourceSha256: asset.sourceSha256 }),
+			...(asset.sourceSha256 !== undefined && {
+				sourceSha256: asset.sourceSha256,
+			}),
 			...(asset.mediaFacts !== undefined && { mediaFacts: asset.mediaFacts }),
 		})),
 	};
@@ -435,6 +450,7 @@ export function createOpenCutTransactionDocumentAdapter({
 
 	function decodeDraft(record: ProjectRecord): OpenCutProjectDraft {
 		const envelope = readEnvelope(record.data);
+		if (envelope?.version === 2) assertTrackLockRuntime();
 		const draft = {
 			project: decodeProject(record.data),
 			assetCatalog: [...cloneOpaque(envelope?.assetCatalog ?? initialAssets)],
@@ -459,7 +475,13 @@ export function createOpenCutTransactionDocumentAdapter({
 			data: {
 				...knownProject,
 				[ENVELOPE_KEY]: {
-					version: ENVELOPE_VERSION,
+					// Old transactional readers explicitly reject v2 instead of
+					// decoding a locked project and silently discarding protection.
+					version:
+						document.tracks.some((track) => track.locked === true) ||
+						readEnvelope(previousRecord.data)?.version === 2
+							? ENVELOPE_VERSION
+							: 1,
 					revision: document.revision,
 					idempotency: cloneOpaque(document.idempotency),
 					assetCatalog: cloneOpaque(draft.assetCatalog),
@@ -567,6 +589,8 @@ export function createOpenCutTransactionDocumentAdapter({
 				if (changed.size && !validateEditing)
 					throw new Error("Rich editing requires the runtime editing provider");
 				const topologyChanged =
+					canonical(previous.project?.mediaFolders) !==
+						canonical(document.project?.mediaFolders) ||
 					canonical(previous.project?.sceneState) !==
 						canonical(document.project?.sceneState) ||
 					canonical(previous.project?.background) !==
@@ -590,6 +614,17 @@ export function createOpenCutTransactionDocumentAdapter({
 					document,
 				});
 			}
+			assertNativeTrackLocks({
+				before: decodeDraft(baseRecord).project,
+				after: draft.project,
+			});
+			assertPublicTrackLocks({
+				before: projectOpenCutDraft(decodeDraft(baseRecord), {
+					revision: document.revision,
+					idempotency: [],
+				}),
+				after: document,
+			});
 			// A durable publication skips the redundant autosave. Derive its summary
 			// here so the stored record, receipt and live/cache publication agree.
 			draft = {

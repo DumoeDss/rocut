@@ -611,6 +611,7 @@ export class AudioManager {
 	}): boolean {
 		return (
 			clip.buffer !== undefined ||
+			clip.retime?.reverse === true ||
 			this.hasCurveRetime({ clip }) ||
 			hasAnimatedVolume({ element: clip.timelineElement }) ||
 			shouldMaintainPitch({

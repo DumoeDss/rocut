@@ -91,6 +91,7 @@ export type ProjectStoreInspection =
 
 export type ProjectStoreErrorCode =
 	| "aborted"
+	| "readonly"
 	| "quota-exceeded"
 	| "unavailable"
 	| "corrupt"

@@ -8,6 +8,7 @@ import {
 	validateMasterEffectsJson,
 } from "opencut-wasm";
 import { editingCatalog } from "./editing-catalog";
+import { validateMediaFolders } from "./media-folder-policy";
 import { parseEditingIssues, validateSceneState } from "./scene-policy";
 import type { Project } from "@opencut/editor-contracts";
 
@@ -22,6 +23,7 @@ export function validateDocumentEditing({
 	previousProject?: Project | null;
 }): TransactionEngineIssue[] {
 	const sceneIssues = validateSceneState({ document, previousProject });
+	sceneIssues.push(...validateMediaFolders({ document }));
 	const project = document.project;
 	const tracks = new Map(document.tracks.map((track) => [track.id, track]));
 	const assets = new Map(document.assets.map((asset) => [asset.id, asset]));
@@ -80,6 +82,7 @@ export function validateDocumentEditing({
 }
 
 export const openCutEditingPolicy: TransactionPlacementPolicy = {
+	validatesMediaFolders: true,
 	evaluate(context) {
 		const ids = new Set(context.operationIndexByEntityId.keys());
 		return validateDocumentEditing({

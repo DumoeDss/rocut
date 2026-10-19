@@ -1,5 +1,6 @@
 import type { EditorCore } from "..";
 import { revisionOf } from "@opencut/editor-contracts";
+import { toast } from "sonner";
 import {
 	BatchCommand,
 	type Command,
@@ -160,6 +161,14 @@ export class CommandManager {
 				draft.assetCatalog = draft.assetCatalog.filter(
 					(asset) => asset.id !== assetId,
 				);
+				if (draft.project.mediaFolders) {
+					draft.project.mediaFolders = {
+						...draft.project.mediaFolders,
+						assignments: draft.project.mediaFolders.assignments.filter(
+							(item) => item.assetId !== assetId,
+						),
+					};
+				}
 				const scene = draft.project.scenes.find(
 					(candidate) => candidate.id === draft.project.currentSceneId,
 				);
@@ -178,10 +187,16 @@ export class CommandManager {
 					main: withoutAsset(scene.tracks.main),
 					overlay: scene.tracks.overlay
 						.map((track) => withoutAsset(track))
-						.filter((track) => track.elements.length > 0),
+						.filter(
+							(track) =>
+								track.locked !== undefined || track.elements.length > 0,
+						),
 					audio: scene.tracks.audio
 						.map((track) => withoutAsset(track))
-						.filter((track) => track.elements.length > 0),
+						.filter(
+							(track) =>
+								track.locked !== undefined || track.elements.length > 0,
+						),
 				};
 				reconcileDraftTransitions({ draft, previous: baseDocument });
 				const projected = projectOpenCutDraft(draft, {
@@ -291,6 +306,11 @@ export class CommandManager {
 				this.editor.reportPersistenceFailure({
 					operation: "command-transaction",
 					error,
+				});
+				toast.error("Could not apply edit", {
+					id: "editor-command-failure",
+					description:
+						"The change was not saved. Reload the editor and try again.",
 				});
 				throw error;
 			});

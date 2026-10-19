@@ -8,6 +8,7 @@ import type {
 } from "../../timeline/types";
 import { cloneOpaque, overlayOpaque } from "./opaque-value";
 import { EDITING_NAME_SHAPE_KEY } from "./editing-name-shape";
+import { assertTrackLockRuntime } from "../transactions/opencut/track-lock-runtime";
 
 type UnknownRecord = Record<string, unknown>;
 
@@ -42,7 +43,15 @@ function pick(source: UnknownRecord, keys: readonly string[]): UnknownRecord {
 	return result;
 }
 
-const TRACK_KEYS = ["id", "name", "type", "elements", "muted", "hidden"];
+const TRACK_KEYS = [
+	"id",
+	"name",
+	"type",
+	"elements",
+	"muted",
+	"hidden",
+	"locked",
+];
 const ELEMENT_KEYS = [
 	EDITING_NAME_SHAPE_KEY,
 	"id",
@@ -84,6 +93,9 @@ function decodeElement(value: unknown): TimelineElement {
 
 function decodeTrack(value: unknown): TimelineTrack {
 	const raw = record(value, "track");
+	if (raw.locked !== undefined && typeof raw.locked !== "boolean")
+		throw new Error("Invalid track lock state");
+	if (raw.locked === true) assertTrackLockRuntime();
 	return {
 		...pick(raw, TRACK_KEYS),
 		elements: Array.isArray(raw.elements)
@@ -125,6 +137,12 @@ export function decodeProject(
 	options?: { sequenceOwnership: "borrow" },
 ): TProject {
 	const raw = record(data, "project");
+	if (
+		typeof raw.__opencutTransaction === "object" &&
+		raw.__opencutTransaction !== null &&
+		Reflect.get(raw.__opencutTransaction, "version") === 2
+	)
+		assertTrackLockRuntime();
 	const metadata = record(raw.metadata, "project.metadata");
 	if (!Array.isArray(raw.scenes)) {
 		throw new Error("Invalid persisted project: scenes must be an array");
@@ -147,6 +165,9 @@ export function decodeProject(
 				: cloneOpaque(raw.motionTextSequences)
 			: [],
 		currentSceneId: text(raw.currentSceneId, "currentSceneId"),
+		...(raw.mediaFolders !== undefined && {
+			mediaFolders: cloneOpaque(raw.mediaFolders) as TProject["mediaFolders"],
+		}),
 		settings: cloneOpaque(raw.settings) as TProject["settings"],
 		version: cloneOpaque(raw.version) as number,
 		...(Object.hasOwn(raw, "timelineViewState") && {
@@ -217,17 +238,35 @@ export function encodeProject({
 		// These entities are replaced below, not recursively overlaid. Do not
 		// clone/traverse the full sequence tree only to discard that result.
 		motionTextSequences: [] as TProject["motionTextSequences"],
+		mediaFolders: undefined as TProject["mediaFolders"],
 		currentSceneId: project.currentSceneId,
 		settings: cloneOpaque(project.settings),
 		version: project.version,
 		timelineViewState: cloneOpaque(project.timelineViewState),
 	};
 	const encoded = overlayOpaque({ retained, known });
+	if (
+		project.scenes.some((scene) =>
+			[...scene.tracks.overlay, scene.tracks.main, ...scene.tracks.audio].some(
+				(track) => track.locked === true,
+			),
+		)
+	) {
+		assertTrackLockRuntime();
+		const envelope: unknown = Reflect.get(encoded, "__opencutTransaction");
+		Reflect.set(encoded, "__opencutTransaction", {
+			...(typeof envelope === "object" && envelope !== null
+				? envelope
+				: { revision: 0, idempotency: [], assetCatalog: [] }),
+			version: 2,
+		});
+	}
 	// A motion-text update is a full entity replacement. The decoded entity
 	// already carries opaque extensions, so merging it with an older persisted
 	// entity would incorrectly resurrect removed optional fields (for example a
 	// resolved plan after undo, or inherited cue overrides).
 	encoded.motionTextSequences = cloneOpaque(project.motionTextSequences);
+	encoded.mediaFolders = cloneOpaque(project.mediaFolders);
 	// These objects are complete editor-owned values, not opaque partial patches.
 	// Recursive overlay would resurrect deleted animation channels/parameters or
 	// retain the other background variant after switching color <-> blur.

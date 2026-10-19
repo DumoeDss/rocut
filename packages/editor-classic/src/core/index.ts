@@ -66,7 +66,10 @@ export class EditorCore {
 		this.playback = new PlaybackManager(this);
 		this.scenes = new ScenesManager(this);
 		this.project = new ProjectManager(this);
-		this.media = new MediaManager(this);
+		this.media = new MediaManager({
+			editor: this,
+			nativeProvider: session.host.mediaPreviews,
+		});
 		this.renderer = new RendererManager({
 			programmaticFrames: session.host.programmaticFrames,
 			editor: this,
@@ -112,8 +115,12 @@ export class EditorCore {
 			const tracks = activeScene.tracks;
 			const prunedTracks = {
 				...tracks,
-				overlay: tracks.overlay.filter((track) => track.elements.length > 0),
-				audio: tracks.audio.filter((track) => track.elements.length > 0),
+				overlay: tracks.overlay.filter(
+					(track) => track.locked !== undefined || track.elements.length > 0,
+				),
+				audio: tracks.audio.filter(
+					(track) => track.locked !== undefined || track.elements.length > 0,
+				),
 			};
 			if (
 				prunedTracks.overlay.length !== tracks.overlay.length ||

@@ -130,6 +130,7 @@ export const USAGE_LINES: readonly string[] = [
 	"  rocut programmatic animation-inspect <spec.json> [--target <id|auto>] [--project <dir>]",
 	"  rocut task list|start <spec.json>|get <id>|cancel <id> [--target <id|auto>] [--project <dir>]",
 	"  rocut scenes list|plan <spec.json> [--target <id|auto>] [--project <dir>]",
+	"  rocut media-folders list|plan <spec.json> [--target <id|auto>] [--project <dir>]",
 	"  rocut motion-text catalog [--target <id|auto>] [--project <dir>]",
 	"  rocut motion-text list [--target <id|auto>] [--project <dir>]",
 	"  rocut motion-text create <spec.json> [--target <id|auto>] [--project <dir>]",
@@ -317,6 +318,7 @@ async function runCli(argv: readonly string[]): Promise<void> {
 		case "programmatic":
 		case "editing":
 		case "task":
+		case "media-folders":
 		case "scenes": {
 			await runAgentCli({
 				command,

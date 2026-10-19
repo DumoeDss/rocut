@@ -48,7 +48,7 @@ if (process.env.OPENCUT_MEDIA_PERSISTENCE_TEST_ISOLATED !== "1") {
 				},
 			},
 		} as unknown as EditorCore;
-		const manager = new MediaManager(editor);
+		const manager = new MediaManager({ editor });
 		const failedFile = new File([new Uint8Array([1])], "failed.png", {
 			type: "image/png",
 		});

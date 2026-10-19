@@ -9,6 +9,7 @@ import { generateUUID } from "../../../utils/id";
 import { isRetimableElement } from "../../../timeline";
 import { splitAnimationsAtTime } from "../../../animation";
 import { getSourceSpanAtClipTime } from "../../../retime";
+import { directionalSourceTrims } from "../../../wasm/video-time";
 import {
 	addMediaTime,
 	type MediaTime,
@@ -119,20 +120,26 @@ export class SplitElementsCommand extends Command {
 					shouldIncludeSplitBoundary: true,
 				});
 				let splitResult: TimelineElement[];
+				const trims = directionalSourceTrims({
+					trimStart: element.trimStart,
+					trimEnd: element.trimEnd,
+					reverse: retimeRef?.reverse,
+				});
+				const baseElement = { ...element, ...trims };
 
 				const leftTrimEnd = addMediaTime({
-					a: element.trimEnd,
+					a: trims.trimEnd,
 					b: rightSourceSpan,
 				});
 				const rightTrimStart = addMediaTime({
-					a: element.trimStart,
+					a: trims.trimStart,
 					b: leftSourceSpan,
 				});
 
 				if (this.retainSide === "left") {
 					splitResult = [
 						{
-							...element,
+							...baseElement,
 							duration: leftVisibleDuration,
 							trimEnd: leftTrimEnd,
 							name: `${element.name} (left)`,
@@ -148,7 +155,7 @@ export class SplitElementsCommand extends Command {
 					});
 					splitResult = [
 						{
-							...element,
+							...baseElement,
 							id: newId,
 							startTime: this.splitTime,
 							duration: rightVisibleDuration,
@@ -166,7 +173,7 @@ export class SplitElementsCommand extends Command {
 					});
 					splitResult = [
 						{
-							...element,
+							...baseElement,
 							duration: leftVisibleDuration,
 							trimEnd: leftTrimEnd,
 							name: `${element.name} (left)`,
@@ -174,7 +181,7 @@ export class SplitElementsCommand extends Command {
 							...(retimeRef !== undefined ? { retime: retimeRef } : {}),
 						},
 						{
-							...element,
+							...baseElement,
 							id: secondElementId,
 							startTime: this.splitTime,
 							duration: rightVisibleDuration,
@@ -186,7 +193,14 @@ export class SplitElementsCommand extends Command {
 					];
 				}
 
-				return splitResult;
+				return splitResult.map((entry) => ({
+					...entry,
+					...directionalSourceTrims({
+						trimStart: entry.trimStart,
+						trimEnd: entry.trimEnd,
+						reverse: retimeRef?.reverse,
+					}),
+				}));
 			});
 
 			return { ...track, elements } as TTrack;

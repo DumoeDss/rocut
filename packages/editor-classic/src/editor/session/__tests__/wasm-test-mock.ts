@@ -2,6 +2,7 @@
  * @opencutSurface experimental — wasm test-mock entry; test infrastructure (the README's migration constraint names it)
  */
 import { mock } from "bun:test";
+import * as nativeSync from "opencut-wasm/sync";
 import {
 	evaluateClipTransitions,
 	isMediaSourceSpanValid,
@@ -339,6 +340,11 @@ mock.module("mediabunny", () => ({
 	Input: MockMediaInput,
 	BlobSource: MockMediaSource,
 	AudioBufferSink: MockAudioBufferSink,
+	AudioSampleSink: class {
+		async *samples() {
+			throw new Error("Audio sample decoding is not provided by the session ownership mock.");
+		}
+	},
 	CanvasSink: MockMediaSink,
 	VideoSampleSink: MockMediaSink,
 	ALL_FORMATS: [],
@@ -442,6 +448,11 @@ function renderMockFrame({
 }
 
 mock.module("opencut-wasm", () => ({
+	// Forward the real Rust admission rule when the candidate runtime has it.
+	// Old-runtime compatibility tests deliberately keep this absent.
+	validateTrackLocksJson: Reflect.get(nativeSync, "validateTrackLocksJson"),
+	planMediaFolderMutationJson: Reflect.get(nativeSync, "planMediaFolderMutationJson"),
+	validateMediaFoldersJson: Reflect.get(nativeSync, "validateMediaFoldersJson"),
 	evaluateClipTransitions,
 	isMediaSourceSpanValid,
 	planFrameGrid,

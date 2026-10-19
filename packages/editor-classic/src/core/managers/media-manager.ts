@@ -1,4 +1,13 @@
 import type { EditorCore } from "..";
+import type {
+	MediaFolder,
+	MediaFolderMutation,
+} from "@opencut/editor-contracts";
+import {
+	isMediaFolderEditingAvailable,
+} from "../../editor/transactions/opencut/media-folder-policy";
+import { MutateMediaFoldersCommand } from "../../commands/project/mutate-media-folders";
+import type { MediaPreviewProvider } from "@opencut/editor-ports/host";
 import { toast } from "sonner";
 import type { MediaAsset } from "../../media/types";
 import {
@@ -11,20 +20,33 @@ import {
 import { generateUUID } from "../../utils/id";
 import { VideoCache } from "../../services/video-cache/service";
 import { WaveformCache } from "../../services/waveform-cache/service";
+import { MediaPreviewResources } from "../../media/preview-resource";
 import { buildWaveformSourceKey } from "../../media/waveform-summary";
 import { MotionTextAudioAnalysisCache } from "../../services/motion-text-audio-analysis/service";
+import { assertMediaRemovalUnlocked } from "../../editor/transactions/opencut/track-lock-policy";
 
 export class MediaManager {
 	private readonly videoCache: VideoCache;
 	private readonly waveformCache: WaveformCache;
+	private readonly previewResources: MediaPreviewResources;
 	private readonly motionTextAudioAnalysisCache: MotionTextAudioAnalysisCache;
 	private assets: MediaAsset[] = [];
 	private isLoading = false;
 	private listeners = new Set<() => void>();
 
-	constructor(private editor: EditorCore) {
+	private readonly editor: EditorCore;
+
+	constructor({
+		editor,
+		nativeProvider,
+	}: {
+		editor: EditorCore;
+		nativeProvider?: MediaPreviewProvider;
+	}) {
+		this.editor = editor;
+		this.previewResources = new MediaPreviewResources({ nativeProvider });
 		this.videoCache = new VideoCache();
-		this.waveformCache = new WaveformCache(editor.resources);
+		this.waveformCache = new WaveformCache({ resources: editor.resources });
 		this.motionTextAudioAnalysisCache = new MotionTextAudioAnalysisCache({
 			resources: editor.resources,
 		});
@@ -113,6 +135,13 @@ export class MediaManager {
 			return;
 		}
 
+		assertMediaRemovalUnlocked({
+			project: {
+				...this.editor.project.getActive(),
+				scenes: this.editor.scenes.getScenes(),
+			},
+			assetIds: uniqueIds,
+		});
 		for (const assetId of uniqueIds) {
 			await this.removeMediaAssetAtomically({ projectId, assetId });
 		}
@@ -246,6 +275,14 @@ export class MediaManager {
 
 	async clearProjectMedia({ projectId }: { projectId: string }): Promise<void> {
 		const assetsToClear = [...this.assets];
+		const project = await this.editor.persistence.loadProject({
+			id: projectId,
+		});
+		if (project)
+			assertMediaRemovalUnlocked({
+				project,
+				assetIds: assetsToClear.map((asset) => asset.id),
+			});
 		try {
 			await Promise.all(
 				assetsToClear.map(({ id }) =>
@@ -266,6 +303,7 @@ export class MediaManager {
 			throw error;
 		}
 
+		this.previewResources.clearAll();
 		await Promise.all([
 			this.videoCache.clearAll(),
 			this.waveformCache.clearAll(),
@@ -287,6 +325,7 @@ export class MediaManager {
 	}
 
 	async clearAllAssets(): Promise<void> {
+		this.previewResources.clearAll();
 		await Promise.all([
 			this.videoCache.clearAll(),
 			this.waveformCache.clearAll(),
@@ -312,12 +351,41 @@ export class MediaManager {
 		return this.assets;
 	}
 
+	getFolders(): readonly MediaFolder[] {
+		return this.editor.project.getActiveOrNull()?.mediaFolders?.folders ?? [];
+	}
+
+	getAssetFolder(assetId: string): string | undefined {
+		return this.editor.project
+			.getActiveOrNull()
+			?.mediaFolders?.assignments.find((item) => item.assetId === assetId)
+			?.folderId;
+	}
+
+	isFolderEditingAvailable(): boolean {
+		return isMediaFolderEditingAvailable();
+	}
+
+	async mutateFolders(operation: MediaFolderMutation): Promise<void> {
+		await this.editor.command.execute({
+			command: new MutateMediaFoldersCommand({
+				projectId: this.editor.project.getActive().metadata.id,
+				operation,
+			}),
+		});
+		this.notify();
+	}
+
 	getVideoCache(): VideoCache {
 		return this.videoCache;
 	}
 
 	getWaveformCache(): WaveformCache {
 		return this.waveformCache;
+	}
+
+	getPreviewResources(): MediaPreviewResources {
+		return this.previewResources;
 	}
 
 	getMotionTextAudioAnalysisCache(): MotionTextAudioAnalysisCache {
@@ -353,6 +421,7 @@ export class MediaManager {
 	}
 
 	async dispose(): Promise<void> {
+		this.previewResources.clearAll();
 		await Promise.all([
 			this.videoCache.dispose(),
 			this.waveformCache.dispose(),

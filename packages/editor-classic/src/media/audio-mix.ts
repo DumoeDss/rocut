@@ -71,7 +71,12 @@ export function mixAudioChannels({
 		for (let offset = 0; offset < count; offset++) {
 			const clipTime = times[offset];
 			const sourceTime =
-				trimStart + getSourceTimeAtClipTime({ clipTime, retime });
+				trimStart +
+				getSourceTimeAtClipTime({
+					clipTime,
+					retime,
+					clipDuration: element.duration,
+				});
 			const sourceIndex = sourceTime * buffer.sampleRate;
 			if (sourceIndex < 0) continue;
 			if (sourceIndex >= buffer.length) return;

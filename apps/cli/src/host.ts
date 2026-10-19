@@ -31,6 +31,7 @@ import { PROGRAMMATIC_ANIMATION_INSPECT_CAPABILITY } from "./programmatic/animat
 import { createProgrammaticBuildService } from "./programmatic/engines/build-service";
 import { editingCatalog } from "@opencut/editor-classic/editing";
 import { planSceneEdit } from "./scene-editing";
+import { planMediaFolderEdit } from "./media-folder-editing";
 import {
 	importLocalMedia,
 	inspectLocalMediaImport,
@@ -41,6 +42,8 @@ import {
 	type EditorTaskRegistry,
 } from "./host-editor-tasks";
 import { handleEditorTaskRoute } from "./host-editor-task-routes";
+import { createMediaPreviewService } from "./media-preview";
+import { handleMediaPreviewRoute } from "./media-preview-route";
 import { createReadStream, existsSync } from "node:fs";
 import { stat } from "node:fs/promises";
 import path from "node:path";
@@ -400,6 +403,10 @@ export async function startHost(args: StartHostArgs): Promise<RunningHost> {
 		decoder: args.nativeVideoDecoder,
 		toolchainDirectory: args.engineToolchainDirectory,
 	});
+	const mediaPreviews = createMediaPreviewService({
+		projectRoot: resolvedProject,
+		decoder: args.nativeVideoDecoder,
+	});
 	const server = createServer((request, response) => {
 		void handle(request, response, {
 			token,
@@ -413,6 +420,7 @@ export async function startHost(args: StartHostArgs): Promise<RunningHost> {
 			editorTasks,
 			programmaticFrames,
 			programmaticAudio,
+			mediaPreviews,
 			programmaticBuilds,
 			animationInspectToolchainDirectory: args.engineToolchainDirectory,
 			motionTextCores: args.motionTextCores,
@@ -452,6 +460,7 @@ export async function startHost(args: StartHostArgs): Promise<RunningHost> {
 			return plane.automation();
 		},
 		close: async () => {
+			await mediaPreviews.dispose();
 			await programmaticAudio.dispose();
 			await programmaticFrames.dispose();
 			await programmaticBuilds.dispose();
@@ -495,6 +504,7 @@ export function revisionEventWriter(args: {
 }
 
 interface HandleContext {
+	readonly mediaPreviews: ReturnType<typeof createMediaPreviewService>;
 	readonly projectDirectory: string;
 	readonly animationInspectToolchainDirectory?: string;
 	readonly programmaticAudio: ReturnType<typeof createProgrammaticAudioService>;
@@ -740,6 +750,29 @@ async function handleApi(
 			);
 			return;
 		}
+		if (
+			route[0] === "media-folders" &&
+			route.length === 1 &&
+			request.method === "GET"
+		) {
+			respond(200, (await automation.project())?.mediaFolders ?? null);
+			return;
+		}
+		if (
+			route[0] === "media-folders" &&
+			route[1] === "plan" &&
+			route.length === 2 &&
+			request.method === "POST"
+		) {
+			const input: unknown = await readJsonBody(request);
+			respond(
+				200,
+				await plane.enqueue(() =>
+					planMediaFolderEdit({ automation: plane.automation(), input }),
+				),
+			);
+			return;
+		}
 		if (route[0] === "editor-tasks") {
 			await handleEditorTaskRoute({
 				request,
@@ -775,6 +808,20 @@ async function handleApi(
 			return;
 		}
 		if (
+			route.length === 2 &&
+			route[0] === "media" &&
+			route[1] === "preview" &&
+			!url.search
+		) {
+			await handleMediaPreviewRoute({
+				request,
+				response,
+				service: context.mediaPreviews,
+				readBody: () => readJsonBody(request),
+			});
+			return;
+		}
+		if (
 			request.method === "POST" &&
 			route.length === 2 &&
 			route[0] === "media" &&
@@ -783,14 +830,17 @@ async function handleApi(
 			const input: unknown = await readJsonBody(request);
 			respond(
 				200,
-				await plane.enqueue(() =>
-					(route[1] === "import" ? importLocalMedia : inspectLocalMediaImport)({
+				await plane.enqueue(async () => {
+					const spec = {
 						input,
 						store: plane.baseStore,
 						projectId: plane.projectId,
 						automation: plane.automation(),
-					}),
-				),
+					};
+					return route[1] === "import"
+						? importLocalMedia(spec)
+						: inspectLocalMediaImport(spec);
+				}),
 			);
 			return;
 		}

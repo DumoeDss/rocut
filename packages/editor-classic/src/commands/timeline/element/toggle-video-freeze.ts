@@ -53,6 +53,7 @@ export class ToggleVideoFreezeCommand extends Command {
 				playhead: this.options.playhead,
 				trimStart: element.trimStart,
 				playbackRate: element.retime?.rate ?? 1,
+				reverse: element.retime?.reverse,
 				sourceDuration: duration,
 			});
 			if (planned === null)

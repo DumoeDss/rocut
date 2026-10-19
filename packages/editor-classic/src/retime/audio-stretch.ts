@@ -2,6 +2,7 @@ import { PitchShifter } from "soundtouchjs";
 import { clampRetimeRate, shouldMaintainPitch } from "./rate";
 import type { RetimeConfig } from "../timeline";
 import { getSourceTimeAtClipTime } from "./resolve";
+import { reverseAudioSamples } from "../wasm/video-time";
 
 const RATE_EPSILON = 1e-6;
 
@@ -158,22 +159,31 @@ export async function renderRetimedBuffer({
 		shouldMaintainPitch({ rate, maintainPitch }) &&
 		Math.abs(rate - 1) > RATE_EPSILON;
 
-	if (usePitchPreservation) {
-		return buildPitchPreservedBuffer({
-			sourceBuffer,
-			trimStart,
-			clipDuration,
-			rate,
-			targetSampleRate,
-		});
+	const result = usePitchPreservation
+		? await buildPitchPreservedBuffer({
+				sourceBuffer,
+				trimStart,
+				clipDuration,
+				rate,
+				targetSampleRate,
+			})
+		: buildResampledBuffer({
+				audioContext,
+				sourceBuffer,
+				trimStart,
+				clipDuration,
+				targetSampleRate,
+				retime: retime ? { ...retime, reverse: false } : undefined,
+			});
+	if (retime?.reverse) {
+		for (let channel = 0; channel < result.numberOfChannels; channel++) {
+			result.copyToChannel(
+				Float32Array.from(
+					reverseAudioSamples({ samples: result.getChannelData(channel) }),
+				),
+				channel,
+			);
+		}
 	}
-
-	return buildResampledBuffer({
-		audioContext,
-		sourceBuffer,
-		trimStart,
-		clipDuration,
-		targetSampleRate,
-		retime,
-	});
+	return result;
 }

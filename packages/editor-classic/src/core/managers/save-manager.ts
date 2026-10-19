@@ -1,9 +1,19 @@
 import type { EditorCore } from "..";
+import { ProjectStoreError } from "@opencut/editor-ports";
 import type { TimerHandle } from "../../editor/session/resources";
 
 type SaveManagerOptions = {
 	debounceMs?: number;
 };
+
+export interface SaveState {
+	readonly isDirty: boolean;
+	readonly isSaving: boolean;
+	readonly isPaused: boolean;
+	readonly error: string | null;
+	/** Present only after an explicit structured storage write denial. */
+	readonly isReadOnly?: boolean;
+}
 
 export class SaveManager {
 	private debounceMs: number;
@@ -16,6 +26,15 @@ export class SaveManager {
 	private unsubscribeHandlers: Array<() => void> = [];
 	private publicationListeners = new Set<() => void>();
 	private alreadyDurablePublicationDepth = 0;
+	private stateListeners = new Set<() => void>();
+	private error: string | null = null;
+	private isReadOnly = false;
+	private state: SaveState = {
+		isDirty: false,
+		isSaving: false,
+		isPaused: false,
+		error: null,
+	};
 
 	constructor({
 		editor,
@@ -54,10 +73,12 @@ export class SaveManager {
 	pause(): void {
 		this.clearTimer();
 		this.isPaused = true;
+		this.publishState();
 	}
 
 	resume(): void {
 		this.isPaused = false;
+		this.publishState();
 		if (this.hasPendingSave) {
 			this.queueSave();
 		}
@@ -67,6 +88,7 @@ export class SaveManager {
 		if (this.alreadyDurablePublicationDepth > 0) return;
 		if (this.isPaused && !force) return;
 		this.hasPendingSave = true;
+		this.publishState();
 		this.queueSave();
 	}
 
@@ -82,11 +104,18 @@ export class SaveManager {
 	async flush(): Promise<void> {
 		for (const listener of this.flushListeners) listener();
 		this.hasPendingSave = true;
+		this.publishState();
 		while (this.hasPendingSave || this.isSaving) {
-			if (this.isPaused || !this.editor.project.getActive() ||
+			if (
+				this.isPaused ||
+				!this.editor.project.getActive() ||
 				this.editor.project.getIsLoading() ||
-				this.editor.project.getMigrationState().isMigrating) {
-				throw new Error("Project is not ready to flush");
+				this.editor.project.getMigrationState().isMigrating
+			) {
+				this.error = "Project is not ready to flush";
+				this.isReadOnly = false;
+				this.publishState();
+				throw new Error(this.error);
 			}
 			await this.saveNow();
 		}
@@ -95,11 +124,48 @@ export class SaveManager {
 	/** Publish transient UI state before an explicit durable-save barrier. */
 	beforeFlush(listener: () => void): () => void {
 		this.flushListeners.add(listener);
-		return () => { this.flushListeners.delete(listener); };
+		return () => {
+			this.flushListeners.delete(listener);
+		};
 	}
 
 	getIsDirty(): boolean {
 		return this.hasPendingSave || this.isSaving;
+	}
+
+	getState = (): SaveState => this.state;
+
+	subscribe = (listener: () => void): (() => void) => {
+		this.stateListeners.add(listener);
+		return () => {
+			this.stateListeners.delete(listener);
+		};
+	};
+
+	private publishState(): void {
+		const next: SaveState = {
+			isDirty: this.getIsDirty(),
+			isSaving: this.isSaving,
+			isPaused: this.isPaused,
+			error: this.error,
+			...(this.isReadOnly ? { isReadOnly: true } : {}),
+		};
+		if (
+			next.isDirty === this.state.isDirty &&
+			next.isSaving === this.state.isSaving &&
+			next.isPaused === this.state.isPaused &&
+			next.error === this.state.error &&
+			next.isReadOnly === this.state.isReadOnly
+		)
+			return;
+		this.state = next;
+		for (const listener of this.stateListeners) {
+			try {
+				listener();
+			} catch {
+				/* Observers cannot alter persistence results. */
+			}
+		}
 	}
 
 	/** Observe successful durable-save publications (used by lifecycle probes). */
@@ -145,19 +211,29 @@ export class SaveManager {
 		if (this.isPaused || !this.hasPendingSave) return Promise.resolve();
 
 		const activeProject = this.editor.project.getActive();
-		if (!activeProject || this.editor.project.getIsLoading() ||
-			this.editor.project.getMigrationState().isMigrating) return Promise.resolve();
+		if (
+			!activeProject ||
+			this.editor.project.getIsLoading() ||
+			this.editor.project.getMigrationState().isMigrating
+		)
+			return Promise.resolve();
 
 		this.isSaving = true;
 		this.hasPendingSave = false;
+		this.error = null;
+		this.isReadOnly = false;
 		this.clearTimer();
-		this.inFlight = this.persist().then(() => {
-			this.inFlight = null;
-			if (this.hasPendingSave && !this.isPaused) this.queueSave();
-		}, (error: unknown) => {
-			this.inFlight = null;
-			throw error;
-		});
+		this.inFlight = this.persist().then(
+			() => {
+				this.inFlight = null;
+				if (this.hasPendingSave && !this.isPaused) this.queueSave();
+			},
+			(error: unknown) => {
+				this.inFlight = null;
+				throw error;
+			},
+		);
+		this.publishState();
 		return this.inFlight;
 	}
 
@@ -174,9 +250,14 @@ export class SaveManager {
 			}
 		} catch (error) {
 			this.hasPendingSave = true;
+			this.error =
+				error instanceof Error ? error.message : "Project save failed";
+			this.isReadOnly =
+				error instanceof ProjectStoreError && error.code === "readonly";
 			throw error;
 		} finally {
 			this.isSaving = false;
+			this.publishState();
 		}
 	}
 

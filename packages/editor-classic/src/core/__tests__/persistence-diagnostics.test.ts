@@ -8,6 +8,7 @@ const privatePayload = "provider-private-payload-must-not-leak";
 test("storage errors expose only their stable failure code", () => {
 	for (const code of [
 		"aborted",
+		"readonly",
 		"quota-exceeded",
 		"unavailable",
 		"corrupt",

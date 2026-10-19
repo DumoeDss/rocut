@@ -66,6 +66,7 @@ export function groupTransitionTrack({
 								seconds: media.duration ?? 0,
 							}),
 							playbackRate: element.retime?.rate ?? 1,
+							...(element.retime?.reverse ? { reverse: true } : {}),
 							freezeFrame: element.freezeFrame,
 						},
 		});

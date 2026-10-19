@@ -26,8 +26,13 @@ import type {
 } from "@opencut/editor-ports";
 import type { MediaAsset } from "../../../media/types";
 import { createOpenCutTransactionDocumentAdapter } from "./adapter";
+import { mergeAssetCatalogs } from "./asset-catalog";
 import { ProjectMutationArbiter } from "./arbiter";
 import { openCutMediaPolicy } from "./media-policy";
+import {
+	assertNativeTrackLocks,
+	openCutTrackLockPolicy,
+} from "./track-lock-policy";
 import {
 	openCutEditingPolicy,
 	validateDocumentEditing,
@@ -45,7 +50,6 @@ export type {
 } from "./ui-commit";
 import {
 	assetCatalogFromMedia,
-	type OpenCutAssetCatalogEntry,
 	type OpenCutCommitToken,
 	type OpenCutProjectDraft,
 } from "./types";
@@ -63,20 +67,6 @@ function commitToken(): OpenCutCommitToken {
 	const random = globalThis.crypto?.randomUUID?.();
 	const fallback = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
 	return `opencut-ui:${random ?? fallback}` as OpenCutCommitToken;
-}
-
-function mergeAssetCatalogs({
-	committed,
-	live,
-}: {
-	committed: readonly OpenCutAssetCatalogEntry[];
-	live: readonly OpenCutAssetCatalogEntry[];
-}): OpenCutAssetCatalogEntry[] {
-	const merged = new Map(
-		committed.map((asset) => [asset.id, { ...asset }] as const),
-	);
-	for (const asset of live) merged.set(asset.id, { ...asset });
-	return [...merged.values()];
 }
 
 export class SessionOpenCutTransactions {
@@ -131,7 +121,11 @@ export class SessionOpenCutTransactions {
 					store: this.options.persistence.store,
 					projectId: portProjectId,
 					documentAdapter: adapter,
-					placementPolicies: [openCutMediaPolicy, openCutEditingPolicy],
+					placementPolicies: [
+						openCutMediaPolicy,
+						openCutEditingPolicy,
+						openCutTrackLockPolicy,
+					],
 					normalizeOperationFingerprint,
 				});
 				const active: ActiveOpenCutRouter = {
@@ -193,6 +187,10 @@ export class SessionOpenCutTransactions {
 					baseDocument,
 				});
 				const token = commitToken();
+				assertNativeTrackLocks({
+					before: active.adapter.currentDraft().project,
+					after: prepared.draft.project,
+				});
 				const projectedDocument = projectOpenCutDraft(prepared.draft, {
 					revision: revisionOf(Number(revision) + 1),
 					idempotency: [],

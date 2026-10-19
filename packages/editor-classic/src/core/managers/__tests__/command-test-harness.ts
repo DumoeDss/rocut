@@ -3,6 +3,7 @@ import type { EditorCore } from "../..";
 import type { MediaAsset } from "../../../media/types";
 import type { TProject } from "../../../project/types";
 import type { TScene } from "../../../timeline";
+import type { OpenCutAssetCatalogEntry } from "../../../editor/transactions/opencut/types";
 await import("../../../editor/session/__tests__/wasm-test-mock");
 const { CommandManager } = await import("../commands");
 const { SelectionManager } = await import("../selection-manager");
@@ -13,14 +14,33 @@ const { cloneOpaque } =
 	await import("../../../editor/persistence/opaque-value");
 const { ProjectMutationArbiter, SessionOpenCutTransactions } =
 	await import("../../../editor/transactions/opencut");
-const { projectFixture, storeFixture, TEST_PROJECT_ID } =
+const { projectFixture, recordFixture, storeFixture, TEST_PROJECT_ID } =
 	await import("../../../editor/transactions/opencut/__tests__/fixture");
 
 export async function commandHarness(
 	project = projectFixture(),
 	assets: MediaAsset[] = [],
+	options: { committedAssetCatalog?: OpenCutAssetCatalogEntry[] } = {},
 ) {
 	const fixture = await storeFixture(project);
+	if (options.committedAssetCatalog) {
+		await fixture.store.save({
+			record: recordFixture(project, {
+				__opencutTransaction: {
+					version: 1,
+					revision: 0,
+					idempotency: [],
+					assetCatalog: options.committedAssetCatalog,
+				},
+			}),
+			summary: {
+				id: project.metadata.id,
+				name: project.metadata.name,
+				createdAt: project.metadata.createdAt.toISOString(),
+				updatedAt: project.metadata.updatedAt.toISOString(),
+			},
+		});
+	}
 	const arbiter = new ProjectMutationArbiter();
 	const persistence = new SessionPersistenceCoordinator(fixture.store, arbiter);
 	await persistence.loadProject({ id: TEST_PROJECT_ID });
@@ -85,8 +105,12 @@ export async function commandHarness(
 		const tracks = target.scenes.getActiveScene().tracks;
 		const pruned = {
 			...tracks,
-			overlay: tracks.overlay.filter((track) => track.elements.length > 0),
-			audio: tracks.audio.filter((track) => track.elements.length > 0),
+			overlay: tracks.overlay.filter(
+				(track) => track.locked !== undefined || track.elements.length > 0,
+			),
+			audio: tracks.audio.filter(
+				(track) => track.locked !== undefined || track.elements.length > 0,
+			),
 		};
 		if (
 			pruned.overlay.length !== tracks.overlay.length ||

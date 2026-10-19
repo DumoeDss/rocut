@@ -65,6 +65,7 @@ export function evaluateDocumentTransitions({
 							trimStart: clip.trimStart,
 							sourceDuration: asset.duration ?? 0,
 							playbackRate: clip.retime?.rate ?? 1,
+							...(clip.retime?.reverse ? { reverse: true } : {}),
 							freezeFrame: clip.freezeFrame,
 						},
 		});

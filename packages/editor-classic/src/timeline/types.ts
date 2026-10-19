@@ -32,6 +32,8 @@ export type TrackType = "video" | "text" | "audio" | "graphic" | "effect";
 interface BaseTrack {
 	id: string;
 	name: string;
+	/** Legacy tracks omit this field and remain editable. */
+	locked?: boolean;
 }
 
 export interface VideoTrack extends BaseTrack {
@@ -82,6 +84,7 @@ export interface SceneTracks {
 
 export interface RetimeConfig {
 	rate: number;
+	reverse?: boolean;
 	maintainPitch?: boolean;
 }
 
@@ -288,6 +291,7 @@ export interface DropTarget {
 }
 
 export interface ComputeDropTargetParams {
+	heightScale?: number;
 	elementType: ElementType;
 	mouseX: number;
 	mouseY: number;

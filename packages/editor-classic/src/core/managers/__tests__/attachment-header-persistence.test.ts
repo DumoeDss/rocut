@@ -105,7 +105,7 @@ if (process.env.ROCUT_ATTACHMENT_HEADERS_ISOLATED !== "1") {
 			save: { pause: () => {}, resume: () => {} },
 			scenes: { clearScenes: () => {} },
 		} as unknown as EditorCore;
-		const media = new MediaManager(editor);
+		const media = new MediaManager({ editor });
 		Object.assign(editor, { media });
 		return {
 			persistence,

@@ -46,6 +46,7 @@ export interface TTimelineViewState {
 }
 
 export interface TProject {
+	mediaFolders?: import("@opencut/editor-contracts").MediaFolderState;
 	metadata: TProjectMetadata;
 	scenes: TScene[];
 	motionTextSequences: MotionTextSequence[];

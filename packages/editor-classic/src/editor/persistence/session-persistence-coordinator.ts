@@ -10,6 +10,13 @@ import type {
 import { ProjectMutationArbiter } from "../transactions/opencut/arbiter";
 import { cloneOpaque, overlayOpaque } from "./opaque-value";
 import { decodeProject, encodeProject } from "./project-codec";
+import {
+	assertNativeTrackLocks,
+	assertMediaRemovalUnlocked,
+	assertMediaSourceUnlocked,
+	mediaSourceRequiresValidation,
+} from "../transactions/opencut/track-lock-policy";
+import { sourceBytesSha256 } from "../../media/media-facts";
 import { collectProjectAnimationAdmissionIssues } from "../../animation/project-animation-admission";
 import type { TimelineElement } from "../../timeline/types";
 
@@ -170,7 +177,8 @@ export class SessionPersistenceCoordinator {
 	captureNativeExportSourceData({ project }: { project: TProject }): unknown {
 		this.assertAlive();
 		const retained = this.projectSnapshots.get(project.metadata.id);
-		if (retained === undefined) throw new Error("Native export source has not been loaded");
+		if (retained === undefined)
+			throw new Error("Native export source has not been loaded");
 		return encodeProject({ project: cloneOpaque(project), retained });
 	}
 
@@ -194,7 +202,9 @@ export class SessionPersistenceCoordinator {
 				this.enqueue({
 					key: `project:${id}`,
 					operation: async () => {
-						const retained = this.projectSnapshots.get(id) ?? {};
+						const existingRecord = await this.store.load({ id });
+						const retained =
+							existingRecord?.data ?? this.projectSnapshots.get(id) ?? {};
 						// Encode against the latest retained record exactly once. A second
 						// generic merge resurrects removed fields in full sequence replacements.
 						const project = args.refreshProject
@@ -204,6 +214,11 @@ export class SessionPersistenceCoordinator {
 							throw new Error("The queued save project is no longer active");
 						}
 						const data = encodeProject({ project, retained });
+						if (existingRecord || this.projectSnapshots.has(id))
+							assertNativeTrackLocks({
+								before: decodeProject(retained),
+								after: project,
+							});
 						const summary = summaryOverride ?? this.summaryFor(project);
 						const record = { id, schemaVersion: project.version, data };
 						await this.store.save({
@@ -380,17 +395,73 @@ export class SessionPersistenceCoordinator {
 			key: `attachment:${logical}`,
 			operation: async () => {
 				const resolvedBody = await body;
-				const metadata = overlayOpaque({
-					retained: this.attachmentSnapshots.get(logical),
-					known: knownMetadata,
+				return this.projectMutationArbiter.run({
+					projectId: args.projectId,
+					operation: async () => {
+						const projectRecord = await this.store.load({ id: args.projectId });
+						const project = projectRecord
+							? decodeProject(projectRecord.data)
+							: null;
+						if (
+							projectRecord &&
+							project &&
+							mediaSourceRequiresValidation({ project, assetId: args.key })
+						) {
+							const previous = await this.store.loadAttachment({
+								projectId: args.projectId,
+								key: args.key,
+							});
+							const envelope: unknown =
+								typeof projectRecord.data === "object" &&
+								projectRecord.data !== null
+									? Reflect.get(projectRecord.data, "__opencutTransaction")
+									: undefined;
+							const catalog: unknown =
+								typeof envelope === "object" && envelope !== null
+									? Reflect.get(envelope, "assetCatalog")
+									: undefined;
+							const entry: unknown = Array.isArray(catalog)
+								? catalog.find(
+										(asset: unknown) =>
+											typeof asset === "object" &&
+											asset !== null &&
+											Reflect.get(asset, "id") === args.key,
+									)
+								: undefined;
+							const recordedDigest: unknown =
+								typeof entry === "object" && entry !== null
+									? Reflect.get(entry, "sourceSha256")
+									: undefined;
+							const [beforeSha256, afterSha256] = await Promise.all([
+								previous
+									? sourceBytesSha256(new Uint8Array(previous.body))
+									: Promise.resolve(
+											typeof recordedDigest === "string"
+												? recordedDigest
+												: "missing-source-fingerprint",
+										),
+								sourceBytesSha256(new Uint8Array(resolvedBody)),
+							]);
+							assertMediaSourceUnlocked({
+								project,
+								assetId: args.key,
+								beforeSha256,
+								afterSha256,
+							});
+						}
+						const metadata = overlayOpaque({
+							retained: this.attachmentSnapshots.get(logical),
+							known: knownMetadata,
+						});
+						await this.store.saveAttachment({
+							...args,
+							metadata,
+							body: resolvedBody,
+						});
+						this.attachmentSnapshots.set(logical, cloneOpaque(metadata));
+						this.emit({ kind: "attachment", key: logical });
+					},
 				});
-				await this.store.saveAttachment({
-					...args,
-					metadata,
-					body: resolvedBody,
-				});
-				this.attachmentSnapshots.set(logical, cloneOpaque(metadata));
-				this.emit({ kind: "attachment", key: logical });
 			},
 		});
 	}
@@ -407,11 +478,21 @@ export class SessionPersistenceCoordinator {
 		});
 		return this.enqueue({
 			key: `attachment:${logical}`,
-			operation: async () => {
-				await this.store.removeAttachment(args);
-				this.attachmentSnapshots.delete(logical);
-				this.emit({ kind: "remove", key: logical });
-			},
+			operation: () =>
+				this.projectMutationArbiter.run({
+					projectId: args.projectId,
+					operation: async () => {
+						const projectRecord = await this.store.load({ id: args.projectId });
+						if (projectRecord)
+							assertMediaRemovalUnlocked({
+								project: decodeProject(projectRecord.data),
+								assetIds: [args.key],
+							});
+						await this.store.removeAttachment(args);
+						this.attachmentSnapshots.delete(logical);
+						this.emit({ kind: "remove", key: logical });
+					},
+				}),
 		});
 	}
 
