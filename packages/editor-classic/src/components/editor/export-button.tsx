@@ -38,6 +38,7 @@ import {
 } from "../../export/defaults";
 import { ExportVideoChromaControl } from "./export-video-chroma";
 import { TICKS_PER_SECOND } from "../../wasm";
+import { useEditorMessages } from "../../editor/host/editor-host-context";
 
 function isExportFormat(value: string): value is ExportFormat {
 	return EXPORT_FORMAT_VALUES.some((formatValue) => formatValue === value);
@@ -48,6 +49,7 @@ function isExportQuality(value: string): value is ExportQuality {
 }
 
 export function ExportButton() {
+	const messages = useEditorMessages();
 	const [isExportPopoverOpen, setIsExportPopoverOpen] = useState(false);
 	const editor = useEditorInstance();
 	const activeProject = useEditor((e) => e.project.getActiveOrNull());
@@ -70,7 +72,7 @@ export function ExportButton() {
 				<button
 					type="button"
 					className={cn(
-						"flex items-center gap-1.5 rounded-md bg-[#38BDF8] px-[0.12rem] py-[0.12rem] text-white",
+						"flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-md bg-[#38BDF8] px-[0.12rem] py-[0.12rem] text-white",
 						hasProject ? "cursor-pointer" : "cursor-not-allowed opacity-50",
 					)}
 					onClick={hasProject ? () => setIsExportPopoverOpen(true) : undefined}
@@ -84,7 +86,7 @@ export function ExportButton() {
 				>
 					<div className="relative flex items-center gap-1.5 rounded-[0.6rem] bg-linear-270 from-[#2567EC] to-[#37B6F7] px-4 py-1 shadow-[0_1px_3px_0px_rgba(0,0,0,0.65)]">
 						<HugeiconsIcon icon={TransitionTopIcon} className="z-50 size-3.5" />
-						<span className="z-50 text-[0.875rem]">Export</span>
+						<span className="z-50 text-[0.875rem]">{messages.export}</span>
 						<div className="absolute top-0 left-0 z-10 flex size-full items-center justify-center rounded-[0.6rem] bg-linear-to-t from-white/0 to-white/50">
 							<div className="absolute top-[0.08rem] z-50 h-[calc(100%-2px)] w-[calc(100%-2px)] rounded-[0.6rem] bg-linear-270 from-[#2567EC] to-[#37B6F7]"></div>
 						</div>
@@ -105,6 +107,7 @@ export function ExportOptions({
 }: {
 	onOpenChange: (open: boolean) => void;
 }) {
+	const messages = useEditorMessages();
 	const editor = useEditorInstance();
 	const activeProject = useEditor((e) => e.project.getActive());
 	const exportState = useEditor((e) => e.project.getExportState());
@@ -178,7 +181,7 @@ export function ExportOptions({
 				<>
 					<div className="flex items-center justify-between p-3 border-b">
 						<h3 className="font-medium text-sm">
-							{isExporting ? "Exporting project" : "Export project"}
+							{isExporting ? messages.exportingProject : messages.exportProject}
 						</h3>
 					</div>
 
@@ -192,7 +195,7 @@ export function ExportOptions({
 										showTopBorder={false}
 									>
 										<SectionHeader>
-											<SectionTitle>Format</SectionTitle>
+											<SectionTitle>{messages.exportFormat}</SectionTitle>
 										</SectionHeader>
 										<SectionContent>
 											<RadioGroup
@@ -207,15 +210,11 @@ export function ExportOptions({
 											>
 												<div className="flex items-center space-x-2">
 													<RadioGroupItem value="mp4" id="mp4" />
-													<Label htmlFor="mp4">
-														MP4 (H.264) - Better compatibility
-													</Label>
+													<Label htmlFor="mp4">{messages.mp4Compatibility}</Label>
 												</div>
 												<div className="flex items-center space-x-2">
 													<RadioGroupItem value="webm" id="webm" />
-													<Label htmlFor="webm">
-														WebM (VP9) - Smaller file size
-													</Label>
+													<Label htmlFor="webm">{messages.webmSize}</Label>
 												</div>
 											</RadioGroup>
 										</SectionContent>
@@ -223,7 +222,7 @@ export function ExportOptions({
 
 									<Section collapsible defaultOpen={false}>
 										<SectionHeader>
-											<SectionTitle>Quality</SectionTitle>
+											<SectionTitle>{messages.exportQuality}</SectionTitle>
 										</SectionHeader>
 										<SectionContent>
 											<RadioGroup
@@ -236,21 +235,19 @@ export function ExportOptions({
 											>
 												<div className="flex items-center space-x-2">
 													<RadioGroupItem value="low" id="low" />
-													<Label htmlFor="low">Low - Smallest file size</Label>
+													<Label htmlFor="low">{messages.qualityLow}</Label>
 												</div>
 												<div className="flex items-center space-x-2">
 													<RadioGroupItem value="medium" id="medium" />
-													<Label htmlFor="medium">Medium - Balanced</Label>
+													<Label htmlFor="medium">{messages.qualityMedium}</Label>
 												</div>
 												<div className="flex items-center space-x-2">
 													<RadioGroupItem value="high" id="high" />
-													<Label htmlFor="high">High - Recommended</Label>
+													<Label htmlFor="high">{messages.qualityHigh}</Label>
 												</div>
 												<div className="flex items-center space-x-2">
 													<RadioGroupItem value="very_high" id="very_high" />
-													<Label htmlFor="very_high">
-														Very high - Largest file size
-													</Label>
+													<Label htmlFor="very_high">{messages.qualityVeryHigh}</Label>
 												</div>
 											</RadioGroup>
 										</SectionContent>
@@ -259,7 +256,7 @@ export function ExportOptions({
 									{format === "webm" && (
 										<Section>
 											<SectionHeader>
-												<SectionTitle>Color sampling</SectionTitle>
+												<SectionTitle>{messages.chroma}</SectionTitle>
 											</SectionHeader>
 											<SectionContent>
 												<ExportVideoChromaControl
@@ -272,14 +269,14 @@ export function ExportOptions({
 
 									<Section collapsible defaultOpen={exportRange !== null}>
 										<SectionHeader>
-											<SectionTitle>Range</SectionTitle>
+											<SectionTitle>{messages.exportRange}</SectionTitle>
 										</SectionHeader>
 										<SectionContent>
 											<div className="space-y-2 text-sm">
 												<p className="text-muted-foreground">
 													{exportRange
 														? `${(exportRange.startTime / TICKS_PER_SECOND).toFixed(2)}s – ${(exportRange.endTime / TICKS_PER_SECOND).toFixed(2)}s`
-														: "Full timeline"}
+														: messages.fullTimeline}
 												</p>
 												{exportRange && (
 													<Button
@@ -287,7 +284,7 @@ export function ExportOptions({
 														size="sm"
 														onClick={() => editor.project.clearExportRange()}
 													>
-														Use full timeline
+														{messages.useFullTimeline}
 													</Button>
 												)}
 											</div>
@@ -296,7 +293,7 @@ export function ExportOptions({
 
 									<Section collapsible defaultOpen={false}>
 										<SectionHeader>
-											<SectionTitle>Audio</SectionTitle>
+											<SectionTitle>{messages.audio}</SectionTitle>
 										</SectionHeader>
 										<SectionContent>
 											<div className="flex items-center space-x-2">
@@ -307,9 +304,7 @@ export function ExportOptions({
 														setShouldIncludeAudio(!!checked)
 													}
 												/>
-												<Label htmlFor="include-audio">
-													Include audio in export
-												</Label>
+													<Label htmlFor="include-audio">{messages.exportAudio}</Label>
 											</div>
 										</SectionContent>
 									</Section>
@@ -318,7 +313,7 @@ export function ExportOptions({
 								<div className="p-3 pt-0">
 									<Button onClick={handleExport} className="w-full gap-2">
 										<Download className="size-4" />
-										Export
+										{messages.startExport}
 									</Button>
 								</div>
 							</>
@@ -341,7 +336,7 @@ export function ExportOptions({
 									className="w-full rounded-md"
 									onClick={handleCancel}
 								>
-									Cancel
+									{messages.cancel}
 								</Button>
 							</div>
 						)}
@@ -359,6 +354,7 @@ function ExportError({
 	error: string;
 	onRetry: () => void;
 }) {
+	const messages = useEditorMessages();
 	const [copied, setCopied] = useState(false);
 	const { resources } = useEditorSession();
 
@@ -374,7 +370,7 @@ function ExportError({
 	return (
 		<div className="space-y-4 p-3">
 			<div className="flex flex-col gap-1.5">
-				<p className="text-destructive text-sm font-medium">Export failed</p>
+				<p className="text-destructive text-sm font-medium">{messages.exportFailed}</p>
 				<p className="text-muted-foreground text-xs">{error}</p>
 			</div>
 
@@ -386,7 +382,7 @@ function ExportError({
 					onClick={handleCopy}
 				>
 					{copied ? <Check className="text-constructive" /> : <Copy />}
-					Copy
+					{messages.copyError}
 				</Button>
 				<Button
 					variant="outline"
@@ -395,7 +391,7 @@ function ExportError({
 					onClick={onRetry}
 				>
 					<RotateCcw />
-					Retry
+					{messages.retryOperation}
 				</Button>
 			</div>
 		</div>

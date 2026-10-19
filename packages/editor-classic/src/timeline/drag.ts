@@ -10,6 +10,15 @@ export interface MediaDragData extends BaseDragData {
 	type: "media";
 	mediaType: "image" | "video" | "audio";
 	targetElementTypes?: MaskableElement["type"][];
+	creator?: {
+		readonly projectId: string;
+		readonly nativeProjectId: string;
+		readonly sceneId: string;
+		readonly assetId: string;
+		readonly versionId: string;
+		readonly sha256: string;
+		readonly durationSeconds?: number;
+	};
 }
 
 export interface TextDragData extends BaseDragData {

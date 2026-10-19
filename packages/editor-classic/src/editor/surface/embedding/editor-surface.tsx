@@ -28,6 +28,7 @@ export function EditorSurface({
 	onReady,
 	onError,
 	className,
+	hostOwnsChrome = false,
 }: EditorSurfaceProps) {
 	const rootRef = useRef<HTMLDivElement>(null);
 	const onReadyRef = useRef(onReady);
@@ -108,7 +109,7 @@ export function EditorSurface({
 												enabled: FOCUS_MODE_MATRIX[focusMode].keyboard,
 											}}
 										>
-											<EditorRoot />
+											<EditorRoot hostOwnsChrome={hostOwnsChrome} />
 										</EditorProvider>
 									</SurfaceCommitProvider>
 								</EditorSessionProvider>

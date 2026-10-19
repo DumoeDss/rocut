@@ -1,4 +1,5 @@
 import type { ComponentProps } from "react";
+import { propertyLabel } from "../../components/editor/panels/properties/property-labels";
 import { PropertyParamField } from "../../components/editor/panels/properties/components/property-param-field";
 import { KeyframeToggle } from "../../components/editor/panels/properties/components/keyframe-toggle";
 import { usePropertyDraft } from "../../components/editor/panels/properties/hooks/use-property-draft";
@@ -44,20 +45,20 @@ export function FrostNumberField({
 		(param.max !== undefined && value > param.max);
 	return (
 		<SectionField
-			label={param.label}
+			label={propertyLabel(param.label)}
 			beforeLabel={
 				keyframe && param.keyframable !== false ? (
 					<KeyframeToggle
 						isActive={keyframe.isActive}
 						isDisabled={keyframe.isDisabled}
-						title={`Toggle ${param.label.toLowerCase()} keyframe`}
+						title={`切换${propertyLabel(param.label)}关键帧`}
 						onToggle={keyframe.onToggle}
 					/>
 				) : undefined
 			}
 		>
 			<NumberField
-				aria-label={param.label}
+				aria-label={propertyLabel(param.label)}
 				aria-invalid={invalid}
 				data-testid={`effect-frost-input-${param.key}`}
 				value={draft.displayValue}

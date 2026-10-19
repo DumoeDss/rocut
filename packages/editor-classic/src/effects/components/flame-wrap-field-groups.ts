@@ -6,9 +6,9 @@ export function flameWrapFieldGroups({
 	definitions: readonly ParamDefinition[];
 }) {
 	return [
-		{ label: "Boundary", keys: ["amount", "boundaryWidth", "flameHeight"] },
-		{ label: "Optics", keys: ["flameOpacity", "sparkOpacity", "refraction"] },
-		{ label: "Timing and seed", keys: ["speed", "wind", "seed"] },
+		{ label: "边界", keys: ["amount", "boundaryWidth", "flameHeight"] },
+		{ label: "光学", keys: ["flameOpacity", "sparkOpacity", "refraction"] },
+		{ label: "时间与种子", keys: ["speed", "wind", "seed"] },
 	].map(({ label, keys }) => ({
 		label,
 		params: definitions.filter((param) => keys.includes(param.key)),

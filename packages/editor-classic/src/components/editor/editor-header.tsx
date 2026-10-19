@@ -16,6 +16,7 @@ import {
 	useEditorHostLinks,
 	useEditorHostNavigation,
 	useEditorHostServices,
+	useEditorMessages,
 } from "../../editor/host/editor-host-context";
 import { FaDiscord } from "react-icons/fa6";
 import { ExportButton } from "./export-button";
@@ -28,25 +29,27 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { ShortcutsDialog } from "../../actions/components/shortcuts-dialog";
 import { HostImage } from "../../editor/host/host-image";
 import { cn } from "../../utils/ui";
+import { ProjectOperations } from "./project-operations";
 
-export function EditorHeader() {
+export function EditorHeader({ hostOwnsChrome = false }: { hostOwnsChrome?: boolean }) {
 	const { feedbackEndpoint } = useEditorHostServices();
 
 	return (
 		<header
 			data-editor-header=""
-			className="bg-background flex h-[3.4rem] items-center justify-between px-3 pt-0.5"
+			className="bg-background flex min-h-11 shrink-0 flex-wrap items-center justify-between gap-1 px-3 py-1"
 		>
-			<div className="flex items-center gap-1">
-				<ProjectDropdown />
+			<div className="flex min-w-0 flex-1 basis-24 items-center gap-1 overflow-hidden">
+				{!hostOwnsChrome && <ProjectDropdown />}
 				<EditableProjectName />
 			</div>
-			<nav className="flex items-center gap-2">
+			<ProjectOperations />
+			<nav className="flex shrink-0 items-center gap-2">
 				{/* Feedback posts to a server route; a host without one hides it
 				    entirely rather than offering a control that cannot work. */}
-				{feedbackEndpoint ? <FeedbackPopover /> : null}
+				{feedbackEndpoint && !hostOwnsChrome ? <FeedbackPopover /> : null}
 				<ExportButton />
-				<ThemeToggle />
+				{!hostOwnsChrome && <ThemeToggle />}
 			</nav>
 		</header>
 	);
@@ -90,9 +93,9 @@ function ProjectDropdown() {
 					name: newName.trim(),
 				});
 			} catch (error) {
-				toast.error("Failed to rename project", {
+				toast.error("工程重命名失败", {
 					description:
-						error instanceof Error ? error.message : "Please try again",
+						error instanceof Error ? error.message : "请重试",
 				});
 			} finally {
 				setOpenDialog(null);
@@ -108,9 +111,9 @@ function ProjectDropdown() {
 				});
 				navigation.onExitProject();
 			} catch (error) {
-				toast.error("Failed to delete project", {
+				toast.error("删除工程失败", {
 					description:
-						error instanceof Error ? error.message : "Please try again",
+						error instanceof Error ? error.message : "请重试",
 				});
 			} finally {
 				setOpenDialog(null);
@@ -125,7 +128,7 @@ function ProjectDropdown() {
 					<Button variant="ghost" size="icon" className="p-1 rounded-sm size-8">
 						<HostImage
 							src={logoUrl}
-							alt="Project thumbnail"
+							alt="工程缩略图"
 							width={32}
 							height={32}
 							className="invert dark:invert-0 size-5"
@@ -138,14 +141,14 @@ function ProjectDropdown() {
 						disabled={isExiting}
 						icon={<HugeiconsIcon icon={Logout05Icon} />}
 					>
-						Exit project
+						退出工程
 					</DropdownMenuItem>
 
 					<DropdownMenuItem
 						onClick={() => setOpenDialog("shortcuts")}
 						icon={<HugeiconsIcon icon={CommandIcon} />}
 					>
-						Shortcuts
+						快捷键
 					</DropdownMenuItem>
 
 					<DropdownMenuSeparator />
@@ -178,6 +181,7 @@ function ProjectDropdown() {
 }
 
 function EditableProjectName() {
+	const messages = useEditorMessages();
 	const editor = useEditorInstance();
 	const activeProject = useEditor((e) => e.project.getActive());
 	const [isEditing, setIsEditing] = useState(false);
@@ -215,9 +219,9 @@ function EditableProjectName() {
 					name: newName,
 				});
 			} catch (error) {
-				toast.error("Failed to rename project", {
+				toast.error("工程重命名失败", {
 					description:
-						error instanceof Error ? error.message : "Please try again",
+						error instanceof Error ? error.message : "请重试",
 				});
 			}
 		}
@@ -242,13 +246,14 @@ function EditableProjectName() {
 		<input
 			ref={inputRef}
 			type="text"
+			aria-label={messages.projectName}
 			defaultValue={projectName}
 			readOnly={!isEditing}
 			onClick={startEditing}
 			onBlur={saveEdit}
 			onKeyDown={handleKeyDown}
 			className={cn(
-				"[field-sizing:content] text-[0.9rem] h-8 px-2 py-1 rounded-sm bg-transparent outline-none cursor-pointer hover:bg-accent hover:text-accent-foreground",
+				"[field-sizing:content] min-w-0 max-w-full truncate text-[0.9rem] h-8 px-2 py-1 rounded-sm bg-transparent outline-none cursor-pointer hover:bg-accent hover:text-accent-foreground",
 				isEditing && "ring-1 ring-ring cursor-text hover:bg-transparent",
 			)}
 		/>

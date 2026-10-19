@@ -294,7 +294,7 @@ function runGenerator(stepName, storeRoot) {
 /** In-page marker probe used by the cold-open loop. */
 const COLD_PROBE = () => {
 	const panel = document.querySelector('[data-testid="export-panel"]');
-	const mainTrack = document.querySelector('button[aria-label="Select Main Track track"]');
+	const mainTrack = document.querySelector('button[aria-label="选择 Main Track 轨道"]');
 	const timecode = document.querySelector('button[title="Click to edit time"]');
 	const elements = document.querySelectorAll("div.absolute.top-0.select-none").length;
 	const dialog = document.querySelector('[role="dialog"]');
@@ -476,7 +476,7 @@ const RAF_INSTALL = () => {
 /** Focus inside the editor surface so the surface-root keydown listener
  * (space -> toggle-play, actions/definitions.ts) receives the key. */
 const FOCUS_EDITOR = () => {
-	const btn = document.querySelector('button[aria-label="Select Main Track track"]');
+	const btn = document.querySelector('button[aria-label="选择 Main Track 轨道"]');
 	if (btn instanceof HTMLElement) btn.focus();
 	const active = document.activeElement;
 	return {
@@ -692,7 +692,7 @@ async function runOnce(runIndex, args, facts, onPartial) {
 		const coldEnd = performance.now();
 		run.coldOpen = {
 			definition:
-				"editor interactive = [data-testid=export-panel] present AND button[aria-label='Select Main Track track'] present AND all 2000 element nodes (div.absolute.top-0.select-none) mounted; harness monotonic clock from before electron.launch()",
+				"editor interactive = [data-testid=export-panel] present AND button[aria-label='选择 Main Track 轨道'] present AND all 2000 element nodes (div.absolute.top-0.select-none) mounted; harness monotonic clock from before electron.launch()",
 			clock: "harness (driver) monotonic clock",
 			tLaunchResolvedMs: tLaunchResolved - launchStart,
 			tFirstWindowMs: tFirstWindow - launchStart,

@@ -90,7 +90,7 @@ export function createCustomPresetsStore({
 			operation,
 			code: readFailureCode(error),
 		});
-		return "Custom presets could not be persisted. Retry the operation.";
+		return "无法保存自定义预设，请重试。";
 	};
 
 	return createStore<CustomPresetsStore>()((set) => ({
@@ -126,7 +126,7 @@ export function createCustomPresetsStore({
 						...current,
 						{
 							id: generateUUID(),
-							label: `Custom ${current.length + 1}`,
+							label: `自定义 ${current.length + 1}`,
 							value: [...value] as NormalizedCubicBezier,
 							isCustom: true,
 						},

@@ -11,6 +11,7 @@ export {
 	useEditorSession,
 } from "./editor-session-provider";
 export { EditorSessionHost } from "./editor-session-host";
+export { EditorLocaleProvider } from "../host/editor-host-context";
 export type {
 	DisposalReport,
 	GpuResourceHandle,

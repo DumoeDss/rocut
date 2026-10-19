@@ -50,12 +50,18 @@ function parseSpeedInput({ input }: { input: string }): number | null {
 function buildRetime({
 	rate,
 	maintainPitch,
+	reverse,
 }: {
 	rate: number;
 	maintainPitch: boolean;
+	reverse?: boolean;
 }) {
-	if (rate === DEFAULT_RETIME_RATE && !maintainPitch) return undefined;
-	return buildConstantRetime({ rate, maintainPitch });
+	if (rate === DEFAULT_RETIME_RATE && !maintainPitch && !reverse)
+		return undefined;
+	return {
+		...buildConstantRetime({ rate, maintainPitch }),
+		...(reverse ? { reverse } : {}),
+	};
 }
 
 export function SpeedTab({
@@ -84,7 +90,11 @@ export function SpeedTab({
 		editor.timeline.updateElementRetime({
 			trackId,
 			elementId: element.id,
-			retime: buildRetime({ rate: nextRate, maintainPitch: nextMaintainPitch }),
+			retime: buildRetime({
+				rate: nextRate,
+				maintainPitch: nextMaintainPitch,
+				reverse: element.retime?.reverse,
+			}),
 		});
 	};
 
@@ -99,7 +109,11 @@ export function SpeedTab({
 						trackId,
 						elementId: element.id,
 						updates: {
-							retime: buildRetime({ rate: nextRate, maintainPitch }),
+							retime: buildRetime({
+								rate: nextRate,
+								maintainPitch,
+								reverse: element.retime?.reverse,
+							}),
 						},
 					},
 				],
@@ -113,13 +127,13 @@ export function SpeedTab({
 	return (
 		<Section collapsible sectionKey={`${element.id}:speed`}>
 			<SectionHeader>
-				<SectionTitle>Speed</SectionTitle>
+				<SectionTitle>速度</SectionTitle>
 			</SectionHeader>
 			<SectionContent>
 				<SectionFields>
-					<SectionField label="Speed">
+					<SectionField label="速度">
 						<NumberField
-							aria-label="Playback speed"
+							aria-label="播放速度"
 							icon={<HugeiconsIcon icon={DashboardSpeed02Icon} />}
 							value={speedDraft.displayValue}
 							suffix="x"
@@ -147,7 +161,7 @@ export function SpeedTab({
 							htmlFor={pitchSwitchId}
 							className="text-sm text-foreground font-normal"
 						>
-							Change pitch
+							随速度改变音调
 						</Label>
 						<Switch
 							id={pitchSwitchId}

@@ -17,7 +17,10 @@ import { DEFAULT_BACKGROUND_COLOR } from "../../../../../../background/color";
 import { patternCraftGradients } from "../../../../../../data/colors/pattern-craft";
 import { colors } from "../../../../../../data/colors/solid";
 import { syntaxUIGradients } from "../../../../../../data/colors/syntax-ui";
-import { useEditor, useEditorInstance } from "../../../../../../editor/use-editor";
+import {
+	useEditor,
+	useEditorInstance,
+} from "../../../../../../editor/use-editor";
 import {
 	acquireEffectPreviewService,
 	releaseEffectPreviewService,
@@ -142,7 +145,7 @@ const BackgroundPreviews = memo(
 						}
 						onClick={() => onSelect(bg)}
 						type="button"
-						aria-label={`Select background ${bg}`}
+						aria-label={`选择背景 ${bg}`}
 					/>
 				)),
 			[
@@ -178,7 +181,7 @@ function CustomColorPreview({
 						isSelected && "border-primary border-2",
 					)}
 					type="button"
-					aria-label="Pick a custom background color"
+					aria-label="选择自定义背景颜色"
 				>
 					<span
 						className="absolute inset-0"
@@ -202,20 +205,20 @@ function CustomColorPreview({
 const COLOR_SECTIONS = [
 	{
 		id: "colors",
-		title: "Colors",
+		title: "纯色",
 		backgrounds: colors,
 		useBackgroundColor: true,
 		showCustomPicker: true,
 	},
 	{
 		id: "pattern-craft",
-		title: "Pattern craft",
+		title: "图案渐变",
 		backgrounds: patternCraftGradients,
 		showCustomPicker: false,
 	},
 	{
 		id: "syntax-ui",
-		title: "Syntax UI",
+		title: "配色渐变",
 		backgrounds: syntaxUIGradients,
 		showCustomPicker: false,
 	},
@@ -299,7 +302,7 @@ export function BackgroundContent() {
 				showTopBorder={false}
 			>
 				<SectionHeader>
-					<SectionTitle>Blur</SectionTitle>
+					<SectionTitle>模糊</SectionTitle>
 				</SectionHeader>
 				<SectionContent>
 					<div className="flex flex-wrap gap-2">{blurPreviews}</div>

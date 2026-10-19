@@ -1,3 +1,4 @@
+import { useTimelineStore } from "../../editor/use-session-store";
 import { getDropLineY } from "./drop-target";
 import type { TimelineTrack, DropTarget } from "..";
 import { TIMELINE_LAYERS } from "./layers";
@@ -15,9 +16,10 @@ export function DragLine({
 	isVisible,
 	headerHeight = 0,
 }: DragLineProps) {
+	const heightScale = useTimelineStore((s) => s.trackHeightScale);
 	if (!isVisible || !dropTarget) return null;
 
-	const y = getDropLineY({ dropTarget, tracks });
+	const y = getDropLineY({ dropTarget, tracks, heightScale });
 	const lineTop = y + headerHeight;
 
 	return (

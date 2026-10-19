@@ -37,6 +37,14 @@ class FakeTarget {
 }
 
 describe("Surface keybinding target", () => {
+	test("tabs own navigation while ordinary editor targets retain timeline keys", () => {
+		const element = { tagName: "BUTTON", getAttribute: (name: string) => name === "role" ? "tab" : null };
+		for (const key of ["ArrowLeft", "ArrowRight", "Home", "End", " ", "Enter"]) {
+			expect(isControlNavigation({ element, key })).toBe(true);
+			expect(isControlNavigation({ element: { tagName: "DIV", getAttribute: () => null }, key })).toBe(false);
+		}
+		expect(isControlNavigation({ element, key: "z" })).toBe(false);
+	});
 	test("native disclosure owns Enter and Space without swallowing editor history keys", () => {
 		const element = { tagName: "SUMMARY", getAttribute: () => null };
 		for (const key of ["Enter", " "]) {

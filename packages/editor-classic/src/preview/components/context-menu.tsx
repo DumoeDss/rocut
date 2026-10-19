@@ -10,6 +10,7 @@ import { usePreviewViewport } from "./preview-viewport";
 import { useEditorInstance } from "../../editor/use-editor";
 import type { PreviewOverlayControl } from "../overlays";
 import { toast } from "sonner";
+import { useEditorMessages } from "../../editor/host/editor-host-context";
 
 export function PreviewContextMenu({
 	onToggleFullscreen,
@@ -26,14 +27,15 @@ export function PreviewContextMenu({
 	}) => void;
 }) {
 	const editor = useEditorInstance();
+	const messages = useEditorMessages();
 	const viewport = usePreviewViewport();
 
 	const handleCopySnapshot = async () => {
 		const result = await editor.renderer.copySnapshot();
 
 		if (!result.success) {
-			toast.error("Failed to copy snapshot", {
-				description: result.error ?? "Please try again",
+			toast.error("复制快照失败", {
+				description: result.error ?? "请重试",
 			});
 			return;
 		}
@@ -43,8 +45,8 @@ export function PreviewContextMenu({
 		const result = await editor.renderer.saveSnapshot();
 
 		if (!result.success) {
-			toast.error("Failed to save snapshot", {
-				description: result.error ?? "Please try again",
+			toast.error("保存快照失败", {
+				description: result.error ?? "请重试",
 			});
 			return;
 		}
@@ -53,17 +55,17 @@ export function PreviewContextMenu({
 	return (
 		<ContextMenuContent className="w-56" container={container}>
 			<ContextMenuItem onClick={viewport.fitToScreen} inset>
-				Fit to screen
+				{messages.fitWindow}
 			</ContextMenuItem>
 			<ContextMenuSeparator />
 			<ContextMenuItem onClick={onToggleFullscreen} inset>
-				Full screen
+				全屏
 			</ContextMenuItem>
 			<ContextMenuItem onClick={handleSaveSnapshot} inset>
-				Save snapshot
+				保存快照
 			</ContextMenuItem>
 			<ContextMenuItem onClick={handleCopySnapshot} inset>
-				Copy snapshot
+				复制快照
 			</ContextMenuItem>
 			{overlayControls.length > 0 ? <ContextMenuSeparator /> : null}
 			{overlayControls.map((overlayControl) => (

@@ -26,26 +26,26 @@ export function BubbleTrajectoryFields({
 	};
 	return (
 		<div className="flex flex-col gap-4">
-			<h4 className="text-sm font-medium">Trajectory</h4>
+			<h4 className="text-sm font-medium">运动轨迹</h4>
 			<p className="text-xs text-muted-foreground">
-				Point times are relative to the activity start, in ticks.
+				各点时间以运动起点为基准，单位为 tick。
 			</p>
 			{Array.from({ length: count }, (_, index) => (
 				<div key={index} className="flex flex-col gap-3">
 					<div className="flex items-center justify-between">
-						<span className="text-xs font-medium">Point {index + 1}</span>
+						<span className="text-xs font-medium">点 {index + 1}</span>
 						<Button
 							size="sm"
 							variant="ghost"
 							disabled={count <= 1 || index === 0}
 							title={
 								index === 0
-									? "The first point anchors the activity start."
+									? "第一个点用于定位运动起点。"
 									: undefined
 							}
 							onClick={() => update(removeBubblePoint({ params, index }))}
 						>
-							Remove point
+							移除点
 						</Button>
 					</div>
 					{["Time", "X", "Y"].map((axis) => {
@@ -72,7 +72,7 @@ export function BubbleTrajectoryFields({
 				disabled={count >= maximum}
 				onClick={() => update(appendBubblePoint({ params, definitions }))}
 			>
-				Add point
+				添加点
 			</Button>
 		</div>
 	);

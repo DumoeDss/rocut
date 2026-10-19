@@ -2,8 +2,25 @@
 
 import { createContext, useContext } from "react";
 import type { EditorHost, EditorHostBase } from "@opencut/editor-ports/host";
+import { getEditorMessages } from "./editor-messages";
 
 const EditorHostContext = createContext<EditorHost | null>(null);
+const EditorLocaleContext = createContext<string | undefined>(undefined);
+
+/** Live presentation preference independent of the session's stable Host. */
+export function EditorLocaleProvider({
+	locale,
+	children,
+}: {
+	locale?: string;
+	children: React.ReactNode;
+}) {
+	return (
+		<EditorLocaleContext.Provider value={locale}>
+			{children}
+		</EditorLocaleContext.Provider>
+	);
+}
 
 export function EditorHostProvider({
 	host,
@@ -57,4 +74,10 @@ export function useEditorHostBranding() {
 /** Host-supplied external links only. */
 export function useEditorHostLinks() {
 	return useEditorHost().links;
+}
+
+export function useEditorMessages() {
+	const locale = useContext(EditorLocaleContext);
+	const host = useEditorHost();
+	return getEditorMessages(locale ?? host.locale);
 }

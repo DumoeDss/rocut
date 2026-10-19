@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import type { ImperativePanelGroupHandle } from "react-resizable-panels";
 import { EditorPanels } from "./editor-panels";
 import {
 	ResizablePanelGroup,
@@ -45,11 +46,11 @@ import {
  * `content-collections` —a Next-build-time virtual module that no other bundler
  * can resolve. The Next host renders it alongside this component instead.
  */
-export function EditorRoot() {
+export function EditorRoot({ hostOwnsChrome = false }: { hostOwnsChrome?: boolean }) {
 	return (
 		<div className="bg-background relative flex size-full flex-col overflow-hidden">
 			<DegradedRendererBanner />
-			<EditorHeader />
+			<EditorHeader hostOwnsChrome={hostOwnsChrome} />
 			<div className="min-h-0 min-w-0 flex-1">
 				<EditorLayout />
 			</div>
@@ -69,15 +70,14 @@ function DegradedRendererBanner() {
 			className="bg-accent border-b h-9 flex items-center justify-center gap-2 text-xs text-muted-foreground"
 		>
 			<span>
-				Renderer unavailable in this environment. Editing remains available, but
-				preview and export are disabled.
+				当前环境的渲染器不可用。仍可编辑，但预览和导出已停用。
 			</span>
 			<Button
 				variant="text"
 				size="icon"
 				className="p-0 w-auto [&_svg]:size-3.5"
 				onClick={() => setDismissed(true)}
-				aria-label="Dismiss renderer unavailable message"
+				aria-label="关闭渲染器不可用提示"
 			>
 				<HugeiconsIcon icon={Cancel01Icon} />
 			</Button>
@@ -88,6 +88,8 @@ function DegradedRendererBanner() {
 function EditorLayout() {
 	usePasteMedia();
 	const { panels, setPanel } = usePanelStore();
+	const verticalGroup = useRef<ImperativePanelGroupHandle>(null);
+	useEffect(() => { verticalGroup.current?.setLayout([panels.mainContent, panels.timeline]); }, [panels.mainContent, panels.timeline]);
 	const activeScene = useEditor((editor) =>
 		editor.scenes.getActiveSceneOrNull(),
 	);
@@ -134,6 +136,7 @@ function EditorLayout() {
 
 	return (
 		<ResizablePanelGroup
+			ref={verticalGroup}
 			direction="vertical"
 			className="size-full gap-[0.18rem]"
 			onLayout={(sizes) => {

@@ -16,12 +16,10 @@ export function PreviewResourceNotice({
 			<p className="font-medium">{issues[0].diagnostic.message}</p>
 			<details>
 				<summary className="focus-visible:ring-ring cursor-pointer rounded-sm outline-none focus-visible:ring-2">
-					Resource details and next steps ({issues.length})
+					资源详情与处理建议 ({issues.length})
 				</summary>
 				<p>
-					Preview may use fallback glyphs. Export requires valid resources.
-					Select the motion-text clip to change its font or text; restore
-					unavailable font files before retrying export.
+					预览可能使用替代字形，导出前需确保资源有效。请选择动态文字片段修改字体或文字，并在恢复缺失字体后重试导出。
 				</p>
 				<ul className="list-disc space-y-1 pl-4">
 					{issues.map(({ sequenceId, diagnostic }, index) => (
@@ -29,7 +27,7 @@ export function PreviewResourceNotice({
 							{diagnostic.message}
 							{diagnostic.codePoints && diagnostic.codePoints.length > 0 && (
 								<p>
-									Missing characters:{" "}
+									缺失字符：{" "}
 									{diagnostic.codePoints
 										.map(
 											(point) =>
@@ -39,7 +37,7 @@ export function PreviewResourceNotice({
 								</p>
 							)}
 							<span className="text-muted-foreground">
-								Sequence: {sequenceId}
+								序列： {sequenceId}
 							</span>
 						</li>
 					))}

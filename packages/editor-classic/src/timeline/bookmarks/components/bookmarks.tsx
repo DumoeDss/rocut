@@ -92,7 +92,7 @@ export function TimelineBookmarksRow({
 					height: TIMELINE_BOOKMARK_ROW_HEIGHT_PX,
 					width: `${dynamicTimelineWidth}px`,
 				}}
-				aria-label="Timeline ruler"
+				aria-label="时间轴标尺"
 				type="button"
 				onWheel={handleWheel}
 				onClick={(event) => {

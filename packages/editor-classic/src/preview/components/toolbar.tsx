@@ -23,12 +23,14 @@ import { PREVIEW_ZOOM_PRESETS } from "../zoom";
 import { usePreviewViewport } from "./preview-viewport";
 
 import { usePlaybackTime } from "./use-playback-time";
+import { useEditorMessages } from "../../editor/host/editor-host-context";
 
 export function PreviewToolbar({
 	onToggleFullscreen,
 }: {
 	onToggleFullscreen: () => void;
 }) {
+	const messages = useEditorMessages();
 	return (
 		<div
 			data-testid="preview-toolbar"
@@ -43,7 +45,7 @@ export function PreviewToolbar({
 				<Button
 					variant="text"
 					size="icon"
-					aria-label="Toggle preview fullscreen"
+					aria-label={messages.previewFullscreen}
 					onClick={onToggleFullscreen}
 				>
 					<HugeiconsIcon icon={FullScreenIcon} />
@@ -82,10 +84,11 @@ function TimecodeDisplay() {
 }
 
 function ZoomSelect() {
+	const messages = useEditorMessages();
 	const { isAtFit, zoomPercent, fitToScreen, setViewportPercent } =
 		usePreviewViewport();
 
-	const displayLabel = isAtFit ? "Fit" : `${zoomPercent}%`;
+	const displayLabel = isAtFit ? messages.fitWindow : `${zoomPercent}%`;
 
 	const onValueChange = (value: string) => {
 		if (value === "fit") {
@@ -100,11 +103,11 @@ function ZoomSelect() {
 			value={isAtFit ? "fit" : String(zoomPercent)}
 			onValueChange={onValueChange}
 		>
-			<SelectTrigger aria-label="Preview zoom" className="tabular-nums">
+			<SelectTrigger aria-label={messages.previewZoom} className="tabular-nums">
 				{displayLabel}
 			</SelectTrigger>
 			<SelectContent>
-				<SelectItem value="fit">Fit</SelectItem>
+				<SelectItem value="fit">{messages.fitWindow}</SelectItem>
 				<SelectSeparator />
 				{PREVIEW_ZOOM_PRESETS.map((preset) => (
 					<SelectItem key={preset} value={String(preset)}>
@@ -117,6 +120,7 @@ function ZoomSelect() {
 }
 
 function PlayPauseButton() {
+	const messages = useEditorMessages();
 	const invokeAction = useActionInvoker();
 	const isPlaying = useEditor((e) => e.playback.getIsPlaying());
 
@@ -124,7 +128,7 @@ function PlayPauseButton() {
 		<Button
 			variant="text"
 			size="icon"
-			aria-label={isPlaying ? "Pause preview" : "Play preview"}
+			aria-label={isPlaying ? messages.previewPause : messages.previewPlay}
 			onClick={() => invokeAction("toggle-play")}
 		>
 			<HugeiconsIcon icon={isPlaying ? PauseIcon : PlayIcon} />

@@ -40,6 +40,7 @@ export function isControlNavigation({
 	if (role === "combobox" || role === "listbox" || role === "option") {
 		return [...navigation, " ", "Enter"].includes(key);
 	}
+	if (role === "tab") return [...navigation, " ", "Enter"].includes(key);
 	if (role === "slider") return navigation.includes(key);
 	if (element.tagName === "BUTTON" || element.tagName === "SUMMARY" || role === "button") {
 		return key === " " || key === "Enter";

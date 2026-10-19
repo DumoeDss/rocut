@@ -30,7 +30,7 @@ import { CURRENT_PROJECT_VERSION } from "@opencut/editor-classic/transactions";
  */
 export interface HttpProjectStoreOptions {
 	readonly base?: string;
-	readonly fetchImpl?: typeof fetch;
+	readonly fetchImpl?: FetchLike;
 }
 
 type FetchLike = (input: string, init?: RequestInit) => Promise<Response>;
@@ -95,7 +95,11 @@ export class HttpProjectStore implements ProjectStore {
 			} | null;
 			throw new ProjectStoreError({
 				code:
-					body?.error === "revision-conflict" ? "conflict" : "unavailable",
+					body?.error === "revision-conflict"
+						? "conflict"
+						: body?.error === "readonly"
+							? "readonly"
+							: "unavailable",
 				operation: operation as never,
 				scope: { kind: "store" },
 				message: body?.error ?? `${operation} failed (${response.status})`,
@@ -105,20 +109,16 @@ export class HttpProjectStore implements ProjectStore {
 	}
 
 	async list(): Promise<readonly ProjectSummary[]> {
-		const payload = (await this.requestJson(
-			"list-projects",
-			"record",
-		)) as { summary?: ProjectSummary } | null;
+		const payload = (await this.requestJson("list-projects", "record")) as {
+			summary?: ProjectSummary;
+		} | null;
 		return payload?.summary === undefined ? [] : [payload.summary];
 	}
 
-	async load(_args: {
-		readonly id: ProjectId;
-	}): Promise<ProjectRecord | null> {
-		const payload = (await this.requestJson(
-			"load-project",
-			"record",
-		)) as { record?: ProjectRecord } | null;
+	async load(_args: { readonly id: ProjectId }): Promise<ProjectRecord | null> {
+		const payload = (await this.requestJson("load-project", "record")) as {
+			record?: ProjectRecord;
+		} | null;
 		return payload?.record ?? null;
 	}
 
@@ -233,8 +233,7 @@ export class HttpProjectStore implements ProjectStore {
 			});
 		}
 		const metadataRaw = response.headers.get("x-opencut-metadata");
-		const metadata =
-			metadataRaw === null ? {} : decodeBase64Json(metadataRaw);
+		const metadata = metadataRaw === null ? {} : decodeBase64Json(metadataRaw);
 		const body = await response.arrayBuffer();
 		return { projectId: args.projectId, key: args.key, metadata, body };
 	}
@@ -368,10 +367,9 @@ export class HttpProjectStore implements ProjectStore {
 	}
 
 	async persistedSchemaVersion(): Promise<number | null> {
-		const payload = (await this.requestJson(
-			"inspect",
-			"record",
-		)) as { record?: { schemaVersion: number } } | null;
+		const payload = (await this.requestJson("inspect", "record")) as {
+			record?: { schemaVersion: number };
+		} | null;
 		return payload?.record?.schemaVersion ?? null;
 	}
 }

@@ -114,7 +114,7 @@ export function DraggableItem({
 							{preview}
 							{!isDragging && onAddToTimeline && (
 								<PlusButton
-									label={`Add ${name} to timeline`}
+									label={`将 ${name} 添加到时间线`}
 									onClick={handleAddToTimeline}
 								/>
 							)}
@@ -155,7 +155,7 @@ export function DraggableItem({
 					</button>
 					{onAddToTimeline && !isDragging && (
 						<PlusButton
-							label={`Add ${name} to timeline`}
+							label={`将 ${name} 添加到时间线`}
 							className="right-1 bottom-1"
 							onClick={handleAddToTimeline}
 						/>
@@ -184,9 +184,9 @@ export function DraggableItem({
 								</div>
 								{shouldShowPlusOnDrag && onAddToTimeline && (
 									<PlusButton
-										label={`Add ${name} to timeline`}
+										label={`将 ${name} 添加到时间线`}
 										onClick={handleAddToTimeline}
-										tooltipText="Add to timeline or drag to position"
+										tooltipText="添加到时间线或拖动到指定位置"
 									/>
 								)}
 							</AspectRatio>

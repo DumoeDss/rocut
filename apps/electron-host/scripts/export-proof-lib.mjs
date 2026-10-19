@@ -55,7 +55,7 @@ export const FIXTURE_IMAGE = join(FIXTURE_DIR, "fixture-image.png");
 export const FIXTURE_TONE_A4 = join(FIXTURE_DIR, "fixture-tone-a4.wav");
 
 /** The parity driver's host-neutral editor selectors (tests/parity/driver.ts). */
-export const MAIN_TRACK = 'button[aria-label="Select Main Track track"]';
+export const MAIN_TRACK = 'button[aria-label="选择 Main Track 轨道"]';
 export const TIMECODE = 'button[title="Click to edit time"]';
 
 /** A ffmpeg-free PATH for the negative launch (the auto PATH carries ffmpeg). */

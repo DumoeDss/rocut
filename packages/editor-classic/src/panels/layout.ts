@@ -7,3 +7,5 @@ export const PANEL_CONFIG = {
 		timeline: 35,
 	},
 } as const;
+
+export const WIDE_PANEL_WIDTHS = { assets: 300, properties: 280 } as const;

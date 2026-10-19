@@ -1,4 +1,5 @@
 import { useEffect, useReducer, useState, type RefObject } from "react";
+import { useTimelineStore } from "../../../editor/use-session-store";
 import { useEditorInstance } from "../../../editor/use-editor";
 import { useCommittedRef } from "../../../hooks/use-committed-ref";
 import { useShiftKey } from "../../../hooks/use-shift-key";
@@ -36,11 +37,13 @@ export function useElementInteraction({
 	const isShiftHeldRef = useShiftKey();
 	const selection = useElementSelection();
 
+	const heightScale = useTimelineStore((s) => s.trackHeightScale);
 	const deps: ElementInteractionDeps = {
 		startMouseDrag: ({ move, finish, cancel }) =>
 			dragCoordinator.start({ kind: "mouse", move, finish, cancel }),
 		viewport: {
 			getZoomLevel: () => zoomLevel,
+			getTrackHeightScale: () => heightScale,
 			getTracksScrollEl: () => tracksScrollRef.current,
 			getTracksContainerEl: () => tracksContainerRef.current,
 			getHeaderEl: () => headerRef?.current ?? null,

@@ -7,6 +7,8 @@ import { createStore } from "zustand/vanilla";
 import { persist } from "zustand/middleware";
 
 export interface TimelineStore {
+	trackHeightScale: number;
+	setTrackHeightScale: (scale: number) => void;
 	snappingEnabled: boolean;
 	toggleSnapping: () => void;
 	rippleEditingEnabled: boolean;
@@ -19,6 +21,10 @@ export function createTimelineStore() {
 	return createStore<TimelineStore>()(
 		persist(
 			(set) => ({
+				trackHeightScale: 1,
+				setTrackHeightScale: (scale) => {
+					if ([0.8, 1, 1.5, 2].includes(scale)) set({ trackHeightScale: scale });
+				},
 				snappingEnabled: true,
 
 				toggleSnapping: () => {
@@ -50,6 +56,7 @@ export function createTimelineStore() {
 			{
 				name: "timeline-store",
 				partialize: (state) => ({
+					trackHeightScale: state.trackHeightScale,
 					snappingEnabled: state.snappingEnabled,
 					rippleEditingEnabled: state.rippleEditingEnabled,
 				}),

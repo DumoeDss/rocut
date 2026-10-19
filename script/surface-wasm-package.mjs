@@ -52,14 +52,44 @@ export function resolveSurfaceWasmPackage({ repoRoot, wasmPackageDirectory, outD
 	return { ...closure, wasmBundlerEntry: entry, bundlerEntrySha256: hash(bytes) };
 }
 
+function assertSurfaceWasmPackageUnchanged(closure) {
+	assertRuntimeWasmPackageUnchanged(closure);
+	if (hash(readFileSync(closure.wasmBundlerEntry)) !== closure.bundlerEntrySha256)
+		throw Error("Selected surface bundler entry changed");
+}
+
 export function surfaceWasmPackagePlugin(closure) {
 	return {
 		name: "rocut-selected-surface-wasm",
-		apply: "build",
+		configureServer(server) {
+			assertSurfaceWasmPackageUnchanged(closure);
+			const binaryPath = `/@fs/${closure.wasmBinary.replaceAll("\\", "/")}`;
+			const expected = closure.files.find(file => file.name.endsWith(".wasm")).sha256;
+			// Serve the selected binary directly: raw /@fs/ serving can resolve a
+			// different drive when the package and Vite root are on separate drives.
+			server.middlewares.use((request, response, next) => {
+				if (request.method !== "GET" && request.method !== "HEAD") return next();
+				let url, path;
+				try {
+					url = new URL(request.url, "http://surface.invalid");
+					path = decodeURI(url.pathname);
+				}
+				catch { return next(); }
+				if (url.search || path !== binaryPath) return next();
+				try {
+					assertSurfaceWasmPackageUnchanged(closure);
+					const bytes = readFileSync(closure.wasmBinary);
+					if (hash(bytes) !== expected) throw Error("Selected surface WASM changed");
+					response.statusCode = 200;
+					response.setHeader("Content-Type", "application/wasm");
+					response.setHeader("Content-Length", bytes.byteLength);
+					response.setHeader("Cache-Control", "no-cache");
+					response.end(request.method === "HEAD" ? undefined : bytes);
+				} catch (error) { next(error); }
+			});
+		},
 		generateBundle(_options, bundle) {
-			assertRuntimeWasmPackageUnchanged(closure);
-			if (hash(readFileSync(closure.wasmBundlerEntry)) !== closure.bundlerEntrySha256)
-				throw Error("Selected surface bundler entry changed");
+			assertSurfaceWasmPackageUnchanged(closure);
 			const expected = closure.files.find(file => file.name.endsWith(".wasm")).sha256;
 			const emitted = Object.values(bundle).filter(item => item.type === "asset" &&
 				item.fileName.endsWith(".wasm") && hash(item.source) === expected);

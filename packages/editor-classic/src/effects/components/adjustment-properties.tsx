@@ -62,7 +62,7 @@ export function AdjustmentProperties({
 			if (!(await commit())) {
 				editor.timeline.discardPreview();
 				setMessage(
-					"Adjustment was not saved. Previous colors restored; try again.",
+					"色彩调整未保存，已恢复原来的色彩，请重试。",
 				);
 			}
 		} finally {
@@ -77,7 +77,7 @@ export function AdjustmentProperties({
 	};
 	return (
 		<PanelView
-			title="Color adjustment"
+			title="色彩调整"
 			contentClassName="px-3 pb-4"
 			footer={
 				message ? (
@@ -96,7 +96,7 @@ export function AdjustmentProperties({
 					}
 					onClick={reset}
 				>
-					Reset colors
+					重置色彩
 				</Button>
 			}
 		>

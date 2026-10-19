@@ -117,7 +117,7 @@ export function ClipExportDialog({
 				}),
 			onClip: ({ index: nextIndex, name }) => {
 				setIndex(nextIndex);
-				setStatus(`Rendering ${nextIndex + 1} of ${selected.size}: ${name}`);
+				setStatus(`正在渲染 ${nextIndex + 1}/${selected.size}：${name}`);
 			},
 		});
 		controller.current = null;
@@ -126,7 +126,7 @@ export function ClipExportDialog({
 			setRunning(false);
 			setError(result.error ?? null);
 			setStatus(
-				`${result.cancelled ? "Cancelled. " : ""}${result.completed} of ${selected.size} files sent to downloads.`,
+				`${result.cancelled ? "已取消。" : ""}已将 ${result.completed}/${selected.size} 个文件发送至下载。`,
 			);
 		}
 	};
@@ -145,11 +145,9 @@ export function ClipExportDialog({
 				className="flex max-h-[calc(100%-2rem)] max-w-lg flex-col overflow-hidden"
 			>
 				<div className="shrink-0 border-b p-5 pr-14">
-					<DialogTitle>Export clips</DialogTitle>
+					<DialogTitle>导出片段</DialogTitle>
 					<DialogDescription className="mt-2">
-						One file per selected timeline clip. Each file includes the
-						overlapping layers, effects and audio in that clip’s time range—not
-						the original source file.
+						每个选中的时间线片段导出为一个文件，包含该时间范围内叠加的图层、效果和音频，并非原始素材文件。
 					</DialogDescription>
 				</div>
 				<div
@@ -158,13 +156,12 @@ export function ClipExportDialog({
 				>
 					{clips.length === 0 ? (
 						<p className="text-sm text-muted-foreground">
-							No timeline clips to export. Add this media to the timeline, then
-							reopen Export clips.
+							暂无可导出的时间线片段。请先将素材添加到时间线，再重新打开“导出片段”。
 						</p>
 					) : (
 						<fieldset disabled={running} className="space-y-2">
 							<legend className="mb-2 text-sm font-medium">
-								Choose clips ({selected.size}/{clips.length})
+								选择片段（{selected.size}/{clips.length}）
 							</legend>
 							<div className="flex gap-2">
 								<Button
@@ -172,14 +169,14 @@ export function ClipExportDialog({
 									size="sm"
 									onClick={() => setSelected(new Set(clips.map((_, i) => i)))}
 								>
-									Select all
+									全选
 								</Button>
 								<Button
 									variant="ghost"
 									size="sm"
 									onClick={() => setSelected(new Set())}
 								>
-									Clear selection
+									清空选择
 								</Button>
 							</div>
 							{clips.map((clip, itemIndex) => (
@@ -190,7 +187,7 @@ export function ClipExportDialog({
 								>
 									<Checkbox
 										id={`${controlId}-clip-${itemIndex}`}
-										aria-label={`Export ${clip.name} (${itemIndex + 1})`}
+										aria-label={`导出 ${clip.name}（${itemIndex + 1}）`}
 										checked={selected.has(itemIndex)}
 										onCheckedChange={(checked) =>
 											setSelected((previous) => {
@@ -223,9 +220,9 @@ export function ClipExportDialog({
 						className="mt-5 grid grid-cols-2 gap-3 text-sm"
 					>
 						<label className="flex flex-col gap-1">
-							Format
+							格式
 							<select
-								aria-label="Clip export format"
+								aria-label="片段导出格式"
 								value={format}
 								onChange={(event) => {
 									const next = EXPORT_FORMAT_VALUES.find(
@@ -243,9 +240,9 @@ export function ClipExportDialog({
 							</select>
 						</label>
 						<label className="flex flex-col gap-1">
-							Quality
+							质量
 							<select
-								aria-label="Clip export quality"
+								aria-label="片段导出质量"
 								value={quality}
 								onChange={(event) => {
 									const next = EXPORT_QUALITY_VALUES.find(
@@ -255,10 +252,10 @@ export function ClipExportDialog({
 								}}
 								className="rounded border bg-background p-2"
 							>
-								<option value="low">Low</option>
-								<option value="medium">Medium</option>
-								<option value="high">High</option>
-								<option value="very_high">Very high</option>
+								<option value="low">低</option>
+								<option value="medium">中</option>
+								<option value="high">高</option>
+								<option value="very_high">极高</option>
 							</select>
 						</label>
 						{format === "webm" && (
@@ -278,7 +275,7 @@ export function ClipExportDialog({
 								checked={includeAudio}
 								onCheckedChange={(checked) => setIncludeAudio(checked === true)}
 							/>
-							Include timeline audio
+							包含时间线音频
 						</label>
 					</fieldset>
 				</div>
@@ -298,19 +295,19 @@ export function ClipExportDialog({
 					)}
 					{running && (
 						<Progress
-							aria-label="Clip export progress"
+							aria-label="片段导出进度"
 							value={((index + exportState.progress) / selected.size) * 100}
 						/>
 					)}
 					<div className="flex justify-end gap-2">
 						{running ? (
 							<Button variant="outline" onClick={cancel}>
-								Cancel export
+								取消导出
 							</Button>
 						) : (
 							<>
 								<Button variant="outline" onClick={onClose}>
-									Close
+									关闭
 								</Button>
 								<Button
 									disabled={
@@ -320,7 +317,7 @@ export function ClipExportDialog({
 									}
 									onClick={() => void start()}
 								>
-									Export {selected.size} clips
+									导出 {selected.size} 个片段
 								</Button>
 							</>
 						)}

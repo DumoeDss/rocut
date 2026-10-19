@@ -2,6 +2,7 @@ import {
 	getSourceSpanAtClipTime,
 	getTimelineDurationForSourceSpan,
 } from "../../retime";
+import { directionalSourceTrims } from "../../wasm/video-time";
 import {
 	addMediaTime,
 	clampMediaTime,
@@ -29,6 +30,14 @@ export function computeGroupResize({
 	deltaTime,
 	fps,
 }: ComputeGroupResizeArgs): GroupResizeResult {
+	members = members.map((member) => ({
+		...member,
+		...directionalSourceTrims({
+			trimStart: member.trimStart,
+			trimEnd: member.trimEnd,
+			reverse: member.retime?.reverse,
+		}),
+	}));
 	if (members.length === 0) {
 		return { deltaTime: ZERO_MEDIA_TIME, updates: [] };
 	}
@@ -103,13 +112,24 @@ export function computeGroupResize({
 
 	return {
 		deltaTime: Object.is(finalDeltaTime, -0) ? ZERO_MEDIA_TIME : finalDeltaTime,
-		updates: members.map((member) =>
-			buildResizeUpdate({
+		updates: members.map((member) => {
+			const result = buildResizeUpdate({
 				member,
 				side,
 				deltaTime: finalDeltaTime,
-			}),
-		),
+			});
+			return {
+				...result,
+				patch: {
+					...result.patch,
+					...directionalSourceTrims({
+						trimStart: result.patch.trimStart,
+						trimEnd: result.patch.trimEnd,
+						reverse: member.retime?.reverse,
+					}),
+				},
+			};
+		}),
 	};
 }
 
@@ -131,15 +151,15 @@ function buildResizeUpdate({
 		return {
 			trackId: member.trackId,
 			elementId: member.elementId,
-		patch: {
-			trimStart: maxMediaTime({
-				a: ZERO_MEDIA_TIME,
-				b: addMediaTime({ a: member.trimStart, b: sourceDelta }),
-			}),
-			trimEnd: member.trimEnd,
-			startTime: addMediaTime({ a: member.startTime, b: deltaTime }),
-			duration: subMediaTime({ a: member.duration, b: deltaTime }),
-		},
+			patch: {
+				trimStart: maxMediaTime({
+					a: ZERO_MEDIA_TIME,
+					b: addMediaTime({ a: member.trimStart, b: sourceDelta }),
+				}),
+				trimEnd: member.trimEnd,
+				startTime: addMediaTime({ a: member.startTime, b: deltaTime }),
+				duration: subMediaTime({ a: member.duration, b: deltaTime }),
+			},
 		};
 	}
 
@@ -301,7 +321,11 @@ function getDurationForVisibleSourceSpan({
 	});
 }
 
-function getSourceDuration({ member }: { member: GroupResizeMember }): MediaTime {
+function getSourceDuration({
+	member,
+}: {
+	member: GroupResizeMember;
+}): MediaTime {
 	if (member.sourceDuration != null) {
 		return member.sourceDuration;
 	}
@@ -310,8 +334,8 @@ function getSourceDuration({ member }: { member: GroupResizeMember }): MediaTime
 		a: addMediaTime({
 			a: member.trimStart,
 			b: getVisibleSourceSpanForDuration({
-			member,
-			duration: member.duration,
+				member,
+				duration: member.duration,
 			}),
 		}),
 		b: member.trimEnd,

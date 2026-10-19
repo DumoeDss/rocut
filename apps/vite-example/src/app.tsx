@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ThemeProvider } from "next-themes";
 import { useEmbeddedHostTheme } from "./host/use-embedded-host-theme";
 import { bindEmbeddedHostLifecycle } from "./host/embedded-host-lifecycle";
+import { subscribeEmbeddedHostLocale } from "./host/embedded-host-locale";
 import { createHostEditorTasks } from "./host/editor-tasks";
 import { createProjectReadiness } from "./host/project-readiness";
 import { createCompositionExportController } from "./host/composition-export-controller";
@@ -9,9 +10,17 @@ import { createCompositionExportTransport } from "./host/host-composition-export
 import { Toaster } from "@opencut/editor-classic/ui";
 import { TooltipProvider } from "@opencut/editor-classic/ui";
 import { MobileGate } from "@opencut/editor-classic/ui";
-import { SessionEditorSurface } from "@opencut/editor-classic/surface";
+import {
+	SessionEditorSurface,
+	CreatorWorkspaceProvider,
+} from "@opencut/editor-classic/surface";
+import {
+	connectCreatorWorkspaceBridge,
+	type ConnectedCreatorWorkspaceBridge,
+} from "./host/creator-workspace-bridge";
 import {
 	EditorSessionHost,
+	EditorLocaleProvider,
 	useEditorInstance,
 } from "@opencut/editor-classic/session";
 import { ViteEditorHost } from "./host/vite-editor-host";
@@ -38,6 +47,7 @@ import { BrowserProjectStore } from "@opencut/editor-classic/storage";
 import { mediaTime } from "@opencut/editor-classic";
 import * as nativeExportWasm from "opencut-wasm";
 import { verifyNativeExportSource } from "./host/host-export-protocol";
+import { CreatorWorkspaceHarness } from "./creator-workspace-harness";
 
 const C4_BUILD_MARKER = import.meta.env.VITE_C4_BUILD_MARKER ?? "development";
 
@@ -46,6 +56,13 @@ function readProjectIdFromUrl(): string | null {
 }
 
 export function App() {
+	if (
+		import.meta.env.DEV &&
+		new URLSearchParams(window.location.search).get(
+			"creator-workspace-harness",
+		) === "1"
+	)
+		return <CreatorWorkspaceHarness />;
 	if (
 		new URLSearchParams(window.location.search).get(
 			"c4-forced-none-harness",
@@ -120,11 +137,31 @@ function BootApp() {
 
 function HostServedApp({ surface }: { surface: HostServedSurface }) {
 	const hostTheme = useEmbeddedHostTheme();
+	const [locale, setLocale] = useState(surface.locale);
+	useEffect(() => subscribeEmbeddedHostLocale({ onLocale: setLocale }), []);
+	const [creatorBridge, setCreatorBridge] =
+		useState<ConnectedCreatorWorkspaceBridge | null>(null);
+	useEffect(() => {
+		const controller = new AbortController();
+		let bridge: ConnectedCreatorWorkspaceBridge | null = null;
+		void connectCreatorWorkspaceBridge({ signal: controller.signal }).then(
+			(connected) => {
+				bridge = connected;
+				if (!controller.signal.aborted) setCreatorBridge(connected);
+				else connected?.dispose();
+			},
+		);
+		return () => {
+			controller.abort();
+			bridge?.dispose();
+		};
+	}, [surface.projectId]);
 	const host = useMemo(
 		() =>
 			createHostServedEditorHost({
 				projectId: surface.projectId,
 				base: surface.apiBase,
+				locale: surface.locale,
 			}),
 		[surface],
 	);
@@ -140,12 +177,19 @@ function HostServedApp({ surface }: { surface: HostServedSurface }) {
 				<main id="editor-container" data-host-embedded="true">
 					<EditorErrorBoundary>
 						<EditorSessionHost host={host}>
-							<HostServedSync projectId={surface.projectId} />
+							<EditorLocaleProvider locale={locale}>
+								<HostServedSync projectId={surface.projectId} />
 							{/* No MobileGate here: the host-served pane is a real
 							    desktop editor embedded in a possibly-narrow
 							    WebContentsView — the width guard exists for
 							    opencut.app mobile visitors, not for the pane. */}
-							<SessionEditorSurface focusMode="focused" />
+								<CreatorWorkspaceProvider bridge={creatorBridge}>
+									<SessionEditorSurface
+										focusMode="focused"
+										hostOwnsChrome={window.parent !== window}
+									/>
+								</CreatorWorkspaceProvider>
+							</EditorLocaleProvider>
 						</EditorSessionHost>
 					</EditorErrorBoundary>
 				</main>
@@ -460,7 +504,7 @@ function EditorApp() {
 								onExitProject={exitProject}
 							>
 								<MobileGate>
-									<SessionEditorSurface focusMode="focused" />
+									<SessionEditorSurface focusMode="focused" hostOwnsChrome />
 								</MobileGate>
 							</ViteEditorHost>
 						</EditorErrorBoundary>

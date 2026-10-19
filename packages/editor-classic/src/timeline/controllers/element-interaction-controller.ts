@@ -36,6 +36,7 @@ const MOUSE_BUTTON_RIGHT = 2;
 // --- Config ---
 
 export interface ViewportAdapter {
+	getTrackHeightScale?: () => number;
 	getZoomLevel: () => number;
 	getTracksScrollEl: () => HTMLDivElement | null;
 	getTracksContainerEl: () => HTMLDivElement | null;
@@ -235,7 +236,7 @@ function resolveDropTarget({
 	const headerHeight =
 		viewport.getHeaderEl()?.getBoundingClientRect().height ?? 0;
 
-	return computeDropTarget({
+	return computeDropTarget({ heightScale: viewport.getTrackHeightScale?.(),
 		elementType: movingElement.type,
 		mouseX: clientX - scrollRect.left + scrollContainer.scrollLeft,
 		mouseY: clientY - scrollRect.top + scrollContainer.scrollTop - headerHeight,

@@ -33,7 +33,7 @@ const appRoot = join(here, "..");
 const mainPath = join(appRoot, "electron", "main.cjs");
 const evidenceDir = join(appRoot, "..", "..", "rasen", "changes", "s05-second-host", "evidence");
 
-const MAIN_TRACK = 'button[aria-label="Select Main Track track"]';
+const MAIN_TRACK = 'button[aria-label="选择 Main Track 轨道"]';
 const TIMECODE = 'button[title="Click to edit time"]';
 const HARNESS_URL = "opencut://app/index.html?c4-worker-harness=1";
 

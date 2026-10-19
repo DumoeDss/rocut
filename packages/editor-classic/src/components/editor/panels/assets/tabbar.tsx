@@ -10,6 +10,7 @@ import {
 	tabs,
 	useAssetsPanelStore,
 } from "../../../../editor/use-session-store";
+const toolLabels: Record<string, string> = { media: "素材", sounds: "音效", text: "文字", "motion-text": "动态文字", motionText: "动态文字", stickers: "贴纸", effects: "特效", transitions: "转场", captions: "字幕", adjustment: "调整", settings: "工程设置" };
 
 export function TabBar() {
 	const { activeTab, setActiveTab } = useAssetsPanelStore();
@@ -51,13 +52,14 @@ export function TabBar() {
 				>
 					{TAB_KEYS.map((tabKey) => {
 						const tab = tabs[tabKey];
+						const label = toolLabels[tabKey] ?? tab.label;
 						return (
 							<Tooltip key={tabKey} delayDuration={10}>
 								<TooltipTrigger asChild>
 									<Button
 										variant={activeTab === tabKey ? "secondary" : "ghost"}
 										size="icon"
-										aria-label={tab.label}
+										aria-label={label}
 										className={cn(
 											"shrink-0",
 											"h-8 w-8",
@@ -75,7 +77,7 @@ export function TabBar() {
 									sideOffset={8}
 								>
 									<div className="text-foreground text-sm leading-none font-medium">
-										{tab.label}
+										{label}
 									</div>
 								</TooltipContent>
 							</Tooltip>

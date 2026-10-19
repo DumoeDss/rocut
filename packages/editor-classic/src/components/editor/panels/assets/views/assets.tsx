@@ -33,7 +33,6 @@ import { useActionInvoker } from "../../../../../actions/action-scope";
 import { processMediaAssets } from "../../../../../media/processing";
 import { showMediaUploadToast } from "../../../../../media/upload-toast";
 import {
-	SelectableItem,
 	SelectableSurface,
 	useSelection,
 	useSelectionScope,
@@ -54,11 +53,17 @@ import {
 	LeftToRightListDashIcon,
 	SortingOneNineIcon,
 	Image02Icon,
-	MusicNote03Icon,
 	Video01Icon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon, type IconSvgElement } from "@hugeicons/react";
 import { ClipExportDialog } from "../../../clip-export-dialog";
+import { useMediaPreview } from "../../../../../media/use-media-preview";
+import { MediaWaveformPreview } from "../../../../../media/media-waveform-preview";
+import { useNativeAssetPreview } from "../../../../../editor/surface/native-asset-preview";
+import { MediaCard } from "./media-card";
+import { useHoverScrub } from "./use-hover-scrub";
+import { ALL_MEDIA, ROOT_MEDIA, MediaFolders, MoveMediaSelection } from "./media-folders";
+import { useEditorMessages } from "../../../../../editor/host/editor-host-context";
 
 export function MediaView() {
 	const invokeAction = useActionInvoker();
@@ -78,11 +83,38 @@ export function MediaView() {
 
 	const [isProcessing, setIsProcessing] = useState(false);
 	const [progress, setProgress] = useState(0);
+	const [search, setSearch] = useState("");
+	const [typeFilter, setTypeFilter] = useState("all");
+	const [usedOnly, setUsedOnly] = useState(false);
+	const [folder, setFolder] = useState(ALL_MEDIA);
+	const folders = useEditor((current) => current.media.getFolders());
+	const folderAssignments = useEditor((current) => current.project.getActiveOrNull()?.mediaFolders);
+	const activeFolder = folder === ROOT_MEDIA || folders.some((entry) => entry.id === folder) ? folder : ALL_MEDIA;
+	const scenes = useEditor((current) => current.scenes.getScenes());
+	const usedMediaIds = useMemo(
+		() =>
+			new Set(
+				scenes.flatMap((scene) =>
+					[
+						scene.tracks.main,
+						...scene.tracks.overlay,
+						...scene.tracks.audio,
+					].flatMap((track) =>
+						track.elements.flatMap((element) =>
+							"mediaId" in element && typeof element.mediaId === "string"
+								? [element.mediaId]
+								: [],
+						),
+					),
+				),
+			),
+		[scenes],
+	);
 
 	const processFiles = async ({ files }: { files: File[] }) => {
 		if (!files || files.length === 0) return;
 		if (!activeProject) {
-			toast.error("No active project");
+			toast.error("当前没有打开的工程");
 			return;
 		}
 
@@ -111,7 +143,7 @@ export function MediaView() {
 						if (saved) assetNames.push(saved.name);
 					}
 					if (assetNames.length === 0) {
-						throw new Error("No media assets were saved");
+						throw new Error("未能保存任何素材");
 					}
 					return {
 						uploadedCount: assetNames.length,
@@ -120,7 +152,7 @@ export function MediaView() {
 				},
 			});
 		} catch {
-			console.error("Failed to process media files");
+			console.error("处理素材文件失败");
 		} finally {
 			setIsProcessing(false);
 			setProgress(0);
@@ -161,7 +193,16 @@ export function MediaView() {
 	};
 
 	const filteredMediaItems = useMemo(() => {
-		const filtered = mediaFiles.filter((item) => !item.ephemeral);
+		const filtered = mediaFiles.filter(
+			(item) =>
+				!item.ephemeral &&
+				(activeFolder === ALL_MEDIA || (activeFolder === ROOT_MEDIA ? !folderAssignments?.assignments.some((entry) => entry.assetId === item.id) : folderAssignments?.assignments.some((entry) => entry.assetId === item.id && entry.folderId === activeFolder))) &&
+				item.name
+					.toLocaleLowerCase()
+					.includes(search.trim().toLocaleLowerCase()) &&
+				(typeFilter === "all" || item.type === typeFilter) &&
+				(!usedOnly || usedMediaIds.has(item.id)),
+		);
 
 		filtered.sort((a, b) => {
 			let valueA: string | number;
@@ -194,7 +235,17 @@ export function MediaView() {
 		});
 
 		return filtered;
-	}, [mediaFiles, mediaSortBy, mediaSortOrder]);
+	}, [
+		mediaFiles,
+		mediaSortBy,
+		mediaSortOrder,
+		search,
+		typeFilter,
+		usedOnly,
+		usedMediaIds,
+		activeFolder,
+		folderAssignments,
+	]);
 	const orderedMediaIds = useMemo(() => {
 		return filteredMediaItems.map((item) => item.id);
 	}, [filteredMediaItems]);
@@ -204,7 +255,7 @@ export function MediaView() {
 			<input {...fileInputProps} />
 
 			<PanelView
-				title="Assets"
+				title="工程素材"
 				actions={
 					<MediaActions
 						mediaViewMode={mediaViewMode}
@@ -220,7 +271,22 @@ export function MediaView() {
 				contentClassName="h-full"
 				{...dragProps}
 			>
-				{isDragOver || filteredMediaItems.length === 0 ? (
+				<MediaFolders key={activeProject.metadata.id} active={activeFolder} onSelect={setFolder} />
+				<MediaFilters
+					search={search}
+					typeFilter={typeFilter}
+					usedOnly={usedOnly}
+					onSearchChange={setSearch}
+					onTypeFilterChange={setTypeFilter}
+					onUsedOnlyChange={setUsedOnly}
+				/>
+				{!isDragOver &&
+				filteredMediaItems.length === 0 &&
+				mediaFiles.some((item) => !item.ephemeral) ? (
+					<p className="py-6 text-xs text-muted-foreground">
+						没有匹配的素材。调整搜索或筛选条件。
+					</p>
+				) : isDragOver || filteredMediaItems.length === 0 ? (
 					<MediaDragOverlay
 						isVisible={true}
 						isProcessing={isProcessing}
@@ -229,21 +295,85 @@ export function MediaView() {
 					/>
 				) : (
 					<SelectableSurface
-						ariaLabel="Assets"
+						ariaLabel="工程素材"
 						orderedIds={orderedMediaIds}
 						revealId={highlightMediaId}
 						onRevealComplete={clearHighlight}
 					>
 						<MediaScopeRegistrar />
+						<MoveMediaSelection />
 						<MediaItemList
+							key={activeProject.metadata.id}
 							items={filteredMediaItems}
 							mode={mediaViewMode}
+							usedMediaIds={usedMediaIds}
 							onRemove={handleRemove}
 						/>
 					</SelectableSurface>
 				)}
 			</PanelView>
 		</>
+	);
+}
+
+export function MediaFilters({
+	search,
+	typeFilter,
+	usedOnly,
+	onSearchChange,
+	onTypeFilterChange,
+	onUsedOnlyChange,
+}: {
+	search: string;
+	typeFilter: string;
+	usedOnly: boolean;
+	onSearchChange: (value: string) => void;
+	onTypeFilterChange: (value: string) => void;
+	onUsedOnlyChange: (value: boolean) => void;
+}) {
+	return (
+		<div className="flex min-w-0 flex-wrap items-center gap-2 pb-3 text-xs">
+			<input
+				type="search"
+				aria-label="搜索工程素材"
+				placeholder="搜索素材"
+				value={search}
+				onChange={(event) => onSearchChange(event.target.value)}
+				className="min-w-0 w-full rounded border bg-background px-2 py-1.5 focus-visible:outline-ring"
+			/>
+			<select
+				aria-label="工程素材类型"
+				value={typeFilter}
+				onChange={(event) => onTypeFilterChange(event.target.value)}
+				className="min-w-0 max-w-full rounded border bg-background px-2 py-1"
+			>
+				<option value="all">全部类型</option>
+				<option value="image">图片</option>
+				<option value="video">视频</option>
+				<option value="audio">音频</option>
+			</select>
+			<label className="flex items-center gap-1">
+				<input
+					type="checkbox"
+					checked={usedOnly}
+					onChange={(event) => onUsedOnlyChange(event.target.checked)}
+				/>
+				已使用
+			</label>
+			<Button
+				variant="ghost"
+				size="sm"
+				className="text-xs"
+				disabled={!search && typeFilter === "all" && !usedOnly}
+				onClick={() => {
+					onSearchChange("");
+					onTypeFilterChange("all");
+					onUsedOnlyChange(false);
+				}}
+			>
+				清除筛选
+			</Button>
+		</div>
 	);
 }
 
@@ -307,9 +437,7 @@ function MediaAssetDraggable({
 				addElementAtTime({ asset: item, startTime: currentTime })
 			}
 			variant={variant}
-			containerClassName={
-				variant === "card" ? "min-w-0 w-full max-w-28" : undefined
-			}
+			containerClassName={variant === "card" ? "min-w-0 w-full" : undefined}
 			isRounded={isRounded}
 		/>
 	);
@@ -334,7 +462,7 @@ function MediaItemWithContextMenu({
 	const [exportOpen, setExportOpen] = useState(false);
 	const idsToDelete = isSelected(item.id) ? selectedIds : [item.id];
 	const deleteLabel =
-		idsToDelete.length > 1 ? `Delete ${idsToDelete.length} items` : "Delete";
+		idsToDelete.length > 1 ? `删除 ${idsToDelete.length} 项素材` : "删除素材";
 
 	return (
 		<>
@@ -346,7 +474,7 @@ function MediaItemWithContextMenu({
 					}}
 				>
 					<ContextMenuItem onSelect={() => setExportOpen(true)}>
-						Export clips
+						导出片段
 					</ContextMenuItem>
 					<ContextMenuItem
 						variant="destructive"
@@ -371,10 +499,12 @@ function MediaItemWithContextMenu({
 function MediaItemList({
 	items,
 	mode,
+	usedMediaIds,
 	onRemove,
 }: {
 	items: MediaAsset[];
 	mode: MediaViewMode;
+	usedMediaIds: ReadonlySet<string>;
 	onRemove: ({
 		event,
 		ids,
@@ -384,34 +514,57 @@ function MediaItemList({
 	}) => void;
 }) {
 	const isGrid = mode === "grid";
+	const messages = useEditorMessages();
+	const nativePreview = useNativeAssetPreview();
+	const thumbnailSize = useAssetsPanelStore((state) => state.mediaThumbnailSize);
+	const setThumbnailSize = useAssetsPanelStore((state) => state.setMediaThumbnailSize);
+	const hover = useHoverScrub();
 
 	return (
+		<>
+		{isGrid && <label className="flex items-center gap-2 py-2 text-xs">{messages.thumbnailSize}<input aria-label={messages.thumbnailSize} type="range" min={80} max={240} step={8} value={thumbnailSize} onChange={(event) => setThumbnailSize(Number(event.target.value))} /></label>}
 		<div
 			className={cn(isGrid ? "grid gap-4" : "flex flex-col gap-1.5")}
 			style={
 				isGrid
-					? { gridTemplateColumns: "repeat(auto-fill, min(100%, 7rem))" }
+					? {
+							gridTemplateColumns:
+								`repeat(auto-fill, minmax(min(100%, ${thumbnailSize}px), 1fr))`,
+						}
 					: undefined
 			}
 		>
 			{items.map((item) => (
 				<MediaItemWithContextMenu item={item} onRemove={onRemove} key={item.id}>
-					<SelectableItem className="min-w-0 w-full" id={item.id}>
+					<div onPointerMove={(event) => {
+						if (item.type !== "video" || event.buttons || event.pointerType === "touch") return;
+						const bounds = event.currentTarget.getBoundingClientRect();
+						if (bounds.width > 0) hover.move({ id: item.id, ratio: (event.clientX - bounds.left) / bounds.width, duration: item.duration ?? 0 });
+					}} onPointerLeave={hover.cancel} onPointerDown={hover.cancel}>
+					<MediaCard
+						id={item.id}
+						name={item.name}
+						isUsed={usedMediaIds.has(item.id)}
+						onPreview={() => nativePreview.open(item)}
+					>
 						<MediaAssetDraggable
 							item={item}
 							preview={
 								<MediaPreview
 									item={item}
 									variant={isGrid ? "grid" : "compact"}
+									timeSeconds={hover.sample?.id === item.id ? hover.sample.time : undefined}
 								/>
 							}
 							variant={isGrid ? "card" : "compact"}
 							isRounded={isGrid ? false : undefined}
 						/>
-					</SelectableItem>
+					</MediaCard>
+					</div>
 				</MediaItemWithContextMenu>
 			))}
 		</div>
+		</>
 	);
 }
 
@@ -469,11 +622,14 @@ function MediaTypePlaceholder({
 function MediaPreview({
 	item,
 	variant = "grid",
+	timeSeconds,
 }: {
 	item: MediaAsset;
 	variant?: "grid" | "compact";
+	timeSeconds?: number;
 }) {
 	const shouldShowDurationBadge = variant === "grid";
+	const derivedPreview = useMediaPreview({ asset: item, timeSeconds });
 
 	if (item.type === "image") {
 		return (
@@ -492,11 +648,12 @@ function MediaPreview({
 	}
 
 	if (item.type === "video") {
-		if (item.thumbnailUrl) {
+		if (derivedPreview.status === "ready") {
 			return (
 				<div className="relative size-full">
 					<HostImage
-						src={item.thumbnailUrl}
+						src={derivedPreview.url}
+						onError={derivedPreview.reportError}
 						alt={item.name}
 						fill
 						sizes="100vw"
@@ -512,28 +669,51 @@ function MediaPreview({
 		}
 
 		return (
-			<MediaTypePlaceholder
-				icon={Video01Icon}
-				label="Video"
-				duration={item.duration}
-				variant="muted"
-			/>
+			<div className="relative flex size-full flex-col items-center justify-center">
+				<MediaTypePlaceholder
+					icon={Video01Icon}
+					label={
+						derivedPreview.status === "loading"
+							? "正在获取封面"
+							: derivedPreview.status === "offline"
+								? "素材离线"
+								: derivedPreview.status === "unsupported"
+									? "暂不支持预览"
+									: "封面不可用"
+					}
+					duration={item.duration}
+					variant="muted"
+				/>
+				{derivedPreview.status === "failed" && (
+					<button
+						type="button"
+						className="absolute bottom-1 rounded bg-background px-1 text-xs focus-visible:outline-ring"
+						onDoubleClick={(event) => event.stopPropagation()}
+						onClick={(event) => {
+							event.stopPropagation();
+							derivedPreview.retry();
+						}}
+					>
+						重试预览
+					</button>
+				)}
+			</div>
 		);
 	}
 
 	if (item.type === "audio") {
 		return (
-			<MediaTypePlaceholder
-				icon={MusicNote03Icon}
-				label="Audio"
-				duration={item.duration}
-				variant="bordered"
-			/>
+			<div className="relative flex size-full items-center justify-center border rounded">
+				<MediaWaveformPreview asset={item} className="w-full h-12" />
+				{shouldShowDurationBadge && (
+					<MediaDurationBadge duration={item.duration} />
+				)}
+			</div>
 		);
 	}
 
 	return (
-		<MediaTypePlaceholder icon={Image02Icon} label="Unknown" variant="muted" />
+		<MediaTypePlaceholder icon={Image02Icon} label="未知类型" variant="muted" />
 	);
 }
 
@@ -558,7 +738,7 @@ function MediaActions({
 		<div
 			className="flex min-w-0 max-w-full flex-wrap items-center gap-1.5"
 			role="group"
-			aria-label="Media actions"
+			aria-label="素材操作"
 		>
 			<TooltipProvider>
 				<Tooltip>
@@ -566,9 +746,7 @@ function MediaActions({
 						<Button
 							size="icon"
 							aria-label={
-								mediaViewMode === "grid"
-									? "Switch to list view"
-									: "Switch to grid view"
+								mediaViewMode === "grid" ? "切换列表视图" : "切换网格视图"
 							}
 							variant="ghost"
 							onClick={() =>
@@ -585,11 +763,7 @@ function MediaActions({
 						</Button>
 					</TooltipTrigger>
 					<TooltipContent>
-						<p>
-							{mediaViewMode === "grid"
-								? "Switch to list view"
-								: "Switch to grid view"}
-						</p>
+						<p>{mediaViewMode === "grid" ? "切换列表视图" : "切换网格视图"}</p>
 					</TooltipContent>
 				</Tooltip>
 				<Tooltip>
@@ -598,7 +772,7 @@ function MediaActions({
 							<DropdownMenuTrigger asChild>
 								<Button
 									size="icon"
-									aria-label="Sort media"
+									aria-label="素材排序"
 									variant="ghost"
 									disabled={isProcessing}
 									className="items-center justify-center"
@@ -609,28 +783,28 @@ function MediaActions({
 						</TooltipTrigger>
 						<DropdownMenuContent align="end">
 							<SortMenuItem
-								label="Name"
+								label="名称"
 								sortKey="name"
 								currentSortBy={sortBy}
 								currentSortOrder={sortOrder}
 								onSort={onSort}
 							/>
 							<SortMenuItem
-								label="Type"
+								label="类型"
 								sortKey="type"
 								currentSortBy={sortBy}
 								currentSortOrder={sortOrder}
 								onSort={onSort}
 							/>
 							<SortMenuItem
-								label="Duration"
+								label="时长"
 								sortKey="duration"
 								currentSortBy={sortBy}
 								currentSortOrder={sortOrder}
 								onSort={onSort}
 							/>
 							<SortMenuItem
-								label="File size"
+								label="文件大小"
 								sortKey="size"
 								currentSortBy={sortBy}
 								currentSortOrder={sortOrder}
@@ -640,22 +814,31 @@ function MediaActions({
 					</DropdownMenu>
 					<TooltipContent>
 						<p>
-							Sort by {sortBy} (
-							{sortOrder === "asc" ? "ascending" : "descending"})
+							按
+							{
+								{
+									name: "名称",
+									type: "类型",
+									duration: "时长",
+									size: "文件大小",
+								}[sortBy]
+							}
+							排序（
+							{sortOrder === "asc" ? "升序" : "降序"}）
 						</p>
 					</TooltipContent>
 				</Tooltip>
 			</TooltipProvider>
 			<Button
 				variant="outline"
-				aria-label="Import media"
+				aria-label="导入素材"
 				onClick={onImport}
 				disabled={isProcessing}
 				size="sm"
 				className="items-center justify-center gap-1.5"
 			>
 				<HugeiconsIcon icon={CloudUploadIcon} />
-				Import
+				导入
 			</Button>
 		</div>
 	);

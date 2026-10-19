@@ -6,6 +6,8 @@ import { useEditorSession } from "../../editor/session/editor-session-provider";
 import { useAssetsPanelStore } from "../../editor/use-session-store";
 import { AudioWaveform, WAVEFORM_GAIN_SAMPLE_COUNT } from "./audio-waveform";
 import { AudioVolumeLine } from "./audio-volume-line";
+import { VideoFilmstrip } from "./video-filmstrip";
+import { MotionTextTimelineContent } from "./motion-text-content";
 import { useElementPreview } from "../hooks/use-element-preview";
 import {
 	useKeyframeDrag,
@@ -48,10 +50,7 @@ import {
 	getSourceAudioActionLabel,
 	isSourceAudioSeparated,
 } from "../audio-separation";
-import {
-	buildWaveformGainSamples,
-	isElementMuted,
-} from "../audio-state";
+import { buildWaveformGainSamples, isElementMuted } from "../audio-state";
 import { getTimelinePixelsPerSecond } from "..";
 import { buildWaveformSourceKey } from "../../media/waveform-summary";
 import { addMediaTime, type MediaTime, TICKS_PER_SECOND } from "../../wasm";
@@ -82,7 +81,10 @@ import {
 import { HugeiconsIcon } from "@hugeicons/react";
 import { uppercase } from "../../utils/string";
 import { useMemo, type ComponentProps, type ReactNode } from "react";
-import type { SelectedKeyframeRef, ElementKeyframe } from "../../animation/types";
+import type {
+	SelectedKeyframeRef,
+	ElementKeyframe,
+} from "../../animation/types";
 import { cn } from "../../utils/ui";
 import { usePropertiesStore } from "../../editor/use-session-store";
 import { getTrackTypeForElementType } from "../placement/compatibility";
@@ -348,12 +350,13 @@ export function TimelineElement({
 	const sourceAudioLabel =
 		element.type === "video"
 			? getSourceAudioActionLabel({ element })
-			: "Extract audio";
+			: "提取音频";
 	const isElementSourceAudioSeparated =
 		element.type === "video" && isSourceAudioSeparated({ element });
 	const hasKeyframes = elementKeyframes.length > 0;
 	const expansionHeight = getExpansionHeight({ rows: expandedRows });
-	const baseTrackHeight = getTrackHeight({ type: track.type });
+	const heightScale = useTimelineStore((s) => s.trackHeightScale);
+	const baseTrackHeight = getTrackHeight({ type: track.type, heightScale });
 
 	const expandedContent =
 		isExpanded && expandedRows.length > 0 ? (
@@ -440,7 +443,7 @@ export function TimelineElement({
 							action="duplicate-selected"
 							icon={<HugeiconsIcon icon={Copy01Icon} />}
 						>
-							Duplicate
+							复制副本
 						</ActionMenuItem>
 					)}
 					{canElementHaveAudio(element) && hasAudio && (
@@ -482,7 +485,7 @@ export function TimelineElement({
 								toggleElementExpanded(element.id);
 							}}
 						>
-							{isExpanded ? "Collapse keyframes" : "Expand keyframes"}
+							{isExpanded ? "收起关键帧" : "展开关键帧"}
 						</ContextMenuItem>
 					)}
 					{selectedElements.length === 1 && hasMediaId(element) && (
@@ -493,13 +496,13 @@ export function TimelineElement({
 									handleRevealInMedia({ event })
 								}
 							>
-								Reveal media
+								在素材区显示
 							</ContextMenuItem>
 							<ContextMenuItem
 								icon={<HugeiconsIcon icon={Exchange01Icon} />}
 								disabled
 							>
-								Replace media
+								替换素材
 							</ContextMenuItem>
 						</>
 					)}
@@ -729,7 +732,7 @@ function KeyframeIndicators({
 						indicatorTime: indicator.time,
 					})
 				}
-				aria-label="Select keyframe"
+				aria-label="选择关键帧"
 			>
 				<HugeiconsIcon
 					icon={KeyframeIcon}
@@ -882,7 +885,7 @@ function ExpandedKeyframeLanes({
 											indicatorTime: kf.time,
 										});
 									}}
-									aria-label="Select keyframe"
+									aria-label="选择关键帧"
 								>
 									<HugeiconsIcon
 										icon={KeyframeIcon}
@@ -994,11 +997,7 @@ function MotionTextElementContent({
 }: {
 	element: Extract<TimelineElementType, { type: "motion-text" }>;
 }) {
-	return (
-		<div className="flex size-full items-center justify-start pl-2">
-			<span className="truncate text-xs text-white">{element.name}</span>
-		</div>
-	);
+	return <MotionTextTimelineContent element={element} />;
 }
 
 function AudioElementContent({
@@ -1113,7 +1112,9 @@ function TiledMediaContent({
 	element: VideoElement | ImageElement;
 	track: TimelineTrack;
 }) {
+	const pixelsPerSecond = useContext(PixelsPerSecondContext);
 	const mediaAssets = useEditor((e) => e.media.getAssets());
+	const heightScale = useTimelineStore((s) => s.trackHeightScale);
 
 	const mediaAsset = mediaAssets.find((asset) => asset.id === element.mediaId);
 	const imageUrl =
@@ -1121,7 +1122,7 @@ function TiledMediaContent({
 			? mediaAsset?.thumbnailUrl
 			: (mediaAsset?.thumbnailUrl ?? mediaAsset?.url);
 
-	if (!imageUrl) {
+	if (!imageUrl && element.type !== "video") {
 		return (
 			<span className="text-foreground/80 truncate text-xs">
 				{element.name}
@@ -1129,22 +1130,31 @@ function TiledMediaContent({
 		);
 	}
 
-	const trackHeight = getTrackHeight({ type: track.type });
+	const trackHeight = getTrackHeight({ type: track.type, heightScale });
 	const tileWidth = trackHeight * THUMBNAIL_ASPECT_RATIO;
 
 	return (
 		<>
-			<div
-				className="absolute inset-0"
-				style={{
-					backgroundColor: "var(--muted)",
-					backgroundImage: `url(${imageUrl})`,
-					backgroundRepeat: "repeat-x",
-					backgroundSize: `${tileWidth}px ${trackHeight}px`,
-					backgroundPosition: "left center",
-					pointerEvents: "none",
-				}}
-			/>
+			{element.type === "video" && mediaAsset && pixelsPerSecond ? (
+				<VideoFilmstrip
+					asset={mediaAsset}
+					element={element}
+					tileWidth={tileWidth}
+					pixelsPerSecond={pixelsPerSecond}
+				/>
+			) : (
+				<div
+					className="absolute inset-0"
+					style={{
+						backgroundColor: "var(--muted)",
+						backgroundImage: `url(${imageUrl})`,
+						backgroundRepeat: "repeat-x",
+						backgroundSize: `${tileWidth}px ${trackHeight}px`,
+						backgroundPosition: "left center",
+						pointerEvents: "none",
+					}}
+				/>
+			)}
 			<MediaElementHeader
 				name={mediaAsset?.name}
 				leading={
@@ -1214,7 +1224,7 @@ function CopyMenuItem() {
 			action="copy-selected"
 			icon={<HugeiconsIcon icon={Copy01Icon} />}
 		>
-			Copy
+			复制
 		</ActionMenuItem>
 	);
 }
@@ -1241,7 +1251,7 @@ function MuteMenuItem({
 
 	return (
 		<ActionMenuItem action="toggle-elements-muted-selected" icon={getIcon()}>
-			{isMuted ? "Unmute" : "Mute"}
+			{isMuted ? "取消静音" : "静音"}
 		</ActionMenuItem>
 	);
 }
@@ -1273,7 +1283,7 @@ function VisibilityMenuItem({
 			action="toggle-elements-visibility-selected"
 			icon={getIcon()}
 		>
-			{isHidden ? "Show" : "Hide"}
+			{isHidden ? "显示" : "隐藏"}
 		</ActionMenuItem>
 	);
 }
@@ -1296,8 +1306,8 @@ function DeleteMenuItem({
 			icon={<HugeiconsIcon icon={Delete02Icon} />}
 		>
 			{isMultipleSelected && isCurrentElementSelected
-				? `Delete ${selectedCount} elements`
-				: `Delete ${elementType === "text" ? "text" : "clip"}`}
+				? `删除 ${selectedCount} 个元素`
+				: `删除${elementType === "text" ? "文字" : "片段"}`}
 		</ActionMenuItem>
 	);
 }

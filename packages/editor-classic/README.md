@@ -1,5 +1,8 @@
 # @opencut/editor-classic
 
+Advanced media organization and timeline controls are described in
+[Advanced editor controls](../../docs/editor-advanced-editing.md).
+
 The OpenCut Classic provider and its React editor, including the embeddable Surface.
 Depends on [`@opencut/editor-ports`](../editor-ports) and
 [`@opencut/editor-contracts`](../editor-contracts). Classic's own machinery — the editor
@@ -88,6 +91,53 @@ above covers automatically.
   the recovery decision waits for the DOM commit.
 - Transition storage/validation does not itself enable transition authoring or
   rendered dissolves. Those still require scene sampling and UI integration.
+
+## Track lock admission
+
+`TimelineTrack.locked` and public `Track.locked` are optional booleans; missing
+means unlocked. A true lock is persisted, not a selection-only UI state. The
+Rust `validateTrackLocksJson` rule compares the pre-edit snapshot with the final
+candidate. UI commands (including drag, trim, split, ripple and bulk snapshots),
+agent transactions, direct adapter encoding and legacy project saves use the
+same rule. A locked lane cannot be removed/reordered, receive or lose clips, or
+have its existing content edited. Unlock in a separate transaction before
+editing; an unlock-plus-edit batch cannot bypass the pre-edit lock. Mute,
+visibility, selection, preview, generation and export remain available.
+
+Motion-text source sequences and their bound audio/project-font assets are
+protected when referenced by a locked clip. Attachment deletion and same-ID
+byte replacement are admitted inside the project's shared mutation queue before
+storage changes. Actual byte digests, not caller-supplied metadata, determine
+source identity. Identical bytes/facts enrichment and the first known source
+digest remain allowed. An offline source can be restored to a locked project
+only when its retained digest matches; without a retained fingerprint, unlock
+before replacing the unavailable source.
+
+The first true lock upgrades only the private `__opencutTransaction` envelope
+to version 2; the top-level project format is unchanged, and v2 is retained
+after unlocking. New readers accept v1/v2. Older transactional readers reject
+v2 rather than dropping the new field. A runtime without the native export
+still opens/edits legacy unlocked projects, disables the lock control with an
+upgrade message, and rejects locked/v2 projects. Locks are an editor admission
+contract, not an access-control boundary against arbitrary raw `ProjectStore`
+writes outside the editor/session APIs.
+
+## Workspace presentation state
+
+`editor/panel-store.ts` persists wide and compact horizontal preferences separately
+in UI preference schema v4. Deliberate resizing and presets write preferences;
+container constraint normalization does not. Reset clears both modes. Existing v3
+wide-layout intent is preserved, including an explicit fresh-layout preference.
+
+`EditorLocaleProvider` from `./session` overrides presentation messages inside an
+existing session. A shell can update locale without replacing its host or session,
+discarding a draft, or restarting content requests. The Vite host's optional embedded
+locale adapter is presentation-only; it grants no content or project capabilities.
+
+`timeline/components/motion-text-marker-layout.ts` groups visually dense cue/cut
+markers using measured pixel width. Zooming restores separated markers without
+changing sequence data or source-time mapping. The native asset view clears search,
+type and used-state filters together without modifying selection or timeline state.
 
 ## Consumer obligations (from-tarball adoption)
 

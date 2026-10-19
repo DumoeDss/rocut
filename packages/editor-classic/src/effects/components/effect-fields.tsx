@@ -98,11 +98,11 @@ export function EffectFields({
 					: isBubble
 						? [
 								{
-									label: "Optics",
+									label: "光学",
 									params: fields.filter((param) => param.keyframable === true),
 								},
 								{
-									label: "Activity",
+									label: "运动",
 									params: fields.filter((param) => param.keyframable !== true),
 								},
 							]

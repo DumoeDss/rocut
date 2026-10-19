@@ -32,6 +32,7 @@ import {
 import { MasksTab } from "../../../../masks/components/masks-tab";
 import { AdjustmentProperties } from "../../../../effects/components/adjustment-properties";
 import { SpeedTab } from "../../../../speed/components/speed-tab";
+import { ReverseControl } from "./components/reverse-control";
 import { GraphicTab } from "../../../../graphics/components/graphic-tab";
 import { OcShapesIcon } from "../../../icons";
 import { MotionTextPropertiesTab } from "../../../../motion-text/components/properties-tab";
@@ -90,7 +91,7 @@ function buildTransformTab({
 }): PropertiesTabDef {
 	return {
 		id: "transform",
-		label: "Transform",
+		label: "变换",
 		icon: <HugeiconsIcon icon={ArrowExpandIcon} size={16} />,
 		content: ({ trackId }) => (
 			<ElementParamsTab
@@ -110,7 +111,7 @@ function buildBlendingTab({
 }): PropertiesTabDef {
 	return {
 		id: "blending",
-		label: "Blending",
+		label: "混合",
 		icon: <HugeiconsIcon icon={RainDropIcon} size={16} />,
 		content: ({ trackId }) => (
 			<ElementParamsTab
@@ -130,7 +131,7 @@ function buildAudioTab({
 }): PropertiesTabDef {
 	return {
 		id: "audio",
-		label: "Audio",
+		label: "音频",
 		icon: <HugeiconsIcon icon={MusicNote03Icon} size={16} />,
 		content: ({ trackId }) => (
 			<ElementParamsTab
@@ -150,9 +151,9 @@ function buildSpeedTab({
 }): PropertiesTabDef {
 	return {
 		id: "speed",
-		label: "Speed",
+		label: "速度",
 		icon: <HugeiconsIcon icon={DashboardSpeed02Icon} size={16} />,
-		content: ({ trackId }) => <SpeedTab element={element} trackId={trackId} />,
+		content: ({ trackId }) => <><SpeedTab element={element} trackId={trackId} />{element.type === "video" && <ReverseControl element={element} trackId={trackId} />}</>,
 	};
 }
 
@@ -163,7 +164,7 @@ function buildMasksTab({
 }): PropertiesTabDef {
 	return {
 		id: "masks",
-		label: "Masks",
+		label: "遮罩",
 		icon: <OcShapesIcon size={16} />,
 		content: ({ trackId }) => <MasksTab element={element} trackId={trackId} />,
 	};
@@ -176,7 +177,7 @@ function buildClipEffectsTab({
 }): PropertiesTabDef {
 	return {
 		id: "effects",
-		label: "Effects",
+		label: "效果",
 		icon: <HugeiconsIcon icon={MagicWand05Icon} size={16} />,
 		content: ({ trackId }) => (
 			<ClipEffectsTab element={element} trackId={trackId} />
@@ -187,7 +188,7 @@ function buildClipEffectsTab({
 function buildTextTab({ element }: { element: TextElement }): PropertiesTabDef {
 	return {
 		id: "text",
-		label: "Text",
+		label: "文字",
 		icon: <HugeiconsIcon icon={TextFontIcon} size={16} />,
 		content: ({ trackId }) => (
 			<ElementParamsTab
@@ -207,7 +208,7 @@ function buildGraphicTab({
 }): PropertiesTabDef {
 	return {
 		id: "graphic",
-		label: "Graphic",
+		label: "图形",
 		icon: <OcShapesIcon size={16} />,
 		content: ({ trackId }) => (
 			<GraphicTab element={element} trackId={trackId} />
@@ -222,7 +223,7 @@ function buildStandaloneEffectTab({
 }): PropertiesTabDef {
 	return {
 		id: "effects",
-		label: "Effects",
+		label: "效果",
 		icon: <HugeiconsIcon icon={MagicWand05Icon} size={16} />,
 		content: ({ trackId }) => (
 			element.effectType === "color-adjustment"
@@ -249,7 +250,7 @@ function getTextConfig({
 
 function buildTransitionTab({ element }: { element: VideoElement | ImageElement }): PropertiesTabDef {
 	return {
-		id: "transition", label: "Transition",
+		id: "transition", label: "转场",
 		icon: <HugeiconsIcon icon={TransitionRightIcon} size={16} />,
 		content: ({ trackId }) => <TransitionProperties key={element.id} element={element} trackId={trackId} />,
 	};
@@ -336,7 +337,7 @@ function getMotionTextConfig({
 		tabs: [
 			{
 				id: "motion-text",
-				label: "Motion text",
+				label: "动态文字",
 				icon: <HugeiconsIcon icon={TextFontIcon} size={16} />,
 				content: () => <MotionTextPropertiesTab element={element} />,
 			},

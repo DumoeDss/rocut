@@ -43,7 +43,11 @@ export function canExtractSourceAudio(
 export function canRecoverSourceAudio(
 	element: TimelineElement,
 ): element is VideoElement {
-	return element.type === "video" && element.freezeFrame === undefined && isSourceAudioSeparated({ element });
+	return (
+		element.type === "video" &&
+		element.freezeFrame === undefined &&
+		isSourceAudioSeparated({ element })
+	);
 }
 
 export function canToggleSourceAudio(
@@ -112,10 +116,8 @@ export function getSourceAudioActionLabel({
 	element,
 }: {
 	element: VideoElement;
-}): "Extract audio" | "Recover audio" {
-	return isSourceAudioSeparated({ element })
-		? "Recover audio"
-		: "Extract audio";
+}): "提取音频" | "恢复音频" {
+	return isSourceAudioSeparated({ element }) ? "恢复音频" : "提取音频";
 }
 
 function cloneVolumeAnimations({

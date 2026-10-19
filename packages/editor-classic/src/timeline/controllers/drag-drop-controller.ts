@@ -37,6 +37,7 @@ import type { SessionResources } from "../../editor/session/resources";
 // --- Config ---
 
 export interface DragDropConfig {
+	heightScale?: number;
 	zoomLevel: number;
 	getContainerEl: () => HTMLDivElement | null;
 	getHeaderEl: () => HTMLElement | null;
@@ -53,6 +54,10 @@ export interface DragDropConfig {
 	}) => void;
 	resources: SessionResources;
 	dragSource: TimelineDragSource;
+	placeCreatorAsset?: (args: {
+		dragData: Extract<TimelineDragData, { type: "media" }>;
+		target: DropTarget;
+	}) => Promise<void>;
 	addMediaAsset: (args: {
 		projectId: string;
 		asset: ProcessedMediaAsset;
@@ -127,6 +132,10 @@ function getDurationForDrag({
 	mediaAssets: MediaAsset[];
 }): MediaTime {
 	if (dragData.type !== "media") return DEFAULT_NEW_ELEMENT_DURATION;
+	if (dragData.creator)
+		return toElementDurationTicks({
+			seconds: dragData.creator.durationSeconds,
+		});
 	const media = mediaAssets.find((asset) => asset.id === dragData.id);
 	return toElementDurationTicks({ seconds: media?.duration });
 }
@@ -219,7 +228,7 @@ export class DragDropController {
 		const targetElementTypes = getTargetElementTypesForDrag({ dragData });
 
 		const sceneTracks = this.config.getSceneTracks();
-		const target = computeDropTarget({
+		const target = computeDropTarget({ heightScale: this.config.heightScale,
 			elementType,
 			mouseX: coords.mouseX,
 			mouseY: coords.mouseY,
@@ -444,6 +453,10 @@ export class DragDropController {
 			// Replace media source — not yet implemented
 			return;
 		}
+		if (dragData.creator) {
+			void this.config.placeCreatorAsset?.({ dragData, target });
+			return;
+		}
 
 		const mediaAsset = this.config
 			.getMediaAssets()
@@ -562,7 +575,7 @@ export class DragDropController {
 						continue;
 					}
 
-					const dropTarget = computeDropTarget({
+					const dropTarget = computeDropTarget({ heightScale: this.config.heightScale,
 						elementType: createdAsset.type,
 						mouseX,
 						mouseY,

@@ -250,6 +250,8 @@ export type OnSurfaceReady = () => void;
  * @see spec: embeddable-react-surface
  */
 export interface EditorSurfaceProps {
+	/** Hide product-shell branding and theme controls when the host owns chrome. */
+	readonly hostOwnsChrome?: boolean;
 	/**
 	 * The editor session to render. This is the only required prop.
 	 *

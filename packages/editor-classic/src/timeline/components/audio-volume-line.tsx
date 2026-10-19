@@ -249,7 +249,7 @@ export function AudioVolumeLine({
 					onPointerUp={handlePointerUp}
 					onPointerCancel={handlePointerCancel}
 					onLostPointerCapture={handleLostPointerCapture}
-					title="Drag to adjust clip volume"
+					title="拖动调整片段音量"
 				/>
 				{isDragging &&
 					tooltipClientPos &&

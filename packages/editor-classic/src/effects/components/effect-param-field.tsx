@@ -120,7 +120,7 @@ export function EffectParamField({
 			reportError("");
 		} catch {
 			reportError(
-				"Keyframe was not saved. Check the effect values and try again.",
+				"关键帧未保存，请检查效果参数后重试。",
 			);
 		}
 	};

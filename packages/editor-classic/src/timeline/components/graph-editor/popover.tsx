@@ -155,10 +155,10 @@ export function GraphEditorPopover({
 				>
 					<TabsList className="px-3">
 						<TabsTrigger value="presets" className="text-xs">
-							Presets
+							预设
 						</TabsTrigger>
 						<TabsTrigger value="saved" className="text-xs">
-							Saved
+							已保存
 						</TabsTrigger>
 					</TabsList>
 					<TabsContent value="presets" className="px-3 pb-0">
@@ -190,13 +190,13 @@ export function GraphEditorPopover({
 									size="sm"
 									onClick={() => void loadCustomPresets().catch(() => {})}
 								>
-									Retry
+									重试
 								</Button>
 							</div>
 						)}
 						<div
 							role="region"
-							aria-label="Saved curve presets"
+							aria-label="已保存的曲线预设"
 							className="grid max-h-60 grid-cols-3 gap-1 overflow-y-auto overscroll-contain p-1"
 						>
 							{custom.map((preset) => (
@@ -231,7 +231,7 @@ export function GraphEditorPopover({
 										className="size-3.5 opacity-40"
 									/>
 								</div>
-								<span className="text-[10px] leading-tight">Save</span>
+								<span className="text-[10px] leading-tight">保存</span>
 							</button>
 						</div>
 					</TabsContent>
@@ -280,6 +280,7 @@ function ExpandableGrid({
 						variant="ghost"
 						size="icon"
 						className="size-5"
+						aria-label="展开全部曲线预设"
 						onClick={onExpand}
 					>
 						<HugeiconsIcon
@@ -341,7 +342,7 @@ function PresetItem({
 			</button>
 			{onDelete && (
 				<Button
-					aria-label={`Delete ${preset.label} preset`}
+					aria-label={`删除预设“${preset.label}”`}
 					variant="destructive"
 					size="icon"
 					className="absolute -right-0.5 -top-0.5 size-4.5 rounded-full opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 [&_svg]:size-3"
@@ -395,7 +396,7 @@ function CurveThumb({ value }: { value: NormalizedCubicBezier }) {
 			height={THUMB_HEIGHT}
 			viewBox={`0 0 ${THUMB_WIDTH} ${THUMB_HEIGHT}`}
 		>
-			<title>Curve preset preview</title>
+			<title>曲线预设预览</title>
 			<path
 				d={`M${points.join("L")}`}
 				fill="none"

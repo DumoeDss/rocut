@@ -95,6 +95,8 @@ export interface AssetsPanelStore {
 
 	/* Media */
 	mediaViewMode: MediaViewMode;
+	mediaThumbnailSize: number;
+	setMediaThumbnailSize: (size: number) => void;
 	setMediaViewMode: (mode: MediaViewMode) => void;
 	mediaSortBy: MediaSortKey;
 	mediaSortOrder: MediaSortOrder;
@@ -112,6 +114,10 @@ export function createAssetsPanelStore() {
 					set({ activeTab: "media", highlightMediaId: mediaId }),
 				clearHighlight: () => set({ highlightMediaId: null }),
 				mediaViewMode: "grid",
+				mediaThumbnailSize: 112,
+				setMediaThumbnailSize: (size) => {
+					if (Number.isFinite(size)) set({ mediaThumbnailSize: Math.max(80, Math.min(240, Math.round(size))) });
+				},
 				setMediaViewMode: (mode) => set({ mediaViewMode: mode }),
 				mediaSortBy: "name",
 				mediaSortOrder: "asc",
@@ -122,6 +128,7 @@ export function createAssetsPanelStore() {
 				name: "assets-panel",
 				partialize: (state) => ({
 					mediaViewMode: state.mediaViewMode,
+					mediaThumbnailSize: state.mediaThumbnailSize,
 					mediaSortBy: state.mediaSortBy,
 					mediaSortOrder: state.mediaSortOrder,
 				}),

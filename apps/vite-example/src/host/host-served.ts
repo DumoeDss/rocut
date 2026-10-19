@@ -16,6 +16,7 @@ import {
 } from "./host-composition-export";
 import { createHttpDraftReview } from "./http-draft-review";
 import { createHttpProgrammaticFrames } from "./http-programmatic-frames";
+import { createHttpMediaPreviews } from "./http-media-previews";
 import {
 	advertiseExportProtocol,
 	isHostExportOptions,
@@ -38,6 +39,7 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 export interface HostServedSurface {
 	readonly projectId: string;
 	readonly apiBase: string;
+	readonly locale?: string;
 }
 
 /**
@@ -58,7 +60,11 @@ export async function detectHostServedSurface(
 		if (!isRecord(payload) || !isRecord(payload.project)) return null;
 		const projectId = payload.project.id;
 		if (typeof projectId !== "string") return null;
-		return { projectId, apiBase: "api" };
+		return {
+			projectId,
+			apiBase: "api",
+			...(typeof payload.locale === "string" ? { locale: payload.locale } : {}),
+		};
 	} catch {
 		return null;
 	}
@@ -67,11 +73,13 @@ export async function detectHostServedSurface(
 export interface HostServedHostOptions {
 	readonly projectId: string;
 	readonly base?: string;
+	readonly locale?: string;
 }
 
 export function createHostServedEditorHost({
 	projectId,
 	base,
+	locale,
 }: HostServedHostOptions): EditorHost {
 	const diagnostics = new RecordingDiagnostics();
 	const ids = new DeterministicIdGenerator();
@@ -82,6 +90,7 @@ export function createHostServedEditorHost({
 	return {
 		...createInMemoryPorts(),
 		projectId,
+		locale,
 		navigation: {
 			// The pane hosts exactly the host's project; there is nowhere to
 			// navigate to, so these are deliberate no-ops.
@@ -92,6 +101,7 @@ export function createHostServedEditorHost({
 		services: {},
 		draftReview: createHttpDraftReview({ base }),
 		programmaticFrames: createHttpProgrammaticFrames({ base }),
+		mediaPreviews: createHttpMediaPreviews({ base }),
 		branding: {
 			logoUrl: browser.assets.resolve({
 				ref: { path: "logos/opencut/svg/logo.svg" },

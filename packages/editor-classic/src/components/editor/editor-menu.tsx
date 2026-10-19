@@ -48,14 +48,14 @@ export function EditorMenu() {
 								variant="ghost"
 								size="icon"
 								className="size-8 text-muted-foreground"
-								aria-label="Editor menu"
+								aria-label="编辑菜单"
 								data-testid="editor-menu-trigger"
 							>
 								<MoreHorizontal aria-hidden="true" />
 							</Button>
 						</DropdownMenuTrigger>
 					</TooltipTrigger>
-					<TooltipContent side="right">Editor menu</TooltipContent>
+					<TooltipContent side="right">编辑菜单</TooltipContent>
 				</Tooltip>
 				<DropdownMenuContent
 					side="right"
@@ -70,27 +70,27 @@ export function EditorMenu() {
 						icon={<ClipboardCheck />}
 						onSelect={() => setDialog("drafts")}
 					>
-						Review agent changes
+						审阅智能体更改
 					</DropdownMenuItem>
 					<DropdownMenuItem
 						disabled={!hasProject}
 						icon={<Download />}
 						onSelect={() => setDialog("export")}
 					>
-						Export project
+						导出工程
 					</DropdownMenuItem>
 					<DropdownMenuItem
 						disabled={!hasProject}
 						icon={<Download />}
 						onSelect={() => setDialog("clips")}
 					>
-						Export clips
+						导出片段
 					</DropdownMenuItem>
 					<DropdownMenuItem
 						icon={<Keyboard />}
 						onSelect={() => setDialog("shortcuts")}
 					>
-						Keyboard shortcuts
+						快捷键
 					</DropdownMenuItem>
 				</DropdownMenuContent>
 			</DropdownMenu>
@@ -177,7 +177,7 @@ function EditorExportDialog({
 				aria-describedby={undefined}
 				className="flex max-h-[calc(100%-2rem)] max-w-sm flex-col overflow-y-auto overscroll-contain p-0"
 			>
-				<DialogTitle className="sr-only">Export project</DialogTitle>
+				<DialogTitle className="sr-only">导出工程</DialogTitle>
 				<ExportOptions onOpenChange={changeOpen} />
 			</DialogContent>
 		</Dialog>

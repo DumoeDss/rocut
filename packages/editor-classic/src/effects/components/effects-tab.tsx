@@ -38,7 +38,7 @@ export function StandaloneEffectTab({
 	return (
 		<div className="flex flex-col h-full">
 			<div className="border-b px-3.5 h-11 shrink-0 flex items-center">
-				<SectionTitle>Effect</SectionTitle>
+				<SectionTitle>效果</SectionTitle>
 			</div>
 			<EffectSection
 				effect={effect}
@@ -135,7 +135,7 @@ export function ClipEffectsTab({
 	return (
 		<div className="flex flex-col h-full">
 			<div className="border-b px-3.5 h-11 shrink-0 flex items-center">
-				<SectionTitle>Effects</SectionTitle>
+				<SectionTitle>效果</SectionTitle>
 			</div>
 			{effects.length === 0 ? (
 				<EmptyView />
@@ -208,9 +208,9 @@ function EmptyView() {
 				strokeWidth={1}
 			/>
 			<div className="flex flex-col gap-2">
-				<h3 className="font-medium text-foreground">No effects</h3>
+				<h3 className="font-medium text-foreground">尚无效果</h3>
 				<p className="text-muted-foreground text-sm text-balance max-w-44">
-					Add effects to this layer from the Assets panel.
+					从素材面板为此图层添加效果。
 				</p>
 			</div>
 			<Button
@@ -218,7 +218,7 @@ function EmptyView() {
 				size="sm"
 				onClick={() => setActiveTab("effects")}
 			>
-				Open effects
+				打开效果
 			</Button>
 		</div>
 	);

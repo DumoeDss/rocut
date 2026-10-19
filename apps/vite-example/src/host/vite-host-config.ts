@@ -32,6 +32,7 @@ export function createViteEditorHost({
 	rewriteWorkerUrl,
 	transcriptionWorkerUrl,
 	forceRendererBackend,
+	locale,
 }: {
 	projectId: string;
 	onProjectIdChange: (projectId: string) => void;
@@ -40,6 +41,7 @@ export function createViteEditorHost({
 	rewriteWorkerUrl?: BrowserWorkerUrlRewriter;
 	transcriptionWorkerUrl?: string;
 	forceRendererBackend?: "none";
+	locale?: string;
 }): EditorHost {
 	void viteBrowserProjectStore.prepareForSession().catch(() => {
 		viteDiagnostics.log({
@@ -75,6 +77,7 @@ export function createViteEditorHost({
 					: undefined,
 		}),
 		projectId,
+		locale,
 		navigation: {
 			onProjectReplaced: ({ projectId: replacementId }) => {
 				onProjectIdChange(replacementId);

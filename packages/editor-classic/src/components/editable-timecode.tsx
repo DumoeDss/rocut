@@ -142,7 +142,7 @@ export function EditableTimecode({
 	return (
 		<button
 			type="button"
-			aria-label="Edit playhead time"
+			aria-label="编辑播放头时间"
 			onClick={startEditing}
 			onKeyDown={handleDisplayKeyDown}
 			disabled={disabled}

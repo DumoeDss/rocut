@@ -9,7 +9,8 @@ export const TIMELINE_TRACK_THEME: Record<
 		waveformColor?: string;
 	}
 > = {
-	video: { elementClassName: "transparent" },
+	// Agent-imported media may have no thumbnail; keep its clip range visible.
+	video: { elementClassName: "bg-[#5d93ba]/60" },
 	text: { elementClassName: "bg-[#5DBAA0]" },
 	audio: {
 		elementClassName: "bg-[#8F5DBA]",

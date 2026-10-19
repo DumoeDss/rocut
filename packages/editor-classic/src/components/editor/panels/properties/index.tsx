@@ -15,6 +15,8 @@ import { getPropertiesConfig } from "./registry";
 import { cn } from "../../../../utils/ui";
 import { EmptyView } from "./empty-view";
 import { selectElementWithTrackTuple } from "../../../../timeline/element-with-track-selector";
+import { MultipleSelectionSummary } from "./multiple-selection-summary";
+import { CommonProperties } from "./common-properties";
 
 export function PropertiesPanel() {
 	const mediaAssets = useEditor((e) => e.media.getAssets());
@@ -25,6 +27,14 @@ export function PropertiesPanel() {
 		}),
 	);
 	const { selectedElements } = useElementSelection();
+	const selectedElementTypes = useEditor((editor) => {
+		const elements = editor.selection.getSelectedElements();
+		return elements.length > 1
+			? editor.timeline
+					.getElementsWithTracks({ elements })
+					.map(({ element }) => element.type)
+			: [];
+	});
 	const { activeTabPerType, setActiveTab } = usePropertiesStore();
 
 	if (selectedElements.length === 0) {
@@ -37,11 +47,10 @@ export function PropertiesPanel() {
 
 	if (selectedElements.length > 1) {
 		return (
-			<div className="panel bg-background flex h-full flex-col items-center justify-center overflow-hidden rounded-sm border">
-				<p className="text-muted-foreground text-sm">
-					{selectedElements.length} elements selected.0
-				</p>
-			</div>
+			<div className="panel flex h-full flex-col overflow-y-auto rounded-sm border"><MultipleSelectionSummary
+				count={selectedElements.length}
+				elementTypes={selectedElementTypes}
+			/><CommonProperties key={selectedElements.map((item) => item.elementId).join(";")} /></div>
 		);
 	}
 

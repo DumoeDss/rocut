@@ -236,8 +236,8 @@ export function SettingsView() {
 					}}
 				>
 					<TabsList>
-						<TabsTrigger value="project-info">Project info</TabsTrigger>
-						<TabsTrigger value="background">Background</TabsTrigger>
+						<TabsTrigger value="project-info">工程信息</TabsTrigger>
+						<TabsTrigger value="background">背景</TabsTrigger>
 					</TabsList>
 				</Tabs>
 			}
@@ -246,7 +246,7 @@ export function SettingsView() {
 				<div className="flex flex-col">
 					<Section showTopBorder={false}>
 						<SectionHeader>
-							<SectionTitle className="flex-1">Name</SectionTitle>
+							<SectionTitle className="flex-1">名称</SectionTitle>
 							<span className="text-sm truncate">
 								{activeProject.metadata.name}
 							</span>
@@ -254,7 +254,7 @@ export function SettingsView() {
 					</Section>
 					<Section showTopBorder={false}>
 						<SectionHeader className="justify-between">
-							<SectionTitle className="flex-1">Frame rate</SectionTitle>
+							<SectionTitle className="flex-1">帧率</SectionTitle>
 							<Select
 								value={frameRateOption.value}
 								disabled={frameRatePending}
@@ -267,19 +267,17 @@ export function SettingsView() {
 										.updateSettings({ settings: { fps } })
 										.catch((error: unknown) =>
 											setFrameRateError(
-												error instanceof Error
-													? error.message
-													: "Could not change frame rate",
+												error instanceof Error ? error.message : "无法修改帧率",
 											),
 										)
 										.finally(() => setFrameRatePending(false));
 								}}
 							>
 								<SelectTrigger
-									aria-label="Frame rate"
+									aria-label="帧率"
 									className="bg-transparent border-none p-1 h-auto"
 								>
-									<SelectValue placeholder="Select a frame rate" />
+									<SelectValue placeholder="选择帧率" />
 								</SelectTrigger>
 								<SelectContent>
 									{frameRateOption.value === "custom" && (
@@ -296,8 +294,7 @@ export function SettingsView() {
 							</Select>
 						</SectionHeader>
 						<SectionContent className="px-2 pb-2 text-xs text-muted-foreground">
-							Clip boundaries and markers snap to earlier frames. Clips may
-							shorten by up to one frame; Undo restores original timing.
+							片段边界与标记会吸附到前一帧，片段最多缩短一帧；撤销可恢复原时间。
 							{frameRateError && (
 								<p role="alert" className="mt-2 text-destructive">
 									{frameRateError}
@@ -311,7 +308,7 @@ export function SettingsView() {
 						sectionKey="settings:aspect-ratio"
 					>
 						<SectionHeader>
-							<SectionTitle className="flex-1">Aspect ratio</SectionTitle>
+							<SectionTitle className="flex-1">画面比例</SectionTitle>
 						</SectionHeader>
 						<SectionContent className="px-2 flex flex-col gap-1 pb-2">
 							{presetItems.map((preset) => (
@@ -330,7 +327,7 @@ export function SettingsView() {
 							<div className="pb-2">
 								<AspectRatioItem
 									key="custom"
-									label="Custom"
+									label="自定义"
 									previewIcon={<OcSquarePlusIcon />}
 									isSelected={isCustomSelected}
 									onClick={selectCustomCanvasSize}
@@ -339,7 +336,7 @@ export function SettingsView() {
 											<NumberField
 												value={widthDraft.displayValue}
 												className="w-full"
-												aria-label="Canvas width"
+												aria-label="画布宽度"
 												onFocus={widthDraft.onFocus}
 												onChange={widthDraft.onChange}
 												onBlur={widthDraft.onBlur}
@@ -347,7 +344,7 @@ export function SettingsView() {
 											<NumberField
 												value={heightDraft.displayValue}
 												className="w-full"
-												aria-label="Canvas height"
+												aria-label="画布高度"
 												onFocus={heightDraft.onFocus}
 												onChange={heightDraft.onChange}
 												onBlur={heightDraft.onBlur}

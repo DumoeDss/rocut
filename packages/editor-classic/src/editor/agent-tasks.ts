@@ -99,9 +99,11 @@ export function createEditorTaskRunner({
 				}
 				// These tasks create a new track in their unapplied plan. Reject
 				// collisions before audio extraction/model work, not after a long ASR.
+				const outputTrackId = "trackId" in request ? request.trackId : undefined;
+				if (!outputTrackId) throw new Error("invalid-caption-output-track");
 				if (
 					(await editor.transactions.tracks()).some(
-						(track) => track.id === request.trackId,
+						(track) => track.id === outputTrackId,
 					)
 				)
 					throw new Error(

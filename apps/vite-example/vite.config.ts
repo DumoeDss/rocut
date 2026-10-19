@@ -61,9 +61,12 @@ export default defineConfig({
 	// all 5.4 MB of `apps/web/public`. See design D7.
 	publicDir: false,
 	server: {
+		watch: {
+			ignored: ["**/tests/.workspace-output/**"],
+		},
 		fs: {
 			// The editor source lives outside this package's root.
-			allow: [repoRoot],
+			allow: selectedWasm ? [repoRoot, selectedWasm.wasmPackageDirectory] : [repoRoot],
 		},
 	},
 });

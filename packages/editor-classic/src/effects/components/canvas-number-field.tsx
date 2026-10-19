@@ -3,6 +3,7 @@ import { NumberField } from "../../components/ui/number-field";
 import { SectionField } from "../../components/section";
 import type { ParamDefinition, ParamValue } from "../../params";
 import { canvasTypedValue } from "./canvas-stroke-edit";
+import { propertyLabel } from "../../components/editor/panels/properties/property-labels";
 
 export function CanvasNumberField({
 	param,
@@ -29,9 +30,9 @@ export function CanvasNumberField({
 			value < param.min ||
 			(param.max !== undefined && value > param.max));
 	return (
-		<SectionField label={param.label}>
+		<SectionField label={propertyLabel(param.label)}>
 			<NumberField
-				aria-label={param.label}
+				aria-label={propertyLabel(param.label)}
 				aria-invalid={invalid}
 				data-testid={`effect-canvas-input-${param.key}`}
 				value={draft.displayValue}
@@ -47,7 +48,7 @@ export function CanvasNumberField({
 			{param.type === "number" && (
 				<span className="text-xs text-muted-foreground">
 					{param.min} – {param.max ?? "∞"}
-					{invalid ? " · Check this value" : ""}
+					{invalid ? " · 请检查此数值" : ""}
 				</span>
 			)}
 		</SectionField>

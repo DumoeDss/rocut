@@ -24,6 +24,7 @@ import {
 import { usePropertyDraft } from "../hooks/use-property-draft";
 import { KeyframeToggle } from "./keyframe-toggle";
 import { Textarea } from "../../../../ui/textarea";
+import { propertyLabel } from "../property-labels";
 
 export function PropertyParamField({
 	param,
@@ -44,13 +45,13 @@ export function PropertyParamField({
 }) {
 	return (
 		<SectionField
-			label={param.label}
+			label={propertyLabel(param.label)}
 			beforeLabel={
 				keyframe && param.keyframable !== false ? (
 					<KeyframeToggle
 						isActive={keyframe.isActive}
 						isDisabled={keyframe.isDisabled}
-						title={`Toggle ${param.label.toLowerCase()} keyframe`}
+						title={`切换${propertyLabel(param.label)}关键帧`}
 						onToggle={keyframe.onToggle}
 					/>
 				) : undefined
@@ -91,6 +92,7 @@ function ParamInput({
 	if (param.type === "boolean") {
 		return (
 			<Switch
+				aria-label={propertyLabel(param.label)}
 				checked={Boolean(value)}
 				onCheckedChange={(checked) => {
 					onPreview(checked);
@@ -109,13 +111,13 @@ function ParamInput({
 					onCommit();
 				}}
 			>
-				<SelectTrigger className="w-full">
+				<SelectTrigger className="w-full" aria-label={propertyLabel(param.label)}>
 					<SelectValue />
 				</SelectTrigger>
 				<SelectContent>
 					{param.options.map((option) => (
 						<SelectItem key={option.value} value={option.value}>
-							{option.label}
+							{propertyLabel(option.label)}
 						</SelectItem>
 					))}
 				</SelectContent>
@@ -139,6 +141,7 @@ function ParamInput({
 	if (param.type === "text") {
 		return (
 			<Textarea
+				aria-label={propertyLabel(param.label)}
 				value={String(value)}
 				onChange={(event) => onPreview(event.currentTarget.value)}
 				onBlur={onCommit}
@@ -149,6 +152,7 @@ function ParamInput({
 	if (param.type === "font") {
 		return (
 			<input
+				aria-label={propertyLabel(param.label)}
 				className="border-input bg-accent h-9 w-full rounded-md border px-3 text-sm outline-none"
 				value={String(value)}
 				onChange={(event) => onPreview(event.currentTarget.value)}
@@ -209,7 +213,7 @@ function NumberParamField({
 
 	return (
 		<NumberField
-			aria-label={param.label}
+			aria-label={propertyLabel(param.label)}
 			icon={param.shortLabel}
 			value={draft.displayValue}
 			dragSensitivity="slow"

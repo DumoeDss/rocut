@@ -6,3 +6,5 @@ export * from "../editor/surface/editor-root";
 export * from "../editor/surface/embedding/session-surface-bridge";
 export * from "../editor/surface/embedding/surface-drag-coordinator";
 export * from "../editor/surface/embedding/surface-portal";
+export * from "../editor/surface/creator-workspace-types";
+export * from "../editor/surface/creator-workspace-context";

@@ -131,11 +131,11 @@ export function canvasFieldGroups({
 	const lighting = new Set(["lightX", "lightY", "lightZ", "relief"]);
 	return [
 		{
-			label: "Material",
+			label: "材质",
 			params: fields.filter((param) => !lighting.has(param.key)),
 		},
 		{
-			label: "Lighting",
+			label: "光照",
 			params: fields.filter((param) => lighting.has(param.key)),
 		},
 	];

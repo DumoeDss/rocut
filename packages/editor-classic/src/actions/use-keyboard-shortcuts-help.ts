@@ -17,6 +17,17 @@ export interface KeyboardShortcut {
 	icon?: React.ReactNode;
 }
 
+const CATEGORY_LABELS: Record<string, string> = {
+	playback: "播放",
+	navigation: "导航",
+	editing: "编辑",
+	selection: "选择",
+	history: "历史记录",
+	timeline: "时间线",
+	controls: "操作",
+	assets: "素材",
+};
+
 function formatKey({ key }: { key: string }): string {
 	return key
 		.replace("ctrl", getPlatformSpecialKey())
@@ -58,7 +69,7 @@ export function useKeyboardShortcutsHelp() {
 				id: action,
 				keys,
 				description: actionDef.description,
-				category: actionDef.category,
+				category: CATEGORY_LABELS[actionDef.category] ?? actionDef.category,
 				action,
 			});
 		}

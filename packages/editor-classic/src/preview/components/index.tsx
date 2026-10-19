@@ -591,7 +591,7 @@ function PreviewCanvas({
 											role="status"
 											className="bg-muted text-muted-foreground flex size-full items-center justify-center px-6 text-center text-sm"
 										>
-											Preview unavailable: this environment has no rasterizer.
+											当前环境不支持画面渲染，无法预览。
 										</div>
 									) : null}
 								</div>

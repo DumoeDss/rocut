@@ -1,10 +1,11 @@
 import { useRef } from "react";
 import { Button } from "../../components/ui/button";
+import { useEditorMessages } from "../host/editor-host-context";
 
 const PANELS = [
-	{ id: "assets", label: "Media & text" },
-	{ id: "preview", label: "Preview" },
-	{ id: "properties", label: "Inspector" },
+	{ id: "assets", label: "focusAssets" },
+	{ id: "preview", label: "focusPreview" },
+	{ id: "properties", label: "focusProperties" },
 ] as const;
 export type FocusPanel = (typeof PANELS)[number]["id"];
 
@@ -17,11 +18,12 @@ export function EditorFocusTabs({
 	readonly onChange: (value: FocusPanel) => void;
 }) {
 	const ref = useRef<HTMLDivElement>(null);
+	const messages = useEditorMessages();
 	return (
 		<div
 			ref={ref}
 			role="tablist"
-			aria-label="Editor views"
+			aria-label={messages.focusViews}
 			className="flex shrink-0 gap-1 px-3 pb-1"
 		>
 			{PANELS.map((panel, index) => (
@@ -52,7 +54,7 @@ export function EditorFocusTabs({
 							[next]?.focus();
 					}}
 				>
-					{panel.label}
+					{messages[panel.label]}
 				</Button>
 			))}
 		</div>

@@ -141,11 +141,11 @@ export function frostFieldGroups({
 	);
 	return [
 		{
-			label: "Optics",
+			label: "光学",
 			params: fields.filter((param) => param.keyframable === true),
 		},
 		{
-			label: "Recovery",
+			label: "恢复",
 			params: fields.filter((param) => param.keyframable !== true),
 		},
 	];

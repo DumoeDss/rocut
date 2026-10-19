@@ -2,6 +2,7 @@
 
 import { useId } from "react";
 import type { ExportVideoChroma } from "../../export";
+import { useEditorMessages } from "../../editor/host/editor-host-context";
 
 export function ExportVideoChromaControl({
 	value,
@@ -11,10 +12,11 @@ export function ExportVideoChromaControl({
 	onChange: (value: ExportVideoChroma) => void;
 }) {
 	const id = useId();
+	const messages = useEditorMessages();
 	return (
 		<div className="space-y-2 text-sm">
 			<label htmlFor={id} className="flex flex-col gap-1">
-				Color sampling
+				{messages.chroma}
 				<select
 					id={id}
 					aria-describedby={`${id}-help`}
@@ -25,14 +27,12 @@ export function ExportVideoChromaControl({
 					}}
 					className="rounded border bg-background p-2"
 				>
-					<option value="420">4:2:0 — Standard compatibility</option>
-					<option value="444">4:4:4 — High-fidelity color</option>
+					<option value="420">{messages.chroma420}</option>
+					<option value="444">{messages.chroma444}</option>
 				</select>
 			</label>
 			<p id={`${id}-help`} className="text-xs text-muted-foreground">
-				4:4:4 preserves fine color detail in WebM, but needs a supported encoder
-				and may not play in all players. It does not change the quality preset.
-				Unsupported encoders report an error; no automatic 4:2:0 fallback.
+				{messages.chromaHelp}
 			</p>
 		</div>
 	);

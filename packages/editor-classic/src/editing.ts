@@ -6,3 +6,7 @@ export {
 } from "./editor/transactions/opencut/editing-policy";
 export { openCutMediaPolicy } from "./editor/transactions/opencut/media-policy";
 export { planSceneMutation } from "./editor/transactions/opencut/scene-policy";
+export {
+	planMediaFolderMutation,
+	isMediaFolderEditingAvailable,
+} from "./editor/transactions/opencut/media-folder-policy";

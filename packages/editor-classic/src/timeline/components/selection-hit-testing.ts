@@ -82,11 +82,13 @@ export function resolveTimelineElementIntersections({
 	zoomLevel,
 	startPos,
 	currentPos,
+	heightScale,
 }: {
 	container: HTMLElement;
 	scrollContainer: HTMLDivElement | null;
 	tracks: TimelineTrack[];
 	zoomLevel: number;
+	heightScale?: number;
 	startPos: { x: number; y: number };
 	currentPos: { x: number; y: number };
 }): TimelineElementRef[] {
@@ -100,10 +102,11 @@ export function resolveTimelineElementIntersections({
 
 	for (const [trackIndex, track] of tracks.entries()) {
 		const trackTop = getCumulativeHeightBefore({
+			heightScale,
 			tracks,
 			trackIndex,
 		});
-		const trackHeight = getTrackHeight({ type: track.type });
+		const trackHeight = getTrackHeight({ type: track.type, heightScale });
 		const elementTop = TIMELINE_CONTENT_TOP_PADDING_PX + trackTop;
 		const elementBottom = elementTop + trackHeight;
 

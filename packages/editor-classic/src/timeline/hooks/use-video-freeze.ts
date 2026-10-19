@@ -37,10 +37,11 @@ export function useVideoFreeze() {
 			playhead,
 			trimStart: video.trimStart,
 			playbackRate: video.retime?.rate ?? 1,
+			reverse: video.retime?.reverse,
 			sourceDuration,
 		}) !== null;
 	return {
-		label: frozen ? "Unfreeze frame" : "Freeze frame",
+		label: frozen ? "取消定格" : "定格画面",
 		disabled: !track || (!frozen && !canFreeze),
 		isActive: frozen,
 		apply: async () => {
@@ -58,13 +59,11 @@ export function useVideoFreeze() {
 					}),
 				});
 				toast.success(
-					frozen
-						? "Video playback restored"
-						: "Frame held for this clip; source audio paused",
+					frozen ? "已恢复视频播放" : "已定格此片段画面，并暂停原始音频",
 				);
 			} catch (error) {
-				toast.error("Could not change frame hold", {
-					description: error instanceof Error ? error.message : "Try again.",
+				toast.error("无法修改画面定格", {
+					description: error instanceof Error ? error.message : "请重试。",
 				});
 			} finally {
 				applying.current = false;

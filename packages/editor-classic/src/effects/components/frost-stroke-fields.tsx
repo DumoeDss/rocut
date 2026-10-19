@@ -27,10 +27,9 @@ export function FrostStrokeFields({
 	};
 	return (
 		<div className="flex flex-col gap-4" data-testid="effect-frost-strokes">
-			<h4 className="text-sm font-medium">Melt strokes</h4>
+			<h4 className="text-sm font-medium">融化笔触</h4>
 			<p className="text-xs text-muted-foreground">
-				Times are clip-local ticks. 120000 ticks = 1 second. Strokes retain
-				their authored order. Hold and recovery control refreezing after thaw.
+				时间以片段起点为基准，120000 tick 为 1 秒。笔触保留创作顺序；保持与恢复参数控制融化后的重新冻结。
 			</p>
 			{issue ? (
 				<p role="alert" className="text-xs text-destructive">
@@ -44,18 +43,18 @@ export function FrostStrokeFields({
 					data-testid={`effect-frost-stroke-${index}`}
 				>
 					<div className="flex items-center justify-between">
-						<span className="text-xs font-medium">Stroke {index + 1}</span>
+						<span className="text-xs font-medium">笔触 {index + 1}</span>
 						<Button
 							size="sm"
 							variant="ghost"
 							disabled={Boolean(issue)}
-							aria-label={`Remove melt stroke ${index + 1}`}
+							aria-label={`移除融化笔触 ${index + 1}`}
 							data-testid={`effect-frost-remove-${index}`}
 							onClick={() =>
 								update(removeFrostStroke({ params, definitions, index }))
 							}
 						>
-							Remove stroke
+							移除笔触
 						</Button>
 					</div>
 					{FROST_STROKE_FIELDS.map((field) => {
@@ -84,21 +83,21 @@ export function FrostStrokeFields({
 				size="sm"
 				variant="secondary"
 				disabled={Boolean(issue) || count >= maximum}
-				aria-label="Add melt stroke"
+				aria-label="添加融化笔触"
 				data-testid="effect-frost-add"
 				onClick={() => update(appendFrostStroke({ params, definitions }))}
 			>
-				Add stroke
+				添加笔触
 			</Button>
 			{(issue || count > 0) && (
 				<Button
 					size="sm"
 					variant="ghost"
-					aria-label="Clear all melt strokes"
+					aria-label="清空所有融化笔触"
 					data-testid="effect-frost-clear"
 					onClick={() => update(clearFrostStrokes({ params }))}
 				>
-					Clear all strokes
+					清空所有笔触
 				</Button>
 			)}
 		</div>

@@ -8,6 +8,19 @@ import { PanelView } from "../components/editor/panels/assets/views/base-panel";
 import type { VideoElement, ImageElement } from "../timeline";
 import { useTransitionProperties } from "./use-transition-properties";
 
+const transitionLabel: Readonly<Record<string, string>> = {
+	left: "向左",
+	right: "向右",
+	up: "向上",
+	down: "向下",
+	hinge: "折轴",
+	angle: "角度",
+	perspective: "透视",
+	shading: "阴影",
+	curl: "卷曲",
+	segments: "分段",
+};
+
 export function TransitionProperties({
 	element,
 	trackId,
@@ -18,23 +31,22 @@ export function TransitionProperties({
 	const state = useTransitionProperties({ element, trackId });
 	const durationId = useId();
 	return (
-		<PanelView title="Incoming transition" contentClassName="px-3 pb-4">
+		<PanelView title="入场转场" contentClassName="px-3 pb-4">
 			<div
 				className="flex min-w-0 flex-col gap-4"
 				data-testid="transition-properties"
 				aria-busy={state.isSaving}
 			>
 				<div>
-					<h3 className="text-sm font-medium">Picture transition</h3>
+					<h3 className="text-sm font-medium">画面转场</h3>
 					<p className="text-muted-foreground mt-1 text-xs">
-						Transition from the outgoing picture into this clip, centered on the
-						cut. Clip timing stays unchanged.
+						以剪切点为中心，从出场画面过渡到此片段，不改变片段时间。
 					</p>
 				</div>
 				<label className="flex flex-col gap-1.5 text-xs">
-					Transition type
+					转场类型
 					<select
-						aria-label="Transition type"
+						aria-label="转场类型"
 						data-testid="transition-kind"
 						value={state.kind}
 						disabled={state.isSaving}
@@ -43,12 +55,12 @@ export function TransitionProperties({
 						}
 						className="border-border bg-background h-8 min-w-0 rounded-sm border px-2 text-sm"
 					>
-						<option value="cross-dissolve">Cross dissolve</option>
+						<option value="cross-dissolve">交叉溶解</option>
 						<option value="peel" disabled={!state.peelAvailable}>
-							Peel
+							剥离
 						</option>
 						<option value="bend" disabled={!state.bendAvailable}>
-							Bend
+							弯折
 						</option>
 					</select>
 				</label>
@@ -63,11 +75,11 @@ export function TransitionProperties({
 						disabled={state.isSaving}
 						className="flex min-w-0 flex-col gap-2 text-xs"
 					>
-						<legend>Bend style</legend>
+						<legend>弯折样式</legend>
 						<label className="flex flex-col gap-1.5">
-							Direction
+							方向
 							<select
-								aria-label="Bend direction"
+								aria-label="弯折方向"
 								data-testid="transition-bend-direction"
 								value={state.bend.direction}
 								onChange={(event) =>
@@ -77,7 +89,7 @@ export function TransitionProperties({
 							>
 								{["left", "right", "up", "down"].map((direction) => (
 									<option key={direction} value={direction}>
-										{direction}
+										{transitionLabel[direction] ?? direction}
 									</option>
 								))}
 							</select>
@@ -85,11 +97,11 @@ export function TransitionProperties({
 						{(["hinge", "angle", "perspective", "shading"] as const).map(
 							(key) => (
 								<label key={key} className="flex flex-col gap-1.5">
-									{key}
+									{transitionLabel[key] ?? key}
 									<Input
 										type="number"
 										step="any"
-										aria-label={`Bend ${key}`}
+										aria-label={`弯折${transitionLabel[key] ?? key}`}
 										data-testid={`transition-bend-${key}`}
 										value={state.bend![key]}
 										onChange={(event) => state.setBend(key, event.target.value)}
@@ -98,8 +110,7 @@ export function TransitionProperties({
 							),
 						)}
 						<p className="text-muted-foreground">
-							Catalog suggestions are visible for confirmation. Native Rust
-							validates all Bend style parameters when saving.
+							请确认目录建议值；保存时由原生引擎校验所有弯折参数。
 						</p>
 					</fieldset>
 				)}
@@ -108,11 +119,11 @@ export function TransitionProperties({
 						disabled={state.isSaving}
 						className="flex min-w-0 flex-col gap-2 text-xs"
 					>
-						<legend>Peel style</legend>
+						<legend>剥离样式</legend>
 						<label className="flex flex-col gap-1.5">
-							Direction
+							方向
 							<select
-								aria-label="Peel direction"
+								aria-label="剥离方向"
 								data-testid="transition-peel-direction"
 								value={state.peel.direction}
 								onChange={(event) =>
@@ -122,7 +133,7 @@ export function TransitionProperties({
 							>
 								{["left", "right", "up", "down"].map((direction) => (
 									<option key={direction} value={direction}>
-										{direction}
+										{transitionLabel[direction] ?? direction}
 									</option>
 								))}
 							</select>
@@ -130,11 +141,11 @@ export function TransitionProperties({
 						{(["curl", "segments", "shading", "perspective"] as const).map(
 							(key) => (
 								<label key={key} className="flex flex-col gap-1.5">
-									{key}
+									{transitionLabel[key] ?? key}
 									<Input
 										type="number"
 										step={key === "segments" ? 1 : "any"}
-										aria-label={`Peel ${key}`}
+										aria-label={`剥离${transitionLabel[key] ?? key}`}
 										data-testid={`transition-peel-${key}`}
 										value={state.peel![key]}
 										onChange={(event) => state.setPeel(key, event.target.value)}
@@ -143,15 +154,14 @@ export function TransitionProperties({
 							),
 						)}
 						<p className="text-muted-foreground">
-							Catalog suggestions are visible for confirmation. Native Rust
-							validates all Peel style parameters when saving.
+							请确认目录建议值；保存时由原生引擎校验所有剥离参数。
 						</p>
 					</fieldset>
 				)}
 				<label className="flex min-w-0 flex-col gap-1.5 text-xs">
-					Outgoing clip
+					出场片段
 					<select
-						aria-label="Transition outgoing clip"
+						aria-label="转场出场片段"
 						data-testid="transition-outgoing"
 						value={state.outgoingId}
 						disabled={state.isSaving || state.candidates.length === 0}
@@ -159,7 +169,7 @@ export function TransitionProperties({
 						className="border-border bg-background focus-visible:ring-ring h-8 w-full min-w-0 rounded-sm border px-2 text-sm focus-visible:ring-1"
 					>
 						{!state.candidates.length && (
-							<option value="">No other picture clips on this track</option>
+							<option value="">此轨道没有其他画面片段</option>
 						)}
 						{state.candidates.map((clip) => (
 							<option key={clip.id} value={clip.id}>
@@ -174,10 +184,10 @@ export function TransitionProperties({
 					</select>
 				</label>
 				<div className="min-w-0 text-xs">
-					<span className="text-muted-foreground">Into </span>
+					<span className="text-muted-foreground">转入 </span>
 					<span className="break-words">{element.name}</span>
 					<span className="text-muted-foreground mt-1 block">
-						at{" "}
+						起点{" "}
 						{formatTimecode({
 							time: element.startTime,
 							format: "HH:MM:SS:FF",
@@ -186,10 +196,10 @@ export function TransitionProperties({
 					</span>
 				</div>
 				<label htmlFor={durationId} className="flex flex-col gap-1.5 text-xs">
-					Duration in frames
+					时长（帧）
 					<Input
 						id={durationId}
-						aria-label="Transition duration in frames"
+						aria-label="转场时长（帧）"
 						data-testid="transition-duration"
 						type="number"
 						min={2}
@@ -208,8 +218,7 @@ export function TransitionProperties({
 				</p>
 				{state.isHidden && (
 					<p className="text-xs">
-						A clip or its track is hidden. Unhide both clips and the track to
-						see the transition.
+						片段或轨道已隐藏。请显示两个片段及其轨道以查看转场。
 					</p>
 				)}
 				<div className="flex flex-wrap gap-2">
@@ -222,7 +231,7 @@ export function TransitionProperties({
 						}
 						onClick={() => void state.save()}
 					>
-						{element.transitionIn ? "Update transition" : "Add transition"}
+						{element.transitionIn ? "更新转场" : "添加转场"}
 					</Button>
 					<Button
 						size="sm"
@@ -232,7 +241,7 @@ export function TransitionProperties({
 						aria-disabled={state.isSaving || !element.transitionIn}
 						onClick={() => void state.save(true)}
 					>
-						Remove transition
+						移除转场
 					</Button>
 				</div>
 				<p
@@ -243,8 +252,7 @@ export function TransitionProperties({
 					{state.message}
 				</p>
 				<p className="text-muted-foreground text-xs">
-					Video clips need spare source footage on both sides of the cut. Undo
-					and redo work after saving.
+					视频素材需在剪切点两侧保留足够余量。保存后可撤销或重做。
 				</p>
 			</div>
 		</PanelView>

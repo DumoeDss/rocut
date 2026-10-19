@@ -11,5 +11,5 @@ export async function saveEffectPreview({
 		// Transaction errors leave the authored state intact.
 	}
 	discard();
-	return "Effect was not saved. Previous values restored; check your changes and try again.";
+	return "效果未保存，已恢复原来的参数，请检查修改后重试。";
 }

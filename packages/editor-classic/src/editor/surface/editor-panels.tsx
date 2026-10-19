@@ -7,17 +7,42 @@ import {
 	useState,
 	type ReactNode,
 } from "react";
-import type { ImperativePanelGroupHandle } from "react-resizable-panels";
+import type {
+	ImperativePanelGroupHandle,
+	ImperativePanelHandle,
+} from "react-resizable-panels";
+import { Button } from "../../components/ui/button";
 import {
 	ResizableHandle,
 	ResizablePanel,
 	ResizablePanelGroup,
 } from "../../components/ui/resizable";
 import { useContainerSize } from "../../hooks/use-container-size";
-import { getEditorPanelPolicy } from "../../panels/editor-panel-policy";
+import {
+	getEditorPanelPolicy,
+	getHorizontalPanelLayout,
+} from "../../panels/editor-panel-policy";
 import { usePanelStore } from "../use-session-store";
 import { useEditorInstance } from "../use-editor";
+import { useEditorMessages } from "../host/editor-host-context";
 import { EditorFocusTabs, type FocusPanel } from "./editor-focus-tabs";
+import { CreatorWorkspace } from "./creator-workspace";
+import {
+	NativeAssetPreviewProvider,
+	NativeAssetViewer,
+} from "./native-asset-preview";
+
+function readCollapsed(panel: "assets" | "inspector") {
+	try {
+		return (
+			JSON.parse(localStorage.getItem("editor-panel-visibility") ?? "null")?.[
+				panel
+			] === true
+		);
+	} catch {
+		return false;
+	}
+}
 
 /** Rebalance narrow embeds without remounting editors or overwriting wide preferences. */
 export function EditorPanels({
@@ -29,16 +54,89 @@ export function EditorPanels({
 	readonly preview: ReactNode;
 	readonly properties: ReactNode;
 }) {
+	return (
+		<NativeAssetPreviewProvider>
+			<CreatorWorkspace
+				assets={assets}
+				preview={<NativeAssetViewer>{preview}</NativeAssetViewer>}
+			>
+				{(content) => (
+					<EditorPanelLayout {...content} properties={properties} />
+				)}
+			</CreatorWorkspace>
+		</NativeAssetPreviewProvider>
+	);
+}
+
+function EditorPanelLayout({
+	assets,
+	preview,
+	properties,
+	contentActivation,
+}: {
+	readonly assets: ReactNode;
+	readonly preview: ReactNode;
+	readonly properties: ReactNode;
+	readonly contentActivation: number;
+}) {
 	const containerRef = useRef<HTMLDivElement>(null);
 	const groupRef = useRef<ImperativePanelGroupHandle>(null);
-	const compactLayout = useRef<number[] | null>(null);
+	const assetsRef = useRef<ImperativePanelHandle>(null);
+	const inspectorRef = useRef<ImperativePanelHandle>(null);
+	const [assetsCollapsed, setAssetsCollapsed] = useState(() =>
+		readCollapsed("assets"),
+	);
+	const [inspectorCollapsed, setInspectorCollapsed] = useState(() =>
+		readCollapsed("inspector"),
+	);
 	const pendingInspectorFocus = useRef<Element | null>(null);
 	const { width } = useContainerSize({ containerRef });
-	const { panels, setPanels } = usePanelStore();
+	const {
+		panels,
+		hasCustomHorizontalLayout,
+		compactLayout,
+		setPanels,
+		setCompactLayout,
+		resetPanels,
+	} = usePanelStore();
 	const editor = useEditorInstance();
-	const [focusedPanel, setFocusedPanel] = useState<FocusPanel>("assets");
+	const messages = useEditorMessages();
+	const [focusedPanel, setFocusedPanel] = useState<FocusPanel>("preview");
 	const policy = getEditorPanelPolicy(width);
 	const { focus, compact, sidebarMin, previewMin } = policy;
+	const [renderedContentActivation, setRenderedContentActivation] = useState(contentActivation);
+	if (renderedContentActivation !== contentActivation) {
+		setRenderedContentActivation(contentActivation);
+		if (focus) setFocusedPanel("preview");
+	}
+	const previousContentActivation = useRef(contentActivation);
+	useLayoutEffect(() => {
+		if (previousContentActivation.current === contentActivation) return;
+		previousContentActivation.current = contentActivation;
+		if (!focus) return;
+		containerRef.current
+			?.querySelector<HTMLElement>("#focus-tab-preview")
+			?.focus({ preventScroll: true });
+	}, [contentActivation, focus]);
+	const setCollapsed = ({
+		panel,
+		collapsed,
+	}: {
+		panel: "assets" | "inspector";
+		collapsed: boolean;
+	}) => {
+		const next = {
+			assets: panel === "assets" ? collapsed : assetsCollapsed,
+			inspector: panel === "inspector" ? collapsed : inspectorCollapsed,
+		};
+		if (panel === "assets") setAssetsCollapsed(collapsed);
+		else setInspectorCollapsed(collapsed);
+		try {
+			localStorage.setItem("editor-panel-visibility", JSON.stringify(next));
+		} catch {
+			/* Keep this session usable without storage. */
+		}
+	};
 	useEffect(() => {
 		if (!focus) return;
 		const selectionKey = () =>
@@ -86,19 +184,32 @@ export function EditorPanels({
 	}, [focus, focusedPanel]);
 	useLayoutEffect(() => {
 		if (width <= 0 || focus) return;
-		const defaults = getEditorPanelPolicy(width).defaultLayout;
 		groupRef.current?.setLayout(
-			compact
-				? (compactLayout.current ?? defaults)
-				: [panels.tools, panels.preview, panels.properties],
+			getHorizontalPanelLayout({
+				width,
+				panels,
+				hasCustomHorizontalLayout,
+				compactLayout,
+				assetsCollapsed,
+				inspectorCollapsed,
+			}),
 		);
-	}, [width, focus, compact, panels.tools, panels.preview, panels.properties]);
+	}, [
+		width,
+		focus,
+		compact,
+		compactLayout,
+		panels,
+		assetsCollapsed,
+		inspectorCollapsed,
+		hasCustomHorizontalLayout,
+	]);
 	// Persist only deliberate resizing, not constraint normalization during host resize.
 	const saveResize = () => {
-		if (focus) return;
+		if (focus || assetsCollapsed || inspectorCollapsed) return;
 		const sizes = groupRef.current?.getLayout();
 		if (!sizes || sizes.length !== 3) return;
-		if (compact) compactLayout.current = sizes;
+		if (compact) setCompactLayout(sizes);
 		else
 			setPanels({ tools: sizes[0], preview: sizes[1], properties: sizes[2] });
 	};
@@ -123,6 +234,94 @@ export function EditorPanels({
 			data-testid="editor-main-panels"
 			data-layout={focus ? "focus" : compact ? "compact" : "wide"}
 		>
+			{!focus && (
+				<div className="flex shrink-0 items-center gap-1 px-3 pb-1">
+					<Button
+						size="sm"
+						variant="ghost"
+						data-testid="editor-layout-preview-first"
+						onClick={() => {
+							setAssetsCollapsed(false);
+							setInspectorCollapsed(false);
+							setCompactLayout([20, 60, 20]);
+							setPanels({
+								tools: 20,
+								preview: 60,
+								properties: 20,
+								mainContent: 76,
+								timeline: 24,
+							});
+							groupRef.current?.setLayout([20, 60, 20]);
+						}}
+					>
+						{messages.previewFirst}
+					</Button>
+					<Button
+						size="sm"
+						variant="ghost"
+						data-testid="editor-layout-edit-first"
+						onClick={() => {
+							setAssetsCollapsed(false);
+							setInspectorCollapsed(false);
+							setCompactLayout([25, 50, 25]);
+							setPanels({
+								tools: 25,
+								preview: 50,
+								properties: 25,
+								mainContent: 52,
+								timeline: 48,
+							});
+							groupRef.current?.setLayout([25, 50, 25]);
+						}}
+					>
+						{messages.editFirst}
+					</Button>
+					<Button
+						size="sm"
+						variant="ghost"
+						aria-expanded={!assetsCollapsed}
+						onClick={() =>
+							assetsCollapsed
+								? assetsRef.current?.expand()
+								: assetsRef.current?.collapse()
+						}
+					>
+						{assetsCollapsed ? messages.showAssets : messages.hideAssets}
+					</Button>
+					<Button
+						size="sm"
+						variant="ghost"
+						aria-expanded={!inspectorCollapsed}
+						onClick={() =>
+							inspectorCollapsed
+								? inspectorRef.current?.expand()
+								: inspectorRef.current?.collapse()
+						}
+					>
+						{inspectorCollapsed
+							? messages.showInspector
+							: messages.hideInspector}
+					</Button>
+					<Button
+						size="sm"
+						variant="ghost"
+						className="ml-auto"
+						data-testid="editor-layout-reset"
+						onClick={() => {
+							setAssetsCollapsed(false);
+							setInspectorCollapsed(false);
+							try {
+								localStorage.removeItem("editor-panel-visibility");
+							} catch {
+								/* Reset remains available without storage. */
+							}
+							resetPanels();
+						}}
+					>
+						{messages.resetLayout}
+					</Button>
+				</div>
+			)}
 			{focus && (
 				<EditorFocusTabs value={focusedPanel} onChange={setFocusedPanel} />
 			)}
@@ -133,13 +332,18 @@ export function EditorPanels({
 				className="min-h-0 flex-1 gap-[0.19rem] px-3"
 			>
 				<ResizablePanel
+					ref={assetsRef}
+					collapsible
+					collapsedSize={0}
+					onCollapse={() => setCollapsed({ panel: "assets", collapsed: true })}
+					onExpand={() => setCollapsed({ panel: "assets", collapsed: false })}
 					id="editor-assets"
 					role={focus ? "tabpanel" : undefined}
 					aria-labelledby={focus ? "focus-tab-assets" : undefined}
 					style={
 						focus && focusedPanel !== "assets" ? { display: "none" } : undefined
 					}
-					defaultSize={panels.tools}
+					defaultSize={assetsCollapsed ? 0 : panels.tools}
 					minSize={sidebarMin}
 					maxSize={40}
 					className="min-w-0"
@@ -148,7 +352,8 @@ export function EditorPanels({
 				</ResizablePanel>
 				<ResizableHandle
 					{...handleProps}
-					aria-label="Resize assets and preview"
+					aria-label={messages.resizeAssets}
+					data-testid="editor-resize-assets"
 				/>
 				<ResizablePanel
 					id="editor-preview"
@@ -167,10 +372,19 @@ export function EditorPanels({
 				</ResizablePanel>
 				<ResizableHandle
 					{...handleProps}
-					aria-label="Resize preview and inspector"
+					aria-label={messages.resizeInspector}
 				/>
 				<ResizablePanel
 					id="editor-properties"
+					ref={inspectorRef}
+					collapsible
+					collapsedSize={0}
+					onCollapse={() =>
+						setCollapsed({ panel: "inspector", collapsed: true })
+					}
+					onExpand={() =>
+						setCollapsed({ panel: "inspector", collapsed: false })
+					}
 					role={focus ? "tabpanel" : undefined}
 					aria-labelledby={focus ? "focus-tab-properties" : undefined}
 					style={
@@ -178,7 +392,7 @@ export function EditorPanels({
 							? { display: "none" }
 							: undefined
 					}
-					defaultSize={panels.properties}
+					defaultSize={inspectorCollapsed ? 0 : panels.properties}
 					minSize={sidebarMin}
 					maxSize={40}
 					className="min-w-0"

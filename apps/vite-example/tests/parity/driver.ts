@@ -18,11 +18,11 @@ import { HOST } from "./host-profile";
  * capture; blurring to body would now test the Host rather than the Surface.
  */
 
-export const MAIN_TRACK = 'button[aria-label="Select Main Track track"]';
-export const RULER = '[aria-label="Timeline ruler"]';
+export const MAIN_TRACK = 'button[aria-label="选择 Main Track 轨道"]';
+export const RULER = '[aria-label="时间轴标尺"]';
 export const TIMECODE = 'button[title="Click to edit time"]';
 export const SNAP_INDICATOR = 'div[class*="bg-primary/40"]';
-const TRACK_BUTTON = 'button[aria-label^="Select "][aria-label$=" track"]';
+const TRACK_BUTTON = 'button[aria-label^="选择 "][aria-label$=" 轨道"]';
 const ELEMENT_WRAPPER =
 	'div[class~="absolute"][class~="top-0"][class~="select-none"]';
 

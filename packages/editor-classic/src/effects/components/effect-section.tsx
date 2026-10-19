@@ -1,4 +1,5 @@
 import type { ParamValues } from "../../params";
+import { propertyLabel } from "../../components/editor/panels/properties/property-labels";
 import type { ElementAnimations } from "../../animation/types";
 import type { Effect } from "../types";
 import type { EffectElement, VisualElement } from "../../timeline";
@@ -57,7 +58,7 @@ export function EffectSection({
 							<Button
 								variant={effect.enabled ? "secondary" : "ghost"}
 								size="icon"
-								aria-label={`Toggle ${definition.name}`}
+								aria-label={`切换${propertyLabel(definition.name)}`}
 								onClick={onToggle}
 							>
 								<HugeiconsIcon
@@ -67,7 +68,7 @@ export function EffectSection({
 							<Button
 								variant="ghost"
 								size="icon"
-								aria-label={`Remove ${definition.name}`}
+								aria-label={`移除${propertyLabel(definition.name)}`}
 								onClick={onRemove}
 							>
 								<HugeiconsIcon icon={Delete02Icon} />
@@ -79,7 +80,7 @@ export function EffectSection({
 				<SectionTitle
 					className={cn(onToggle && !effect.enabled && "text-muted-foreground")}
 				>
-					{definition.name}
+					{propertyLabel(definition.name)}
 				</SectionTitle>
 			</SectionHeader>
 			<SectionContent

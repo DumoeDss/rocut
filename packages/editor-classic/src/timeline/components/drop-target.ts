@@ -47,15 +47,17 @@ function getTrackAtY({
 	mouseY,
 	tracks,
 	verticalDragDirection,
+	heightScale,
 }: {
 	mouseY: number;
 	tracks: TimelineTrack[];
 	verticalDragDirection?: "up" | "down" | null;
+	heightScale?: number;
 }): { trackIndex: number; relativeY: number } | null {
 	let cumulativeHeight = 0;
 
 	for (let i = 0; i < tracks.length; i++) {
-		const trackHeight = getTrackHeight({ type: tracks[i].type });
+		const trackHeight = getTrackHeight({ type: tracks[i].type, heightScale });
 		const trackTop = cumulativeHeight;
 		const trackBottom = trackTop + trackHeight;
 
@@ -114,6 +116,7 @@ export function computeDropTarget({
 	startTimeOverride,
 	excludeElementId,
 	targetElementTypes,
+	heightScale,
 }: ComputeDropTargetParams): DropTarget {
 	const orderedTracks = [...tracks.overlay, tracks.main, ...tracks.audio];
 	const mainTrackIndex = tracks.overlay.length;
@@ -156,7 +159,7 @@ export function computeDropTarget({
 		};
 	}
 
-	const trackAtMouse = getTrackAtY({
+	const trackAtMouse = getTrackAtY({ heightScale,
 		mouseY,
 		tracks: orderedTracks,
 		verticalDragDirection,
@@ -214,7 +217,7 @@ export function computeDropTarget({
 		}
 	}
 
-	const trackHeight = getTrackHeight({ type: track.type });
+	const trackHeight = getTrackHeight({ type: track.type, heightScale });
 	const placementResult = resolveTrackPlacement({
 		tracks,
 		elementType,
@@ -254,12 +257,13 @@ export function computeDropTarget({
 	};
 }
 
-export function getDropLineY({
+export function getDropLineY({ heightScale,
 	dropTarget,
 	tracks,
 }: {
 	dropTarget: DropTarget;
 	tracks: TimelineTrack[];
+	heightScale?: number;
 }): number {
 	const safeTrackIndex = Math.min(
 		Math.max(dropTarget.trackIndex, 0),
@@ -268,7 +272,7 @@ export function getDropLineY({
 	let y = 0;
 
 	for (let i = 0; i < safeTrackIndex; i++) {
-		y += getTrackHeight({ type: tracks[i].type }) + TIMELINE_TRACK_GAP_PX;
+		y += getTrackHeight({ type: tracks[i].type, heightScale }) + TIMELINE_TRACK_GAP_PX;
 	}
 
 	return y;

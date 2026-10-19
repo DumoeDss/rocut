@@ -30,11 +30,9 @@ export function CanvasStrokeFields({
 			className="flex flex-col gap-4"
 			data-testid="effect-canvas-trajectories"
 		>
-			<h4 className="text-sm font-medium">Trajectories</h4>
+			<h4 className="text-sm font-medium">运动轨迹</h4>
 			<p className="text-xs text-muted-foreground">
-				Times are clip-local ticks. 120000 ticks = 1 second. Start must precede
-				end; end must fit the material replay duration. Trajectories retain
-				their authored order.
+				时间以片段起点为基准，120000 tick 为 1 秒。开始时间必须早于结束时间，结束时间不得超出素材回放时长。轨迹保留创作顺序。
 			</p>
 			{issue && (
 				<p role="alert" className="text-xs text-destructive">
@@ -49,18 +47,18 @@ export function CanvasStrokeFields({
 					data-testid={`effect-canvas-stroke-${index}`}
 				>
 					<summary className="text-xs font-medium">
-						Trajectory {index + 1}
+						轨迹 {index + 1}
 					</summary>
 					<Button
 						size="sm"
 						variant="ghost"
 						disabled={Boolean(issue)}
-						aria-label={`Remove trajectory ${index + 1}`}
+						aria-label={`移除轨迹 ${index + 1}`}
 						onClick={() =>
 							update(removeCanvasStroke({ params, definitions, index }))
 						}
 					>
-						Remove trajectory
+						移除轨迹
 					</Button>
 					{CANVAS_STROKE_FIELDS.map((field) => {
 						const param = definitions.find(
@@ -84,21 +82,21 @@ export function CanvasStrokeFields({
 				size="sm"
 				variant="secondary"
 				disabled={Boolean(issue) || count >= maximum}
-				aria-label="Add trajectory"
+				aria-label="添加轨迹"
 				data-testid="effect-canvas-add"
 				onClick={() => update(appendCanvasStroke({ params, definitions }))}
 			>
-				Add trajectory ({count}/{maximum})
+				添加轨迹 ({count}/{maximum})
 			</Button>
 			{(issue || count > 0) && (
 				<Button
 					size="sm"
 					variant="ghost"
-					aria-label="Clear all trajectories"
+					aria-label="清空所有轨迹"
 					data-testid="effect-canvas-clear"
 					onClick={() => update(clearCanvasStrokes({ params }))}
 				>
-					Clear all trajectories
+					清空所有轨迹
 				</Button>
 			)}
 		</div>
