@@ -25,9 +25,15 @@ use crate::source::{
     ParseMotionTextSourceOptions, parse_motion_text_source,
 };
 
-pub const JIZURA_ENGINE_VERSION: &str = "0.9.0";
+pub const JIZURA_ENGINE_VERSION: &str = "0.10.1";
 pub const JIZURA_CATALOG_HASH: &str =
-    "sha256:9ec6f3be1a297152ccd377456348900fe0f4cc3b7629d21ec319976740f33d12";
+    "sha256:4608ad7aa8a56155178983fe2bf977ea821f3e067c599f3cae8f304a2f26002d";
+/// Identities written into sequences by earlier engines. A sequence saved under
+/// one of these stays readable: the catalog content is identical, only the
+/// version/revision stamp moved. Written plans always carry the current pair.
+pub const JIZURA_LEGACY_ENGINE_VERSIONS: &[&str] = &["0.9.0"];
+pub const JIZURA_LEGACY_CATALOG_HASHES: &[&str] =
+    &["sha256:9ec6f3be1a297152ccd377456348900fe0f4cc3b7629d21ec319976740f33d12"];
 
 const MAX_SOURCE_CHARACTERS: usize = 1_000_000;
 const MAX_CUES: usize = 10_000;
@@ -2589,17 +2595,172 @@ fn assign_cue_timing(
         ));
     }
     let timed_count = cues.iter().filter(|cue| cue.start_ticks.is_some()).count();
-    if timed_count > 0 && timed_count < cues.len() {
-        return Err(error(
-            "mixed-lrc-timing",
-            "Use timestamps on every lyric line or remove all timestamps.",
-        ));
+    if timed_count == 0 {
+        return assign_even_timing(cues, sequence_duration);
     }
     if timed_count == cues.len() {
         return assign_explicit_timing(cues, sequence_duration);
     }
-    assign_even_timing(cues, sequence_duration)
+    // Some lines carry an LRC stamp and some do not. The stamped lines anchor the
+    // timeline; each untimed run fills the gap before the next stamp, keeping the
+    // written order instead of pushing untimed lines to the end.
+    assign_mixed_timing(cues, sequence_duration)
 }
+
+/// Splits `room` ticks across `cues`: an interlude keeps its declared duration and
+/// the rest share what is left, one tick at a time until the remainder runs out.
+fn distribute_room(cues: &[MotionTextSourceCue], room: i64) -> Option<Vec<i64>> {
+    let declared = cues
+        .iter()
+        .filter_map(|cue| cue.interlude_duration_ticks)
+        .try_fold(0_i64, i64::checked_add)?;
+    let flexible = i64::try_from(
+        cues.iter()
+            .filter(|cue| cue.interlude_duration_ticks.is_none())
+            .count(),
+    )
+    .ok()?;
+    if declared > room {
+        return None;
+    }
+    let remaining = room - declared;
+    if flexible > 0 && remaining < flexible {
+        return None;
+    }
+    let base = if flexible == 0 { 0 } else { remaining / flexible };
+    let extra = if flexible == 0 { 0 } else { remaining % flexible };
+    let mut index = 0_i64;
+    let mut durations = Vec::with_capacity(cues.len());
+    for cue in cues {
+        let duration = match cue.interlude_duration_ticks {
+            Some(duration) => duration,
+            None => {
+                let duration = base + i64::from(index < extra);
+                index += 1;
+                duration
+            }
+        };
+        durations.push(duration);
+    }
+    Some(durations)
+}
+
+fn assign_mixed_timing(
+    cues: Vec<MotionTextSourceCue>,
+    sequence_duration: i64,
+) -> Result<Vec<TimedSourceCue>, MotionTextSequenceBuildDiagnostic> {
+    // A stamp that does not advance past the previous one is nudged forward by a
+    // short interval instead of rejecting the whole source, so duplicated
+    // timestamps still leave every line a positive duration.
+    const STAMP_NUDGE_TICKS: i64 = 6_000;
+    let mut anchors: Vec<Option<i64>> = cues.iter().map(|cue| cue.start_ticks).collect();
+    let mut previous: Option<i64> = None;
+    for anchor in anchors.iter_mut().flatten() {
+        if let Some(last) = previous {
+            if *anchor <= last {
+                *anchor = last + STAMP_NUDGE_TICKS;
+            }
+        }
+        previous = Some(*anchor);
+    }
+    if anchors
+        .iter()
+        .flatten()
+        .any(|start| *start < 0 || *start >= sequence_duration)
+    {
+        return Err(error(
+            "cue-out-of-range",
+            "A lyric timestamp falls outside the selected duration.",
+        ));
+    }
+
+    let mut starts = vec![0_i64; cues.len()];
+    let mut index = 0_usize;
+    while index < cues.len() {
+        if anchors[index].is_some() {
+            let anchor = anchors[index].unwrap_or_default();
+            starts[index] = anchor;
+            // The stamp anchors its own line; whatever untimed lines follow share
+            // the room up to the next stamp.
+            let mut end = index + 1;
+            while end < cues.len() && anchors[end].is_none() {
+                end += 1;
+            }
+            if end == index + 1 {
+                index += 1;
+                continue;
+            }
+            let limit = anchors.get(end).copied().flatten().unwrap_or(sequence_duration);
+            let room = limit - anchor;
+            let Some(durations) = distribute_room(&cues[index..end], room) else {
+                return Err(error(
+                    "invalid-cue-duration",
+                    "The untimed lyric lines do not fit before the next timestamp.",
+                ));
+            };
+            let mut cursor = anchor;
+            for (offset, duration) in durations.into_iter().enumerate() {
+                starts[index + offset] = cursor;
+                cursor = cursor.saturating_add(duration);
+            }
+            if cursor > limit {
+                return Err(error(
+                    "invalid-cue-duration",
+                    "The untimed lyric lines do not fit before the next timestamp.",
+                ));
+            }
+            index = end;
+            continue;
+        }
+        // Only reachable for a leading run with no stamp before it.
+        let mut end = index;
+        while end < cues.len() && anchors[end].is_none() {
+            end += 1;
+        }
+        let limit = anchors.get(end).copied().flatten().unwrap_or(sequence_duration);
+        let Some(durations) = distribute_room(&cues[index..end], limit) else {
+            return Err(error(
+                "invalid-cue-duration",
+                "The untimed lyric lines do not fit before the first timestamp.",
+            ));
+        };
+        let mut cursor = 0_i64;
+        for (offset, duration) in durations.into_iter().enumerate() {
+            starts[index + offset] = cursor;
+            cursor = cursor.saturating_add(duration);
+        }
+        index = end;
+    }
+
+    let mut timed = Vec::with_capacity(cues.len());
+    for (cue_index, cue) in cues.into_iter().enumerate() {
+        let start_time = starts[cue_index];
+        let end_time = starts
+            .get(cue_index + 1)
+            .copied()
+            .unwrap_or(sequence_duration);
+        let duration = end_time.saturating_sub(start_time);
+        if duration <= 0 || start_time.saturating_add(duration) > sequence_duration {
+            return Err(error(
+                "invalid-cue-duration",
+                "A lyric line has no positive duration inside the sequence.",
+            ));
+        }
+        let timing_source = if anchors[cue_index].is_some() {
+            MotionTextCueTimingSourceDocument::Lrc
+        } else {
+            MotionTextCueTimingSourceDocument::Estimated
+        };
+        timed.push(TimedSourceCue {
+            source: cue,
+            start_time,
+            duration,
+            timing_source,
+        });
+    }
+    Ok(timed)
+}
+
 
 fn assign_explicit_timing(
     cues: Vec<MotionTextSourceCue>,
@@ -3169,7 +3330,7 @@ mod tests {
     }
 
     #[test]
-    fn rejects_empty_and_partially_timed_sources() {
+    fn rejects_empty_sources() {
         let empty = create_motion_text_sequence(options("  \n# comment"));
         assert!(empty.sequence_json.is_none());
         assert!(
@@ -3178,15 +3339,83 @@ mod tests {
                 .iter()
                 .any(|entry| entry.code == "empty-source")
         );
+    }
 
-        let mixed = create_motion_text_sequence(options("[00:01]timed\nuntimed"));
-        assert!(mixed.sequence_json.is_none());
+    #[test]
+    fn partially_timed_sources_keep_untimed_lines_in_written_order() {
+        // 1.8s sequence. The stamped line starts at 1s; the untimed lines fill the
+        // room after it instead of being pushed to the end.
+        let mixed = create_motion_text_sequence(options(
+            "[00:01]timed\nuntimed one\nuntimed two",
+        ));
+        let sequence: Value = serde_json::from_str(
+            mixed
+                .sequence_json
+                .as_deref()
+                .expect("a partially timed source now builds a sequence"),
+        )
+        .expect("the sequence is JSON");
         assert!(
             mixed
                 .diagnostics
                 .iter()
-                .any(|entry| entry.code == "mixed-lrc-timing")
+                .any(|entry| entry.code == "mixed-lrc-timing" && entry.severity == MotionTextSequenceBuildDiagnosticSeverity::Warning),
+            "the mixed source keeps its warning so the caller can surface it"
         );
+        let cues = sequence["cues"].as_array().expect("cues exist");
+        assert_eq!(cues.len(), 3);
+        assert_eq!(cues[0]["startTime"], 120_000);
+        assert_eq!(cues[0]["timingSource"], "lrc");
+        assert_eq!(cues[1]["timingSource"], "estimated");
+        assert_eq!(cues[2]["timingSource"], "estimated");
+        // In written order, and each inside the remaining room.
+        assert!(cues[1]["startTime"].as_i64().unwrap() > 120_000);
+        assert!(cues[2]["startTime"].as_i64().unwrap() > cues[1]["startTime"].as_i64().unwrap());
+        for cue in cues {
+            let start = cue["startTime"].as_i64().expect("start is a number");
+            let duration = cue["duration"].as_i64().expect("duration is a number");
+            assert!(duration > 0, "every cue keeps a positive duration");
+            assert!(start + duration <= 1_800_000, "cues stay inside the sequence");
+        }
+    }
+
+    #[test]
+    fn leading_untimed_lines_fill_the_room_before_the_first_stamp() {
+        let mixed = create_motion_text_sequence(options("untimed one\n[00:10]timed\n[00:14]last"));
+        let sequence: Value = serde_json::from_str(
+            mixed
+                .sequence_json
+                .as_deref()
+                .expect("a partially timed source builds a sequence"),
+        )
+        .expect("the sequence is JSON");
+        let cues = sequence["cues"].as_array().expect("cues exist");
+        assert_eq!(cues[0]["startTime"], 0);
+        assert_eq!(cues[0]["timingSource"], "estimated");
+        assert_eq!(cues[1]["startTime"], 1_200_000);
+        assert_eq!(cues[2]["startTime"], 1_680_000);
+    }
+
+    #[test]
+    fn a_stamp_that_does_not_advance_is_nudged_instead_of_rejected() {
+        let mixed = create_motion_text_sequence(options("[00:05]one\nuntimed\n[00:05]two"));
+        let sequence: Value = serde_json::from_str(
+            mixed
+                .sequence_json
+                .as_deref()
+                .expect("a repeated stamp still builds a sequence"),
+        )
+        .expect("the sequence is JSON");
+        let cues = sequence["cues"].as_array().expect("cues exist");
+        // Written order survives an equal stamp: the untimed line stays between
+        // the two stamped lines instead of being pushed past the second one.
+        assert_eq!(cues[0]["text"], "one");
+        assert_eq!(cues[1]["text"], "untimed");
+        assert_eq!(cues[2]["text"], "two");
+        let second = cues[2]["startTime"].as_i64().expect("start is a number");
+        assert!(second > 600_000, "the later stamp moves forward");
+        assert!(cues[1]["startTime"].as_i64().unwrap() > 600_000);
+        assert!(cues[1]["startTime"].as_i64().unwrap() < second);
     }
 
     #[test]
@@ -3439,6 +3668,64 @@ mod tests {
         assert_eq!(
             document["resolvedPlan"]["cuts"][0]["parameters"]["jizura.centerFree"]["direction"],
             "lr"
+        );
+
+        // A theme is an optional field: it appears only once one is chosen, and it
+        // survives the same atomic mutation.
+        let themed = mutate_motion_text_sequence(MutateMotionTextSequenceOptions {
+            sequence_json: document.to_string(),
+            mutation_json: serde_json::json!({
+                "kind": "update-planning-controls",
+                "controls": {
+                    "presetSets": { "horror": false, "typo": true, "kinetic": true },
+                    "theme": "wa",
+                    "unify": false,
+                    "centerFree": false,
+                    "centerDirection": "tb"
+                }
+            })
+            .to_string(),
+            renderer_support: renderer_support(),
+        });
+        let themed_document: Value = serde_json::from_str(
+            themed
+                .sequence_json
+                .as_deref()
+                .expect("theming the sequence succeeds"),
+        )
+        .expect("themed sequence is JSON");
+        assert_eq!(themed_document["planningControls"]["theme"], "wa");
+        assert_eq!(themed_document["revision"], 2);
+
+        // Clearing the theme removes the key entirely, so an unthemed project keeps
+        // the pre-theme persisted shape.
+        let cleared = mutate_motion_text_sequence(MutateMotionTextSequenceOptions {
+            sequence_json: themed_document.to_string(),
+            mutation_json: serde_json::json!({
+                "kind": "update-planning-controls",
+                "controls": {
+                    "presetSets": { "horror": false, "typo": true, "kinetic": true },
+                    "theme": null,
+                    "unify": false,
+                    "centerFree": false,
+                    "centerDirection": "tb"
+                }
+            })
+            .to_string(),
+            renderer_support: renderer_support(),
+        });
+        let cleared_document: Value = serde_json::from_str(
+            cleared
+                .sequence_json
+                .as_deref()
+                .expect("clearing the theme succeeds"),
+        )
+        .expect("cleared sequence is JSON");
+        assert!(
+            cleared_document["planningControls"]
+                .get("theme")
+                .is_none(),
+            "an unthemed sequence does not carry a theme key"
         );
     }
 

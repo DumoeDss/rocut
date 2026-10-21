@@ -222,13 +222,43 @@ pub fn parse_motion_text_source(
         diagnostics.push(MotionTextDiagnostic {
             severity: MotionTextDiagnosticSeverity::Warning,
             code: "mixed-lrc-timing".to_owned(),
-            message: "Only some cues have LRC timestamps; untimed cues require explicit timing."
+            message: "Only some cues have LRC timestamps; the untimed lines are placed \
+                      between their neighbours in written order."
                 .to_owned(),
             source_line: None,
         });
     }
 
-    pending_cues.sort_by_key(|cue| cue.start_ticks.unwrap_or(i64::MAX));
+    // Order by timestamp, but keep untimed lines next to the line they follow in
+    // the text. They used to be pushed to the very end, which separated an
+    // interlude from the lyric it was written under. The written index breaks
+    // ties, so an untimed line between two equal stamps stays between them.
+    if pending_cues.iter().any(|cue| cue.start_ticks.is_some()) {
+        let mut anchor = i64::MIN;
+        let mut keys: Vec<(i64, usize)> = pending_cues
+            .iter()
+            .enumerate()
+            .map(|(index, cue)| match cue.start_ticks {
+                Some(tick) => {
+                    anchor = tick;
+                    (tick, index)
+                }
+                // An untimed line inherits the last stamp before it, and keeps its
+                // written place among the lines that share that stamp.
+                None => (anchor, index),
+            })
+            .collect();
+        keys.sort_unstable();
+        let mut slots: Vec<Option<PendingCue>> = pending_cues.into_iter().map(Some).collect();
+        pending_cues = keys
+            .into_iter()
+            .map(|(_, index)| {
+                slots[index]
+                    .take()
+                    .expect("each cue is placed exactly once")
+            })
+            .collect();
+    }
     let mut occurrences = BTreeMap::<String, u32>::new();
     let cues = pending_cues
         .into_iter()

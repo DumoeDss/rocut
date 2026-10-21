@@ -34,6 +34,8 @@
 | 字体／配色／默认 preset         | 支持                 | `mutate`                          | 支持                  | 字体受离线字形门禁约束                 |
 | cue／cut／group／parameter 锁定 | 支持                 | `mutate`                          | 支持                  | 变体和 restyle 保留锁定 snapshot       |
 | 变体预览／应用                  | 支持                 | `vary`／`vary --apply`            | 支持                  | preview 不落盘，apply 需双 revision    |
+| おまかせ主题                    | 支持（Planning 面板） | `mutate` planning controls        | 可调用                | 按 preset 自带 mood 标签收窄，无匹配回退整池 |
+| 装饰数字／时刻隐藏              | 支持（参数，默认关） | `mutate` parameters               | 可调用                | 歌词中出现的同样文本不受影响           |
 | 音频绑定／分析／手工节拍        | 支持                 | `mutate` mutation kinds           | 可调用                | PCM 不持久化，Rocut 音轨仍是唯一音源   |
 | 歌词时间预览与显式同步          | 支持                 | `mutate`                          | 可调用                | 不自动覆盖 locked/manual/tap cue       |
 | 移动／裁剪／拆分／撤销重做      | 支持                 | 现有事务接口                      | 通过 Rocut 事务       | 源码通过                               |

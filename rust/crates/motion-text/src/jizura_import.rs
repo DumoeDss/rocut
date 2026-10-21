@@ -647,6 +647,9 @@ fn import_planning_controls(
             typo: boolean("typo", true),
             kinetic: boolean("kinetic", true),
         },
+        // A JIZURA project does not carry おまかせ のテーマ, so the import keeps the
+        // whole enabled catalog eligible.
+        theme: None,
         unify: boolean("unify", false),
         center_free: boolean("centerFree", false),
         center_direction,

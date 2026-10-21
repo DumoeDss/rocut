@@ -3,8 +3,8 @@
 	"generatedBy": "script/audit-jizura-registry.mjs",
 	"source": {
 		"name": "JIZURA",
-		"version": "0.9.0",
-		"revision": null,
+		"version": "0.10.1",
+		"revision": "fc16bfe",
 		"loadedFiles": [
 			"01_util.js",
 			"02_fonts.js",

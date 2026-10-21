@@ -3,8 +3,8 @@
 	"generatedBy": "script/probe-non-motion-export.mjs",
 	"source": {
 		"canonicalWasm": {
-			"bytes": 5511220,
-			"sha256": "14de620a1bfa38228a43e4103cc557ae7a27bbb30185bfffae91b17d685e75a8"
+			"bytes": 15391704,
+			"sha256": "b1b93d92ae604b2bdc175b7653546b08977ecb12da82029447f9481cb4bdc8de"
 		}
 	},
 	"environment": {
@@ -20,7 +20,11 @@
 		},
 		"duration": 120000,
 		"audioSampleRate": 48000,
-		"sampleTimes": [0, 60000, 119999]
+		"sampleTimes": [
+			0,
+			60000,
+			119999
+		]
 	},
 	"result": {
 		"samples": [
@@ -51,12 +55,12 @@
 			"progressEvents": 31,
 			"completeEvents": 1,
 			"errorEvents": 0,
-			"elapsedMs": 410.6,
+			"elapsedMs": 520.2,
 			"bufferBytes": 22624,
 			"fileType": "ftyp",
 			"hasVideoHandler": true,
 			"hasAudioHandler": true,
-			"sha256": "f8623ce6ad09777d3bfddf426ba9bb047f7eab6eb0824ede94e3b52ce9985fea"
+			"sha256": "141820482ba471de4873b9f3cc6ce40bb4f1edd528ff3e01bb66f3f609eb703a"
 		}
 	}
 }

@@ -6,6 +6,7 @@ import {
 
 import { drawMotionTextBackground } from "./backgrounds";
 import { drawCoreDecors } from "./core-decors";
+import { shouldHideDecorativeCopy } from "./decorative-copy";
 import { signedRandom, unitRandom } from "./deterministic-random";
 import { drawHorrorDecors } from "./horror-decors";
 import { drawScreenEffects } from "./screen-effects";
@@ -300,6 +301,16 @@ function drawLayout({
 		ctx.font = `${frame.font.style} ${frame.font.weight} ${Math.max(18, size)}px ${quoteFamily(frame.font.family)}`;
 	};
 	const drawText = (draw: TypographyTextDraw) => {
+		if (
+			shouldHideDecorativeCopy({
+				hideIndex: frame.cut?.parameters["jizura.hideNo"] === true,
+				hideTime: frame.cut?.parameters["jizura.hideTime"] === true,
+				lyric: frame.cut?.text ?? null,
+				text: draw.text,
+			})
+		) {
+			return;
+		}
 		setFontSize(draw.size);
 		if (
 			drawTypographyEntrance({

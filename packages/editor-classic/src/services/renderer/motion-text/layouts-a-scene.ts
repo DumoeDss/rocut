@@ -1,11 +1,15 @@
-import { layoutGlyphs, layoutSigned } from "./core-layout-utils";
+import {
+	chunkText,
+	isLatinText,
+	layoutGlyphs,
+	layoutSigned,
+	layoutUnit,
+} from "./core-layout-utils";
 import {
 	layoutADrawFrame,
 	layoutADrawLine,
-	layoutADrawPlate,
 	layoutASize,
 	layoutAText,
-	layoutAUnits,
 } from "./layouts-a-utils";
 import type { TypographyLayoutOptions } from "./typography-layout-types";
 
@@ -286,41 +290,161 @@ function drawGenkou(options: TypographyLayoutOptions): void {
 
 function drawPanels(options: TypographyLayoutOptions): void {
 	const { ctx, drawText, frame, height, setFontSize, width } = options;
-	const units = layoutAUnits({ count: 3, text: layoutAText(options) });
-	const gap = width * 0.015;
-	const panelWidth = (width * 0.84 - gap * 2) / 3;
-	const left = width * 0.08;
-	const panelHeight = height * 0.6;
-	for (let index = 0; index < 3; index += 1) {
-		const x = left + index * (panelWidth + gap);
-		const offset =
-			Math.sin(frame.progress * Math.PI * 2 + index) * height * 0.025;
-		const color =
-			index === 1
-				? frame.palette.accent
-				: index === 2
-					? frame.palette.secondary
-					: frame.palette.foreground;
-		layoutADrawPlate({
-			alpha: index === 2 ? 0.36 : 0.9,
-			color,
-			ctx,
-			height: panelHeight,
-			width: panelWidth,
-			x: x + panelWidth / 2,
-			y: height / 2 + offset,
+	const text = layoutAText(options);
+	const { closePath, lineTo, moveTo } = ctx;
+	if (!moveTo || !lineTo || !closePath) return;
+
+	const seed = frame.cut?.seed ?? 0;
+	const minSide = Math.min(width, height);
+	// Landscape Latin reads left to right; landscape CJK keeps the traditional
+	// right-to-left column order; portrait stacks the panels downward.
+	const portrait = height > width * 1.1;
+	const leftToRight = !portrait && isLatinText(text);
+	const glyphTotal = layoutGlyphs(text).length;
+	const chunks = chunkText({ count: glyphTotal >= 6 ? 3 : 2, text });
+	const count = chunks.length;
+	if (count === 0) return;
+
+	const margin = minSide * 0.05;
+	const gap = minSide * 0.028;
+	const strokeWidth = Math.max(3, minSide * 0.0065);
+	const along = (portrait ? height : width) - margin * 2;
+	const cross = (portrait ? width : height) - margin * 2;
+
+	// Panel widths follow the amount of copy they hold, with a little variation so
+	// the split does not look mechanical.
+	const weights = chunks.map(
+		(chunk, index) =>
+			Math.sqrt(layoutGlyphs(chunk).length + 2) *
+			(0.8 + 0.45 * layoutUnit(seed, 401, index)),
+	);
+	const totalWeight = weights.reduce((sum, weight) => sum + weight, 0);
+	if (totalWeight <= 0) return;
+	const bounds = [0];
+	let accumulated = 0;
+	weights.forEach((weight) => {
+		accumulated += weight;
+		bounds.push((accumulated / totalWeight) * along);
+	});
+
+	// Slanted separators, alternating direction, never eating the whole panel.
+	const slant =
+		Math.tan((5 + 6 * layoutUnit(seed, 402)) * (Math.PI / 180)) * (cross / 2);
+	const maxSlant = (along / count) * 0.18;
+	const slantLength = Math.min(slant, maxSlant);
+	const accentIndex = Math.floor(layoutUnit(seed, 403) * count) % count;
+
+	const toScreen = ({
+		t,
+		c,
+	}: {
+		readonly t: number;
+		readonly c: number;
+	}): readonly [number, number] => {
+		if (portrait) return [margin + c, margin + t];
+		if (leftToRight) return [margin + t, margin + c];
+		return [width - margin - t, margin + c];
+	};
+
+	const pathOf = (points: readonly (readonly [number, number])[]) => {
+		ctx.beginPath();
+		const [firstX, firstY] = points[0];
+		moveTo.call(ctx, firstX, firstY);
+		for (let index = 1; index < points.length; index += 1) {
+			lineTo.call(ctx, points[index][0], points[index][1]);
+		}
+		closePath.call(ctx);
+	};
+
+	const fitSize = ({
+		chunk,
+		maxWidth,
+		maxHeight,
+	}: {
+		readonly chunk: string;
+		readonly maxHeight: number;
+		readonly maxWidth: number;
+	}) =>
+		Math.max(
+			10,
+			Math.min(
+				maxHeight * 0.55,
+				maxWidth / Math.max(1, layoutGlyphs(chunk).length * 0.62),
+				minSide * 0.24,
+			),
+		);
+
+	for (let index = 0; index < count; index += 1) {
+		const start = bounds[index];
+		const end = bounds[index + 1];
+		const startSlant =
+			index === 0 ? 0 : slantLength * (index % 2 === 0 ? -1 : 1);
+		const endSlant =
+			index === count - 1 ? 0 : slantLength * ((index + 1) % 2 === 0 ? -1 : 1);
+		const innerStart = start + (index === 0 ? 0 : gap / 2);
+		const innerEnd = end - (index === count - 1 ? 0 : gap / 2);
+		const points = [
+			toScreen({ c: 0, t: innerStart + startSlant }),
+			toScreen({ c: 0, t: innerEnd + endSlant }),
+			toScreen({ c: cross, t: innerEnd - endSlant }),
+			toScreen({ c: cross, t: innerStart - startSlant }),
+		];
+		const inset = Math.min(
+			(innerEnd - innerStart - startSlant - endSlant) * 0.5,
+			cross / 2,
+		);
+		if (inset <= 0) continue;
+		const centerT = (innerStart + innerEnd) / 2;
+		const [centerX, centerY] = toScreen({ c: cross / 2, t: centerT });
+
+		const delay = 0.06 + index * 0.16;
+		const reveal = Math.max(0, Math.min(1, (frame.progress - delay) / 0.3));
+		if (reveal <= 0) continue;
+
+		ctx.save();
+		pathOf(points);
+		ctx.clip();
+		// Wipe along the reading direction.
+		const wipeExtent = along * reveal;
+		pathOf([
+			toScreen({ c: -margin, t: 0 }),
+			toScreen({ c: -margin, t: wipeExtent }),
+			toScreen({ c: cross + margin, t: wipeExtent }),
+			toScreen({ c: cross + margin, t: 0 }),
+		]);
+		ctx.clip();
+		const accent = index === accentIndex;
+		if (accent) {
+			ctx.fillStyle = frame.palette.accent;
+			pathOf(points);
+			ctx.fill?.();
+		}
+		const chunk = chunks[index];
+		const innerWidth = Math.max(10, inset * 1.6);
+		const innerHeight = Math.max(10, cross * 0.8);
+		const size = fitSize({
+			chunk,
+			maxHeight: innerHeight,
+			maxWidth: innerWidth,
 		});
-		ctx.fillStyle =
-			index === 2 ? frame.palette.foreground : frame.palette.background;
 		ctx.textAlign = "center";
-		const size = Math.min(height * 0.12, panelWidth * 0.18);
+		ctx.fillStyle = accent
+			? frame.palette.background
+			: frame.palette.foreground;
 		setFontSize(size);
 		drawText({
-			text: units[index] ?? units[0] ?? "",
-			x: x + panelWidth / 2,
-			y: height / 2 + offset,
-			maxWidth: panelWidth * 0.76,
+			maxWidth: innerWidth,
 			size,
+			text: chunk,
+			x: centerX,
+			y: centerY,
 		});
+		ctx.restore();
+
+		// Outline stays crisp on top of the clipped content.
+		pathOf(points);
+		ctx.strokeStyle = frame.palette.foreground;
+		ctx.lineWidth = strokeWidth;
+		ctx.stroke?.();
 	}
 }

@@ -372,6 +372,13 @@ const plannerCatalog = {
 					{
 						...value.plannerChoice,
 						presetSet: value.set,
+						// Mood tags drive おまかせ themes ("horror", "和風", …). They are
+						// already in the audit catalog; the planner needs them too or a
+						// theme has nothing to select on.
+						tags: Array.isArray(value.metadata?.tags)
+							? [...value.metadata.tags].sort()
+							: [],
+						wa: value.metadata?.wa === true,
 					},
 				]
 			: [],

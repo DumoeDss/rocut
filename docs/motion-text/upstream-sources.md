@@ -7,20 +7,22 @@
 | 字段                     | 固定值                                                                                  |
 | ------------------------ | --------------------------------------------------------------------------------------- |
 | Repository               | https://github.com/852wa/JIZURA.git                                                     |
-| Version                  | `0.9.0`                                                                                 |
-| Commit                   | `bae339e450512435b829a717248ea92ae5b44899`                                              |
+| Version                  | `0.10.1`                                                                                |
+| Commit                   | `fc16bfe`                                                                               |
 | License                  | MIT，Copyright (c) 2026 hakoniwa                                                        |
 | `LICENSE`                | 1,086 bytes；SHA-256 `e06f8ce76d69c5a8f3e438a3ca8cc81c6621c93bac22aaaeec1f4c36330cbe99` |
 | `THIRD_PARTY_NOTICES.md` | 1,766 bytes；SHA-256 `2b31e9c75ec9c243167aa41b7daad265cde6207ed2e6927adf2b219a76473c3d` |
 
 JIZURA 的 registry 源文件在固定 commit 上按真实加载顺序执行，由 [audit-jizura-registry.mjs](../../script/audit-jizura-registry.mjs) 生成机器可审计目录。Rocut 不在运行时读取 sibling checkout；JIZURA 是行为、预设、名称、来源位置和导入格式的固定参考，生产工程使用 Rocut 原生 Rust planner、持久化契约和 renderer。
 
+0.9.0 → 0.10.1 之间上游只改行为、不改预设：用同一审计器重新生成后，除 `source.version`/`source.revision` 外目录逐字节一致（912 条、887 条投影、12 组计数全同）。因此这轮版本移动不改变任何 preset ID 或可规划选择集。
+
 ## 生成目录与摘要
 
 | 产物                                                                                               | 用途                          | 摘要                                                                              |
 | -------------------------------------------------------------------------------------------------- | ----------------------------- | --------------------------------------------------------------------------------- |
-| [jizura-preset-catalog.json](./jizura-preset-catalog.json)                                         | 912 项完整来源目录与审计身份  | 606,262 bytes；`9ec6f3be1a297152ccd377456348900fe0f4cc3b7629d21ec319976740f33d12` |
-| [jizura-planner-catalog.json](../../rust/crates/motion-text/resources/jizura-planner-catalog.json) | Rust 可规划选择投影，887 项   | 81,062 bytes；`7fd1b885e17538b70b55feffed918f4af5b6c220d4023a76a472f8aa7936323b`  |
+| [jizura-preset-catalog.json](./jizura-preset-catalog.json)                                         | 912 项完整来源目录与审计身份  | 606,268 bytes；`4608ad7aa8a56155178983fe2bf977ea821f3e067c599f3cae8f304a2f26002d` |
+| [jizura-planner-catalog.json](../../rust/crates/motion-text/resources/jizura-planner-catalog.json) | Rust 可规划选择投影，887 项   | 81,068 bytes；`d91e1c3e7c75192bfe04e4f0ec741ada8f3641e788c9fe1f7619f9642dc2a972`  |
 | [jizura-font-catalog.json](../../rust/crates/motion-text/resources/jizura-font-catalog.json)       | 23 个字体角色 + 1 个 zh-Hans 资产变体到离线资源的映射 | 13,017 bytes；`ff46303135e2b4983369e95e14798cb9f110c49fab23a9ac0284bc7854592854`  |
 
 完整目录 hash 是 engine 的 `catalogHash`。planner 投影 hash 只标识可规划选择集，二者语义不同，不能互相替换。drawable 支持状态和逐项证据位于 [jizura-preset-compatibility.json](./jizura-preset-compatibility.json)。
@@ -101,14 +103,12 @@ node script/probe-motion-text-font-readiness.mjs --candidate <font.ttf> --expect
 
 ## Rocut 与插件交付基线
 
-当前 Rocut 工作树以 commit `8246f0b9c463d32e1d807cfed18b62c7baed04a4` 为已提交基线，但 motion-text 改动尚在未提交工作树中，因此它不是可供插件 pin 的最终验证 commit。
-
-当前 `elftia-plugin-rocut/upstream.json` 仍固定：
+当前 `elftia-plugin-rocut/upstream.json` 固定：
 
 - repository：`https://github.com/DumoeDss/rocut`
-- commit：`fea667d6ea57412eeae2fa07d70a594c844bed38`
+- commit：`5965b060ca089c78081c318186d0c3510eeee35b`
 
-该 pin 早于本轮 motion-text 源码，不得把现有 plugin dist 宣称为已包含本功能。后续必须先形成验证 commit，再按 producer 的正常 `vendor -> build -> verify:dist` 链更新 pin、provenance、NOTICE 和实际交付字节；不能手工复制 sibling 源码、WASM 或字体到 vendor/dist。
+2026-10-20 的 JIZURA 0.10.1 对齐改动（preset 目录重新生成、engine 版本与目录身份、装饰文本开关、拉丁分行与 `panels` 重排）发生在此 pin 之后，尚未重新 vendor。出包前必须按 `vendor -> build -> verify:dist` 链移动 pin 并重新生成 provenance、NOTICE 和交付字节。
 
 ## 打包前核对
 

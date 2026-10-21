@@ -20,6 +20,68 @@ pub enum MotionTextPresetSet {
     Kinetic,
 }
 
+/// おまかせ のテーマ: narrows a deterministic variation to one direction instead
+/// of the whole catalog. The mood tags each preset carries are the selector, so a
+/// theme never needs its own hand-maintained preset list.
+#[cfg_attr(feature = "wasm", derive(tsify_next::Tsify))]
+#[cfg_attr(feature = "wasm", tsify(from_wasm_abi, into_wasm_abi))]
+#[derive(Clone, Copy, Debug, Deserialize, Serialize, Eq, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub enum MotionTextTheme {
+    /// 文字PV
+    LyricPv,
+    /// キネティック
+    Kinetic,
+    /// 和風
+    Wa,
+    /// ホラー
+    Horror,
+    /// ポップ
+    Pop,
+    /// バラード
+    Ballad,
+}
+
+impl MotionTextTheme {
+    /// Serialized key, also used in diagnostics.
+    pub const fn key(self) -> &'static str {
+        match self {
+            Self::LyricPv => "lyricPv",
+            Self::Kinetic => "kinetic",
+            Self::Wa => "wa",
+            Self::Horror => "horror",
+            Self::Pop => "pop",
+            Self::Ballad => "ballad",
+        }
+    }
+
+    /// Mood tags this direction may draw from.
+    const fn moods(self) -> &'static [&'static str] {
+        match self {
+            Self::LyricPv => &["editorial", "graphic", "emotional"],
+            Self::Kinetic => &["pop", "graphic", "glitch"],
+            Self::Wa => &["calm", "emotional", "editorial"],
+            Self::Horror => &["horror"],
+            Self::Pop => &["pop"],
+            Self::Ballad => &["calm", "emotional"],
+        }
+    }
+
+    /// The preset family this direction always keeps available.
+    const fn preset_set(self) -> Option<MotionTextPresetSet> {
+        match self {
+            Self::LyricPv => Some(MotionTextPresetSet::Typo),
+            Self::Kinetic => Some(MotionTextPresetSet::Kinetic),
+            Self::Horror => Some(MotionTextPresetSet::Horror),
+            Self::Wa | Self::Pop | Self::Ballad => None,
+        }
+    }
+
+    const fn wants_wa(self) -> bool {
+        matches!(self, Self::Wa)
+    }
+}
+
 #[cfg_attr(feature = "wasm", derive(tsify_next::Tsify))]
 #[cfg_attr(feature = "wasm", tsify(from_wasm_abi, into_wasm_abi))]
 #[derive(Clone, Copy, Debug, Deserialize, Serialize, Eq, PartialEq)]
@@ -67,6 +129,11 @@ impl MotionTextCenterDirection {
 pub struct MotionTextPlanningControls {
     #[serde(default)]
     pub preset_sets: MotionTextPresetSetControls,
+    /// `None` keeps the previous behaviour: the whole enabled catalog is eligible.
+    /// Omitted from saved projects so the persisted shape only grows when a theme
+    /// is actually chosen.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub theme: Option<MotionTextTheme>,
     #[serde(default)]
     pub unify: bool,
     #[serde(default)]
@@ -295,6 +362,11 @@ pub struct MotionTextPresetChoice {
     pub weight: f64,
     #[serde(default)]
     pub preset_set: Option<MotionTextPresetSet>,
+    /// Mood tags from the JIZURA registry; the selector for おまかせ themes.
+    #[serde(default)]
+    pub tags: Vec<String>,
+    #[serde(default)]
+    pub wa: bool,
     #[serde(default)]
     pub min_chars: Option<u32>,
     #[serde(default)]
@@ -1126,6 +1198,18 @@ fn apply_randomized_presets(
                     && renderer_supports(renderer_support, choice.group, &choice.id)
             })
             .collect();
+        // A theme narrows the pool, but never empties it: if the direction has no
+        // entry for this group the whole enabled pool stays available.
+        if let Some(theme) = planning_controls.theme {
+            let themed: Vec<&MotionTextPresetChoice> = choices
+                .iter()
+                .copied()
+                .filter(|choice| choice_matches_theme(choice, theme))
+                .collect();
+            if !themed.is_empty() {
+                choices = themed;
+            }
+        }
         choices.sort_by(|left, right| left.id.cmp(&right.id));
         if *group == MotionTextPresetGroup::Trans && !context.has_adjacent_previous {
             preset.trans = None;
@@ -1133,6 +1217,19 @@ fn apply_randomized_presets(
             set_preset_group(preset, *group, Some(id));
         }
     }
+}
+
+fn choice_matches_theme(choice: &MotionTextPresetChoice, theme: MotionTextTheme) -> bool {
+    if theme.wants_wa() && choice.wa {
+        return true;
+    }
+    if theme.preset_set().is_some() && choice.preset_set == theme.preset_set() {
+        return true;
+    }
+    theme
+        .moods()
+        .iter()
+        .any(|mood| choice.tags.iter().any(|tag| tag == mood))
 }
 
 fn preset_set_enabled(
@@ -1915,6 +2012,8 @@ mod tests {
                         id: "center".to_owned(),
                         weight: 1.0,
                         preset_set: None,
+                        tags: Vec::new(),
+                        wa: false,
                         min_chars: None,
                         max_chars: None,
                         min_duration: None,
@@ -1925,6 +2024,8 @@ mod tests {
                         id: "stack".to_owned(),
                         weight: 1.0,
                         preset_set: None,
+                        tags: Vec::new(),
+                        wa: false,
                         min_chars: None,
                         max_chars: None,
                         min_duration: None,
@@ -2055,6 +2156,8 @@ mod tests {
             id: "long-copy-only".to_owned(),
             weight: 10_000.0,
             preset_set: None,
+            tags: Vec::new(),
+            wa: false,
             min_chars: Some(100),
             max_chars: None,
             min_duration: None,
@@ -2065,6 +2168,8 @@ mod tests {
             id: "short-copy".to_owned(),
             weight: 1.0,
             preset_set: None,
+            tags: Vec::new(),
+            wa: false,
             min_chars: Some(1),
             max_chars: Some(20),
             min_duration: Some(1),
@@ -2097,6 +2202,8 @@ mod tests {
             id: "unsupported-layout".to_owned(),
             weight: 1_000_000.0,
             preset_set: None,
+            tags: Vec::new(),
+            wa: false,
             min_chars: None,
             max_chars: None,
             min_duration: None,
@@ -2201,6 +2308,8 @@ mod tests {
                 1.0
             },
             preset_set,
+            tags: Vec::new(),
+            wa: false,
             min_chars: None,
             max_chars: None,
             min_duration: None,
@@ -2243,6 +2352,63 @@ mod tests {
     }
 
     #[test]
+    fn a_theme_narrows_random_choices_by_catalog_tags() {
+        let choices = ["horrorTagged", "popTagged", "waTagged", "untagged"]
+            .into_iter()
+            .map(|id| MotionTextPresetChoice {
+                group: MotionTextPresetGroup::Layout,
+                id: id.to_owned(),
+                weight: 1.0,
+                preset_set: None,
+                tags: match id {
+                    "horrorTagged" => vec!["horror".to_owned()],
+                    "popTagged" => vec!["pop".to_owned()],
+                    _ => Vec::new(),
+                },
+                wa: id == "waTagged",
+                min_chars: None,
+                max_chars: None,
+                min_duration: None,
+                max_duration: None,
+            })
+            .collect();
+        let mut input = options();
+        input.catalog = MotionTextPlannerCatalog { choices };
+        // Only the layout group is randomized, so the theme decides the layout.
+        input.randomize_groups = vec![MotionTextPresetGroup::Layout];
+
+        input.sequence.planning_controls.theme = Some(MotionTextTheme::Horror);
+        let horror = plan_motion_text_sequence(input.clone())
+            .plan
+            .expect("the horror-theme plan is valid");
+        assert!(
+            horror
+                .cuts
+                .iter()
+                .all(|cut| cut.preset.layout == "horrorTagged"),
+            "a theme only draws from its own mood tags"
+        );
+
+        input.sequence.planning_controls.theme = Some(MotionTextTheme::Wa);
+        let wa = plan_motion_text_sequence(input.clone())
+            .plan
+            .expect("the wa-theme plan is valid");
+        assert!(
+            wa.cuts
+                .iter()
+                .all(|cut| cut.preset.layout == "waTagged" || cut.preset.layout == "untagged"),
+            "the 和風 direction also keeps entries flagged as wa"
+        );
+
+        // Without a theme the whole pool stays eligible, including untagged entries.
+        input.sequence.planning_controls.theme = None;
+        let untargeted = plan_motion_text_sequence(input)
+            .plan
+            .expect("the unthemed plan is valid");
+        assert!(untargeted.cuts.iter().all(|cut| cut.preset.layout != ""));
+    }
+
+    #[test]
     fn unified_look_reuses_repeated_line_visuals_and_stable_seeds() {
         let mut input = options();
         input.sequence.cues[1].text = input.sequence.cues[0].text.clone();
@@ -2253,6 +2419,8 @@ mod tests {
                 id: "slideL".to_owned(),
                 weight: 1.0,
                 preset_set: None,
+                tags: Vec::new(),
+                wa: false,
                 min_chars: None,
                 max_chars: None,
                 min_duration: None,
@@ -2263,6 +2431,8 @@ mod tests {
                 id: "slideR".to_owned(),
                 weight: 1.0,
                 preset_set: None,
+                tags: Vec::new(),
+                wa: false,
                 min_chars: None,
                 max_chars: None,
                 min_duration: None,

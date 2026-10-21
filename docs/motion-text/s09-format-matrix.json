@@ -3,13 +3,13 @@
 	"generatedBy": "script/probe-motion-text-format-matrix.mjs",
 	"source": {
 		"canonicalWasm": {
-			"bytes": 5511220,
-			"sha256": "14de620a1bfa38228a43e4103cc557ae7a27bbb30185bfffae91b17d685e75a8"
+			"bytes": 15391704,
+			"sha256": "b1b93d92ae604b2bdc175b7653546b08977ecb12da82029447f9481cb4bdc8de"
 		},
 		"canonicalCatalog": {
 			"identity": {
-				"bytes": 606262,
-				"sha256": "9ec6f3be1a297152ccd377456348900fe0f4cc3b7629d21ec319976740f33d12"
+				"bytes": 606268,
+				"sha256": "4608ad7aa8a56155178983fe2bf977ea821f3e067c599f3cae8f304a2f26002d"
 			},
 			"schemaVersion": 1,
 			"totalEntries": 912
@@ -30,7 +30,11 @@
 		"duration": 720000,
 		"seed": 20260928,
 		"previewText": "ROCUT FORMAT\nF06 MATRIX",
-		"samplePositions": [0.2, 0.5, 0.8],
+		"samplePositions": [
+			0.2,
+			0.5,
+			0.8
+		],
 		"exportFrameLimit": 6,
 		"formats": [
 			{
@@ -248,10 +252,10 @@
 				"progressEvents": 7,
 				"completeEvents": 1,
 				"errorEvents": 0,
-				"elapsedMs": 79.3,
+				"elapsedMs": 83,
 				"bufferBytes": 3170,
 				"fileType": "ftyp",
-				"sha256": "40706668722e02d88e0e0f0a689f052d92b66e1b03cefe40c90662b9ad67f428"
+				"sha256": "9ea5f248cffc31b37db9e14cb5997d9f01cfe8dcc448e0417cde74aa70ef0283"
 			}
 		},
 		{
@@ -309,10 +313,10 @@
 				"progressEvents": 7,
 				"completeEvents": 1,
 				"errorEvents": 0,
-				"elapsedMs": 71.1,
+				"elapsedMs": 54.7,
 				"bufferBytes": 3347,
 				"fileType": "ftyp",
-				"sha256": "703c7e8062a7f685dc6ac33a7859c6d5e87f826b62c15ee273c086456d33cfd9"
+				"sha256": "c8e63e4e785d7e9b5a5c2136b83c4fe432d06dbc8883ad16bd8cd1ef3e5c3966"
 			}
 		},
 		{
@@ -370,10 +374,10 @@
 				"progressEvents": 7,
 				"completeEvents": 1,
 				"errorEvents": 0,
-				"elapsedMs": 73.5,
+				"elapsedMs": 70.8,
 				"bufferBytes": 3237,
 				"fileType": "ftyp",
-				"sha256": "80a8623270d2569d62ec06820a10d14da1cd6a75018d0f0a21fc7bf0f69ac1af"
+				"sha256": "b09757da88cd9fc043d6c83118303c17e65d817ffeb20224166c898de787da42"
 			}
 		},
 		{
@@ -431,10 +435,10 @@
 				"progressEvents": 7,
 				"completeEvents": 1,
 				"errorEvents": 0,
-				"elapsedMs": 63.8,
+				"elapsedMs": 52.3,
 				"bufferBytes": 2436,
 				"fileType": "ftyp",
-				"sha256": "c6d13d351b56f44936949dfd61eef41c15ba96791618e67a7c8dc221925bdebc"
+				"sha256": "cca62b7cc4c0452f85ac8a8581ffed5a1523d593b130ef709ee82da55957c1cd"
 			}
 		},
 		{
@@ -492,10 +496,10 @@
 				"progressEvents": 7,
 				"completeEvents": 1,
 				"errorEvents": 0,
-				"elapsedMs": 85.1,
+				"elapsedMs": 64.6,
 				"bufferBytes": 3237,
 				"fileType": "ftyp",
-				"sha256": "c057da791bb8c4030466da02ec62490df00debf929c7335e0acf8fe8f33bc5ac"
+				"sha256": "c0895c895019c41abf965ccf5eb67a16975d10e7ed7d3606cf8c1327f6a11918"
 			}
 		},
 		{
@@ -553,10 +557,10 @@
 				"progressEvents": 7,
 				"completeEvents": 1,
 				"errorEvents": 0,
-				"elapsedMs": 73.2,
+				"elapsedMs": 59.7,
 				"bufferBytes": 3360,
 				"fileType": "ftyp",
-				"sha256": "d801217484aeb5e17ef7752efec743b994fd4c1702ff628973b629cbc15a0e9d"
+				"sha256": "f083eff574561abcb6096dc457b84b075846e9d0ec64d4f8b7a12cc6728985f4"
 			}
 		},
 		{
@@ -614,10 +618,10 @@
 				"progressEvents": 7,
 				"completeEvents": 1,
 				"errorEvents": 0,
-				"elapsedMs": 115.3,
+				"elapsedMs": 59.7,
 				"bufferBytes": 3301,
 				"fileType": "ftyp",
-				"sha256": "638ca93defc008421297c9aaca28df41898b0c7814fd7a660e86759038b7397c"
+				"sha256": "db335e3fcf125308ed68119b03cda9fca6bd4fbc2306dc7155032461dd0e2876"
 			}
 		},
 		{
@@ -675,10 +679,10 @@
 				"progressEvents": 7,
 				"completeEvents": 1,
 				"errorEvents": 0,
-				"elapsedMs": 72.3,
+				"elapsedMs": 65.1,
 				"bufferBytes": 3181,
 				"fileType": "ftyp",
-				"sha256": "17d5124e270652a055be5b46d8be20954945c0b9f64385ff3cd9925466920205"
+				"sha256": "381ae2e1d59f5bd150db0b4d8c6e2f51ff7123f07f8474554d4affeacd861547"
 			}
 		},
 		{
@@ -736,10 +740,10 @@
 				"progressEvents": 7,
 				"completeEvents": 1,
 				"errorEvents": 0,
-				"elapsedMs": 69.3,
+				"elapsedMs": 54.2,
 				"bufferBytes": 2847,
 				"fileType": "ftyp",
-				"sha256": "79909e59db95c354617d881ec1d800a2d41a2c300e377ab98697a5f61ca83ffb"
+				"sha256": "b67fe99f4e655f146b8bb8b427dcb8be7215cbc6535f0047402ba6a07599f106"
 			}
 		},
 		{
@@ -797,10 +801,10 @@
 				"progressEvents": 7,
 				"completeEvents": 1,
 				"errorEvents": 0,
-				"elapsedMs": 78.7,
+				"elapsedMs": 58.3,
 				"bufferBytes": 3181,
 				"fileType": "ftyp",
-				"sha256": "324d8b3abace508e51c02e1e3a7d9a5e11386e62bfc0fb8eb6d81371b05592ad"
+				"sha256": "759406447c3793e8dfb5828070ab907937ca8e607eb700c76e96021b526992d4"
 			}
 		},
 		{
@@ -861,7 +865,7 @@
 				"elapsedMs": 66.4,
 				"bufferBytes": 3802,
 				"fileType": "ftyp",
-				"sha256": "be9a96b30b6dbc8d91d4d5a9ae57291099205ff500e5e06927ab7f8a2497a933"
+				"sha256": "651ab065e7f359ae44220b756f1b298ac9e19749dd06197c9519636236acb288"
 			}
 		},
 		{
@@ -919,10 +923,10 @@
 				"progressEvents": 7,
 				"completeEvents": 1,
 				"errorEvents": 0,
-				"elapsedMs": 62.2,
+				"elapsedMs": 59.5,
 				"bufferBytes": 3604,
 				"fileType": "ftyp",
-				"sha256": "aca3f4e821afe90cc4c050dcc9650bd067c61ce29a9236bdc9e111e7da86372a"
+				"sha256": "fb97f9b7d380f018a023cf7280dbf27e0bb5ed00f2c939675cc35c6c61a5240f"
 			}
 		},
 		{
@@ -980,10 +984,10 @@
 				"progressEvents": 7,
 				"completeEvents": 1,
 				"errorEvents": 0,
-				"elapsedMs": 71.4,
+				"elapsedMs": 57.4,
 				"bufferBytes": 3325,
 				"fileType": "ftyp",
-				"sha256": "4e4098d1b43384c9c0f0cee7bb9621c2f048cad4110fd22d424766fef5df39f0"
+				"sha256": "f8687fd88e7124a2d0ebe65d9655465d2d9c3cc3ed58901f08f5fc149ccfcdaf"
 			}
 		},
 		{
@@ -1041,10 +1045,10 @@
 				"progressEvents": 7,
 				"completeEvents": 1,
 				"errorEvents": 0,
-				"elapsedMs": 71.9,
+				"elapsedMs": 58.1,
 				"bufferBytes": 2794,
 				"fileType": "ftyp",
-				"sha256": "17d8861f20d99a8623bf2330122a9721b5b03faf824a6c1109f36cb7f21cb3dd"
+				"sha256": "40d6e6cefaed1231560118715174d1847fb4330340cf09847fbeaf0b6c355e26"
 			}
 		},
 		{
@@ -1102,10 +1106,10 @@
 				"progressEvents": 7,
 				"completeEvents": 1,
 				"errorEvents": 0,
-				"elapsedMs": 66.2,
+				"elapsedMs": 55.5,
 				"bufferBytes": 3325,
 				"fileType": "ftyp",
-				"sha256": "86217afa9979bc5991ef01618f96dc427401802df6aee272d39979dd9b6e916d"
+				"sha256": "1b80500392153a941ce9f682ddcd9e8fedae866d3ae00eb7e8ad57d2b100165f"
 			}
 		}
 	]

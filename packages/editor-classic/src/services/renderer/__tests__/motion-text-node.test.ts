@@ -6,6 +6,7 @@ import {
 	motionTextCutId,
 	motionTextFontId,
 	motionTextSequenceId,
+	type MotionTextParameterValue,
 	type MotionTextPresetGroup,
 	type MotionTextPresetSelection,
 	type MotionTextSequence,
@@ -296,6 +297,7 @@ function recordingContext() {
 		readonly fillStyle: string;
 	}> = [];
 	const rects: Array<readonly [number, number, number, number]> = [];
+	const pathPoints: Array<readonly [number, number]> = [];
 	const rotations: number[] = [];
 	const scales: Array<readonly [number, number]> = [];
 	const transforms: Array<
@@ -326,6 +328,22 @@ function recordingContext() {
 		textBaseline: "alphabetic",
 		beginPath() {},
 		clip() {},
+		// The real host always exposes the full path API; a layout such as `panels`
+		// draws its panels as clipped polygons, so a double without these would
+		// silently render nothing and look like a layout bug.
+		closePath() {},
+		fill: () => {
+			drawEvents.push({ kind: "rect" });
+		},
+		lineTo: (x: number, y: number) => {
+			pathPoints.push([x, y]);
+		},
+		moveTo: (x: number, y: number) => {
+			pathPoints.push([x, y]);
+		},
+		stroke: () => {
+			drawEvents.push({ kind: "rect" });
+		},
 		fillRect: (...args: [number, number, number, number]) => {
 			drawEvents.push({ kind: "rect" });
 			fillRects.push(args);
@@ -405,6 +423,7 @@ function renderTypographyLayout({
 	fx,
 	hold,
 	layout,
+	parameters,
 	seed = 7,
 	sequenceTime = 30_000,
 	style,
@@ -419,6 +438,7 @@ function renderTypographyLayout({
 	readonly fx?: readonly string[];
 	readonly hold?: string;
 	readonly layout: string;
+	readonly parameters?: Readonly<Record<string, MotionTextParameterValue>>;
 	readonly seed?: number;
 	readonly sequenceTime?: number;
 	readonly style?: string;
@@ -447,6 +467,10 @@ function renderTypographyLayout({
 					...base.resolvedPlan,
 					cuts: base.resolvedPlan.cuts.map((cut, index) => ({
 						...cut,
+						parameters:
+							index === 0 && parameters
+								? { ...cut.parameters, ...parameters }
+								: cut.parameters,
 						preset,
 						text: index === 0 ? text : cut.text,
 					})),
@@ -982,6 +1006,62 @@ describe("MotionTextNode", () => {
 		expect(phaseA.get("searchBar")!.text).toEqual(
 			expect.arrayContaining(["LAYOUT ALPHA SIGNAL lyrics"]),
 		);
+	});
+
+	test("panels follows the reading direction of its lyric", () => {
+		// Latin reads left to right, CJK keeps right-to-left columns.
+		const latin = renderTypographyLayout({
+			layout: "panels",
+			sequenceTime: 18_000,
+			text: "ALPHA BETA GAMMA DELTA",
+		});
+		const latinPanels = latin.textDraws.filter((draw) =>
+			["ALPHA BETA", "GAMMA DELTA", "ALPHA", "BETA GAMMA", "DELTA"].includes(
+				draw.text,
+			),
+		);
+		expect(latinPanels.length).toBeGreaterThanOrEqual(2);
+		const latinXs = latinPanels.map((draw) => draw.x);
+		expect(latinXs).toEqual([...latinXs].sort((left, right) => left - right));
+
+		const cjk = renderTypographyLayout({
+			layout: "panels",
+			sequenceTime: 18_000,
+			text: "夜明けの色を覚えてる",
+		});
+		const cjkPanels = cjk.textDraws.filter(
+			(draw) => draw.kind === "fill" && /[぀-ヿ]/u.test(draw.text),
+		);
+		expect(cjkPanels.length).toBeGreaterThanOrEqual(2);
+		const cjkXs = cjkPanels.map((draw) => draw.x);
+		expect(cjkXs).toEqual([...cjkXs].sort((left, right) => right - left));
+	});
+
+	test("decorative stamps can be hidden without touching the lyric", () => {
+		const stamped = renderTypographyLayout({
+			layout: "pill",
+			sequenceTime: 18_000,
+			text: "MIDNIGHT DRIVE",
+		});
+		expect(stamped.text.some((line) => line.startsWith("No."))).toBe(true);
+
+		const hidden = renderTypographyLayout({
+			layout: "pill",
+			parameters: { "jizura.hideNo": true },
+			sequenceTime: 18_000,
+			text: "MIDNIGHT DRIVE",
+		});
+		expect(hidden.text.some((line) => line.startsWith("No."))).toBe(false);
+		expect(hidden.text).toEqual(expect.arrayContaining(["MIDNIGHT DRIVE"]));
+
+		// A number that belongs to the lyric is content, not a stamp.
+		const lyricNumber = renderTypographyLayout({
+			layout: "pill",
+			parameters: { "jizura.hideNo": true },
+			sequenceTime: 18_000,
+			text: "24 HOURS",
+		});
+		expect(lyricNumber.text.join(" ")).toContain("24 HOURS");
 	});
 
 	test("layoutsB family preserves twenty-seven kinetic composition signatures", () => {

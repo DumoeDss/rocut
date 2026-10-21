@@ -1,3 +1,4 @@
+import { balancedWordLines, isLatinText } from "./core-layout-utils";
 import { drawCoreLayout } from "./core-layouts";
 import { drawHorrorLayout } from "./horror-layouts";
 import { drawKineticLayout } from "./kinetic-layouts";
@@ -276,6 +277,9 @@ function splitLines({
 	if (targetLineCount <= 1 || normalized.length === 0) return [normalized];
 	const words = normalized.split(" ");
 	if (words.length > 1) return distributeWords({ words, targetLineCount });
+	// A single Latin word is never cut: "never-ending" stays whole instead of
+	// breaking mid-word. CJK has no word spaces, so it still chunks per glyph.
+	if (isLatinText(normalized)) return [normalized];
 	const glyphs = Array.from(normalized);
 	const lineLength = Math.ceil(glyphs.length / targetLineCount);
 	const lines: string[] = [];
@@ -292,15 +296,5 @@ function distributeWords({
 	readonly words: readonly string[];
 	readonly targetLineCount: number;
 }): string[] {
-	const lines: string[] = [];
-	let wordIndex = 0;
-	for (let lineIndex = 0; lineIndex < targetLineCount; lineIndex += 1) {
-		const wordsLeft = words.length - wordIndex;
-		const linesLeft = targetLineCount - lineIndex;
-		const take = Math.max(1, Math.ceil(wordsLeft / linesLeft));
-		lines.push(words.slice(wordIndex, wordIndex + take).join(" "));
-		wordIndex += take;
-		if (wordIndex >= words.length) break;
-	}
-	return lines;
+	return balancedWordLines({ lineCount: targetLineCount, words });
 }

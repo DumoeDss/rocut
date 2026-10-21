@@ -5,6 +5,12 @@ import { readFileSync, statSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
+// Cold Vite + a heavy fixture graph can take a minute on a loaded machine; this
+// budget covers the page load, not the work the probe measures.
+const pageLoadTimeoutMs = Number(
+	process.env.ROCUT_PROBE_PAGE_TIMEOUT_MS ?? 300_000,
+);
+
 import { chromium } from "@playwright/test";
 import { createServer } from "vite";
 import topLevelAwait from "vite-plugin-top-level-await";
@@ -197,9 +203,11 @@ try {
 	);
 	await page.goto(
 		`http://127.0.0.1:${address.port}/script/fixtures/motion-text-stress-probe.html`,
+		{ timeout: pageLoadTimeoutMs },
 	);
 	await page.waitForFunction(
 		() => typeof globalThis.__probeMotionTextStress === "function",
+		{ timeout: pageLoadTimeoutMs },
 	);
 	const result = await page.evaluate(
 		async ({ fixtures, config }) =>

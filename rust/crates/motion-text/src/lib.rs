@@ -26,6 +26,7 @@ pub use factory::{
     CreateMotionTextSequenceOptions, CreateMotionTextSequenceResult,
     CreateMotionTextStructuredCuesOptions, CreateMotionTextStructuredCuesResult,
     CreateMotionTextVariationCandidateOptions, JIZURA_CATALOG_HASH, JIZURA_ENGINE_VERSION,
+    JIZURA_LEGACY_CATALOG_HASHES, JIZURA_LEGACY_ENGINE_VERSIONS,
     MotionTextLineMapping, MotionTextSequenceBuildDiagnostic,
     MotionTextSequenceBuildDiagnosticSeverity, MotionTextSourceFormat, MotionTextStarterPreset,
     MotionTextStructuredCue, MotionTextVariationCandidateResult, MutateMotionTextSequenceOptions,

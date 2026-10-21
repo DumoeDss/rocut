@@ -36,10 +36,20 @@ pub fn validate_sequence_attachment(bytes: &[u8]) -> Result<MotionTextSequenceIn
     }
     let input: MotionTextSequenceInput =
         serde_json::from_value(value.clone()).map_err(|e| e.to_string())?;
+    // Identity, not equality: a sequence keeps rendering under the engine that
+    // wrote it as long as that engine's catalog is a known one. The catalog
+    // content is what decides the look, so a stamp-only move between releases
+    // must not invalidate saved projects.
+    let engine_version = value["engine"]["version"].as_str().unwrap_or_default();
+    let catalog_hash = value["engine"]["catalogHash"].as_str().unwrap_or_default();
+    let known_engine = engine_version == crate::JIZURA_ENGINE_VERSION
+        || crate::JIZURA_LEGACY_ENGINE_VERSIONS.contains(&engine_version);
+    let known_catalog = catalog_hash == crate::JIZURA_CATALOG_HASH
+        || crate::JIZURA_LEGACY_CATALOG_HASHES.contains(&catalog_hash);
     if value["schemaVersion"] != 1
         || value["engine"]["id"] != "jizura"
-        || value["engine"]["version"] != crate::JIZURA_ENGINE_VERSION
-        || value["engine"]["catalogHash"] != crate::JIZURA_CATALOG_HASH
+        || !known_engine
+        || !known_catalog
         || input.duration <= 0
         || input.duration > 21600 * 120000
         || input.cues.len() > 4096

@@ -55,6 +55,26 @@ export default defineConfig({
 				app: resolve(here, "index.html"),
 				"surface-evidence": resolve(here, "surface-evidence.html"),
 			},
+			output: {
+				// Without this the editor source collapses into a single multi-megabyte
+				// chunk: every edit anywhere rewrites that one file, so a plugin rebuild
+				// cannot be scoped by byte diff. Motion text is a leaf cluster (it imports
+				// only the editor contracts and its own wasm module), so it splits
+				// cleanly and a motion-text change stops touching the rest of the editor.
+				manualChunks(id: string) {
+					if (id.includes("/services/renderer/motion-text/")) {
+						return "motion-text";
+					}
+					return undefined;
+				},
+				// Non-entry chunks keep a stable name on purpose. A content hash here
+				// would be quoted by every chunk that imports this one, so a
+				// motion-text-only edit would still rewrite the main chunk and defeat
+				// the point of splitting. The whole surface ships as one versioned
+				// package served from an authenticated local host, so per-file cache
+				// busting buys nothing.
+				chunkFileNames: "assets/[name].js",
+			},
 		},
 	},
 	// Runtime assets are copied by an explicit allowlist rather than by shipping

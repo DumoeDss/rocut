@@ -162,8 +162,42 @@ export interface MotionTextPresetSetControls {
 
 export type MotionTextCenterDirection = "tb" | "lr";
 
+/**
+ * おまかせ のテーマ: narrows a deterministic variation to one direction. Selection
+ * uses the mood tags each preset already carries, so a theme never needs its own
+ * preset list.
+ */
+export type MotionTextTheme =
+	| "lyricPv"
+	| "kinetic"
+	| "wa"
+	| "horror"
+	| "pop"
+	| "ballad";
+
+export const MOTION_TEXT_THEMES: readonly MotionTextTheme[] = Object.freeze([
+	"lyricPv",
+	"kinetic",
+	"wa",
+	"horror",
+	"pop",
+	"ballad",
+]);
+
+/** `undefined` and `null` both mean "no theme", so saved projects stay valid. */
+function validMotionTextTheme(value: unknown): boolean {
+	return (
+		value === undefined ||
+		value === null ||
+		(typeof value === "string" &&
+			(MOTION_TEXT_THEMES as readonly string[]).includes(value))
+	);
+}
+
 export interface MotionTextPlanningControls {
 	readonly presetSets: MotionTextPresetSetControls;
+	/** `null` keeps the whole enabled catalog eligible. */
+	readonly theme?: MotionTextTheme | null;
 	readonly unify: boolean;
 	readonly centerFree: boolean;
 	readonly centerDirection: MotionTextCenterDirection;
@@ -176,6 +210,7 @@ export const DEFAULT_MOTION_TEXT_PLANNING_CONTROLS: MotionTextPlanningControls =
 			typo: true,
 			kinetic: true,
 		}),
+		theme: null,
 		unify: false,
 		centerFree: false,
 		centerDirection: "tb",
@@ -619,6 +654,7 @@ export function validateMotionTextSequence(args: {
 			typeof controls.presetSets.kinetic !== "boolean" ||
 			typeof controls.unify !== "boolean" ||
 			typeof controls.centerFree !== "boolean" ||
+			!validMotionTextTheme(controls.theme) ||
 			(controls.centerDirection !== "tb" && controls.centerDirection !== "lr")
 		) {
 			issue(issues, {

@@ -12,6 +12,12 @@ import wasm from "vite-plugin-wasm";
 
 import { emitProbeReport, probeReportMode } from "./probe-report-output.mjs";
 
+// Cold Vite + a heavy fixture graph can take a minute on a loaded machine; this
+// budget covers the page load, not the work the probe measures.
+const pageLoadTimeoutMs = Number(
+	process.env.ROCUT_PROBE_PAGE_TIMEOUT_MS ?? 300_000,
+);
+
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const REPORT_PATH = join(ROOT, "docs/motion-text/s09-non-motion-export.json");
 const WASM_PATH = join(ROOT, "rust/wasm/pkg/opencut_wasm_bg.wasm");
@@ -136,9 +142,11 @@ try {
 	);
 	await page.goto(
 		`http://127.0.0.1:${address.port}/script/fixtures/non-motion-export-probe.html`,
+		{ timeout: pageLoadTimeoutMs },
 	);
 	await page.waitForFunction(
 		() => typeof globalThis.__probeNonMotionExport === "function",
+		{ timeout: pageLoadTimeoutMs },
 	);
 	const result = await page.evaluate(
 		async (config) => globalThis.__probeNonMotionExport(config),

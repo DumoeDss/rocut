@@ -4,6 +4,7 @@ import type {
 	MotionTextPlanningControls,
 	MotionTextPresetSetControls,
 	MotionTextSequence,
+	MotionTextTheme,
 } from "@opencut/editor-contracts";
 import { useRef, useState, type ReactNode } from "react";
 import { Button } from "../../components/ui/button";
@@ -28,6 +29,24 @@ const PRESET_SET_LABELS: Readonly<
 	typo: "Typography",
 	kinetic: "Kinetic",
 	horror: "Horror",
+};
+
+const THEMES: readonly MotionTextTheme[] = [
+	"lyricPv",
+	"kinetic",
+	"wa",
+	"horror",
+	"pop",
+	"ballad",
+];
+
+const THEME_LABELS: Readonly<Record<MotionTextTheme, string>> = {
+	lyricPv: "Lyric PV",
+	kinetic: "Kinetic",
+	wa: "和風",
+	horror: "Horror",
+	pop: "Pop",
+	ballad: "Ballad",
 };
 
 function diagnosticMessage(
@@ -130,6 +149,12 @@ export function MotionTextPlanningControlsEditor({
 		});
 	};
 
+	const selectTheme = (theme: MotionTextTheme | null) => {
+		void apply({ ...controls, theme });
+	};
+
+	const activeTheme = controls.theme ?? null;
+
 	return (
 		<section className="border-b px-3 py-3" data-motion-text-planning-controls>
 			<div className="mb-2 flex items-baseline justify-between gap-2">
@@ -151,6 +176,32 @@ export function MotionTextPlanningControlsEditor({
 						{PRESET_SET_LABELS[presetSet]}
 					</ToggleButton>
 				))}
+			</div>
+			<div className="mt-3">
+				<span className="text-muted-foreground text-xs">Theme</span>
+				<p className="text-muted-foreground mt-0.5 text-[11px] leading-4">
+					Restricts variations to one direction using each preset&apos;s own
+					mood tags. A group with no matching entry keeps its full pool.
+				</p>
+				<div className="mt-1.5 flex flex-wrap gap-1.5" aria-label="Theme">
+					<ToggleButton
+						pressed={activeTheme === null}
+						busy={isApplying}
+						onClick={() => selectTheme(null)}
+					>
+						None
+					</ToggleButton>
+					{THEMES.map((theme) => (
+						<ToggleButton
+							key={theme}
+							pressed={activeTheme === theme}
+							busy={isApplying}
+							onClick={() => selectTheme(theme)}
+						>
+							{THEME_LABELS[theme]}
+						</ToggleButton>
+					))}
+				</div>
 			</div>
 			<div className="mt-2 grid grid-cols-[repeat(auto-fit,minmax(min(100%,8rem),1fr))] gap-1.5">
 				<Button

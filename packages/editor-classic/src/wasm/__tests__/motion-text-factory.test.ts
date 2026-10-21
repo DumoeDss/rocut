@@ -178,7 +178,7 @@ describe("motion-text Rust sequence factory seam", () => {
 	test("returns actionable diagnostics without a partial sequence", () => {
 		const created = createStarterMotionTextSequence({
 			sequenceId: "sequence:invalid-source",
-			source: "[00:01]有时间\n没有时间",
+			source: "   \n# only a comment",
 			duration: 1_800_000,
 			starterPreset: "clean-caption",
 			rendererSupport: MOTION_TEXT_RENDERER_SUPPORT,
@@ -189,6 +189,31 @@ describe("motion-text Rust sequence factory seam", () => {
 		expect(created.diagnostics).toContainEqual(
 			expect.objectContaining({
 				severity: "error",
+				code: "empty-source",
+			}),
+		);
+	});
+
+	test("places untimed lines between their neighbours and keeps the warning", () => {
+		const created = createStarterMotionTextSequence({
+			sequenceId: "sequence:partially-timed",
+			source: "[00:01]有时间\n没有时间",
+			duration: 1_800_000,
+			starterPreset: "clean-caption",
+			rendererSupport: MOTION_TEXT_RENDERER_SUPPORT,
+			core: canonicalFactory,
+		});
+
+		expect(created.sequence).not.toBeNull();
+		expect(created.sequence?.cues.map((cue) => cue.text)).toEqual([
+			"有时间",
+			"没有时间",
+		]);
+		expect(created.sequence?.cues[0]?.timingSource).toBe("lrc");
+		expect(created.sequence?.cues[1]?.timingSource).toBe("estimated");
+		expect(created.diagnostics).toContainEqual(
+			expect.objectContaining({
+				severity: "warning",
 				code: "mixed-lrc-timing",
 			}),
 		);

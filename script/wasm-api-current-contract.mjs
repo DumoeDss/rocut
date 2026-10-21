@@ -14,13 +14,16 @@
  * reviewed against the preceding reverse build, with no removals or import delta.
  * Media folders add only their mutation planner and validator (string -> string),
  * reviewed against the preceding track-lock build with no removals or import delta.
+ * The JIZURA 0.10.1 alignment adds MotionTextTheme (a string union) plus the
+ * `tags`/`wa` fields on MotionTextPresetChoice. Type surface only: the low-level
+ * wasm d.ts, its line count and every binary export are unchanged.
  */
 import { EXPECTED as HISTORICAL } from "./wasm-api-surface-contract.mjs";
 
 export const EXPECTED = {
 	...HISTORICAL,
 	...{
-		dtsSha: "965bc39bfbf11930851d1029e92681a3b1c31bdf08f39aa16703c4913bdbde0a",
+		dtsSha: "fb4f0bbd5b39cdc38c5d39768fa85c94b95a83124f2c297d695155e6998af241",
 		wrapperSha:
 			"94f213cb3dab88bdfa0c73056e7b0a87039267cbcc86f496e27fefb67eff86d5",
 		wasmDtsNormalizedSignature:
