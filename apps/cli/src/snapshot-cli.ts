@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { copyFile } from "node:fs/promises";
+import { deliverOutput, prepareOutputDestination } from "./output-delivery";
 import { resolve } from "node:path";
 import type { ResolvedTarget } from "./target-registry";
 import { request } from "./host-request";
@@ -20,6 +20,7 @@ export async function runSnapshotCli({
 }) {
 	if (!Number.isSafeInteger(tick) || tick < 0)
 		throw new Error("--tick requires non-negative integer media ticks");
+	const destination = await prepareOutputDestination(out);
 	if (
 		expectedRevision !== undefined &&
 		(!Number.isSafeInteger(expectedRevision) || expectedRevision < 0)
@@ -76,8 +77,7 @@ export async function runSnapshotCli({
 			throw new Error(
 				`snapshot ${started.id} ${job.status}: ${job.error ?? "no PNG output"}`,
 			);
-		if (out !== undefined && resolve(out) !== resolve(job.result.outputPath))
-			await copyFile(job.result.outputPath, resolve(out));
+		await deliverOutput(job.result.outputPath, destination);
 		return {
 			target: resolved.entry.id,
 			jobId: started.id,

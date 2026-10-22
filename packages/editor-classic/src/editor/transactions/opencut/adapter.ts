@@ -414,6 +414,7 @@ export interface OpenCutTransactionDocumentAdapter extends TransactionDocumentAd
 	clear(token: OpenCutCommitToken): void;
 	consumeReceipt(): EncodedOpenCutPublicationReceipt | null;
 	currentRecordDigest(): string;
+	currentRecord(): ProjectRecord;
 	currentDraft(): OpenCutProjectDraft;
 	currentAssetCatalog(): OpenCutAssetCatalogEntry[];
 	/** Ownership transfer requires an isolated record relinquished by the caller. */
@@ -664,6 +665,9 @@ export function createOpenCutTransactionDocumentAdapter({
 			return receipt;
 		},
 		currentRecordDigest,
+		currentRecord() {
+			return cloneOpaque(latestRecord);
+		},
 		currentDraft() {
 			// Decoding detaches the project fields, and the catalog is copied too;
 			// no shared state remains for another whole-project clone to protect.

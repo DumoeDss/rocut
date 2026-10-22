@@ -139,6 +139,42 @@ if (process.env.OPENCUT_PROJECT_THUMBNAIL_TEST_ISOLATED !== "1") {
 	}
 
 	describe("project thumbnail rasterizer boundary", () => {
+		test("opening a project without a thumbnail does not render or save it", async () => {
+			const { calls, manager, persistence, project } = createHarness({ degraded: false });
+			await persistence.saveProject({ project });
+			const before = JSON.stringify(await persistence.store.load({ id: project.metadata.id }));
+			await manager.loadProject({ id: project.metadata.id });
+			expect(JSON.stringify(await persistence.store.load({ id: project.metadata.id }))).toBe(before);
+			expect(calls.createCanvasRenderer).toBe(0);
+			expect(calls.markDirty).toBe(0);
+		});
+
+		test("initial loading and a revision reload cannot publish in reverse order", async () => {
+			const { manager, persistence, project } = createHarness({ degraded: true });
+			await persistence.saveProject({ project });
+			const load = persistence.loadProject.bind(persistence);
+			let entered = 0;
+			let release!: () => void;
+			const paused = new Promise<void>((resolve) => { release = resolve; });
+			persistence.loadProject = async (args) => {
+				const result = await load(args);
+				entered++;
+				if (entered === 1) await paused;
+				return result;
+			};
+			const initial = manager.loadProject({ id: project.metadata.id });
+			const revision = manager.loadProject({ id: project.metadata.id });
+			while (entered === 0) await new Promise((resolve) => setTimeout(resolve, 0));
+			expect(entered).toBe(1);
+			const next = structuredClone(project);
+			next.metadata.name = "Newer project";
+			await persistence.saveProject({ project: next });
+			release();
+			await Promise.all([initial, revision]);
+			expect(entered).toBe(2);
+			expect(manager.getActive().metadata.name).toBe("Newer project");
+		});
+
 		test("degraded load and exit skip thumbnail work before scene or renderer acquisition", async () => {
 			const { calls, manager, persistence, project, renderer } = createHarness({
 				degraded: true,

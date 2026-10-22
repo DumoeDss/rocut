@@ -25,6 +25,7 @@ import type {
 	ProjectRecord,
 } from "@opencut/editor-ports";
 import type { MediaAsset } from "../../../media/types";
+import type { TProject } from "../../../project/types";
 import { createOpenCutTransactionDocumentAdapter } from "./adapter";
 import { mergeAssetCatalogs } from "./asset-catalog";
 import { ProjectMutationArbiter } from "./arbiter";
@@ -101,10 +102,10 @@ export class SessionOpenCutTransactions {
 	}: {
 		projectId: string;
 		assets: readonly MediaAsset[];
-	}): Promise<void> {
+	}): Promise<TProject> {
 		this.assertAlive();
 		await this.retire();
-		await this.options.arbiter.run({
+		return this.options.arbiter.run({
 			projectId,
 			operation: async () => {
 				const portProjectId = projectId as PortProjectId;
@@ -177,6 +178,11 @@ export class SessionOpenCutTransactions {
 					}
 				});
 				this.active = active;
+				// The store can advance between the UI's initial read and engine open.
+				// Publish the same snapshot the engine owns, including retained fields.
+				return this.options.persistence.adoptCommittedProjectRecord({
+					record: adapter.currentRecord(),
+				});
 			},
 		});
 	}

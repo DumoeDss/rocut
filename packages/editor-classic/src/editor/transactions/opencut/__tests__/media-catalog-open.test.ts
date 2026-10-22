@@ -1,7 +1,7 @@
 import { expect, test } from "bun:test";
 import { assetId } from "@opencut/editor-contracts";
 import { commandHarness } from "../../../../core/managers/__tests__/command-test-harness";
-import { TEST_PROJECT_ID } from "./fixture";
+import { TEST_PROJECT_ID, projectFixture, recordFixture } from "./fixture";
 import { savePersistedMediaAsset } from "../../../../media/persistence";
 
 function media(id: string) {
@@ -16,6 +16,52 @@ function media(id: string) {
 		fps: 6,
 	};
 }
+
+test("open returns and caches the engine snapshot when the store advanced after the UI read", async () => {
+	const target = await commandHarness();
+	const stale = await target.editor.persistence.loadProject({
+		id: TEST_PROJECT_ID,
+	});
+	const latest = projectFixture();
+	latest.scenes[0].name = "Newly authored scene";
+	const record = recordFixture(latest, {
+		__opencutTransaction: {
+			version: 1,
+			revision: 9,
+			idempotency: [],
+			assetCatalog: [],
+		},
+		providerPrivate: { retained: "new" },
+	});
+	await target.fixture.store.save({
+		record,
+		summary: {
+			id: record.id,
+			name: latest.metadata.name,
+			createdAt: latest.metadata.createdAt.toISOString(),
+			updatedAt: latest.metadata.updatedAt.toISOString(),
+		},
+	});
+	const saves = target.fixture.getSaveCount();
+	const opened = await target.transactions.open({
+		projectId: TEST_PROJECT_ID,
+		assets: [],
+	});
+	expect(opened.scenes[0].name).toBe("Newly authored scene");
+	expect(stale!.scenes[0].name).not.toBe(opened.scenes[0].name);
+	expect(Number(await target.transactions.revision())).toBe(9);
+	expect(target.fixture.getSaveCount()).toBe(saves);
+	expect(
+		target.editor.persistence.captureNativeExportSourceData({
+			project: opened,
+		}),
+	).toMatchObject({ providerPrivate: { retained: "new" } });
+	opened.scenes[0].name = "Caller mutation";
+	expect(
+		target.editor.persistence.readCachedProject({ id: TEST_PROJECT_ID })!
+			.scenes[0].name,
+	).toBe("Newly authored scene");
+});
 
 async function fixture() {
 	const target = await commandHarness();

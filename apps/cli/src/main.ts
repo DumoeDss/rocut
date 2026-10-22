@@ -9,7 +9,8 @@
  * error). `target list` reconnects by id; credential URLs are printed only
  * on explicit `host start` / `host ensure` and never listed.
  */
-import { copyFile, readFile } from "node:fs/promises";
+import { readFile } from "node:fs/promises";
+import { deliverOutput, prepareOutputDestination } from "./output-delivery";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { startHost } from "./host";
@@ -552,6 +553,7 @@ async function runCli(argv: readonly string[]): Promise<void> {
 				);
 			}
 			const exportRevision = flag(args, "revision");
+			const out = await prepareOutputDestination(flag(args, "out"));
 			const exportKey = flag(args, "idempotency-key");
 			if (
 				exportRevision === undefined ||
@@ -648,8 +650,7 @@ async function runCli(argv: readonly string[]): Promise<void> {
 			// The host only writes inside the project directory it owns; placing
 			// the file where the caller asked is this process's job, because it
 			// runs as the user and the HTTP surface deliberately does not.
-			const out = flag(args, "out");
-			if (out !== undefined) await copyFile(job.outputPath, resolve(out));
+			await deliverOutput(job.outputPath, out);
 			process.stdout.write(
 				JSON.stringify(
 					{

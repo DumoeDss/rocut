@@ -45,6 +45,7 @@ export class ProjectManager {
 	private savedProjects: TProjectMetadata[] = [];
 	private isLoading = true;
 	private isInitialized = false;
+	private projectLoad: Promise<void> = Promise.resolve();
 	private invalidProjectIds = new Set<string>();
 	private listeners = new Set<() => void>();
 	private migrationState: MigrationState = {
@@ -120,7 +121,14 @@ export class ProjectManager {
 		}
 	}
 
-	async loadProject({ id }: { id: string }): Promise<void> {
+	loadProject({ id }: { id: string }): Promise<void> {
+		// Initial surface loading and host revision hydration share one flight queue.
+		const loading = this.projectLoad.then(() => this.loadProjectNow({ id }));
+		this.projectLoad = loading.catch(() => {});
+		return loading;
+	}
+
+	private async loadProjectNow({ id }: { id: string }): Promise<void> {
 		if (!this.isInitialized) {
 			this.isLoading = true;
 			this.notify();
@@ -130,11 +138,19 @@ export class ProjectManager {
 		await this.editor.transactions?.retire();
 
 		try {
-			const project = await this.editor.persistence.loadProject({ id });
+			let project = await this.editor.persistence.loadProject({ id });
 			if (!project) {
 				throw new Error(`Project with id ${id} not found`);
 			}
 
+			await this.editor.drainProjectLiveState();
+			await this.editor.media.loadProjectMedia({ projectId: id });
+			if (this.editor.transactions) {
+				project = await this.editor.transactions.open({
+					projectId: id,
+					assets: this.editor.media.getAssets(),
+				});
+			}
 			await loadFonts({
 				families: [
 					...new Set(
@@ -144,14 +160,6 @@ export class ProjectManager {
 					),
 				],
 			});
-			await this.editor.drainProjectLiveState();
-			await this.editor.media.loadProjectMedia({ projectId: id });
-			if (this.editor.transactions) {
-				await this.editor.transactions.open({
-					projectId: id,
-					assets: this.editor.media.getAssets(),
-				});
-			}
 
 			this.active = project;
 			this.exportRange = null;
@@ -166,16 +174,8 @@ export class ProjectManager {
 				this.editor.scenes.clearScenes();
 			}
 
-			if (!project.metadata.thumbnail) {
-				try {
-					const didUpdateThumbnail = await this.updateThumbnailFromTimeline();
-					if (didUpdateThumbnail) {
-						await this.saveCurrentProject();
-					}
-				} catch {
-					console.error("Failed to generate project thumbnail");
-				}
-			}
+			// Loading is read-only: thumbnails are refreshed on explicit exit/save.
+			// Saving here can overwrite a newer host edit while its revision hydrates.
 		} catch (error) {
 			await this.editor.transactions?.retire();
 			this.editor.reportPersistenceFailure({
