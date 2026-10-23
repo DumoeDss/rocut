@@ -715,6 +715,15 @@ async function runCli(argv: readonly string[]): Promise<void> {
 					batch,
 				);
 				process.stdout.write(JSON.stringify(outcome, null, "\t") + "\n");
+				if (
+					outcome &&
+					typeof outcome === "object" &&
+					"accepted" in outcome &&
+					outcome.accepted === false
+				)
+					throw new Error(
+						"draft stage rejected; inspect field diagnostics before submitting another operation",
+					);
 				return;
 			}
 			if (
@@ -736,7 +745,9 @@ async function runCli(argv: readonly string[]): Promise<void> {
 			);
 		}
 		default:
-			process.stdout.write(USAGE_LINES.join("\n") + "\n");
+			throw new Error(
+				`Unknown command ${JSON.stringify(command)}. Pass subcommands as separate arguments; use --help for usage.`,
+			);
 	}
 }
 
