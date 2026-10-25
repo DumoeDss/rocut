@@ -14,6 +14,7 @@ import {
 	type MotionTextFontEnvironment,
 	type MotionTextFontRuntimeOptions,
 } from "../motion-text/font-runtime";
+import { TextNode } from "../nodes/text-node";
 
 const FONT_DIGEST = "sha256:fixture-font";
 
@@ -117,12 +118,14 @@ function runtimeFixture({
 	loadProjectFont,
 	missingCodePoints = [],
 	inspectCoverage,
+	fontDigest = FONT_DIGEST,
 }: {
 	loadProjectFont?: (args: {
 		signal: AbortSignal;
 	}) => Promise<ArrayBuffer | null>;
 	missingCodePoints?: readonly number[];
 	inspectCoverage?: MotionTextFontRuntimeOptions["inspectCoverage"];
+	fontDigest?: string;
 } = {}) {
 	let loads = 0;
 	let faceLoads = 0;
@@ -150,7 +153,7 @@ function runtimeFixture({
 			return {
 				error: null,
 				inspection: {
-					contentDigest: FONT_DIGEST,
+					contentDigest: fontDigest,
 					faceIndex: 0,
 					glyphCount: 10,
 					missingCodePoints: text.length === 0 ? [] : missingCodePoints,
@@ -173,6 +176,83 @@ function runtimeFixture({
 }
 
 describe("MotionTextFontRuntime", () => {
+	test("ordinary text measures only after the exact face loads and keeps authored parameters unchanged", async () => {
+		const digest = "a".repeat(64),
+			bytes = deferred<ArrayBuffer>();
+		const f = runtimeFixture({
+			fontDigest: digest,
+			loadProjectFont: () => bytes.promise,
+		});
+		const node = new TextNode({
+			id: "text",
+			name: "Text",
+			type: "text",
+			startTime: mediaTime({ ticks: 0 }),
+			duration: mediaTime({ ticks: 120000 }),
+			trimStart: mediaTime({ ticks: 0 }),
+			trimEnd: mediaTime({ ticks: 0 }),
+			params: {
+				content: "Hello",
+				fontFamily: "Fixture",
+				"mv.fontResource": JSON.stringify({
+					id: "font",
+					kind: "font",
+					mimeType: "font/ttf",
+					byteLength: 3,
+					sha256: digest,
+					attachmentKey: `programmatic-sha256-${digest}`,
+					font: { family: "Fixture", style: "normal", weight: 400 },
+				}),
+			},
+			transform: { position: { x: 0, y: 0 }, scaleX: 1, scaleY: 1, rotate: 0 },
+			opacity: 1,
+			canvasCenter: { x: 960, y: 540 },
+			canvasHeight: 1080,
+			fontRuntime: f.runtime,
+			projectId: "project",
+		});
+		const pending = node.measurementParams();
+		expect(f.counts().adds).toBe(0);
+		bytes.resolve(new Uint8Array([1, 2, 3]).buffer);
+		const resolved = await pending;
+		expect(resolved.params.fontFamily).not.toBe("Fixture");
+		expect(node.params.params.fontFamily).toBe("Fixture");
+		const abort = new AbortController();
+		abort.abort();
+		await expect(node.measurementParams(abort.signal)).rejects.toThrow();
+		node.params.params.fontFamily = "Another face";
+		await expect(node.measurementParams()).rejects.toThrow("differs");
+		f.runtime.dispose();
+	});
+	test("ordinary text uses the same immutable font and glyph barrier", async () => {
+		const font = sequenceFixture().fonts[0]!;
+		const f = runtimeFixture();
+		const resolved = await f.runtime.prepareFont({
+			projectId: "project",
+			font,
+			text: "Hello",
+		});
+		expect(resolved.family).not.toBe(font.family);
+		await f.runtime.prepareFont({ projectId: "project", font, text: "World" });
+		expect(f.counts().loads).toBe(1);
+		expect(f.inspectedTexts).toContain("World");
+		f.runtime.dispose();
+		expect(f.counts().deletes).toBe(1);
+		const missing = runtimeFixture({ missingCodePoints: [0x4e16] });
+		await expect(
+			missing.runtime.prepareFont({ projectId: "project", font, text: "世" }),
+		).rejects.toThrow();
+		missing.runtime.dispose();
+		const mismatch = runtimeFixture();
+		await expect(
+			mismatch.runtime.prepareFont({
+				projectId: "project",
+				font: { ...font, contentDigest: "sha256:changed" },
+				text: "Hello",
+			}),
+		).rejects.toThrow("expected");
+		mismatch.runtime.dispose();
+	});
 	test("digests immutable bytes once but checks every changed text and revalidates after invalidation", async () => {
 		const checkedTexts: string[] = [];
 		const fixture = runtimeFixture({

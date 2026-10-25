@@ -189,6 +189,14 @@ const textElementParams: ElementParamDefinition[] = [
 		keyframable: false,
 	},
 	{
+		key: "mv.fontResource",
+		label: "Project Font Source",
+		type: "text",
+		default: "",
+		required: false,
+		keyframable: false,
+	},
+	{
 		key: "fontSize",
 		label: "Font Size",
 		type: "number",

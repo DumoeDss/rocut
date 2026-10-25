@@ -17,13 +17,17 @@
  * The JIZURA 0.10.1 alignment adds MotionTextTheme (a string union) plus the
  * `tags`/`wa` fields on MotionTextPresetChoice. Type surface only: the low-level
  * wasm d.ts, its line count and every binary export are unchanged.
+ * October 24 structured lyric syntax adds only optional textSyntax on
+ * CreateMotionTextStructuredCuesOptions and its literal/jizura string union.
+ * Omission preserves literal behavior. No existing declaration is removed;
+ * all low-level signatures, binary imports and exports remain pinned below.
  */
 import { EXPECTED as HISTORICAL } from "./wasm-api-surface-contract.mjs";
 
 export const EXPECTED = {
 	...HISTORICAL,
 	...{
-		dtsSha: "fb4f0bbd5b39cdc38c5d39768fa85c94b95a83124f2c297d695155e6998af241",
+		dtsSha: "5ed5a1673bbe0f0326c75c59d181c513e0e15cf191e602da80649d0d6610591e",
 		wrapperSha:
 			"94f213cb3dab88bdfa0c73056e7b0a87039267cbcc86f496e27fefb67eff86d5",
 		wasmDtsNormalizedSignature:

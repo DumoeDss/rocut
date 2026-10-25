@@ -3,6 +3,7 @@ use super::*;
 fn options() -> CreateMotionTextStructuredCuesOptions {
     CreateMotionTextStructuredCuesOptions {
         sequence_id: "structured:test".to_owned(),
+        text_syntax: None,
         source: "\r\n  A! | *B* / [x]  \r\n\r\n  A! | *B* / [x]  \n".to_owned(),
         cues: vec![2, 4]
             .into_iter()
@@ -119,5 +120,162 @@ fn preserves_bare_cr_and_rejects_blank_line_cues() {
         create_motion_text_structured_cues(input)
             .sequence_json
             .is_none()
+    );
+}
+
+fn syntax_options(source: &str, selected: &[u32]) -> CreateMotionTextStructuredCuesOptions {
+    let mut input = options();
+    input.source = source.to_owned();
+    input.text_syntax = Some(MotionTextStructuredTextSyntax::Jizura);
+    input.cues = selected
+        .iter()
+        .enumerate()
+        .map(|(i, line)| MotionTextStructuredCue {
+            line_id: format!("syntax:{i}"),
+            source_line: *line,
+            text: source
+                .replace("\r\n", "\n")
+                .replace('\r', "\n")
+                .split('\n')
+                .nth(*line as usize - 1)
+                .unwrap()
+                .to_owned(),
+            start_ticks: 17 + i as i64 * 120000,
+            end_ticks: 100017 + i as i64 * 120000,
+        })
+        .collect();
+    input
+}
+
+#[test]
+fn explicit_jizura_preserves_raw_identity_and_fixed_clock_but_interprets_display() {
+    let input = syntax_options(
+        "[ti:original]\r\n[00:09]*救って*/世界! | whisper\r\n\r\n[間奏 9s]\r\nplain?",
+        &[2, 4, 5],
+    );
+    let mut input = input;
+    input.duration_ticks = 400000;
+    let output = create_motion_text_structured_cues(input.clone());
+    let sequence: Value =
+        serde_json::from_str(output.sequence_json.as_deref().expect("syntax succeeds")).unwrap();
+    assert_eq!(sequence["source"]["text"], input.source);
+    assert_eq!(sequence["source"]["format"], "jizura");
+    assert_eq!(sequence["cues"][0]["text"], "救って世界");
+    assert_eq!(
+        sequence["cues"][0]["emphasis"],
+        serde_json::json!(["救って"])
+    );
+    assert_eq!(
+        sequence["cues"][0]["segments"],
+        serde_json::json!(["救って", "世界"])
+    );
+    assert_eq!(sequence["cues"][0]["impact"], true);
+    assert_eq!(sequence["cues"][1]["interlude"], true);
+    assert_eq!(sequence["cues"][1]["text"], "");
+    assert_eq!(sequence["cues"][1]["gapBefore"], true);
+    assert_eq!(sequence["cues"][2]["text"], "plain?");
+    for (i, cue) in input.cues.iter().enumerate() {
+        assert_eq!(sequence["cues"][i]["sourceLine"], cue.source_line);
+        assert_eq!(sequence["cues"][i]["startTime"], cue.start_ticks);
+        assert_eq!(
+            sequence["cues"][i]["duration"],
+            cue.end_ticks - cue.start_ticks
+        );
+        assert_eq!(output.line_mappings[i].line_id, cue.line_id);
+    }
+    let mut changed = input.clone();
+    changed.cues[0].text = "救って世界".to_owned();
+    let rejected = create_motion_text_structured_cues(changed);
+    assert!(rejected.sequence_json.is_none());
+    assert!(rejected.line_mappings.is_empty());
+    let repeated = create_motion_text_structured_cues(input);
+    assert_eq!(output, repeated);
+}
+
+#[test]
+fn explicit_jizura_rejects_ignored_empty_and_expanded_selected_lines_without_partial_mappings() {
+    for text in ["[ti:metadata]", "# comment", "/", "[00:01][00:02]expanded"] {
+        let output =
+            create_motion_text_structured_cues(syntax_options(&format!("valid\n{text}"), &[1, 2]));
+        assert!(output.sequence_json.is_none(), "{text}");
+        assert!(output.line_mappings.is_empty(), "{text}");
+        assert!(
+            output
+                .diagnostics
+                .iter()
+                .any(|d| d.code == "invalid-structured-cue-syntax" && d.source_line == Some(2)),
+            "{text}"
+        );
+    }
+}
+
+#[test]
+fn explicit_literal_matches_default_even_for_syntax_and_ignored_source_lines() {
+    let mut input = options();
+    let default = create_motion_text_structured_cues(input.clone());
+    input.text_syntax = Some(MotionTextStructuredTextSyntax::Literal);
+    assert_eq!(default, create_motion_text_structured_cues(input));
+    let mut ignored = syntax_options("[ti:literal]\n# literal", &[1, 2]);
+    ignored.text_syntax = None;
+    let output = create_motion_text_structured_cues(ignored);
+    let sequence: Value = serde_json::from_str(output.sequence_json.as_deref().unwrap()).unwrap();
+    assert_eq!(sequence["cues"][0]["text"], "[ti:literal]");
+    assert_eq!(sequence["cues"][1]["text"], "# literal");
+}
+
+#[test]
+fn explicit_jizura_interlude_label_and_declared_length_never_replace_fixed_endpoints() {
+    for label in ["[間奏]", "[間奏 9s]"] {
+        let input = syntax_options(label, &[1]);
+        let output = create_motion_text_structured_cues(input.clone());
+        let sequence: Value =
+            serde_json::from_str(output.sequence_json.as_deref().unwrap()).unwrap();
+        assert_eq!(sequence["cues"][0]["text"], "");
+        assert_eq!(sequence["cues"][0]["interlude"], true);
+        assert_eq!(sequence["cues"][0]["startTime"], input.cues[0].start_ticks);
+        assert_eq!(
+            sequence["cues"][0]["duration"],
+            input.cues[0].end_ticks - input.cues[0].start_ticks
+        );
+    }
+}
+
+#[test]
+fn explicit_jizura_scopes_line_diagnostics_to_selected_cues() {
+    let source = "valid\n[18446744073709551616:01]broken";
+    let selected = create_motion_text_structured_cues(syntax_options(source, &[1]));
+    assert!(
+        selected.sequence_json.is_some(),
+        "{:?}",
+        selected.diagnostics
+    );
+    assert_eq!(selected.line_mappings.len(), 1);
+    assert!(
+        !selected
+            .diagnostics
+            .iter()
+            .any(|d| d.code == "invalid-lrc-time")
+    );
+
+    let rejected = create_motion_text_structured_cues(syntax_options(source, &[1, 2]));
+    assert!(rejected.sequence_json.is_none());
+    assert!(rejected.line_mappings.is_empty());
+    assert!(
+        rejected
+            .diagnostics
+            .iter()
+            .any(|d| d.code == "invalid-lrc-time" && d.source_line == Some(2))
+    );
+}
+
+#[test]
+fn fixed_structured_timing_does_not_inherit_global_timing_allocator_warnings() {
+    let output = create_motion_text_structured_cues(syntax_options("[00:09]valid\nuntimed", &[1]));
+    assert!(output.sequence_json.is_some());
+    assert!(
+        !output
+            .diagnostics
+            .iter()
+            .any(|d| d.code == "mixed-lrc-timing")
     );
 }

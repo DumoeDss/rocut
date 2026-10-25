@@ -183,9 +183,9 @@ addEventListener("message", function connect(event) {
       // next frame until the old Worker and Blob are already gone.
       cleanup();
       if (data.bitmap instanceof ImageBitmap) port.postMessage({bitmap:data.bitmap,brokerRetired:retired}, [data.bitmap]);
-      else if (Array.isArray(data.fontMetrics) && Array.isArray(data.imageDimensions)) port.postMessage({fontMetrics:data.fontMetrics,imageDimensions:data.imageDimensions});
-      else if (Array.isArray(data.fontMetrics)) port.postMessage({fontMetrics:data.fontMetrics});
-      else if (Array.isArray(data.tunnelFontMeasurements)) port.postMessage({tunnelFontMeasurements:data.tunnelFontMeasurements});
+      else if (Array.isArray(data.fontMetrics) && Array.isArray(data.imageDimensions)) port.postMessage({fontMetrics:data.fontMetrics,imageDimensions:data.imageDimensions,brokerRetired:retired});
+      else if (Array.isArray(data.fontMetrics)) port.postMessage({fontMetrics:data.fontMetrics,brokerRetired:retired});
+      else if (Array.isArray(data.tunnelFontMeasurements)) port.postMessage({tunnelFontMeasurements:data.tunnelFontMeasurements,brokerRetired:retired});
       else port.postMessage({error:typeof data.error === "string" ? data.error : "Invalid worker result"});
       terminal = true;
       cleanup();

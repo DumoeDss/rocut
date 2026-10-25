@@ -54,7 +54,10 @@ function sleep(ms: number): Promise<void> {
 
 function result(
 	state: "reused" | "started",
-	target: { readonly entry: { readonly id: string; readonly pid: number }; readonly secret: { readonly port: number; readonly token: string } },
+	target: {
+		readonly entry: { readonly id: string; readonly pid: number };
+		readonly secret: { readonly port: number; readonly token: string };
+	},
 ): EnsureResult {
 	return {
 		state,
@@ -101,7 +104,7 @@ export async function ensureHost(args: EnsureArgs): Promise<EnsureResult> {
 	for (const { entry } of forProject.filter(
 		({ classification }) => classification.verdict === "dead",
 	)) {
-		await args.registry.remove(entry.id);
+		await args.registry.remove(entry.id, entry);
 	}
 
 	// Re-check right before spawning: keeps the two-CLIs-race window tight

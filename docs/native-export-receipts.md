@@ -39,6 +39,23 @@ bytes can confirm the original encoded snapshot even if subsequent edits changed
 the current project; recovery does not encode again or retarget the receipt.
 Completed single-item and list readbacks verify the actual file evidence.
 
+## Renderer progress transport
+
+The browser keeps at most one active progress request and one replaceable latest
+value; frame callbacks never append HTTP requests to an unbounded promise chain.
+Each request has a five-second deadline covering headers and response JSON, and
+is aborted on deadline or export cancellation. Only an explicit cancellation
+response or the existing host cancellation command requests renderer cancellation;
+a progress transport failure is telemetry loss.
+
+After successful encoding, the browser drains the active request and attempts one
+final value of `1`, with the same bounded deadline. It then closes the reporter
+before checking the live source fence and uploading the encoded bytes. Progress
+cannot establish completion or hide upload rejection. Rust still refuses running
+progress on terminal receipts, and publication still validates actual output.
+These transport tests do not establish which await blocked any historical export;
+that requires evidence from the running surface.
+
 ## Verification boundary
 
 Missing, trapping or malformed WASM is refused as

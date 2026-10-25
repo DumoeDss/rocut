@@ -398,6 +398,17 @@ type createMotionTextStructuredCuesExact = Assert<
 		) => wasm.CreateMotionTextStructuredCuesResult
 	>
 >;
+
+// Existing generated API callers may omit the new syntax selector entirely.
+type structuredTextSyntaxOptional = Assert<
+	Equal<
+		Pick<wasm.CreateMotionTextStructuredCuesOptions, "textSyntax">,
+		{ textSyntax?: "literal" | "jizura" }
+	>
+>;
+type structuredTextSyntaxUnion = Assert<
+	Equal<wasm.MotionTextStructuredTextSyntax, "literal" | "jizura">
+>;
 type inspectMediaFactsBytesExact = Assert<
 	Equal<typeof wasm.inspectMediaFactsBytes, (input: Uint8Array) => string>
 >;

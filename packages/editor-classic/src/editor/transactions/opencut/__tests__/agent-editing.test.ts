@@ -142,6 +142,16 @@ test("Agent text, transforms, curves, effects, masks and graphics survive native
 		name: "标题",
 		params: {
 			content: "字幕与标题",
+			fontFamily: "Fixture",
+			"mv.fontResource": JSON.stringify({
+				id: "font",
+				kind: "font",
+				mimeType: "font/ttf",
+				byteLength: 100,
+				sha256: "a".repeat(64),
+				attachmentKey: `programmatic-sha256-${"a".repeat(64)}`,
+				font: { family: "Fixture", style: "normal", weight: 400 },
+			}),
 			fontSize: 72,
 			"transform.positionX": 150,
 			"transform.scaleX": 1.2,

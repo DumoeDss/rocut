@@ -16,6 +16,7 @@ export async function runNativeMediaProcess({ executable, args, signal, maxBytes
 	return new Promise((resolve, reject) => {
 		const child = spawn(executable, [...args], { windowsHide: true, stdio: ["ignore", "pipe", "pipe"], env });
 		const chunks: Buffer[] = [];
+		let stderr = Buffer.alloc(0);
 		let size = 0, failure: Error | undefined;
 		const stop = (message: string) => { failure ??= Error(message); child.kill(); };
 		const abort = () => stop(`Native ${media} decode cancelled`);
@@ -27,11 +28,11 @@ export async function runNativeMediaProcess({ executable, args, signal, maxBytes
 			if (size > maxBytes) stop(`Native ${media} decoder output limit exceeded`);
 			else if (!failure) chunks.push(chunk);
 		});
-		child.stderr.resume();
+		child.stderr.on("data", (chunk: Buffer) => { stderr = Buffer.concat([stderr, chunk]).subarray(-4096); });
 		child.once("close", code => {
 			clearTimeout(timer); signal.removeEventListener("abort", abort);
 			if (failure) reject(failure);
-			else if (code !== 0) reject(Error(`Native ${media} decoder failed (exit ${code})`));
+			else if (code !== 0) reject(Error(`Native ${media} decoder failed (exit ${code}): ${stderr.toString('utf8')}`));
 			else resolve(Buffer.concat(chunks));
 		});
 		if (signal.aborted) abort();

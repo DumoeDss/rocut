@@ -7,6 +7,15 @@ const MAX_SAFE_TICKS: i64 = 9_007_199_254_740_991;
 
 #[cfg_attr(feature = "wasm", derive(tsify_next::Tsify))]
 #[cfg_attr(feature = "wasm", tsify(from_wasm_abi))]
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq)]
+#[serde(rename_all = "kebab-case")]
+pub enum MotionTextStructuredTextSyntax {
+    Literal,
+    Jizura,
+}
+
+#[cfg_attr(feature = "wasm", derive(tsify_next::Tsify))]
+#[cfg_attr(feature = "wasm", tsify(from_wasm_abi))]
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct MotionTextStructuredCue {
@@ -24,6 +33,8 @@ pub struct MotionTextStructuredCue {
 pub struct CreateMotionTextStructuredCuesOptions {
     pub sequence_id: String,
     pub source: String,
+    #[cfg_attr(feature = "wasm", tsify(optional))]
+    pub text_syntax: Option<MotionTextStructuredTextSyntax>,
     pub cues: Vec<MotionTextStructuredCue>,
     pub language: String,
     pub duration_ticks: i64,
@@ -68,7 +79,11 @@ pub fn create_motion_text_structured_cues(
     let base = CreateMotionTextSequenceOptions {
         sequence_id: options.sequence_id.clone(),
         source: options.source.clone(),
-        source_format: MotionTextSourceFormat::Plain,
+        source_format: if options.text_syntax == Some(MotionTextStructuredTextSyntax::Jizura) {
+            MotionTextSourceFormat::Jizura
+        } else {
+            MotionTextSourceFormat::Plain
+        },
         language: options.language,
         duration: options.duration_ticks,
         seed: options.seed,
@@ -151,6 +166,74 @@ pub fn create_motion_text_structured_cues(
             diagnostics,
             line_mappings: Vec::new(),
         };
+    }
+    if options.text_syntax == Some(MotionTextStructuredTextSyntax::Jizura) {
+        // Validate raw identity and timing above before interpreting display syntax.
+        // Parse the complete source once so blank-line gaps retain their meaning.
+        let parsed = parse_motion_text_source(ParseMotionTextSourceOptions {
+            sequence_id: options.sequence_id,
+            source: normalized,
+        });
+        let selected_lines: BTreeSet<u32> =
+            timed.iter().map(|cue| cue.source.source_line).collect();
+        diagnostics.extend(
+            parsed
+                .diagnostics
+                .into_iter()
+                .filter(|diagnostic| {
+                    match diagnostic.source_line {
+                        Some(line) => selected_lines.contains(&line),
+                        // This warning only concerns the ordinary factory's timing
+                        // allocator, which fixed structured endpoints bypass. Retain
+                        // other global diagnostics rather than assuming they are local.
+                        None => diagnostic.code != "mixed-lrc-timing",
+                    }
+                })
+                .map(|diagnostic| MotionTextSequenceBuildDiagnostic {
+                    severity: match diagnostic.severity {
+                        MotionTextDiagnosticSeverity::Warning => {
+                            MotionTextSequenceBuildDiagnosticSeverity::Warning
+                        }
+                        MotionTextDiagnosticSeverity::Error => {
+                            MotionTextSequenceBuildDiagnosticSeverity::Error
+                        }
+                    },
+                    code: diagnostic.code,
+                    message: diagnostic.message,
+                    source_line: diagnostic.source_line,
+                    cue_id: None,
+                }),
+        );
+        let mut by_line = BTreeMap::<u32, Vec<MotionTextSourceCue>>::new();
+        for source in parsed.cues {
+            by_line.entry(source.source_line).or_default().push(source);
+        }
+        for cue in &mut timed {
+            let matches = by_line.get(&cue.source.source_line);
+            if let Some(matches) = matches.filter(|matches| matches.len() == 1) {
+                let mut source = matches[0].clone();
+                source.id = cue.source.id.clone();
+                // The caller's fixed clock always wins over embedded timestamps
+                // and declared interlude lengths; no timing allocator is called.
+                source.start_ticks = Some(cue.start_time);
+                source.interlude_duration_ticks = None;
+                cue.source = source;
+            } else {
+                let mut diagnostic = error(
+                    "invalid-structured-cue-syntax",
+                    "Each selected source line must parse to exactly one cue; ignored or expanded lines cannot be mapped.",
+                );
+                diagnostic.source_line = Some(cue.source.source_line);
+                diagnostics.push(diagnostic);
+            }
+        }
+        if has_errors(&diagnostics) {
+            return CreateMotionTextStructuredCuesResult {
+                sequence_json: None,
+                diagnostics,
+                line_mappings: Vec::new(),
+            };
+        }
     }
     let built = build_timed_sequence(base, timed, diagnostics);
     CreateMotionTextStructuredCuesResult {

@@ -148,7 +148,6 @@ export class ProgrammaticNode extends VisualNode<
 					const resources = await loading;
 					signal.throwIfAborted();
 					if (
-						!source.recipe &&
 						!this.params.renderFrame &&
 						this.sandboxRealm?.isClosed !== false
 					)

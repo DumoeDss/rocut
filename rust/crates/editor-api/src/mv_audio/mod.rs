@@ -28,7 +28,7 @@ pub struct Review {
 }
 impl Review {
     fn valid(&self) -> bool {
-        self.status == "accepted"
+        matches!(self.status.as_str(), "accepted" | "required" | "unreviewed")
             && !self.reference.trim().is_empty()
             && self.reference.len() <= 1024
             && !self.reference.chars().any(char::is_control)
@@ -85,7 +85,7 @@ impl Data {
             .all(|s| digest(s))
             || p.vocal_sha256.as_ref().is_some_and(|s| !digest(s))
         {
-            return Err("Audio analysis requires valid provenance and an explicit accepted review reference".into());
+            return Err("Audio analysis requires valid provenance and an explicit review status reference".into());
         }
         if !self.duration.is_finite()
             || !(0.1..=1800.0).contains(&self.duration)

@@ -28,7 +28,10 @@ import type { AssetResolver } from "@opencut/editor-ports";
 import type { ProgrammaticFrameProvider } from "@opencut/editor-ports/host";
 import type { MotionTextFontRuntime } from "./motion-text/font-runtime";
 import type { Effect } from "../../effects/types";
-import { visibleElementsInDrawOrder, visibleTracksBottomToTop } from "./render-order";
+import {
+	visibleElementsInDrawOrder,
+	visibleTracksBottomToTop,
+} from "./render-order";
 
 const PREVIEW_MAX_IMAGE_SIZE = 2048;
 
@@ -131,6 +134,8 @@ function buildTrackNodes({
 				nodes.push(
 					new TextNode({
 						...element,
+						fontRuntime: motionTextFontRuntime,
+						projectId: motionTextProjectId,
 						transform: buildTransformFromParams({ params: element.params }),
 						opacity: readOpacityFromParams({ params: element.params }),
 						blendMode: readBlendModeFromParams({ params: element.params }),

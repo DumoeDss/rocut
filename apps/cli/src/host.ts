@@ -18,6 +18,8 @@
  * without invalidating reviews. Persistence and resync share one queue slot.
  */
 import { createServer } from "node:http";
+import { prepareMotionTextCues } from "./motion-text-prepare-cues";
+import { motionTextSegmentScopes } from "./motion-text-segment-scopes";
 import { createProgrammaticFrameService } from "./programmatic/frame-service";
 import { createProgrammaticAudioService } from "./programmatic/audio-service";
 import type { NativeVideoDecoder } from "./programmatic/video-decoder";
@@ -291,6 +293,8 @@ async function deriveTargetId(target: {
 	for (const entry of await target.registry.list()) {
 		if (entry.id !== target.baseId) continue;
 		if (normalizeProjectKey(entry.projectPath) === projectKey) continue; // our own stale entry
+		if (!target.registry.isProjectAllowed(entry.projectPath))
+			return `${target.baseId}-${projectIdDigest(projectKey)}`;
 		const secret = await target.registry.readSecret(entry.id);
 		if (
 			(
@@ -306,7 +310,24 @@ async function deriveTargetId(target: {
 }
 
 export async function startHost(args: StartHostArgs): Promise<RunningHost> {
+	return args.registry.withExclusive((registry) =>
+		startHostExclusive({ ...args, registry }),
+	);
+}
+
+async function startHostExclusive(args: StartHostArgs): Promise<RunningHost> {
 	const resolvedProject = path.resolve(args.projectRoot);
+	for (const entry of await args.registry.list()) {
+		if (
+			normalizeProjectKey(entry.projectPath) ===
+				normalizeProjectKey(resolvedProject) &&
+			(await classifyEntry(entry, await args.registry.readSecret(entry.id)))
+				.verdict !== "dead"
+		)
+			throw new Error(
+				"This project already has a live or unverified target; use host ensure or recover_production({restoreEnvironment:true}).",
+			);
+	}
 	const baseStore = new FileProjectStore({
 		root: args.projectRoot,
 		schemaVersion: CURRENT_PROJECT_VERSION,
@@ -466,7 +487,7 @@ export async function startHost(args: StartHostArgs): Promise<RunningHost> {
 			await programmaticBuilds.dispose();
 			await compositionProductions.dispose();
 			editorTasks.dispose();
-			await args.registry.remove(targetId).catch(() => undefined);
+			await args.registry.remove(targetId, entry).catch(() => undefined);
 			// Bun 1.2.18 can lose the close callback if active fetch connections
 			// are terminated only after close(). Drain once before it as well;
 			// the second drain below covers connections accepted in between.
@@ -694,6 +715,7 @@ async function handleApi(
 			respond(200, {
 				revision: await automation.revision(),
 				capabilities: await automation.capabilities(),
+				mvAuthor: { applyStatus: { route: "apply-status", readOnly: true, exactBatch: true }, pinnedTextFonts: true },
 				supportedOperations: await automation.supportedOperations(),
 				mediaImport: MEDIA_IMPORT_CAPABILITY,
 				motionText: {
@@ -858,6 +880,22 @@ async function handleApi(
 		}
 		if (request.method === "GET" && route[0] === "markers") {
 			respond(200, await automation.markers());
+			return;
+		}
+		if (request.method === "POST" && route[0] === "motion-text" && route[1] === "prepare-cues" && route.length === 2) {
+			const input: unknown = await readJsonBody(request);
+			respond(200, prepareMotionTextCues(input, context.motionTextCores?.structuredCues));
+			return;
+		}
+		if (request.method === "POST" && route[0] === "motion-text" && route[1] === "segment-scopes" && route.length === 2) {
+			const input: unknown = await readJsonBody(request);
+			respond(200, await motionTextSegmentScopes({
+				input, staticDir: context.staticDir,
+				readRecord: () => plane.baseStore.load({ id: plane.projectId }),
+				readClips: () => automation.clips(),
+				readTracks: () => automation.tracks(),
+				readSequences: () => automation.motionTextSequences?.() ?? Promise.resolve([]),
+			}));
 			return;
 		}
 		if (request.method === "GET" && route[0] === "motion-text-sequences") {
@@ -1208,24 +1246,28 @@ async function handleApi(
 		}
 		if (route[0] === "timeline-undos") {
 			if (
-				request.method === "GET" && route.length === 2 &&
-				route[1] === "probe" && !url.search
+				request.method === "GET" &&
+				route.length === 2 &&
+				route[1] === "probe" &&
+				!url.search
 			) {
 				respond(200, timelineUndoProbe());
 				return;
 			}
 			if (
-				request.method === "POST" && route.length === 2 &&
-				["commit", "receipt"].includes(route[1]) && !url.search
+				request.method === "POST" &&
+				route.length === 2 &&
+				["commit", "receipt"].includes(route[1]) &&
+				!url.search
 			) {
 				const body = await readUndoRequest(request);
 				const result = await plane.enqueue(() =>
 					route[1] === "commit"
 						? commitTimelineUndo({
-							request: body,
-							projectDirectory: context.projectDirectory,
-							automation: plane.automation(),
-						})
+								request: body,
+								projectDirectory: context.projectDirectory,
+								automation: plane.automation(),
+							})
 						: timelineUndoReceipt(context.projectDirectory, body),
 				);
 				respond(200, result);
@@ -1261,6 +1303,23 @@ async function handleApi(
 				return;
 			}
 			respond(404, { error: "timeline-replacement-route-unavailable" });
+			return;
+		}
+		if (request.method === "POST" && route[0] === "apply-status" && route.length === 1) {
+			const body = await readJsonBody(request);
+			if (body.expectedRevision === undefined || !Number.isSafeInteger(body.expectedRevision) || body.expectedRevision < 0 || !body.idempotencyKey) {
+				respond(400, { error: "apply-status requires the original revision and idempotency key" });
+				return;
+			}
+			const expectedRevision = revisionOf(body.expectedRevision);
+			const preview = await plane.enqueue(() => plane.automation().engine.dryRun({
+				operations: body.operations,
+				expectedRevision,
+				idempotencyKey: body.idempotencyKey,
+			}));
+			respond(200, preview.accepted && preview.replayed
+				? { status: "committed", result: preview.result }
+				: { status: "unknown" });
 			return;
 		}
 		if (request.method === "POST" && route[0] === "apply") {

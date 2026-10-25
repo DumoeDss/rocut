@@ -26,6 +26,7 @@ import {
 	requireHighChromaHost,
 } from "./host-export-protocol";
 import { ensureHost } from "./ensure";
+import { agentProjectScope } from "./agent-project-scope";
 import { CliRequestError, request } from "./host-request";
 import {
 	normalizeProjectKey,
@@ -81,7 +82,9 @@ async function resolveTarget(
 			timeoutMs: PROBE_TIMEOUT_FAST_MS,
 		});
 		if (resolved === null) {
-			throw new Error(`no live target matches --target ${target}`);
+			throw new Error(
+				`no live target matches --target ${target}${registry.recoveryHint}`,
+			);
 		}
 		return resolved;
 	}
@@ -91,7 +94,9 @@ async function resolveTarget(
 			timeoutMs: PROBE_TIMEOUT_FAST_MS,
 		});
 		if (resolved === null) {
-			throw new Error(`no live target matches --project ${project}`);
+			throw new Error(
+				`no live target matches --project ${project}${registry.recoveryHint}`,
+			);
 		}
 		return resolved;
 	}
@@ -99,7 +104,9 @@ async function resolveTarget(
 		timeoutMs: PROBE_TIMEOUT_FAST_MS,
 	});
 	if (resolved === null) {
-		throw new Error("no live target matches --target auto");
+		throw new Error(
+			`no live target matches --target auto${registry.recoveryHint}`,
+		);
 	}
 	return resolved;
 }
@@ -159,8 +166,14 @@ async function runCli(argv: readonly string[]): Promise<void> {
 		return;
 	}
 	const args = parseArgs(rest);
+	if (command === "apply" && args.flags.has("dry-run"))
+		throw new Error(
+			"apply --dry-run is unsupported by this host protocol; no request was sent. Use read to inspect current state; read/verify do not validate an operations batch.",
+		);
+	const scope = agentProjectScope();
 	const registry = new TargetRegistry(
 		flag(args, "targets-root") ?? defaultRegistryRoot(),
+		scope,
 	);
 
 	switch (command) {
@@ -172,6 +185,7 @@ async function runCli(argv: readonly string[]): Promise<void> {
 					`host ${subcommand ?? "<verb>"} requires a project directory`,
 				);
 			}
+			scope?.assertProject(projectDir, true);
 			const staticDir = await resolveHostStaticDirectory({
 				explicit: flag(args, "static"),
 				entryUrl: import.meta.url,
@@ -217,7 +231,7 @@ async function runCli(argv: readonly string[]): Promise<void> {
 		case "target": {
 			const subcommand = args.positional[0];
 			if (subcommand === "list") {
-				const entries = await registry.list();
+				const entries = await registry.listScoped();
 				if (entries.length === 0) {
 					process.stdout.write("no targets\n");
 					return;
@@ -232,6 +246,8 @@ async function runCli(argv: readonly string[]): Promise<void> {
 			}
 			if (subcommand === "reap") {
 				const scopeProject = flag(args, "project");
+				if (scopeProject !== undefined)
+					scope?.assertProject(scopeProject, true);
 				const dryRun = args.flags.has("dry-run");
 				const scopeKey =
 					scopeProject === undefined
@@ -251,7 +267,7 @@ async function runCli(argv: readonly string[]): Promise<void> {
 					}
 					if (classification.verdict === "dead") {
 						if (!dryRun) {
-							await registry.remove(entry.id);
+							await registry.remove(entry.id, entry);
 						}
 						process.stdout.write(
 							`${entry.id}: dead (${classification.reason}) — ${dryRun ? "dry-run, kept" : "removed"}\n`,
@@ -448,7 +464,9 @@ async function runCli(argv: readonly string[]): Promise<void> {
 				};
 			};
 			if (proof.description.schemaVersion !== 2)
-				throw new Error("verify requires frame-proof schema 2; update and restart the target daemon. Schema 1 reports reversed visual stacking.");
+				throw new Error(
+					"verify requires frame-proof schema 2; update and restart the target daemon. Schema 1 reports reversed visual stacking.",
+				);
 			process.stdout.write(
 				JSON.stringify(
 					{
@@ -463,7 +481,9 @@ async function runCli(argv: readonly string[]): Promise<void> {
 						elements: proof.description.elements.map(
 							(element) => `${element.z}:${element.type}:${element.id}`,
 						),
-						audio: proof.description.audio.map((element) => `${element.type}:${element.id}`),
+						audio: proof.description.audio.map(
+							(element) => `${element.type}:${element.id}`,
+						),
 						assets: proof.description.assets.map(
 							(asset) => `${asset.kind}:${asset.id}`,
 						),

@@ -4,6 +4,8 @@ import type { EffectPass } from "../../../effects/types";
 import type { BlendMode, Transform } from "../../../rendering";
 import { drawMeasuredTextLayout } from "../../../text/primitives";
 import type { MeasuredTextElement } from "../../../text/measure-element";
+import type { MotionTextFontRuntime } from "../motion-text/font-runtime";
+import { pinnedTextFont } from "./text-font-resource";
 
 export type TextNodeParams = TextElement & {
 	transform: Transform;
@@ -12,6 +14,8 @@ export type TextNodeParams = TextElement & {
 	canvasCenter: { x: number; y: number };
 	canvasHeight: number;
 	textBaseline?: CanvasTextBaseline;
+	fontRuntime?: MotionTextFontRuntime;
+	projectId?: string;
 };
 
 export interface ResolvedTextNodeState {
@@ -23,7 +27,54 @@ export interface ResolvedTextNodeState {
 	measuredText: MeasuredTextElement;
 }
 
-export class TextNode extends BaseNode<TextNodeParams, ResolvedTextNodeState> {}
+export class TextNode extends BaseNode<TextNodeParams, ResolvedTextNodeState> {
+	private prepared:
+		| {
+				generation: number;
+				text: string;
+				source: string;
+				pending: Promise<string>;
+		  }
+		| undefined;
+
+	async measurementParams(signal?: AbortSignal): Promise<TextNodeParams> {
+		const font = pinnedTextFont(this.params.params["mv.fontResource"]);
+		if (!font) return this.params;
+		if (font.family !== this.params.params.fontFamily)
+			throw Error(
+				"Text font selection differs from its fixed source; choose the matching font file",
+			);
+		const { fontRuntime, projectId } = this.params;
+		if (!fontRuntime || !projectId)
+			throw Error("Pinned text font runtime is unavailable");
+		signal?.throwIfAborted();
+		const generation = fontRuntime.inspect().generation;
+		const text = String(this.params.params.content ?? "");
+		const source = String(this.params.params["mv.fontResource"]);
+		if (
+			!this.prepared ||
+			this.prepared.generation !== generation ||
+			this.prepared.text !== text ||
+			this.prepared.source !== source
+		)
+			this.prepared = {
+				generation,
+				text,
+				source,
+				pending: fontRuntime
+					.prepareFont({ projectId, font, text })
+					.then((value) => value.family),
+			};
+		const family = await this.prepared.pending;
+		signal?.throwIfAborted();
+		if (generation !== fontRuntime.inspect().generation)
+			throw Error("Text font preparation became stale");
+		return {
+			...this.params,
+			params: { ...this.params.params, fontFamily: family },
+		};
+	}
+}
 
 export function renderTextToContext({
 	node,
