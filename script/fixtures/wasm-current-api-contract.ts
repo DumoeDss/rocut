@@ -344,6 +344,9 @@ type resolveEffectLayerParamsJsonExact = Assert<
 type resolveMediaCropJsonExact = Assert<
 	Equal<typeof wasm.resolveMediaCropJson, (input: string) => string>
 >;
+type resolvePinnedTextFontJsonExact = Assert<
+	Equal<typeof wasm.resolvePinnedTextFontJson, (input: string) => string>
+>;
 type resolveGlassObjectParamsJsonExact = Assert<
 	Equal<typeof wasm.resolveGlassObjectParamsJson, (input: string) => string>
 >;

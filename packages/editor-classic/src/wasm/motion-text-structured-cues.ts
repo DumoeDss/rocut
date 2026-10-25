@@ -55,7 +55,12 @@ export function createStructuredMotionTextSequence({
 	const candidate = core ?? Reflect.get(wasm, "createMotionTextStructuredCues");
 	if (typeof candidate !== "function")
 		throw new Error("Structured motion-text capability is unavailable");
-	const raw: unknown = candidate(options);
+	const raw: unknown = candidate({
+		...options,
+		seed: options.seed,
+		cues: [...options.cues],
+		rendererSupport: [...options.rendererSupport],
+	});
 	const built = decodeSequenceBuildResult(raw);
 	if (
 		raw === null ||

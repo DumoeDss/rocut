@@ -31,7 +31,8 @@ export async function prepareJzNativeFrames({plan,input,signal}:{plan:MvRecipePl
 			const fonts=new Map<string,MotionTextResolvedFont>();
 			for(let i=0;i<r.fonts.length;i++){signal?.throwIfAborted();const f=r.fonts[i]!,d=f.resource.font;if(!d)throw Error("JIZURA physical font descriptor absent");
 				const family=`__mv_jz_${f.resource.sha256}_${session}_${i}`;
-				const face=new FontFace(family,parts[i+1]!.slice().buffer,{style:d.style,weight:String(d.weight),variationSettings:Object.entries(d.axes??{}).map(([tag,v])=>`"${tag}" ${v}`).join(",")||"normal"});
+				const descriptors: FontFaceDescriptors & { variationSettings: string } = {style:d.style,weight:String(d.weight),variationSettings:Object.entries(d.axes??{}).map(([tag,v])=>`"${tag}" ${v}`).join(",")||"normal"};
+				const face=new FontFace(family,parts[i+1]!.slice().buffer,descriptors);
 				await face.load();faces.push(face);signal?.throwIfAborted();document.fonts.add(face);
 				fonts.set(f.fontId,{family,style:d.style,weight:d.weight,fingerprint:key(f.resource)});
 			}

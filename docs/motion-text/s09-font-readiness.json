@@ -3,8 +3,8 @@
 	"generatedBy": "script/probe-motion-text-font-readiness.mjs",
 	"source": {
 		"canonicalWasm": {
-			"bytes": 15391704,
-			"sha256": "b1b93d92ae604b2bdc175b7653546b08977ecb12da82029447f9481cb4bdc8de"
+			"bytes": 15453329,
+			"sha256": "e02257b0ca64adcab3e7c39db7270bdf7a834b644393af235536e803a21bdf89"
 		},
 		"fontCatalog": {
 			"bytes": 13609,

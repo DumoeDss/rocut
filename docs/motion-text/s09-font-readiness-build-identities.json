@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "baselineHost": "x86_64-pc-windows-msvc",
+  "builds": {
+    "x86_64-pc-windows-msvc": {
+      "wasm": {
+        "bytes": 15453329,
+        "sha256": "e02257b0ca64adcab3e7c39db7270bdf7a834b644393af235536e803a21bdf89"
+      },
+      "reviewedEvidence": {
+        "kind": "T7 private optimized source build",
+        "rustSourceCommit": "502b1417c547bb70883587c26f63da16e88ab852",
+        "rustc": "1.88.0",
+        "wasmPack": "0.13.1",
+        "wasmOpt": "117",
+        "profile": "release, wasm-opt -O, locked offline Cargo",
+        "receiptSha256": "0ef78942bfa9d74bbe633422655733a537a9a611911186af888abdb699e01fdf"
+      }
+    },
+    "x86_64-unknown-linux-gnu": {
+      "wasm": {
+        "bytes": 15453554,
+        "sha256": "2ce3a34f85c681cce770a17ffe2d0e4fdcc2ad8004161ec23403e45f6f89d37a"
+      },
+      "reviewedEvidence": {
+        "kind": "GitHub Actions optimized source build; bounded report diff contains only WASM bytes and SHA-256",
+        "sourceCommit": "86377bf97d066d1221e4cab370c2c3398b33b48a",
+        "job": "https://github.com/DumoeDss/rocut/actions/runs/40230252872/job/121280439769",
+        "activeToolchain": "1.88.0-x86_64-unknown-linux-gnu",
+        "wasmPack": "0.13.1",
+        "wasmOptExecuted": true
+      }
+    },
+    "aarch64-apple-darwin": {
+      "wasm": {
+        "bytes": 15450341,
+        "sha256": "df765e95a6cc2bb1f3cfee1c4d8177c808746144d9e21f3b3aeff58e3c8c14fb"
+      },
+      "reviewedEvidence": {
+        "kind": "GitHub Actions optimized source build; bounded report diff contains only WASM bytes and SHA-256",
+        "sourceCommit": "86377bf97d066d1221e4cab370c2c3398b33b48a",
+        "job": "https://github.com/DumoeDss/rocut/actions/runs/40230252872/job/121280439535",
+        "activeToolchain": "1.88.0-aarch64-apple-darwin",
+        "wasmPack": "0.13.1",
+        "wasmPackDownloadHost": "x86_64-apple-darwin",
+        "wasmOptExecuted": true
+      }
+    }
+  }
+}

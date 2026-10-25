@@ -1,2 +1,5 @@
 # Font licenses are upstream, digest-pinned assets; preserve their exact bytes.
 apps/web/public/motion-text/fonts/licenses/*-OFL.txt -text
+
+# The generator and --check compare the deterministic SBOM byte for byte.
+SBOM.md text eol=lf
