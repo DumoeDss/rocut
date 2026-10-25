@@ -5,6 +5,22 @@ import type { request } from "../host-request";
 const resolved = { secret: { port: 12345, token: "fixture-only" } };
 const bytes = (value: unknown) =>
 	new TextEncoder().encode(JSON.stringify(value));
+
+test("programmatic-validate maps to the authenticated readonly Rust route", async () => {
+	const calls: unknown[][] = [],
+		source = { runtime: "canvas-worker" };
+	const invoke: typeof request = async (...args) => {
+		calls.push(args);
+		return { producerFingerprint: "a".repeat(64) };
+	};
+	await runNativeReadCli("programmatic-validate", ["source.json"], resolved, {
+		request: invoke,
+		readSpec: async () => bytes(source),
+	});
+	expect(calls).toEqual([
+		[resolved.secret, "POST", "programmatic/validate", source],
+	]);
+});
 test("record uses the existing authenticated read endpoint and preserves its response", async () => {
 	const calls: unknown[][] = [];
 	const result = {

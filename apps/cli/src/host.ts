@@ -19,6 +19,7 @@
  */
 import { createServer } from "node:http";
 import * as nativeWasm from "opencut-wasm";
+import { validateProgrammaticSource } from './programmatic/validate-source';
 import { prepareMotionTextCues } from "./motion-text-prepare-cues";
 import { motionTextSegmentScopes } from "./motion-text-segment-scopes";
 import { createProgrammaticFrameService } from "./programmatic/frame-service";
@@ -607,6 +608,10 @@ async function handleApi(
 		response.end(JSON.stringify(body));
 	};
 	try {
+		if (request.method === 'POST' && route.length === 2 && route[0] === 'programmatic' && route[1] === 'validate') {
+			respond(200, validateProgrammaticSource(await readJsonBody(request)));
+			return;
+		}
 		if (
 			request.method === "POST" &&
 			route.length === 2 &&

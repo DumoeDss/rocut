@@ -4,7 +4,7 @@ import type { ResolvedTarget } from "./target-registry";
 
 /** Read-only protocol mapping. apply-status observes a prior batch through native dryRun. */
 export async function runNativeReadCli(
-	command: "record" | "apply-status",
+	command: "record" | "apply-status" | "programmatic-validate",
 	positional: readonly string[],
 	resolved: Pick<ResolvedTarget, "secret">,
 	io: {
@@ -13,6 +13,17 @@ export async function runNativeReadCli(
 	} = {},
 ): Promise<unknown> {
 	const invoke = io.request ?? request;
+	if (command === "programmatic-validate") {
+		if (positional.length !== 1)
+			throw new Error("usage: rocut programmatic-validate <source.json>");
+		const bytes = await (io.readSpec ?? readFile)(positional[0]!);
+		if (bytes.byteLength > 4 * 1024 ** 2)
+			throw new Error("Programmatic source exceeds the JSON limit");
+		const source: unknown = JSON.parse(
+			new TextDecoder("utf-8", { fatal: true }).decode(bytes),
+		);
+		return invoke(resolved.secret, "POST", "programmatic/validate", source);
+	}
 	if (command === "record") {
 		if (positional.length) throw new Error("usage: rocut record");
 		return invoke(resolved.secret, "GET", "record");

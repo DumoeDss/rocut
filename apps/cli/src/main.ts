@@ -123,6 +123,7 @@ export const USAGE_LINES: readonly string[] = [
 	"  rocut read [--target <id|auto>] [--project <dir>]",
 	"  rocut record [--target <id|auto>] [--project <dir>] (complete read-only native record)",
 	"  rocut apply-status <original-batch.json> [--target <id|auto>] [--project <dir>] (read-only)",
+	"  rocut programmatic-validate <source.json> [--target <id|auto>] [--project <dir>] (read-only Rust source validation)",
 	"  rocut editing catalog [--target <id|auto>] [--project <dir>]",
 	"  rocut capabilities [--target <id|auto>] [--project <dir>]",
 	"  rocut media import <spec.json> [--target <id|auto>] [--project <dir>]",
@@ -498,6 +499,7 @@ async function runCli(argv: readonly string[]): Promise<void> {
 			return;
 		}
 		case "record":
+		case "programmatic-validate":
 		case "apply-status": {
 			const result = await runNativeReadCli(
 				command,
