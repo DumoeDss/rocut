@@ -48,6 +48,12 @@ struct Options {
         skip_serializing_if = "Option::is_none"
     )]
     range: Option<Range>,
+    #[serde(
+        default,
+        deserialize_with = "present",
+        skip_serializing_if = "Option::is_none"
+    )]
+    mux: Option<crate::native_export_mux::Mux>,
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
@@ -325,6 +331,16 @@ fn validate_request(request: &Request) -> Result<()> {
         );
     }
     let options = &request.options;
+    if let Some(mux) = &options.mux {
+        if let Err(error) = mux.validate(
+            options
+                .range
+                .as_ref()
+                .map(|range| (range.start_time, range.end_time)),
+        ) {
+            return refuse("invalid-request", &error);
+        }
+    }
     if !matches!(options.format.as_str(), "mp4" | "webm")
         || !matches!(
             options.quality.as_str(),

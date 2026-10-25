@@ -201,10 +201,11 @@ export async function prepareNightNative({ binding, beats, resources, fontInstan
                             const resource = stack.resources[index];
                             const bytes = fontSources.get(resource.id);
                             if (!bytes || !resource.font || await digest(bytes) !== resource.sha256) throw Error("Night native font bytes changed after admission");
-                            const face = new FontFace(stack.aliases[index], bytes, {
+                            const descriptors: FontFaceDescriptors & { variationSettings: string } = {
                                 weight: String(resource.font.weight), style: resource.font.style,
                                 variationSettings: Object.entries(resource.font.axes ?? {}).map(([tag, number]) => `"${tag}" ${number}`).join(",") || "normal",
-                            });
+                            };
+                            const face = new FontFace(stack.aliases[index], bytes, descriptors);
                             await face.load(); document.fonts.add(face); faces.push(face); fonts.push({ resourceId: resource.id, face });
                         }
                     }

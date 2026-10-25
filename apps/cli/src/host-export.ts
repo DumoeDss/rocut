@@ -53,6 +53,22 @@ export type ExportJobStatus =
 	| "cancelled";
 
 export interface ExportOptions {
+	readonly mux?: {
+		readonly version: 1;
+		readonly frameRate: {
+			readonly numerator: number;
+			readonly denominator: number;
+		};
+		readonly sampleRate: 48000;
+		readonly segments: readonly {
+			readonly nativeJobId: string;
+			readonly outputSha256: string;
+			readonly scopeDigest: string;
+			readonly startFrame: number;
+			readonly frameCount: number;
+			readonly sampleCount: number;
+		}[];
+	};
 	readonly format: ExportFormat;
 	readonly quality: ExportQuality;
 	readonly includeAudio?: boolean;

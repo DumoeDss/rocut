@@ -60,10 +60,10 @@ fn imports_completed_reviewed_creator_artifacts_without_paths_or_new_analysis() 
     assert!(d.get("path").is_none());
 }
 #[test]
-fn reject_incomplete_unreviewed_mismatched_or_malformed_audio_evidence() {
+fn reject_incomplete_unknown_review_mismatched_or_malformed_audio_evidence() {
     for (pointer, value) in [
         ("/manifest/status", json!("incomplete")),
-        ("/review/status", json!("required")),
+        ("/review/status", json!("guessed")),
         ("/review/reference", json!("")),
         ("/expectedAudioSha256", json!("f".repeat(64))),
         ("/musicFile/sha256", json!("f".repeat(64))),
@@ -83,6 +83,20 @@ fn reject_incomplete_unreviewed_mismatched_or_malformed_audio_evidence() {
     v["envelopes"]["channels"]["vocal_rms"] = json!(vec![0; 8]);
     v["envelopes"]["normalization"]["scales"]["vocal_rms"] = json!(0.1);
     assert!(prepare(&v)["error"].is_string());
+}
+#[test]
+fn unreviewed_analysis_can_preview_without_fabricating_acceptance() {
+    for status in ["required", "unreviewed"] {
+        let mut v = input();
+        v["review"] = json!({"status":status,"reference":"Measured producer analysis; user review remains pending"});
+        let d = prepare(&v)["data"].clone();
+        assert_eq!(d["provenance"]["review"]["status"], status);
+        assert_eq!(v["manifest"]["review"], "required");
+        assert_eq!(v["music"]["review"], "required");
+        assert!(resolve(&source(), Some(d), 0)["error"].is_null());
+        v["expectedAudioSha256"] = json!("f".repeat(64));
+        assert!(prepare(&v)["error"].is_string());
+    }
 }
 #[test]
 fn analysis_binding_and_responses_validate_before_persistence_and_never_render_unresolved() {

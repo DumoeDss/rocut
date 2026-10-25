@@ -79,6 +79,45 @@ test("a confirmed retired broker is reused with a fresh private port, then close
 	expect(realm.isClosed).toBe(true);
 });
 
+for (const operation of [
+	"measure-resources",
+	"measure-fonts",
+	"measure-tunnel-fonts",
+] as const)
+	test(`${operation} reuses only a confirmed retired broker with fresh ports`, async () => {
+		harness = installSandboxHarness();
+		const lifetime = new AbortController();
+		const realm = new ProgrammaticSandboxRealm(lifetime.signal);
+		for (let index = 0; index < 2; index++) {
+			const pending = runProgrammaticSandbox({
+				source,
+				frame,
+				resources: [],
+				operation,
+				realm,
+			});
+			for (let i = 0; i < 12; i++) await Promise.resolve();
+			if (index === 0) harness.iframe.onload();
+			const port = harness.channels[index].port1;
+			port.onmessage?.({ data: "ready" });
+			port.onmessage?.({
+				data: {
+					fontMetrics: [],
+					imageDimensions: [],
+					tunnelFontMeasurements: [],
+					brokerRetired: true,
+				},
+			});
+			await pending;
+			expect(realm.isClosed).toBe(false);
+			expect(harness.removeCalls).toBe(0);
+			expect(port.closed).toBe(true);
+		}
+		expect(harness.connections).toBe(2);
+		lifetime.abort();
+		expect(harness.removeCalls).toBe(1);
+	});
+
 for (const outcome of ["unconfirmed", "failed-retirement", "abort", "timeout"])
 	test(`${outcome} closes the broker instead of retaining it for the next frame`, async () => {
 		harness = installSandboxHarness();

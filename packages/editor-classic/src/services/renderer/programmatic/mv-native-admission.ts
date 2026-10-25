@@ -20,6 +20,7 @@ import type { HeartNativeFramePacket } from "./mv-heart-native-transport";
 import type { NightNativeFramePacket } from "./mv-night-native-transport";
 import type { MemoriesNativeFramePacket } from "./mv-memories-native-transport";
 import type { JzNativeFramePacket } from "./mv-jz-native-transport";
+import type { ProgrammaticSandboxRealm } from "./sandbox-realm";
 
 export interface MvNativeRasterInput {
 	width: number;
@@ -63,6 +64,7 @@ export async function prepareMvNativeRasterTicket({
 	provider,
 	signal,
 	diagnosticNativePostMode,
+	realm,
 }: {
 	source: ProgrammaticSource;
 	frame: ProgrammaticFrame;
@@ -70,6 +72,7 @@ export async function prepareMvNativeRasterTicket({
 	provider?: ProgrammaticFrameProvider;
 	signal?: AbortSignal;
 	diagnosticNativePostMode?: "scene-only";
+	realm?: ProgrammaticSandboxRealm;
 }): Promise<MvNativeRasterTicket> {
 	signal?.throwIfAborted();
 	source = structuredClone(source);
@@ -82,7 +85,7 @@ export async function prepareMvNativeRasterTicket({
 		imageDimensions: undefined,
 	});
 	resources = snapshotImageResources(resources);
-	frame = await resolveMvResourceFrame({ source, frame, resources, signal });
+	frame = await resolveMvResourceFrame({ source, frame, resources, signal, realm });
 	if (
 		!frame.recipePlan ||
 		frame.fontMetricRequests?.length ||

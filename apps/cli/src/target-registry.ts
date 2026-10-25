@@ -18,12 +18,21 @@
  * Legacy ISO-string entries (written before this contract fix) are read
  * tolerantly: never routable, reap-eligible once their pid is confirmed gone.
  */
-import { mkdir, readFile, rename, rm, writeFile } from "node:fs/promises";
+import {
+	lstat,
+	mkdir,
+	readFile,
+	rename,
+	rm,
+	rmdir,
+	writeFile,
+} from "node:fs/promises";
 import { existsSync, realpathSync } from "node:fs";
 import http from "node:http";
 import os from "node:os";
 import path from "node:path";
 import { createHash, randomBytes } from "node:crypto";
+import type { AgentProjectScope } from "./agent-project-scope";
 
 export interface TargetEntry {
 	readonly id: string;
@@ -328,13 +337,74 @@ function parseSecret(value: unknown): TargetSecret | null {
 export class TargetRegistry {
 	private readonly rootPath: string;
 
-	constructor(root: string) {
+	constructor(
+		root: string,
+		private readonly agentScope?: AgentProjectScope,
+		private readonly lease?: { active: boolean },
+	) {
 		this.rootPath = root;
+	}
+
+	/** Cross-process serialization. An abandoned lock fails closed; never steal it. */
+	async withExclusive<T>(
+		action: (registry: TargetRegistry) => Promise<T>,
+		options: { timeoutMs?: number; signal?: AbortSignal } = {},
+	): Promise<T> {
+		if (this.lease?.active) return action(this);
+		await mkdir(this.rootPath, { recursive: true });
+		const lock = path.join(this.rootPath, "targets.write-lock");
+		const deadline = Date.now() + (options.timeoutMs ?? 10_000);
+		for (;;) {
+			options.signal?.throwIfAborted();
+			try {
+				await mkdir(lock);
+				break;
+			} catch (error) {
+				if ((error as NodeJS.ErrnoException).code !== "EEXIST") throw error;
+				if (Date.now() >= deadline)
+					throw new Error(
+						"Target registry lock timed out; no entries or secrets were changed. Inspect the lock owner before retrying.",
+					);
+				await new Promise((resolve) => setTimeout(resolve, 25));
+			}
+		}
+		const lease = { active: true };
+		const identity = await lstat(lock, { bigint: true });
+		try {
+			options.signal?.throwIfAborted();
+			return await action(
+				new TargetRegistry(this.rootPath, this.agentScope, lease),
+			);
+		} finally {
+			lease.active = false;
+			const current = await lstat(lock, { bigint: true });
+			if (
+				!current.isDirectory() ||
+				current.isSymbolicLink() ||
+				current.dev !== identity.dev ||
+				current.ino !== identity.ino ||
+				current.birthtimeNs !== identity.birthtimeNs
+			)
+				throw new Error(
+					"Target registry lock identity changed; refusing to remove it",
+				);
+			await rmdir(lock);
+		}
+	}
+
+	/** ID occupancy checks may inspect metadata without reading foreign secrets. */
+	isProjectAllowed(projectPath: string): boolean {
+		return this.agentScope?.allows(projectPath) ?? true;
 	}
 
 	/** The registry root (ensure forwards it to spawned daemons). */
 	get root(): string {
 		return this.rootPath;
+	}
+	get recoveryHint(): string {
+		return this.agentScope
+			? " Call recover_production({restoreEnvironment:true}) and use its current target."
+			: "";
 	}
 
 	private get indexPath(): string {
@@ -346,9 +416,8 @@ export class TargetRegistry {
 	}
 
 	/**
-	 * Temp-file-then-rename so a crash mid-write never truncates the index —
-	 * the same accepted non-atomicity class as the host supervisor's
-	 * `reapEntries` (documented there, not fixed here: no lease exists).
+	 * Temp-file-then-rename prevents truncation; callers hold the registry
+	 * lease across their complete read/modify/write operation.
 	 */
 	private async writeIndex(entries: readonly TargetEntry[]): Promise<void> {
 		const temp = `${this.indexPath}.${randomBytes(4).toString("hex")}.tmp`;
@@ -365,8 +434,24 @@ export class TargetRegistry {
 		readonly entry: TargetEntry;
 		readonly secret: TargetSecret;
 	}): Promise<void> {
+		this.agentScope?.assertProject(args.entry.projectPath);
+		if (!this.lease?.active)
+			return this.withExclusive((registry) => registry.register(args));
 		await mkdir(path.join(this.rootPath, "targets"), { recursive: true });
 		const existing = await this.list();
+		const incumbent = existing.find((entry) => entry.id === args.entry.id);
+		if (args.secret.id !== args.entry.id)
+			throw new Error("Target entry/secret ID mismatch");
+		if (
+			incumbent &&
+			normalizeProjectKey(incumbent.projectPath) !==
+				normalizeProjectKey(args.entry.projectPath) &&
+			(!this.isProjectAllowed(incumbent.projectPath) ||
+				(incumbent.startedAt >= osBootTimeMs() && pidAlive(incumbent.pid)))
+		)
+			throw new Error(
+				`Target ID ${args.entry.id} is occupied by another project`,
+			);
 		const next = [
 			args.entry,
 			...existing.filter((entry) => entry.id !== args.entry.id),
@@ -395,6 +480,11 @@ export class TargetRegistry {
 	}
 
 	async readSecret(id: string): Promise<TargetSecret | null> {
+		if (this.agentScope) {
+			const entry = (await this.list()).find((entry) => entry.id === id);
+			if (!entry) return null;
+			this.agentScope.assertProject(entry.projectPath);
+		}
 		const file = this.secretPath(id);
 		if (!existsSync(file)) return null;
 		try {
@@ -407,8 +497,27 @@ export class TargetRegistry {
 		}
 	}
 
-	async remove(id: string): Promise<void> {
+	async remove(id: string, expected?: TargetEntry): Promise<void> {
+		if (!this.lease?.active)
+			return this.withExclusive((registry) => registry.remove(id, expected));
 		const existing = await this.list();
+		if (expected) {
+			const current = existing.find((entry) => entry.id === id);
+			if (
+				!current ||
+				current.pid !== expected.pid ||
+				current.port !== expected.port ||
+				current.startedAt !== expected.startedAt ||
+				normalizeProjectKey(current.projectPath) !==
+					normalizeProjectKey(expected.projectPath)
+			)
+				return;
+		}
+		if (this.agentScope) {
+			const entry = existing.find((entry) => entry.id === id);
+			if (!entry) return;
+			this.agentScope.assertProject(entry.projectPath);
+		}
 		await this.writeIndex(existing.filter((entry) => entry.id !== id));
 		await rm(this.secretPath(id), { force: true });
 	}
@@ -422,9 +531,12 @@ export class TargetRegistry {
 		id: string,
 		fields: { readonly lastActivityAt: number },
 	): Promise<boolean> {
+		if (!this.lease?.active)
+			return this.withExclusive((registry) => registry.patchEntry(id, fields));
 		const entries = [...(await this.list())];
 		const index = entries.findIndex((entry) => entry.id === id);
 		if (index < 0) return false;
+		this.agentScope?.assertProject(entries[index].projectPath);
 		entries[index] = { ...entries[index], ...fields };
 		await this.writeIndex(entries);
 		return true;
@@ -442,7 +554,7 @@ export class TargetRegistry {
 	): Promise<ResolvedTarget | null> {
 		if (selector === "auto") {
 			const live: ResolvedTarget[] = [];
-			for (const entry of await this.list()) {
+			for (const entry of await this.listScoped()) {
 				const secret = await this.readSecret(entry.id);
 				if (
 					secret !== null &&
@@ -453,14 +565,13 @@ export class TargetRegistry {
 			}
 			if (live.length === 0) return null;
 			if (live.length >= 2) {
-				throw new AmbiguousTargetsError(
-					live.map(({ entry }) => entry),
-				);
+				throw new AmbiguousTargetsError(live.map(({ entry }) => entry));
 			}
 			return live[0];
 		}
 		for (const entry of await this.list()) {
 			if (entry.id !== selector) continue;
+			this.agentScope?.assertProject(entry.projectPath);
 			const secret = await this.readSecret(entry.id);
 			if (
 				secret !== null &&
@@ -481,9 +592,11 @@ export class TargetRegistry {
 		projectPath: string,
 		options?: { readonly timeoutMs?: number },
 	): Promise<ResolvedTarget | null> {
+		this.agentScope?.assertProject(projectPath, true);
 		const key = normalizeProjectKey(projectPath);
 		for (const entry of await this.list()) {
 			if (normalizeProjectKey(entry.projectPath) !== key) continue;
+			this.agentScope?.assertProject(entry.projectPath);
 			const secret = await this.readSecret(entry.id);
 			if (
 				secret !== null &&
@@ -496,9 +609,7 @@ export class TargetRegistry {
 	}
 
 	/** Classify every entry (reap and ensure's fail-closed path work off this). */
-	async classifyAll(options?: {
-		readonly timeoutMs?: number;
-	}): Promise<
+	async classifyAll(options?: { readonly timeoutMs?: number }): Promise<
 		readonly {
 			readonly entry: TargetEntry;
 			readonly secret: TargetSecret | null;
@@ -510,7 +621,7 @@ export class TargetRegistry {
 			secret: TargetSecret | null;
 			classification: EntryClassification;
 		}[] = [];
-		for (const entry of await this.list()) {
+		for (const entry of await this.listScoped()) {
 			const secret = await this.readSecret(entry.id);
 			classified.push({
 				entry,
@@ -519,6 +630,14 @@ export class TargetRegistry {
 			});
 		}
 		return classified;
+	}
+
+	/** Presentation/routing only: storage writes must keep the full global index. */
+	async listScoped(): Promise<readonly TargetEntry[]> {
+		const entries = await this.list();
+		return this.agentScope
+			? entries.filter((entry) => this.agentScope!.allows(entry.projectPath))
+			: entries;
 	}
 }
 

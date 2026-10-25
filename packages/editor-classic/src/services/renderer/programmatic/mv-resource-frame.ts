@@ -9,6 +9,7 @@ import { runProgrammaticSandbox } from "./sandbox-runtime";
 import { canonicalMvResourceRequest } from "./mv-canonical-frame";
 import { prepareTunnelFontPacket } from "./mv-tunnel-font-packet";
 import type { TunnelFontPacket } from "./mv-tunnel-font-packet";
+import type { ProgrammaticSandboxRealm } from "./sandbox-realm";
 
 async function readRecipeResource({
 	declared,
@@ -50,11 +51,13 @@ export async function resolveMvResourceFrame({
 	frame,
 	resources,
 	signal,
+	realm,
 }: {
 	source: ProgrammaticSource;
 	frame: ProgrammaticFrame;
 	resources: readonly ResolvedProgrammaticResource[];
 	signal?: AbortSignal;
+	realm?: ProgrammaticSandboxRealm;
 }): Promise<ProgrammaticFrame> {
 	signal?.throwIfAborted();
 	if (source.recipe) {
@@ -127,6 +130,7 @@ export async function resolveMvResourceFrame({
 				frame: pending,
 				resources,
 				operation: "measure-tunnel-fonts",
+				realm,
 				signal,
 			})
 		: undefined;
@@ -137,6 +141,7 @@ export async function resolveMvResourceFrame({
 					frame: pending,
 					resources,
 					operation: "measure-resources",
+					realm,
 					signal,
 				})
 			: undefined;
@@ -151,6 +156,7 @@ export async function resolveMvResourceFrame({
 					frame: pending,
 					resources,
 					operation: "measure-fonts",
+					realm,
 					signal,
 				})
 			: undefined);

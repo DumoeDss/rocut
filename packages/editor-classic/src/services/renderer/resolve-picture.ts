@@ -14,6 +14,7 @@ import {
 import type { ResolvedVisualSourceNodeState } from "./nodes/visual-node";
 import { resolveVisualState } from "./resolve-visual-state";
 import type { ResolveContext } from "./resolve-context";
+import { resolveMediaCrop } from "../../wasm/media-crop";
 
 export async function resolveVideoNode({
 	node,
@@ -49,11 +50,16 @@ export async function resolveVideoNode({
 		return null;
 	}
 
+	const sourceCrop = resolveMediaCrop({
+		crop: node.params.crop,
+		sourceWidth: frame.canvas.width,
+		sourceHeight: frame.canvas.height,
+	});
 	const visualState = resolveVisualState({
 		params: node.params,
 		context,
-		sourceWidth: frame.canvas.width,
-		sourceHeight: frame.canvas.height,
+		sourceWidth: sourceCrop?.width ?? frame.canvas.width,
+		sourceHeight: sourceCrop?.height ?? frame.canvas.height,
 	});
 	if (!visualState) {
 		return null;
@@ -63,8 +69,9 @@ export async function resolveVideoNode({
 		...visualState,
 		source: frame.canvas,
 		sourceVersion: `${node.params.mediaId}:${frame.timestamp}`,
-		sourceWidth: frame.canvas.width,
-		sourceHeight: frame.canvas.height,
+		sourceWidth: sourceCrop?.width ?? frame.canvas.width,
+		sourceHeight: sourceCrop?.height ?? frame.canvas.height,
+		sourceCrop,
 	};
 }
 
@@ -75,15 +82,23 @@ export async function resolveImageNode({
 	node: ImageNode;
 	context: ResolveContext;
 }): Promise<ResolvedVisualSourceNodeState | null> {
+	const clipTime = context.time - node.params.timeOffset;
+	if (!context.sample && (clipTime < 0 || clipTime >= node.params.duration))
+		return null;
 	const source = await loadImageSource({
 		url: node.params.url,
 		maxSourceSize: node.params.maxSourceSize,
 	});
+	const sourceCrop = resolveMediaCrop({
+		crop: node.params.crop,
+		sourceWidth: source.width,
+		sourceHeight: source.height,
+	});
 	const visualState = resolveVisualState({
 		params: node.params,
 		context,
-		sourceWidth: source.width,
-		sourceHeight: source.height,
+		sourceWidth: sourceCrop?.width ?? source.width,
+		sourceHeight: sourceCrop?.height ?? source.height,
 	});
 	if (!visualState) {
 		return null;
@@ -92,8 +107,9 @@ export async function resolveImageNode({
 	return {
 		...visualState,
 		source: source.source,
-		sourceWidth: source.width,
-		sourceHeight: source.height,
+		sourceWidth: sourceCrop?.width ?? source.width,
+		sourceHeight: sourceCrop?.height ?? source.height,
+		sourceCrop,
 	};
 }
 
@@ -167,18 +183,30 @@ async function resolveBackdropSource({
 			return null;
 		}
 
+		const sourceCrop = resolveMediaCrop({
+			crop: node.params.crop,
+			sourceWidth: frame.canvas.width,
+			sourceHeight: frame.canvas.height,
+		});
 		return {
 			source: frame.canvas,
 			sourceVersion: `${node.params.mediaId}:${frame.timestamp}`,
-			width: frame.canvas.width,
-			height: frame.canvas.height,
+			width: sourceCrop?.width ?? frame.canvas.width,
+			height: sourceCrop?.height ?? frame.canvas.height,
+			sourceCrop,
 		};
 	}
 
 	const source = await loadImageSource({ url: node.params.url });
+	const sourceCrop = resolveMediaCrop({
+		crop: node.params.crop,
+		sourceWidth: source.width,
+		sourceHeight: source.height,
+	});
 	return {
 		source: source.source,
-		width: source.width,
-		height: source.height,
+		width: sourceCrop?.width ?? source.width,
+		height: sourceCrop?.height ?? source.height,
+		sourceCrop,
 	};
 }

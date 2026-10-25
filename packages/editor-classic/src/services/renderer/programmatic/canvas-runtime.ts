@@ -116,6 +116,7 @@ export async function renderProgrammaticCanvas({
 				resources,
 				provider,
 				signal: linked,
+				realm: sandboxRealm,
 			});
 			admissionPending = preparation;
 			const ticket = ownerPreparation
@@ -138,7 +139,13 @@ export async function renderProgrammaticCanvas({
 			if (ownsPreprocessor) imagePreprocessOwner?.dispose();
 		}
 	}
-	frame = await resolveMvResourceFrame({ source, frame, resources, signal });
+	frame = await resolveMvResourceFrame({
+		source,
+		frame,
+		resources,
+		signal,
+		realm: sandboxRealm,
+	});
 	const sequenceImages = await resolveCanvasSequenceImages({
 		frame,
 		provider,

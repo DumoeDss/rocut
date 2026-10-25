@@ -40,6 +40,7 @@ import {
 } from "./nodes/motion-text-node";
 import { resolveMotionTextRenderFrame } from "./motion-text/jizura-adapter";
 import type { ResolvedVisualSourceNodeState } from "./nodes/visual-node";
+import { VisualNode } from "./nodes/visual-node";
 import type { ResolveContext } from "./resolve-context";
 import {
 	resolveEffectPassGroups,
@@ -109,12 +110,14 @@ async function resolveNode({
 	} else if (node instanceof MotionTextNode) {
 		node.resolved = await resolveMotionTextNode({ node, context });
 	} else if (node instanceof TextNode) {
-		node.resolved = resolveTextNode({ node, context });
+		node.resolved = await resolveTextNode({ node, context });
 	} else if (node instanceof BlurBackgroundNode) {
 		node.resolved = await resolveBlurBackgroundNode({ node, context });
 	} else if (node instanceof EffectLayerNode) {
 		node.resolved = resolveEffectLayerNode({ node, context });
 	}
+
+	if (node instanceof VisualNode) await node.prepareMasks(context.signal);
 
 	const settled = await Promise.allSettled(
 		node.children.map((child) => resolveNode({ node: child, context })),
@@ -229,13 +232,13 @@ function resolveGraphicNode({
 	};
 }
 
-function resolveTextNode({
+async function resolveTextNode({
 	node,
 	context,
 }: {
 	node: TextNode;
 	context: ResolveContext;
-}): ResolvedTextNodeState | null {
+}): Promise<ResolvedTextNodeState | null> {
 	if (
 		context.time < node.params.startTime ||
 		context.time >= node.params.startTime + node.params.duration
@@ -249,6 +252,7 @@ function resolveTextNode({
 		elementDuration: node.params.duration,
 	});
 	const background = buildTextBackgroundFromElement({ element: node.params });
+	const measurementParams = await node.measurementParams(context.signal);
 
 	return {
 		transform: resolveTransformAtTime({
@@ -285,7 +289,7 @@ function resolveTextNode({
 			frameRate: context.frameRate,
 		}),
 		measuredText: measureTextElement({
-			element: node.params,
+			element: measurementParams,
 			canvasHeight: node.params.canvasHeight,
 			localTime,
 			ctx: getTextMeasurementContext(),

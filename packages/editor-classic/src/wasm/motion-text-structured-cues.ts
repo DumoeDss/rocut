@@ -21,6 +21,8 @@ export interface MotionTextLineMapping {
 export interface StructuredMotionTextOptions {
 	readonly sequenceId: string;
 	readonly source: string;
+	/** Raw source identity stays exact; only explicit JIZURA interprets display markup. */
+	readonly textSyntax?: "literal" | "jizura";
 	readonly cues: readonly StructuredMotionTextCue[];
 	readonly language: string;
 	readonly durationTicks: number;
@@ -53,7 +55,12 @@ export function createStructuredMotionTextSequence({
 	const candidate = core ?? Reflect.get(wasm, "createMotionTextStructuredCues");
 	if (typeof candidate !== "function")
 		throw new Error("Structured motion-text capability is unavailable");
-	const raw: unknown = candidate(options);
+	const raw: unknown = candidate({
+		...options,
+		seed: options.seed,
+		cues: [...options.cues],
+		rendererSupport: [...options.rendererSupport],
+	});
 	const built = decodeSequenceBuildResult(raw);
 	if (
 		raw === null ||
@@ -91,7 +98,7 @@ export function createStructuredMotionTextSequence({
 			Reflect.get(value, "sourceLine") !== input.sourceLine ||
 			Reflect.get(value, "cueId") !== cue.id ||
 			cue.sourceLine !== input.sourceLine ||
-			cue.text !== input.text ||
+			(options.textSyntax !== "jizura" && cue.text !== input.text) ||
 			Number(cue.startTime) !== input.startTicks ||
 			Number(cue.duration) !== input.endTicks - input.startTicks ||
 			cue.timingSource !== "manual"

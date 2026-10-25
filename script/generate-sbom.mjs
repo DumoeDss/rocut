@@ -352,7 +352,7 @@ const depTable = (deps) =>
 		.map(([name, range]) => `| \`${name}\` | \`${range}\` |`)
 		.join("\n");
 
-const publicDirs = readdirSync(join(REPO_ROOT, "apps/web/public"));
+const publicDirs = readdirSync(join(REPO_ROOT, "apps/web/public")).sort();
 
 const md = `# SBOM — software bill of materials
 

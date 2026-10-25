@@ -33,7 +33,11 @@ import {
 	getBuiltInElementParams,
 } from "../params/registry";
 import { capitalizeFirstLetter } from "../utils/string";
-import { type MediaTime, ZERO_MEDIA_TIME, normalizeColorAdjustment } from "../wasm";
+import {
+	type MediaTime,
+	ZERO_MEDIA_TIME,
+	normalizeColorAdjustment,
+} from "../wasm";
 
 export function canElementHaveAudio(
 	element: TimelineElement,
@@ -137,9 +141,15 @@ export function buildEffectElement({
 		name: capitalizeFirstLetter({ string: instance.type }),
 		effectType,
 		params: instance.params,
-		...(effectType === "color-adjustment" && { adjustment: normalizeColorAdjustment({
-			exposure: 0, contrast: 0, saturation: 0, temperature: 0, tint: 0,
-		}) }),
+		...(effectType === "color-adjustment" && {
+			adjustment: normalizeColorAdjustment({
+				exposure: 0,
+				contrast: 0,
+				saturation: 0,
+				temperature: 0,
+				tint: 0,
+			}),
+		}),
 		duration: duration ?? DEFAULT_NEW_ELEMENT_DURATION,
 		startTime,
 		trimStart: ZERO_MEDIA_TIME,
@@ -421,12 +431,22 @@ export function getElementFontFamilies({
 	const families = new Set<string>();
 	for (const track of [...tracks.overlay, tracks.main, ...tracks.audio]) {
 		for (const element of track.elements) {
-			if (element.type === "text" && typeof element.params.fontFamily === "string") {
+			if (
+				element.type === "text" &&
+				typeof element.params.fontFamily === "string" &&
+				(element.params["mv.fontResource"] === undefined ||
+					element.params["mv.fontResource"] === "")
+			) {
 				families.add(element.params.fontFamily);
 			}
 			if ("masks" in element) {
 				for (const mask of element.masks ?? []) {
-					if (mask.type === "text" && mask.params.fontFamily) {
+					if (
+						mask.type === "text" &&
+						mask.params.fontFamily &&
+						(mask.params["mv.fontResource"] === undefined ||
+							mask.params["mv.fontResource"] === "")
+					) {
 						families.add(mask.params.fontFamily);
 					}
 				}

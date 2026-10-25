@@ -65,7 +65,7 @@ fn prepare(r: Request) -> Result<Data, String> {
         || text(&r.music, "review")? != "required"
         || !r.review.valid()
     {
-        return Err("Completed analysis and a separate accepted review reference are required; do not edit the producer review flag".into());
+        return Err("Completed analysis and a separate explicit review status reference are required; do not edit the producer review flag".into());
     }
     if !digest(&r.expected_audio_sha256)
         || r.manifest["inputs"]["audio"]["sha256"].as_str() != Some(&r.expected_audio_sha256)

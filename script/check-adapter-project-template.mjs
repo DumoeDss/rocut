@@ -124,12 +124,21 @@ console.log(
 );
 
 const manifests = new Map();
+const templateManifest = JSON.parse(
+	readFileSync(join(TEMPLATE_ROOT, "package.json"), "utf8"),
+);
 for (const directory of ["editor-ports", "editor-contracts", "editor-classic"]) {
 	const manifest = JSON.parse(
 		readFileSync(join(REPO_ROOT, "packages", directory, "package.json"), "utf8"),
 	);
+	if (templateManifest.dependencies?.[manifest.name] !== manifest.version) {
+		fail(
+			`${manifest.name} template version ${templateManifest.dependencies?.[manifest.name] ?? "missing"} does not match SDK ${manifest.version}`,
+		);
+	}
 	manifests.set(manifest.name, manifest);
 }
+console.log("template-drift/sdk-versions: PASS (three exact SDK versions match)");
 let importCount = 0;
 for (const path of actualFiles.filter((candidate) => candidate.endsWith(".ts"))) {
 	const absolute = join(TEMPLATE_ROOT, path);

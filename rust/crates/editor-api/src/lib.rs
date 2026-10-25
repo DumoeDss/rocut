@@ -16,6 +16,8 @@ mod image_sequence;
 mod model;
 mod param_diagnostics;
 mod media_facts;
+mod media_crop;
+pub use media_crop::resolve_media_crop_json;
 pub use media_facts::{inspect_media_facts_bytes, validate_media_facts_json};
 pub use image_sequence::{
     validate_image_sequence_image_bytes, validate_image_sequence_manifest_json,
@@ -87,6 +89,8 @@ pub use programmatic_audio::{
 };
 mod programmatic_build;
 mod programmatic_resources;
+mod pinned_text_font;
+pub use pinned_text_font::resolve_pinned_text_font_json;
 pub use programmatic::resolve_programmatic_frame_json;
 pub use programmatic_resources::validate_programmatic_resources_json;
 mod scenes;
@@ -96,6 +100,7 @@ pub use scenes::{plan_scene_mutation_json, validate_scene_state_json};
 mod video_export;
 pub use video_export::resolve_video_export_json;
 mod native_export;
+mod native_export_mux;
 pub use native_export::resolve_native_export_job_json;
 mod composition_production;
 pub use composition_production::resolve_composition_production_json;
@@ -175,6 +180,14 @@ fn validate(request: &Request) -> Vec<Issue> {
     let mut issues = Vec::new();
     let e = &request.editing;
     let kind = e.kind.as_str();
+    if kind == "text" {
+        pinned_text_font::validate_selection(&e.params, "editing.params", &mut issues);
+    }
+    if matches!(kind, "image" | "video") {
+        if let Err(issue) = media_crop::validate_crop_params(&e.params) {
+            issues.push(issue);
+        }
+    }
     let programmatic = kind == "graphic" && e.definition_id.as_deref() == Some("programmatic");
     if programmatic != e.programmatic.is_some() {
         issues.push(Issue::new(
@@ -350,6 +363,9 @@ fn validate(request: &Request) -> Vec<Issue> {
     let mut mask_ids = BTreeSet::new();
     for mask in &e.masks {
         let path = format!("editing.masks.{}", mask.id);
+        if mask.kind == "text" {
+            pinned_text_font::validate_selection(&mask.params, &format!("{path}.params"), &mut issues);
+        }
         unique_id(&mask.id, &mut mask_ids, &path, &mut issues);
         match request.catalog.masks.get(&mask.kind) {
             None => issues.push(Issue::new(&path, "Unknown mask type")),

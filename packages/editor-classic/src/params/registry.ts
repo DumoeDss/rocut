@@ -173,6 +173,49 @@ const audioElementParams: ElementParamDefinition[] = [
 	},
 ];
 
+const mediaCropParams: ElementParamDefinition[] = [
+	{
+		key: "crop.left",
+		label: "Crop Left",
+		type: "number",
+		default: 0,
+		min: 0,
+		max: 1,
+		step: 0.01,
+		keyframable: false,
+	},
+	{
+		key: "crop.top",
+		label: "Crop Top",
+		type: "number",
+		default: 0,
+		min: 0,
+		max: 1,
+		step: 0.01,
+		keyframable: false,
+	},
+	{
+		key: "crop.right",
+		label: "Crop Right",
+		type: "number",
+		default: 1,
+		min: 0,
+		max: 1,
+		step: 0.01,
+		keyframable: false,
+	},
+	{
+		key: "crop.bottom",
+		label: "Crop Bottom",
+		type: "number",
+		default: 1,
+		min: 0,
+		max: 1,
+		step: 0.01,
+		keyframable: false,
+	},
+];
+
 const textElementParams: ElementParamDefinition[] = [
 	{
 		key: "content",
@@ -186,6 +229,14 @@ const textElementParams: ElementParamDefinition[] = [
 		label: "Font Family",
 		type: "font",
 		default: "Arial",
+		keyframable: false,
+	},
+	{
+		key: "mv.fontResource",
+		label: "Project Font Source",
+		type: "text",
+		default: "",
+		required: false,
 		keyframable: false,
 	},
 	{
@@ -334,9 +385,13 @@ export const elementParamRegistry = new DefinitionRegistry<
 const defaultElementParamDefinitions = [
 	{
 		key: "video",
-		definition: [...visualElementParams, ...audioElementParams],
+		definition: [
+			...visualElementParams,
+			...audioElementParams,
+			...mediaCropParams,
+		],
 	},
-	{ key: "image", definition: visualElementParams },
+	{ key: "image", definition: [...visualElementParams, ...mediaCropParams] },
 	{
 		key: "text",
 		definition: [...textElementParams, ...visualElementParams],

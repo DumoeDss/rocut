@@ -17,29 +17,41 @@
  * The JIZURA 0.10.1 alignment adds MotionTextTheme (a string union) plus the
  * `tags`/`wa` fields on MotionTextPresetChoice. Type surface only: the low-level
  * wasm d.ts, its line count and every binary export are unchanged.
+ * October 24 structured lyric syntax adds only optional textSyntax on
+ * CreateMotionTextStructuredCuesOptions and its literal/jizura string union.
+ * Omission preserves literal behavior. No existing declaration is removed;
+ * all low-level signatures, binary imports and exports remain pinned below.
+ * October 25 source cropping adds only resolveMediaCropJson (string -> string),
+ * reviewed with no stable removals or binary import changes.
+ * October 26 pinned text fonts add only resolvePinnedTextFontJson (string -> string).
+ * Reviewed against T5 source snapshot
+ * 80a0d8e9c7a9b8ccf0b1dbcdadafbeffcbddbb904c3c3c5105ff053b1e4a0d39
+ * and its private pinned-toolchain build. No stable removals or import delta;
+ * this ABI record does not claim the baseline checkout contains that implementation.
  */
 import { EXPECTED as HISTORICAL } from "./wasm-api-surface-contract.mjs";
 
 export const EXPECTED = {
 	...HISTORICAL,
 	...{
-		dtsSha: "fb4f0bbd5b39cdc38c5d39768fa85c94b95a83124f2c297d695155e6998af241",
+		dtsSha: "5c4405a7bab4125f69a9ea6576d310bab18dacca7635b835d3c2bf5626b09395",
 		wrapperSha:
-			"94f213cb3dab88bdfa0c73056e7b0a87039267cbcc86f496e27fefb67eff86d5",
+			"e4826b7c1f9b584ccfb522ddfea1776b68917ef6c7ede91c603b54b9a11da294",
 		wasmDtsNormalizedSignature:
-			"7582c7c1b18f01640cd6c4ddf0023938e2900412f3c8ea962c584de082d00dca",
-		wasmDtsLineCount: 250,
+			"d7dbc2517f6e4312358e07f05ee2bbf329ae799d5d92f0239f3618dd52d250aa",
+		wasmDtsLineCount: 252,
 		wrapperExportSignature:
-			"0bf7f80861b940e9294a39ecf238a255f9659fda5f36b9a9345ff32e06c40291",
-		wrapperExportCount: 151,
+			"41d7530c6a70cae339b352742b6beb0e3325f94f7ec753633095142032e158a9",
+		wrapperExportCount: 153,
 		bgExportSignature:
-			"f07fb803da57dd7a0a02acf79e795dac82377b1509d83e6e81d1315b3e4c9231",
-		bgExportCount: 770,
+			"34920db0c1c9753f12a45685eddb27bba1000e0bd3d089895e1788f69dba9bb2",
+		bgExportCount: 772,
 		stableWasmExportSignature:
-			"f51781e6a85fba58b990939a2908f94daf17eb41882438b7ce1cb8fc679a9c19",
-		stableWasmExportCount: 244,
+			"f03e25ff4617636b25e88307000da0b8226a941f94983fa92d847ac513533c75",
+		stableWasmExportCount: 246,
 		trampolineExportCount: 4,
 		wasmExportsAsRecorded: [
+			"resolvePinnedTextFontJson|function",
 			"planMediaFolderMutationJson|function",
 			"validateMediaFoldersJson|function",
 			"validateTrackLocksJson|function",
@@ -199,6 +211,7 @@ export const EXPECTED = {
 			"resolveRemotionProducedAssetsJson|function",
 			"validateClipEditingJson|function",
 			"resolveEffectLayerParamsJson|function",
+			"resolveMediaCropJson|function",
 			"validateMasterEffectsJson|function",
 			"validateImageSequenceManifestJson|function",
 			"mvRecipeCatalogJson|function",
@@ -298,7 +311,7 @@ export const EXPECTED = {
 			"package.json":
 				"60502f95b49df31dd41e5be0ada1826e0693b30a525d3b49da73f4e106a1a4b4",
 			"opencut_wasm_sync.js":
-				"e0651502c0d5bb6ce3da192ad2cde6689adf37a69dfe9c9e5c6598167ebe9479",
+				"708f76ce2b769621ccffd027a6e1d5d19306bf553ff4a0216ee885e143c87d09",
 		},
 	},
 };

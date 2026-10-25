@@ -4,6 +4,8 @@ import { createHash } from "node:crypto";
 import { basename, dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { readFileSync, statSync } from "node:fs";
+import { fontReadinessDifferences } from "./motion-text-font-readiness-diff.mjs";
+import { canonicalFontReportForCheck, readFontBuildHost } from "./motion-text-font-build-identity.mjs";
 
 import { inspectMotionTextFont } from "../rust/wasm/pkg/opencut_wasm_sync.js";
 import {
@@ -322,6 +324,15 @@ function inspectCandidate(path) {
 	}
 }
 
+function printReportDifferences(pinned, current) {
+	const differences = fontReadinessDifferences(pinned, current);
+	console.error("motion-text font readiness mismatch (at most 12 fields):");
+	for (const difference of differences) {
+		console.error(`${difference.field}: pinned=${difference.pinned}; current=${difference.current}`);
+	}
+	if (differences.length === 0) console.error("No report value differences found; see the identity error or JSON property order.");
+}
+
 const candidate = option("--candidate");
 if (candidate) {
 	if (CHECK_ONLY)
@@ -329,8 +340,21 @@ if (candidate) {
 	inspectCandidate(candidate);
 } else if (CHECK_ONLY) {
 	const actual = strictJson(REPORT_PATH);
-	const expected = buildReport();
+	const current = buildReport();
+	let expected;
+	try {
+		expected = canonicalFontReportForCheck({
+			pinned: actual,
+			current,
+			manifest: strictJson(join(ROOT, "docs/motion-text/s09-font-readiness-build-identities.json")),
+			host: readFontBuildHost(),
+		});
+	} catch (error) {
+		printReportDifferences(actual, current);
+		throw error;
+	}
 	if (JSON.stringify(actual) !== JSON.stringify(expected)) {
+		printReportDifferences(actual, expected);
 		throw new Error(
 			"Motion-text font readiness report is stale; regenerate it from the canonical assets",
 		);

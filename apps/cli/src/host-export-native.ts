@@ -11,6 +11,7 @@ import {
 import { join } from "node:path";
 import * as wasm from "opencut-wasm";
 import type { ExportOptions } from "./host-export";
+import { muxNativeExport } from "./host-export-mux";
 import {
 	readNativeExportFile,
 	nativeExportManifestBytes,
@@ -470,7 +471,7 @@ export function createNativeExportRegistry(args: {
 			throw new NativeExportError("native-export-surface-token-invalid");
 		return owner;
 	}
-	return {
+	const api = {
 		async plan(request: unknown) {
 			if (!surfaces.size)
 				throw new NativeExportError("no-compatible-export-surface");
@@ -589,7 +590,15 @@ export function createNativeExportRegistry(args: {
 				await flushRecovery();
 				if (admitted.status === "replay")
 					return records.find((item) => item.jobId === admitted.record!.jobId)!;
-				const surface = surfaces.values().next().value as Surface | undefined;
+				const mux = admitted.record!.request.options.mux;
+				const muxCancellation = new AbortController();
+				const surface: Surface | undefined = mux
+					? {
+							write(chunk: string) {
+								if (chunk.includes("export.cancel")) muxCancellation.abort();
+							},
+						}
+					: (surfaces.values().next().value as Surface | undefined);
 				if (!surface)
 					throw new NativeExportError("no-compatible-export-surface");
 				let record = await put(admitted.record!);
@@ -598,6 +607,48 @@ export function createNativeExportRegistry(args: {
 				// Persist dispatch intent before touching the stream; crash here must not resend.
 				record = await transition(record, { kind: "dispatched" }, source);
 				try {
+					if (mux) {
+						void Promise.resolve()
+							.then(async () => {
+								await api.report(jobId, token, {
+									kind: "running",
+									progress: 0,
+								});
+								const bytes = await muxNativeExport({
+									options: record.request.options,
+									signal: muxCancellation.signal,
+									read: (id) =>
+										args.enqueue(async () => {
+											const value = await completedReadback(id);
+											return {
+												bytes: value.bytes,
+												record: JSON.parse(
+													value.manifest.toString("utf8"),
+												) as NativeExportRecord,
+											};
+										}),
+								});
+								await api.complete(jobId, token, bytes);
+							})
+							.catch(async (error: unknown) => {
+								await api
+									.report(
+										jobId,
+										token,
+										muxCancellation.signal.aborted
+											? { kind: "cancelConfirmed" }
+											: {
+													kind: "failed",
+													error:
+														error instanceof Error
+															? error.message
+															: "Native mux failed",
+												},
+									)
+									.catch(() => undefined);
+							});
+						return record;
+					}
 					send(surface, {
 						command: "export.start",
 						jobId,
@@ -638,6 +689,7 @@ export function createNativeExportRegistry(args: {
 						nativeExportPlan: true,
 						nativeExportReadback: true,
 						nativeExportSourceFence: true,
+						nativeExportMux: true,
 						videoQuantizer: true,
 						videoChroma: ["420", "444"],
 					},
@@ -748,6 +800,7 @@ export function createNativeExportRegistry(args: {
 			});
 		},
 	};
+	return api;
 }
 export type NativeExportRegistry = ReturnType<
 	typeof createNativeExportRegistry

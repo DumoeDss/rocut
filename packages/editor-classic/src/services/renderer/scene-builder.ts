@@ -17,8 +17,10 @@ import {
 	type MotionTextTimeMapper,
 } from "./nodes/motion-text-node";
 import type { AnyBaseNode } from "./nodes/base-node";
+import { VisualNode } from "./nodes/visual-node";
 import type { TBackground, TCanvasSize } from "../../project/types";
 import { DEFAULT_BACKGROUND_BLUR_INTENSITY } from "../../background/blur";
+import { readMediaCropParams } from "../../wasm/media-crop";
 import {
 	buildTransformFromParams,
 	readBlendModeFromParams,
@@ -28,7 +30,10 @@ import type { AssetResolver } from "@opencut/editor-ports";
 import type { ProgrammaticFrameProvider } from "@opencut/editor-ports/host";
 import type { MotionTextFontRuntime } from "./motion-text/font-runtime";
 import type { Effect } from "../../effects/types";
-import { visibleElementsInDrawOrder, visibleTracksBottomToTop } from "./render-order";
+import {
+	visibleElementsInDrawOrder,
+	visibleTracksBottomToTop,
+} from "./render-order";
 
 const PREVIEW_MAX_IMAGE_SIZE = 2048;
 
@@ -87,6 +92,7 @@ function buildTrackNodes({
 						new VideoNode({
 							clipId: element.id,
 							mediaId: mediaAsset.id,
+							crop: readMediaCropParams({ params: element.params }),
 							url: mediaAsset.url,
 							file: mediaAsset.file,
 							duration: element.duration,
@@ -107,6 +113,7 @@ function buildTrackNodes({
 				if (element.type === "image" && mediaAsset.type === "image") {
 					nodes.push(
 						new ImageNode({
+							crop: readMediaCropParams({ params: element.params }),
 							clipId: element.id,
 							url: mediaAsset.url,
 							duration: element.duration,
@@ -131,6 +138,8 @@ function buildTrackNodes({
 				nodes.push(
 					new TextNode({
 						...element,
+						fontRuntime: motionTextFontRuntime,
+						projectId: motionTextProjectId,
 						transform: buildTransformFromParams({ params: element.params }),
 						opacity: readOpacityFromParams({ params: element.params }),
 						blendMode: readBlendModeFromParams({ params: element.params }),
@@ -211,6 +220,12 @@ function buildTrackNodes({
 		}
 	}
 
+	for (const node of nodes) {
+		if (node instanceof VisualNode) {
+			node.params.fontRuntime = motionTextFontRuntime;
+			node.params.projectId = motionTextProjectId;
+		}
+	}
 	return nodes;
 }
 
@@ -258,6 +273,7 @@ function buildBlurBackgroundNodes({
 				retime: element.type === "video" ? element.retime : undefined,
 				freezeFrame: element.type === "video" ? element.freezeFrame : undefined,
 				blurIntensity,
+				crop: readMediaCropParams({ params: element.params }),
 			}),
 		);
 	}

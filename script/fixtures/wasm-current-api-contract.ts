@@ -341,6 +341,12 @@ type prepareRemotionInlineAudioSourcesJsonExact = Assert<
 type resolveEffectLayerParamsJsonExact = Assert<
 	Equal<typeof wasm.resolveEffectLayerParamsJson, (input: string) => string>
 >;
+type resolveMediaCropJsonExact = Assert<
+	Equal<typeof wasm.resolveMediaCropJson, (input: string) => string>
+>;
+type resolvePinnedTextFontJsonExact = Assert<
+	Equal<typeof wasm.resolvePinnedTextFontJson, (input: string) => string>
+>;
 type resolveGlassObjectParamsJsonExact = Assert<
 	Equal<typeof wasm.resolveGlassObjectParamsJson, (input: string) => string>
 >;
@@ -397,6 +403,17 @@ type createMotionTextStructuredCuesExact = Assert<
 			options: wasm.CreateMotionTextStructuredCuesOptions,
 		) => wasm.CreateMotionTextStructuredCuesResult
 	>
+>;
+
+// Existing generated API callers may omit the new syntax selector entirely.
+type structuredTextSyntaxOptional = Assert<
+	Equal<
+		Pick<wasm.CreateMotionTextStructuredCuesOptions, "textSyntax">,
+		{ textSyntax?: "literal" | "jizura" }
+	>
+>;
+type structuredTextSyntaxUnion = Assert<
+	Equal<wasm.MotionTextStructuredTextSyntax, "literal" | "jizura">
 >;
 type inspectMediaFactsBytesExact = Assert<
 	Equal<typeof wasm.inspectMediaFactsBytes, (input: Uint8Array) => string>

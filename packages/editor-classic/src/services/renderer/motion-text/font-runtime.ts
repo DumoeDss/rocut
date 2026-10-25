@@ -114,9 +114,52 @@ export class MotionTextFontRuntime {
 		purpose: MotionTextRenderPurpose;
 		sequence: MotionTextSequence;
 	}): Promise<PreparedMotionTextFonts> {
+		return this.prepareReferences({
+			projectId,
+			purpose,
+			fonts: sequence.fonts,
+			textByFont: referencedTextByFont({ sequence }),
+		});
+	}
+
+	/** Ordinary text shares the same byte/digest/glyph barrier as motion-text. */
+	async prepareFont({
+		projectId,
+		font,
+		text,
+	}: {
+		projectId: string;
+		font: MotionTextFontAssetRef;
+		text: string;
+	}): Promise<MotionTextResolvedFont> {
+		const result = await this.prepareReferences({
+			projectId,
+			purpose: "export",
+			fonts: [font],
+			textByFont: new Map([[font.id, text]]),
+		});
+		const resolved = result.fonts.get(font.id);
+		if (!resolved || result.diagnostics.length)
+			throw Error(
+				result.diagnostics.map((entry) => entry.message).join("; ") ||
+					"Text font is unavailable",
+			);
+		return resolved;
+	}
+
+	private async prepareReferences({
+		projectId,
+		purpose,
+		fonts,
+		textByFont,
+	}: {
+		projectId: string;
+		purpose: MotionTextRenderPurpose;
+		fonts: readonly MotionTextFontAssetRef[];
+		textByFont: ReadonlyMap<string, string>;
+	}): Promise<PreparedMotionTextFonts> {
 		this.assertLive();
 		const generation = this.generation;
-		const textByFont = referencedTextByFont({ sequence });
 		if (textByFont.size === 0) {
 			return {
 				diagnostics: [],
@@ -130,7 +173,7 @@ export class MotionTextFontRuntime {
 		const resolvedFonts = new Map<string, MotionTextResolvedFont>();
 		const fingerprints: string[] = [];
 		for (const [fontId, text] of textByFont) {
-			const font = sequence.fonts.find((candidate) => candidate.id === fontId);
+			const font = fonts.find((candidate) => candidate.id === fontId);
 			if (!font) continue;
 			try {
 				const loaded = await this.loadFont({

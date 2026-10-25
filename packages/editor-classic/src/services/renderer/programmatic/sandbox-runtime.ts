@@ -316,6 +316,7 @@ export async function runProgrammaticSandbox({
 				Array.isArray(tunnelMetrics)
 			) {
 				settled = true;
+				healthy = Reflect.get(data, "brokerRetired") === true;
 				cleanup();
 				resolve(tunnelMetrics);
 				return;
@@ -328,6 +329,7 @@ export async function runProgrammaticSandbox({
 				Array.isArray(imageDimensions)
 			) {
 				settled = true;
+				healthy = Reflect.get(data, "brokerRetired") === true;
 				cleanup();
 				resolve({ fontMetrics: metrics, imageDimensions });
 				return;
@@ -339,6 +341,7 @@ export async function runProgrammaticSandbox({
 			) {
 				// Rust validates identities, cardinality, scalars and numerical bounds.
 				settled = true;
+				healthy = Reflect.get(data, "brokerRetired") === true;
 				cleanup();
 				resolve(metrics);
 				return;

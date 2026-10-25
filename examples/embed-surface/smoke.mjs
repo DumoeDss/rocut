@@ -15,6 +15,11 @@ import { createServer } from "node:http";
 import { readFile } from "node:fs/promises";
 import { extname, join, normalize, resolve, sep } from "node:path";
 import { chromium } from "playwright";
+import {
+	PLAYHEAD_LABEL,
+	RULER_LABEL,
+	waitForDegradedBanner,
+} from "./smoke-banner.mjs";
 
 const distRoot = resolve("dist");
 const MIME = new Map([
@@ -151,9 +156,11 @@ try {
 
 	// 3. GPU-free proof: the forced-"none" rasterizer shows the degraded
 	//    banner — the editor booted degraded-but-interactive, by design.
-	await page
-		.getByText("Renderer unavailable in this environment")
-		.waitFor({ state: "visible", timeout: 120_000 });
+	await waitForDegradedBanner(page, {
+		consoleErrors,
+		pageErrors,
+		failedResponses,
+	});
 	check("gpu-free/degraded-banner", true);
 
 	// 4. Interaction (real): a plain click inside the surface (the preview
@@ -184,15 +191,13 @@ try {
 	//    the earlier choice, but the preview placeholder overflows its panel in
 	//    this GPU-free layout and intercepts its pointer events; the timeline
 	//    is the interaction the task names anyway.
-	const playhead = page.locator(
-		'[role="slider"][aria-label="Timeline playhead"]',
-	);
+	const playhead = page.getByRole("slider", { name: PLAYHEAD_LABEL, exact: true });
 	await playhead.waitFor({ state: "attached", timeout: 30_000 });
 	const before = await playhead.evaluate((el) => ({
 		now: el.getAttribute("aria-valuenow"),
 		left: el.style.left,
 	}));
-	const ruler = page.locator('[role="slider"][aria-label="Timeline ruler"]');
+	const ruler = page.getByRole("slider", { name: RULER_LABEL, exact: true });
 	await ruler.waitFor({ state: "visible", timeout: 30_000 });
 	const rulerBox = await ruler.boundingBox();
 	if (rulerBox) {

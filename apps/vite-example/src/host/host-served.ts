@@ -1,4 +1,5 @@
 import type { EditorHost } from "@opencut/editor-ports/host";
+import { withProgressDeadline } from "./native-export-progress";
 import {
 	isEditorTaskRequest,
 	type EditorTaskRequest,
@@ -229,30 +230,38 @@ export async function reportExportProgress({
 	jobId,
 	progress,
 	token,
+	signal,
 }: {
 	readonly jobId: string;
 	readonly progress: number;
 	readonly token: string;
+	readonly signal?: AbortSignal;
 }): Promise<{ cancelRequested: boolean }> {
-	const response = await fetch(
-		new URL(
-			`api/export/${encodeURIComponent(jobId)}/progress`,
-			location.href,
-		).toString(),
-		{
-			method: "POST",
-			headers: {
-				"content-type": "application/json",
-				"x-native-export-token": token,
+	return withProgressDeadline(
+		async (requestSignal) => {
+			const response = await fetch(
+				new URL(
+					`api/export/${encodeURIComponent(jobId)}/progress`,
+					location.href,
+				).toString(),
+				{
+					method: "POST",
+					signal: requestSignal,
+					headers: {
+						"content-type": "application/json",
+						"x-native-export-token": token,
+					},
+					body: JSON.stringify({ progress }),
+				},
+			);
+			if (!response.ok) throw new Error("native-export-progress-rejected");
+			const parsed: unknown = await response.json();
+			return {
+				cancelRequested: isRecord(parsed) && parsed.cancelRequested === true,
+			};
 			},
-			body: JSON.stringify({ progress }),
-		},
+		{ signal },
 	);
-	if (!response.ok) throw new Error("native-export-progress-rejected");
-	const parsed: unknown = await response.json();
-	return {
-		cancelRequested: isRecord(parsed) && parsed.cancelRequested === true,
-	};
 }
 
 /** Hand the encoded bytes back to the host, which writes the file. */

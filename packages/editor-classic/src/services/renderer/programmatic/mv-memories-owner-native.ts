@@ -157,17 +157,18 @@ export function createMemoriesNativePlatform({
 				throw Error("Memories native font descriptor missing");
 			const font = resource.font,
 				alias = `mv-memories-${resource.sha256}-${font.weight}`;
+			const fontDescriptors: FontFaceDescriptors & { variationSettings: string } = {
+				weight: String(font.weight),
+				style: font.style,
+				variationSettings:
+					Object.entries(font.axes ?? {})
+						.map(([k, v]) => `"${k}" ${v}`)
+						.join(",") || "normal",
+			};
 			const face = new FontFace(
 				alias,
 				new Uint8Array(bytes.buffer, bytes.byteOffset, bytes.byteLength),
-				{
-					weight: String(font.weight),
-					style: font.style,
-					variationSettings:
-						Object.entries(font.axes ?? {})
-							.map(([k, v]) => `"${k}" ${v}`)
-							.join(",") || "normal",
-				},
+				fontDescriptors,
 			);
 			await face.load();
 			check();

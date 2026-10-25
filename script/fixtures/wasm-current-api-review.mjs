@@ -4,8 +4,22 @@
  * private-constructor result classes flow through owner reserve/stage/frame.
  * Full generated JsValue any boundaries are frozen by exact TS assertions;
  * they are not upgraded into claims of schema-safe authored inputs.
+ * Structured cue text syntax adds only the optional textSyntax selector and
+ * literal/jizura string union. Omission remains literal; exact source identity
+ * and externally fixed timing stay unchanged. Rust structured-cue regressions
+ * and apps/cli/src/__tests__/motion-text-prepare-cues.test.ts cover this boundary.
  */
 export const REVIEWED_API_ADDITIONS = [
+	[
+		"resolvePinnedTextFontJson",
+		"rust/crates/editor-api/src/pinned_text_font.rs",
+		"packages/editor-classic/src/services/renderer/nodes/text-font-resource.ts",
+	],
+	[
+		"resolveMediaCropJson",
+		"rust/crates/editor-api/src/media_crop.rs",
+		"packages/editor-classic/src/wasm/media-crop.ts",
+	],
 	[
 		"planMediaFolderMutationJson",
 		"rust/crates/editor-api/src/media_folders.rs",

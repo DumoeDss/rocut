@@ -44,6 +44,8 @@ export interface RectangleMaskParams extends BaseMaskParams {
 }
 
 export interface TextMaskParams extends BaseMaskParams {
+	/** Static font descriptor; bytes live in the project's immutable attachments. */
+	"mv.fontResource"?: string;
 	content: string;
 	fontSize: number;
 	fontFamily: string;

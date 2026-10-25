@@ -418,6 +418,16 @@ test("failed Worker retirement cannot claim a healthy reusable broker", () => {
 	expect(transport.messages.at(-1)).toEqual({ bitmap, brokerRetired: false });
 });
 
+for (const response of [{ fontMetrics: [], imageDimensions: [] }, { fontMetrics: [] }, { tunnelFontMeasurements: [] }])
+	for (const terminateFailure of [false, true])
+		test(`measurement retires Worker before claiming broker health (${Object.keys(response).join("/")}, failure=${terminateFailure})`, () => {
+			const transport = broker({ terminateFailure });
+			transport.workers[0].onmessage({ data: response });
+			expect(transport.workers[0].terminated).toBe(1);
+			expect(transport.revoked).toHaveLength(1);
+			expect(transport.messages.at(-1)).toEqual({ ...response, brokerRetired: !terminateFailure });
+		});
+
 test("generated Worker stages identify deferred font preparation and user eval before bitmap failure", async () => {
 	const transport = broker();
 	const messages: unknown[] = [];

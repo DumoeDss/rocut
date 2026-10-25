@@ -2,10 +2,12 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ThemeProvider } from "next-themes";
 import { useEmbeddedHostTheme } from "./host/use-embedded-host-theme";
 import { bindEmbeddedHostLifecycle } from "./host/embedded-host-lifecycle";
+import { bindMvNativeNavigation } from "./host/mv-native-navigation";
 import { subscribeEmbeddedHostLocale } from "./host/embedded-host-locale";
 import { createHostEditorTasks } from "./host/editor-tasks";
 import { createProjectReadiness } from "./host/project-readiness";
 import { createCompositionExportController } from "./host/composition-export-controller";
+import { createNativeExportProgress } from "./host/native-export-progress";
 import { createCompositionExportTransport } from "./host/host-composition-export";
 import { Toaster } from "@opencut/editor-classic/ui";
 import { TooltipProvider } from "@opencut/editor-classic/ui";
@@ -223,6 +225,10 @@ function HostServedSync({ projectId }: { projectId: string }) {
 		[editor, readiness],
 	);
 	useEffect(
+		() => bindMvNativeNavigation(editor, readiness.whenReady),
+		[editor, readiness],
+	);
+	useEffect(
 		() =>
 			bindEmbeddedHostLifecycle(async () => {
 				if (editor.project.getActiveOrNull()?.metadata.id !== projectId) {
@@ -317,7 +323,12 @@ function HostServedSync({ projectId }: { projectId: string }) {
 			}
 			exporting.current = true;
 			const waiter = new AbortController();
-			let progressReports: Promise<unknown> = Promise.resolve();
+			const progressReports = createNativeExportProgress({
+				report: (progress, signal) =>
+					reportExportProgress({ jobId, progress, token, signal }),
+				onCancel: () => cancelledJobs.current.add(jobId),
+				signal: waiter.signal,
+			});
 			exportWaiters.current.set(jobId, waiter);
 			try {
 				await readiness.whenReady(waiter.signal);
@@ -367,18 +378,17 @@ function HostServedSync({ projectId }: { projectId: string }) {
 									},
 								}),
 					},
-					onProgress: ({ progress }) => {
-						progressReports = progressReports
-							.then(() => reportExportProgress({ jobId, progress, token }))
-							.then(({ cancelRequested }) => {
-								if (cancelRequested) cancelledJobs.current.add(jobId);
-							})
-							.catch(() => cancelledJobs.current.add(jobId));
-					},
+					onProgress: ({ progress }) => progressReports.report(progress),
 					onCancel: () => cancelledJobs.current.has(jobId),
 				});
-				await progressReports;
-				if (result.cancelled === true) {
+				if (
+					result.success === true &&
+					result.buffer !== undefined &&
+					!result.cancelled
+				)
+					await progressReports.finish();
+				else progressReports.stop();
+				if (result.cancelled === true || cancelledJobs.current.has(jobId)) {
 					await reportExportFailure({
 						jobId,
 						token,
@@ -406,6 +416,7 @@ function HostServedSync({ projectId }: { projectId: string }) {
 					error: error instanceof Error ? error.message : String(error),
 				});
 			} finally {
+				progressReports.stop();
 				exporting.current = false;
 				exportWaiters.current.delete(jobId);
 				cancelledJobs.current.delete(jobId);

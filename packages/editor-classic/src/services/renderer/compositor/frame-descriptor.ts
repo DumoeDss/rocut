@@ -35,6 +35,7 @@ import type {
 	TextureUploadDescriptor,
 } from "./types";
 import { DEFAULT_GRAPHIC_SOURCE_SIZE } from "../../../graphics";
+import { croppedMediaTexture } from "./cropped-media-texture";
 
 type RendererDimensions = Pick<CanvasRenderer, "width" | "height">;
 
@@ -175,7 +176,7 @@ async function collectNode({
 		const { backdropSource, passes } = node.resolved;
 		// Decoders reuse canvases. Include the decoded frame version so ordinary
 		// playback redraws while repeated frozen frames can reuse the texture.
-		const contentHash = `blur:${identityKey(backdropSource.source)}:${backdropSource.sourceVersion ?? "static"}:${backdropSource.width}x${backdropSource.height}:${width}x${height}`;
+		const contentHash = `blur:${identityKey(backdropSource.source)}:${backdropSource.sourceVersion ?? "static"}:${backdropSource.width}x${backdropSource.height}:${width}x${height}:${JSON.stringify(backdropSource.sourceCrop ?? null)}`;
 		textures.set(textureId, {
 			kind: "rendered",
 			id: textureId,
@@ -191,13 +192,27 @@ async function collectNode({
 				const scaledHeight = backdropSource.height * coverScale;
 				const offsetX = (width - scaledWidth) / 2;
 				const offsetY = (height - scaledHeight) / 2;
-				ctx.drawImage(
-					backdropSource.source,
-					offsetX,
-					offsetY,
-					scaledWidth,
-					scaledHeight,
-				);
+				const crop = backdropSource.sourceCrop;
+				if (crop)
+					ctx.drawImage(
+						backdropSource.source,
+						crop.sourceX,
+						crop.sourceY,
+						crop.sourceWidth,
+						crop.sourceHeight,
+						offsetX,
+						offsetY,
+						scaledWidth,
+						scaledHeight,
+					);
+				else
+					ctx.drawImage(
+						backdropSource.source,
+						offsetX,
+						offsetY,
+						scaledWidth,
+						scaledHeight,
+					);
 			},
 		});
 		items.push({
@@ -331,15 +346,30 @@ async function collectVisualSourceNode({
 			: (node.resolved as ResolvedVisualSourceNodeState).sourceHeight;
 
 	const textureId = `${path}:source`;
-	textures.set(textureId, {
-		kind: "external",
-		id: textureId,
-		source,
-		sourceVersion:
-			node instanceof GraphicNode ? undefined : node.resolved.sourceVersion,
-		width: sourceWidth,
-		height: sourceHeight,
-	});
+	const sourceVersion =
+		node instanceof GraphicNode ? undefined : node.resolved.sourceVersion;
+	const sourceCrop =
+		node instanceof ImageNode || node instanceof VideoNode
+			? node.resolved.sourceCrop
+			: undefined;
+	textures.set(
+		textureId,
+		sourceCrop
+			? croppedMediaTexture({
+					id: textureId,
+					source,
+					crop: sourceCrop,
+					sourceIdentity: `${identityKey(source)}:${sourceVersion ?? "static"}`,
+				})
+			: {
+					kind: "external",
+					id: textureId,
+					source,
+					sourceVersion,
+					width: sourceWidth,
+					height: sourceHeight,
+				},
+	);
 
 	const transform = computeVisualTransform({
 		renderer,
@@ -478,7 +508,7 @@ function buildMaskArtifacts({
 	mask: LayerMaskDescriptor | null;
 	strokeLayer: FrameItemDescriptor | null;
 } {
-	const mask = node.params.masks?.[0];
+	const mask = (node.resolvedMasks ?? node.params.masks)?.[0];
 	if (!mask) {
 		return { mask: null, strokeLayer: null };
 	}
