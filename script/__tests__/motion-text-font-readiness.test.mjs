@@ -6,6 +6,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { describe, expect, test } from "bun:test";
+import { fontReadinessDifferences } from "../motion-text-font-readiness-diff.mjs";
 
 const REPO_ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const SCRIPT = join(
@@ -50,6 +51,23 @@ function parseOutput(result) {
 	expect(result.stdout).not.toBeEmpty();
 	return JSON.parse(result.stdout);
 }
+
+describe("font readiness mismatch diagnostics", () => {
+	test("identifies exact WASM identity differences without dumping other report data", () => {
+		const pinned = { source: { canonicalWasm: { bytes: 1, sha256: "old" } }, fixture: { text: "unchanged" } };
+		const current = { ...pinned, source: { canonicalWasm: { bytes: 2, sha256: "new" } } };
+		expect(fontReadinessDifferences(pinned, current)).toEqual([
+			{ field: "/source/canonicalWasm/bytes", pinned: "1", current: "2" },
+			{ field: "/source/canonicalWasm/sha256", pinned: '"old"', current: '"new"' },
+		]);
+	});
+	test("bounds fields and scalar length for unexpected differences", () => {
+		const differences = fontReadinessDifferences(Array(20).fill("a"), Array(20).fill("x".repeat(1000)));
+		expect(differences).toHaveLength(12);
+		expect(differences.every((entry) => entry.current.length <= 161)).toBe(true);
+		expect(fontReadinessDifferences({ a: 1 }, { a: 1 })).toEqual([]);
+	});
+});
 
 describe("motion-text font readiness CLI", () => {
 	test("checks the pinned report against canonical assets", () => {

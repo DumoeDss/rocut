@@ -4,6 +4,7 @@ import { createHash } from "node:crypto";
 import { basename, dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { readFileSync, statSync } from "node:fs";
+import { fontReadinessDifferences } from "./motion-text-font-readiness-diff.mjs";
 
 import { inspectMotionTextFont } from "../rust/wasm/pkg/opencut_wasm_sync.js";
 import {
@@ -331,6 +332,12 @@ if (candidate) {
 	const actual = strictJson(REPORT_PATH);
 	const expected = buildReport();
 	if (JSON.stringify(actual) !== JSON.stringify(expected)) {
+		const differences = fontReadinessDifferences(actual, expected);
+		console.error("motion-text font readiness mismatch (at most 12 fields):");
+		for (const difference of differences) {
+			console.error(`${difference.field}: pinned=${difference.pinned}; current=${difference.current}`);
+		}
+		if (differences.length === 0) console.error("Report values match, but JSON property order differs.");
 		throw new Error(
 			"Motion-text font readiness report is stale; regenerate it from the canonical assets",
 		);
