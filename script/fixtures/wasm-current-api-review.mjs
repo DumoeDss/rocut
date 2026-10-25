@@ -11,6 +11,11 @@
  */
 export const REVIEWED_API_ADDITIONS = [
 	[
+		"resolvePinnedTextFontJson",
+		"rust/crates/editor-api/src/pinned_text_font.rs",
+		"packages/editor-classic/src/services/renderer/nodes/text-font-resource.ts",
+	],
+	[
 		"resolveMediaCropJson",
 		"rust/crates/editor-api/src/media_crop.rs",
 		"packages/editor-classic/src/wasm/media-crop.ts",

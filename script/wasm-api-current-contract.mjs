@@ -23,29 +23,35 @@
  * all low-level signatures, binary imports and exports remain pinned below.
  * October 25 source cropping adds only resolveMediaCropJson (string -> string),
  * reviewed with no stable removals or binary import changes.
+ * October 26 pinned text fonts add only resolvePinnedTextFontJson (string -> string).
+ * Reviewed against T5 source snapshot
+ * 80a0d8e9c7a9b8ccf0b1dbcdadafbeffcbddbb904c3c3c5105ff053b1e4a0d39
+ * and its private pinned-toolchain build. No stable removals or import delta;
+ * this ABI record does not claim the baseline checkout contains that implementation.
  */
 import { EXPECTED as HISTORICAL } from "./wasm-api-surface-contract.mjs";
 
 export const EXPECTED = {
 	...HISTORICAL,
 	...{
-		dtsSha: "d4cc3d46b7cfb5958be0b060a9720c8c0519d420a2bc70f6b148afff8a11f671",
+		dtsSha: "5c4405a7bab4125f69a9ea6576d310bab18dacca7635b835d3c2bf5626b09395",
 		wrapperSha:
-			"b0e2fc5a5b33aaab2b30791aa1c46d166c05eb9a5cbc4e985d12b8e60a8a798e",
+			"e4826b7c1f9b584ccfb522ddfea1776b68917ef6c7ede91c603b54b9a11da294",
 		wasmDtsNormalizedSignature:
-			"0363997ceccdb02a55b0688838a0f17f386ed2c8ea546729410c305903ce35ff",
-		wasmDtsLineCount: 251,
+			"d7dbc2517f6e4312358e07f05ee2bbf329ae799d5d92f0239f3618dd52d250aa",
+		wasmDtsLineCount: 252,
 		wrapperExportSignature:
-			"78c47b69619bb611b02528a4b2dc8343eee517f217431036a05f2d077ff64d52",
-		wrapperExportCount: 152,
+			"41d7530c6a70cae339b352742b6beb0e3325f94f7ec753633095142032e158a9",
+		wrapperExportCount: 153,
 		bgExportSignature:
-			"86c39352ce7972d3d0e39ddb359f9fa2e2385b7bb7f2f6a4c2e5a045fa9b3c3c",
-		bgExportCount: 771,
+			"34920db0c1c9753f12a45685eddb27bba1000e0bd3d089895e1788f69dba9bb2",
+		bgExportCount: 772,
 		stableWasmExportSignature:
-			"3e7830b5d9bff5aeef17759747dc804ddcdafcfbc4d6d34cb317cca7944f603a",
-		stableWasmExportCount: 245,
+			"f03e25ff4617636b25e88307000da0b8226a941f94983fa92d847ac513533c75",
+		stableWasmExportCount: 246,
 		trampolineExportCount: 4,
 		wasmExportsAsRecorded: [
+			"resolvePinnedTextFontJson|function",
 			"planMediaFolderMutationJson|function",
 			"validateMediaFoldersJson|function",
 			"validateTrackLocksJson|function",
@@ -305,7 +311,7 @@ export const EXPECTED = {
 			"package.json":
 				"60502f95b49df31dd41e5be0ada1826e0693b30a525d3b49da73f4e106a1a4b4",
 			"opencut_wasm_sync.js":
-				"144f30c6fc1bed134988b16d57a0b2f2452ce77dac6b86b17c7f2db31e086c60",
+				"708f76ce2b769621ccffd027a6e1d5d19306bf553ff4a0216ee885e143c87d09",
 		},
 	},
 };
