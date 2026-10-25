@@ -5,6 +5,7 @@ import { basename, dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { readFileSync, statSync } from "node:fs";
 import { fontReadinessDifferences } from "./motion-text-font-readiness-diff.mjs";
+import { canonicalFontReportForCheck, readFontBuildHost } from "./motion-text-font-build-identity.mjs";
 
 import { inspectMotionTextFont } from "../rust/wasm/pkg/opencut_wasm_sync.js";
 import {
@@ -330,7 +331,12 @@ if (candidate) {
 	inspectCandidate(candidate);
 } else if (CHECK_ONLY) {
 	const actual = strictJson(REPORT_PATH);
-	const expected = buildReport();
+	const expected = canonicalFontReportForCheck({
+		pinned: actual,
+		current: buildReport(),
+		manifest: strictJson(join(ROOT, "docs/motion-text/s09-font-readiness-build-identities.json")),
+		host: readFontBuildHost(),
+	});
 	if (JSON.stringify(actual) !== JSON.stringify(expected)) {
 		const differences = fontReadinessDifferences(actual, expected);
 		console.error("motion-text font readiness mismatch (at most 12 fields):");

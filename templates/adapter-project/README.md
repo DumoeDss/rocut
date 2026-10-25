@@ -13,8 +13,8 @@ The committed manifest intentionally records the current mixed SDK versions:
 
 | package                     | expected version | surface used here                                                 |
 | --------------------------- | ---------------- | ----------------------------------------------------------------- |
-| `@opencut/editor-ports`     | `0.2.0`          | frozen ports/conformance plus experimental requirement formatting |
-| `@opencut/editor-contracts` | `0.3.0`          | frozen suites plus experimental `./conformance/fakes`             |
+| `@opencut/editor-ports`     | `0.3.0`          | frozen ports/conformance plus experimental requirement formatting |
+| `@opencut/editor-contracts` | `0.4.0`          | frozen suites plus experimental `./conformance/fakes`             |
 | `@opencut/editor-classic`   | `0.2.0`          | provider migration chain plus experimental wasm test mock         |
 
 The runner checks these expectations against the packed manifests before

@@ -118,6 +118,13 @@ transaction engine and durable project store. The focused suite proves:
   catalog, canonical WASM and per-asset result; candidate mode additionally
   requires an expected font SHA-256, expected license SHA-256 and strict UTF-8
   OFL 1.1 text before reporting exact glyph coverage.
+  The canonical report retains its reviewed Windows WASM identity. The separate
+  `s09-font-readiness-build-identities.json` records exact reviewed identities by
+  Rust build-host triple; only `--check` queries `rustc -vV` and requires a matching
+  host identity before comparing every remaining report field exactly. Unknown
+  hosts and unreviewed binaries fail. Candidate review and ordinary report output
+  do not require rustc or auto-register any identity. This follows BOUNDARIES'
+  explicit absence of a cross-platform WASM byte-identity claim.
 - the Rust builtin-font catalog now separates each stable JIZURA role from an
   optional language-specific asset variant. Creation and JIZURA import resolve
   a role once from `language` and persist the concrete asset ID; later
