@@ -324,6 +324,15 @@ function inspectCandidate(path) {
 	}
 }
 
+function printReportDifferences(pinned, current) {
+	const differences = fontReadinessDifferences(pinned, current);
+	console.error("motion-text font readiness mismatch (at most 12 fields):");
+	for (const difference of differences) {
+		console.error(`${difference.field}: pinned=${difference.pinned}; current=${difference.current}`);
+	}
+	if (differences.length === 0) console.error("No report value differences found; see the identity error or JSON property order.");
+}
+
 const candidate = option("--candidate");
 if (candidate) {
 	if (CHECK_ONLY)
@@ -331,19 +340,21 @@ if (candidate) {
 	inspectCandidate(candidate);
 } else if (CHECK_ONLY) {
 	const actual = strictJson(REPORT_PATH);
-	const expected = canonicalFontReportForCheck({
-		pinned: actual,
-		current: buildReport(),
-		manifest: strictJson(join(ROOT, "docs/motion-text/s09-font-readiness-build-identities.json")),
-		host: readFontBuildHost(),
-	});
+	const current = buildReport();
+	let expected;
+	try {
+		expected = canonicalFontReportForCheck({
+			pinned: actual,
+			current,
+			manifest: strictJson(join(ROOT, "docs/motion-text/s09-font-readiness-build-identities.json")),
+			host: readFontBuildHost(),
+		});
+	} catch (error) {
+		printReportDifferences(actual, current);
+		throw error;
+	}
 	if (JSON.stringify(actual) !== JSON.stringify(expected)) {
-		const differences = fontReadinessDifferences(actual, expected);
-		console.error("motion-text font readiness mismatch (at most 12 fields):");
-		for (const difference of differences) {
-			console.error(`${difference.field}: pinned=${difference.pinned}; current=${difference.current}`);
-		}
-		if (differences.length === 0) console.error("Report values match, but JSON property order differs.");
+		printReportDifferences(actual, expected);
 		throw new Error(
 			"Motion-text font readiness report is stale; regenerate it from the canonical assets",
 		);

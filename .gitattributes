@@ -3,3 +3,9 @@ apps/web/public/motion-text/fonts/licenses/*-OFL.txt -text
 
 # The generator and --check compare the deterministic SBOM byte for byte.
 SBOM.md text eol=lf
+
+# Rust embeds these text files verbatim with include_str!; checkout must not
+# change the redistributed WASM bytes on Windows.
+rust/**/*.wgsl text eol=lf
+rust/crates/motion-text/resources/jizura-font-catalog.json text eol=lf
+rust/crates/motion-text/resources/jizura-planner-catalog.json text eol=lf
