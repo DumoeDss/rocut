@@ -18,6 +18,8 @@ jobs:
   build:
     runs-on: ${{ matrix.os }}
     strategy:
+      # Each supported host must report its own build and evidence result.
+      fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
 
