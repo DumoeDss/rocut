@@ -19,6 +19,7 @@ import { runAgentCli } from "./agent-cli";
 import { runVideoPosterCli } from "./video-poster-cli";
 import type { ExportJob } from "./host-export";
 import { runSnapshotCli } from "./snapshot-cli";
+import { runNativeReadCli } from "./native-read-cli";
 import {
 	parseVideoChromaFlag,
 	parseVideoQuantizerFlag,
@@ -120,6 +121,8 @@ export const USAGE_LINES: readonly string[] = [
 	"  rocut video-poster capabilities|create (offline; create reads fixed JSON from stdin)",
 	"  rocut target reap [--project <dir>] [--dry-run]",
 	"  rocut read [--target <id|auto>] [--project <dir>]",
+	"  rocut record [--target <id|auto>] [--project <dir>] (complete read-only native record)",
+	"  rocut apply-status <original-batch.json> [--target <id|auto>] [--project <dir>] (read-only)",
 	"  rocut editing catalog [--target <id|auto>] [--project <dir>]",
 	"  rocut capabilities [--target <id|auto>] [--project <dir>]",
 	"  rocut media import <spec.json> [--target <id|auto>] [--project <dir>]",
@@ -492,6 +495,16 @@ async function runCli(argv: readonly string[]): Promise<void> {
 					"\t",
 				) + "\n",
 			);
+			return;
+		}
+		case "record":
+		case "apply-status": {
+			const result = await runNativeReadCli(
+				command,
+				args.positional,
+				await resolveTarget(args, registry),
+			);
+			process.stdout.write(JSON.stringify(result, null, "\t") + "\n");
 			return;
 		}
 		case "apply": {

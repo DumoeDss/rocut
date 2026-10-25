@@ -17,6 +17,7 @@ import {
 	type MotionTextTimeMapper,
 } from "./nodes/motion-text-node";
 import type { AnyBaseNode } from "./nodes/base-node";
+import { VisualNode } from "./nodes/visual-node";
 import type { TBackground, TCanvasSize } from "../../project/types";
 import { DEFAULT_BACKGROUND_BLUR_INTENSITY } from "../../background/blur";
 import { readMediaCropParams } from "../../wasm/media-crop";
@@ -219,6 +220,12 @@ function buildTrackNodes({
 		}
 	}
 
+	for (const node of nodes) {
+		if (node instanceof VisualNode) {
+			node.params.fontRuntime = motionTextFontRuntime;
+			node.params.projectId = motionTextProjectId;
+		}
+	}
 	return nodes;
 }
 

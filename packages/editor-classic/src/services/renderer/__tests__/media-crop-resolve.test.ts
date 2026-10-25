@@ -122,9 +122,11 @@ test("inactive images do not load missing bytes or prepare an unrelated source c
 	const crop = spyOn(mediaCrop, "resolveMediaCrop").mockImplementation(() => {
 		throw new Error("Unrelated crop must not run");
 	});
-	const load = spyOn(images, "loadImageSource").mockRejectedValue(
-		new Error("Unrelated image must not load"),
-	);
+	// Bun 1.2.18 creates an eager rejected promise for mockRejectedValue;
+	// this negative-call assertion needs a rejection only if the loader runs.
+	const load = spyOn(images, "loadImageSource").mockImplementation(async () => {
+		throw new Error("Unrelated image must not load");
+	});
 	const context: ResolveContext = {
 		renderer: { width: 200, height: 100 },
 		time: 240000,

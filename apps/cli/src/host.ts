@@ -722,7 +722,12 @@ async function handleApi(
 						readOnly: true,
 						exactBatch: true,
 					},
-					pinnedTextFonts: true,
+					pinnedTextFonts:
+						typeof Reflect.get(nativeWasm, "resolvePinnedTextFontJson") ===
+						"function",
+					pinnedTextMaskFonts:
+						typeof Reflect.get(nativeWasm, "resolvePinnedTextFontJson") ===
+						"function",
 					mediaCrop:
 						typeof Reflect.get(nativeWasm, "resolveMediaCropJson") ===
 						"function"

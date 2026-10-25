@@ -38,12 +38,12 @@ export class TextNode extends BaseNode<TextNodeParams, ResolvedTextNodeState> {
 		| undefined;
 
 	async measurementParams(signal?: AbortSignal): Promise<TextNodeParams> {
-		const font = pinnedTextFont(this.params.params["mv.fontResource"]);
+		const font = pinnedTextFont(
+			this.params.params["mv.fontResource"],
+			undefined,
+			this.params.params.fontFamily as string,
+		);
 		if (!font) return this.params;
-		if (font.family !== this.params.params.fontFamily)
-			throw Error(
-				"Text font selection differs from its fixed source; choose the matching font file",
-			);
 		const { fontRuntime, projectId } = this.params;
 		if (!fontRuntime || !projectId)
 			throw Error("Pinned text font runtime is unavailable");
