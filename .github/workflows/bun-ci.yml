@@ -86,7 +86,7 @@ jobs:
 
       - name: Install dependencies
         working-directory: apps/web
-        run: bun install
+        run: bun install --frozen-lockfile
 
       # Recomputes the checked-in SBOM and validates the motion-text catalog
       # against the exact shipped TTF/OFL closure. This is deliberately after
@@ -94,7 +94,15 @@ jobs:
       # current wasm32 crate graph and lockfile resolution, so an earlier run
       # would certify a different tree from the one consumed below.
       - name: Verify SBOM and motion-text font closure
-        run: node script/generate-sbom.mjs --check
+        shell: bash
+        run: |
+          if ! node script/generate-sbom.mjs --check; then
+            if ! node script/generate-sbom.mjs; then
+              echo "SBOM regeneration also failed; showing any generated difference."
+            fi
+            git diff -- SBOM.md
+            exit 1
+          fi
 
       # The SBOM gate proves the shipped closure; this separate gate pins the
       # exact F01 glyph result to the freshly built canonical WASM and exercises

@@ -346,6 +346,8 @@ async function collectVisualSourceNode({
 			: (node.resolved as ResolvedVisualSourceNodeState).sourceHeight;
 
 	const textureId = `${path}:source`;
+	const sourceVersion =
+		node instanceof GraphicNode ? undefined : node.resolved.sourceVersion;
 	const sourceCrop =
 		node instanceof ImageNode || node instanceof VideoNode
 			? node.resolved.sourceCrop
@@ -357,16 +359,13 @@ async function collectVisualSourceNode({
 					id: textureId,
 					source,
 					crop: sourceCrop,
-					sourceIdentity: `${identityKey(source)}:${node.resolved.sourceVersion ?? "static"}`,
+					sourceIdentity: `${identityKey(source)}:${sourceVersion ?? "static"}`,
 				})
 			: {
 					kind: "external",
 					id: textureId,
 					source,
-					sourceVersion:
-						node instanceof GraphicNode
-							? undefined
-							: node.resolved.sourceVersion,
+					sourceVersion,
 					width: sourceWidth,
 					height: sourceHeight,
 				},
