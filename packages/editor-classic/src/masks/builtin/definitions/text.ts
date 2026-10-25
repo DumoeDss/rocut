@@ -40,6 +40,14 @@ const TEXT_MASK_ALIGNMENT = "center";
 
 const TEXT_MASK_PARAMS: ParamDefinition<keyof TextMaskParams & string>[] = [
 	{
+		key: "mv.fontResource",
+		label: "Project Font Source",
+		type: "text",
+		default: "",
+		required: false,
+		keyframable: false,
+	},
+	{
 		key: "centerX",
 		label: "X",
 		type: "number",

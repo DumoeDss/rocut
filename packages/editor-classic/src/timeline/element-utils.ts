@@ -441,7 +441,12 @@ export function getElementFontFamilies({
 			}
 			if ("masks" in element) {
 				for (const mask of element.masks ?? []) {
-					if (mask.type === "text" && mask.params.fontFamily) {
+					if (
+						mask.type === "text" &&
+						mask.params.fontFamily &&
+						(mask.params["mv.fontResource"] === undefined ||
+							mask.params["mv.fontResource"] === "")
+					) {
 						families.add(mask.params.fontFamily);
 					}
 				}

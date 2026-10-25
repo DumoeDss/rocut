@@ -40,6 +40,7 @@ import {
 } from "./nodes/motion-text-node";
 import { resolveMotionTextRenderFrame } from "./motion-text/jizura-adapter";
 import type { ResolvedVisualSourceNodeState } from "./nodes/visual-node";
+import { VisualNode } from "./nodes/visual-node";
 import type { ResolveContext } from "./resolve-context";
 import {
 	resolveEffectPassGroups,
@@ -115,6 +116,8 @@ async function resolveNode({
 	} else if (node instanceof EffectLayerNode) {
 		node.resolved = resolveEffectLayerNode({ node, context });
 	}
+
+	if (node instanceof VisualNode) await node.prepareMasks(context.signal);
 
 	const settled = await Promise.allSettled(
 		node.children.map((child) => resolveNode({ node: child, context })),

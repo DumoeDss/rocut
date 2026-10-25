@@ -89,6 +89,8 @@ pub use programmatic_audio::{
 };
 mod programmatic_build;
 mod programmatic_resources;
+mod pinned_text_font;
+pub use pinned_text_font::resolve_pinned_text_font_json;
 pub use programmatic::resolve_programmatic_frame_json;
 pub use programmatic_resources::validate_programmatic_resources_json;
 mod scenes;
@@ -178,6 +180,9 @@ fn validate(request: &Request) -> Vec<Issue> {
     let mut issues = Vec::new();
     let e = &request.editing;
     let kind = e.kind.as_str();
+    if kind == "text" {
+        pinned_text_font::validate_selection(&e.params, "editing.params", &mut issues);
+    }
     if matches!(kind, "image" | "video") {
         if let Err(issue) = media_crop::validate_crop_params(&e.params) {
             issues.push(issue);
@@ -358,6 +363,9 @@ fn validate(request: &Request) -> Vec<Issue> {
     let mut mask_ids = BTreeSet::new();
     for mask in &e.masks {
         let path = format!("editing.masks.{}", mask.id);
+        if mask.kind == "text" {
+            pinned_text_font::validate_selection(&mask.params, &format!("{path}.params"), &mut issues);
+        }
         unique_id(&mask.id, &mut mask_ids, &path, &mut issues);
         match request.catalog.masks.get(&mask.kind) {
             None => issues.push(Issue::new(&path, "Unknown mask type")),
