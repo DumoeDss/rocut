@@ -21,27 +21,29 @@
  * CreateMotionTextStructuredCuesOptions and its literal/jizura string union.
  * Omission preserves literal behavior. No existing declaration is removed;
  * all low-level signatures, binary imports and exports remain pinned below.
+ * October 25 source cropping adds only resolveMediaCropJson (string -> string),
+ * reviewed with no stable removals or binary import changes.
  */
 import { EXPECTED as HISTORICAL } from "./wasm-api-surface-contract.mjs";
 
 export const EXPECTED = {
 	...HISTORICAL,
 	...{
-		dtsSha: "5ed5a1673bbe0f0326c75c59d181c513e0e15cf191e602da80649d0d6610591e",
+		dtsSha: "d4cc3d46b7cfb5958be0b060a9720c8c0519d420a2bc70f6b148afff8a11f671",
 		wrapperSha:
-			"94f213cb3dab88bdfa0c73056e7b0a87039267cbcc86f496e27fefb67eff86d5",
+			"b0e2fc5a5b33aaab2b30791aa1c46d166c05eb9a5cbc4e985d12b8e60a8a798e",
 		wasmDtsNormalizedSignature:
-			"7582c7c1b18f01640cd6c4ddf0023938e2900412f3c8ea962c584de082d00dca",
-		wasmDtsLineCount: 250,
+			"0363997ceccdb02a55b0688838a0f17f386ed2c8ea546729410c305903ce35ff",
+		wasmDtsLineCount: 251,
 		wrapperExportSignature:
-			"0bf7f80861b940e9294a39ecf238a255f9659fda5f36b9a9345ff32e06c40291",
-		wrapperExportCount: 151,
+			"78c47b69619bb611b02528a4b2dc8343eee517f217431036a05f2d077ff64d52",
+		wrapperExportCount: 152,
 		bgExportSignature:
-			"f07fb803da57dd7a0a02acf79e795dac82377b1509d83e6e81d1315b3e4c9231",
-		bgExportCount: 770,
+			"86c39352ce7972d3d0e39ddb359f9fa2e2385b7bb7f2f6a4c2e5a045fa9b3c3c",
+		bgExportCount: 771,
 		stableWasmExportSignature:
-			"f51781e6a85fba58b990939a2908f94daf17eb41882438b7ce1cb8fc679a9c19",
-		stableWasmExportCount: 244,
+			"3e7830b5d9bff5aeef17759747dc804ddcdafcfbc4d6d34cb317cca7944f603a",
+		stableWasmExportCount: 245,
 		trampolineExportCount: 4,
 		wasmExportsAsRecorded: [
 			"planMediaFolderMutationJson|function",
@@ -203,6 +205,7 @@ export const EXPECTED = {
 			"resolveRemotionProducedAssetsJson|function",
 			"validateClipEditingJson|function",
 			"resolveEffectLayerParamsJson|function",
+			"resolveMediaCropJson|function",
 			"validateMasterEffectsJson|function",
 			"validateImageSequenceManifestJson|function",
 			"mvRecipeCatalogJson|function",
@@ -302,7 +305,7 @@ export const EXPECTED = {
 			"package.json":
 				"60502f95b49df31dd41e5be0ada1826e0693b30a525d3b49da73f4e106a1a4b4",
 			"opencut_wasm_sync.js":
-				"e0651502c0d5bb6ce3da192ad2cde6689adf37a69dfe9c9e5c6598167ebe9479",
+				"144f30c6fc1bed134988b16d57a0b2f2452ce77dac6b86b17c7f2db31e086c60",
 		},
 	},
 };

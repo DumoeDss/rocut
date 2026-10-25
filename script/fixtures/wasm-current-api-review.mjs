@@ -11,6 +11,11 @@
  */
 export const REVIEWED_API_ADDITIONS = [
 	[
+		"resolveMediaCropJson",
+		"rust/crates/editor-api/src/media_crop.rs",
+		"packages/editor-classic/src/wasm/media-crop.ts",
+	],
+	[
 		"planMediaFolderMutationJson",
 		"rust/crates/editor-api/src/media_folders.rs",
 		"packages/editor-classic/src/editor/transactions/opencut/media-folder-policy.ts",

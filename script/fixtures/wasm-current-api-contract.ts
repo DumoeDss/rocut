@@ -341,6 +341,9 @@ type prepareRemotionInlineAudioSourcesJsonExact = Assert<
 type resolveEffectLayerParamsJsonExact = Assert<
 	Equal<typeof wasm.resolveEffectLayerParamsJson, (input: string) => string>
 >;
+type resolveMediaCropJsonExact = Assert<
+	Equal<typeof wasm.resolveMediaCropJson, (input: string) => string>
+>;
 type resolveGlassObjectParamsJsonExact = Assert<
 	Equal<typeof wasm.resolveGlassObjectParamsJson, (input: string) => string>
 >;

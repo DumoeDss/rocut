@@ -3,6 +3,10 @@ import type { Effect, EffectPass } from "../../../effects/types";
 import type { Mask } from "../../../masks/types";
 import type { BlendMode, Transform } from "../../../rendering";
 import type { RetimeConfig, VisualElement } from "../../../timeline";
+import type {
+	MediaCropBounds,
+	MediaCropGeometry,
+} from "../../../wasm/media-crop";
 
 export interface VisualNodeParams {
 	/** Scene identity for transition branch grouping; absent for standalone nodes. */
@@ -19,6 +23,7 @@ export interface VisualNodeParams {
 	blendMode?: BlendMode;
 	effects?: Effect[];
 	masks?: Mask[];
+	crop?: MediaCropBounds;
 }
 
 export interface ResolvedVisualNodeState {
@@ -34,6 +39,7 @@ export interface ResolvedVisualSourceNodeState extends ResolvedVisualNodeState {
 	sourceVersion?: string;
 	sourceWidth: number;
 	sourceHeight: number;
+	sourceCrop?: MediaCropGeometry;
 }
 
 export abstract class VisualNode<

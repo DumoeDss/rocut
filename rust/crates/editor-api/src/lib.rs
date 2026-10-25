@@ -16,6 +16,8 @@ mod image_sequence;
 mod model;
 mod param_diagnostics;
 mod media_facts;
+mod media_crop;
+pub use media_crop::resolve_media_crop_json;
 pub use media_facts::{inspect_media_facts_bytes, validate_media_facts_json};
 pub use image_sequence::{
     validate_image_sequence_image_bytes, validate_image_sequence_manifest_json,
@@ -176,6 +178,11 @@ fn validate(request: &Request) -> Vec<Issue> {
     let mut issues = Vec::new();
     let e = &request.editing;
     let kind = e.kind.as_str();
+    if matches!(kind, "image" | "video") {
+        if let Err(issue) = media_crop::validate_crop_params(&e.params) {
+            issues.push(issue);
+        }
+    }
     let programmatic = kind == "graphic" && e.definition_id.as_deref() == Some("programmatic");
     if programmatic != e.programmatic.is_some() {
         issues.push(Issue::new(

@@ -1,6 +1,10 @@
 import type { EffectPass } from "../../../effects/types";
 import type { RetimeConfig } from "../../../timeline";
 import { BaseNode } from "./base-node";
+import type {
+	MediaCropBounds,
+	MediaCropGeometry,
+} from "../../../wasm/media-crop";
 
 export type BlurBackgroundNodeParams = {
 	clipId?: string;
@@ -15,6 +19,7 @@ export type BlurBackgroundNodeParams = {
 	retime?: RetimeConfig;
 	freezeFrame?: number;
 	blurIntensity: number;
+	crop?: MediaCropBounds;
 };
 
 export type BackdropSource = {
@@ -22,6 +27,7 @@ export type BackdropSource = {
 	sourceVersion?: string;
 	width: number;
 	height: number;
+	sourceCrop?: MediaCropGeometry;
 };
 
 export interface ResolvedBlurBackgroundNodeState {

@@ -18,6 +18,7 @@
  * without invalidating reviews. Persistence and resync share one queue slot.
  */
 import { createServer } from "node:http";
+import * as nativeWasm from "opencut-wasm";
 import { prepareMotionTextCues } from "./motion-text-prepare-cues";
 import { motionTextSegmentScopes } from "./motion-text-segment-scopes";
 import { createProgrammaticFrameService } from "./programmatic/frame-service";
@@ -715,7 +716,19 @@ async function handleApi(
 			respond(200, {
 				revision: await automation.revision(),
 				capabilities: await automation.capabilities(),
-				mvAuthor: { applyStatus: { route: "apply-status", readOnly: true, exactBatch: true }, pinnedTextFonts: true },
+				mvAuthor: {
+					applyStatus: {
+						route: "apply-status",
+						readOnly: true,
+						exactBatch: true,
+					},
+					pinnedTextFonts: true,
+					mediaCrop:
+						typeof Reflect.get(nativeWasm, "resolveMediaCropJson") ===
+						"function"
+							? "normalized-source-v1"
+							: undefined,
+				},
 				supportedOperations: await automation.supportedOperations(),
 				mediaImport: MEDIA_IMPORT_CAPABILITY,
 				motionText: {

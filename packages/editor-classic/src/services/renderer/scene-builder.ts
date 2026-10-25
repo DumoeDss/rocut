@@ -19,6 +19,7 @@ import {
 import type { AnyBaseNode } from "./nodes/base-node";
 import type { TBackground, TCanvasSize } from "../../project/types";
 import { DEFAULT_BACKGROUND_BLUR_INTENSITY } from "../../background/blur";
+import { readMediaCropParams } from "../../wasm/media-crop";
 import {
 	buildTransformFromParams,
 	readBlendModeFromParams,
@@ -90,6 +91,7 @@ function buildTrackNodes({
 						new VideoNode({
 							clipId: element.id,
 							mediaId: mediaAsset.id,
+							crop: readMediaCropParams({ params: element.params }),
 							url: mediaAsset.url,
 							file: mediaAsset.file,
 							duration: element.duration,
@@ -110,6 +112,7 @@ function buildTrackNodes({
 				if (element.type === "image" && mediaAsset.type === "image") {
 					nodes.push(
 						new ImageNode({
+							crop: readMediaCropParams({ params: element.params }),
 							clipId: element.id,
 							url: mediaAsset.url,
 							duration: element.duration,
@@ -263,6 +266,7 @@ function buildBlurBackgroundNodes({
 				retime: element.type === "video" ? element.retime : undefined,
 				freezeFrame: element.type === "video" ? element.freezeFrame : undefined,
 				blurIntensity,
+				crop: readMediaCropParams({ params: element.params }),
 			}),
 		);
 	}
