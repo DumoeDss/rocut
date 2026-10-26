@@ -1,4 +1,5 @@
 import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { cn } from "../../utils/ui";
 
 export function ReactMarkdownWrapper({
@@ -10,6 +11,7 @@ export function ReactMarkdownWrapper({
 }) {
 	return (
 		<ReactMarkdown
+			remarkPlugins={[remarkGfm]}
 			components={{
 				a: ({ className: linkClassName, children, ...props }) => (
 					<a

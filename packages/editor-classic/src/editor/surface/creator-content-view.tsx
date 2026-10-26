@@ -1,6 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { ReactMarkdownWrapper } from "../../components/ui/react-markdown-wrapper";
+import { useCreatorDocument } from "./use-creator-document";
 import { Button } from "../../components/ui/button";
 import type {
 	CreatorAsset,
@@ -34,42 +36,7 @@ export function CreatorDocumentView({
 	readDocument?: CreatorWorkspaceBridge["readDocument"];
 	snapshot?: CreatorWorkspaceSnapshot;
 }) {
-	const [loaded, setLoaded] = useState<CreatorDocument | null>(null);
-	const [loadError, setLoadError] = useState<string | null>(null);
-	const [readAttempt, setReadAttempt] = useState(0);
-	useEffect(() => {
-		let active = true;
-		if (sourceDocument.contentState !== "unloaded") {
-			return;
-		}
-		const reading =
-			readDocument && snapshot
-				? readDocument({ document: sourceDocument, snapshot })
-				: Promise.reject(new Error("Document loading is unavailable"));
-		void reading
-			.then((value) => {
-				if (active) {
-					setLoaded(value);
-					setLoadError(null);
-				}
-			})
-			.catch((failure: unknown) => {
-				if (active)
-					setLoadError(
-						failure instanceof Error
-							? failure.message
-							: "Document loading failed",
-					);
-			});
-		return () => {
-			active = false;
-		};
-	}, [sourceDocument, readDocument, snapshot, readAttempt]);
-	const document =
-		loaded?.id === sourceDocument.id &&
-		loaded.revision === sourceDocument.revision
-			? loaded
-			: sourceDocument;
+	const { document, error: loadError, retry } = useCreatorDocument(sourceDocument, readDocument, snapshot);
 	const ready = document.contentState !== "unloaded";
 	const [editing, setEditing] = useState(false);
 	const [content, setContent] = useState(document.content);
@@ -81,10 +48,7 @@ export function CreatorDocumentView({
 					{loadError ?? "正在加载文档…"}
 					{loadError && (
 						<button
-							onClick={() => {
-								setLoadError(null);
-								setReadAttempt((value) => value + 1);
-							}}
+							onClick={retry}
 						>
 							重试
 						</button>
@@ -157,8 +121,10 @@ export function CreatorDocumentView({
 					onChange={(event) => setContent(event.target.value)}
 				/>
 			) : ready ? (
-				<div className="whitespace-pre-wrap break-words text-sm leading-8 mt-6">
-					{document.content || "文档暂无内容。点击编辑文档开始记录。"}
+				<div className="creator-document-body break-words text-sm leading-8 mt-6 [&_h1]:text-xl [&_h2]:text-lg [&_h3]:font-semibold [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6 [&_table]:border-collapse [&_th]:border [&_th]:p-2 [&_td]:border [&_td]:p-2 [&_pre]:overflow-auto">
+					{["plan", "character", "scene", "script", "storyboard"].includes(document.group) ? (
+						<ReactMarkdownWrapper>{document.content || "文档暂无内容。点击编辑文档开始记录。"}</ReactMarkdownWrapper>
+					) : <div className="whitespace-pre-wrap">{document.content || "文档暂无内容。点击编辑文档开始记录。"}</div>}
 				</div>
 			) : null}
 		</article>
