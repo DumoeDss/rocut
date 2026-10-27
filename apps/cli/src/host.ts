@@ -62,6 +62,7 @@ import {
 import {
 	createNativeExportRegistry,
 	NativeExportError,
+	sanitizedOutcomeReason,
 	type NativeExportRegistry,
 } from "./host-export-native";
 import {
@@ -1211,7 +1212,7 @@ async function handleApi(
 									ownerToken,
 									url.searchParams.get("terminated") === "true"
 										? { kind: "cancelConfirmed" }
-										: { kind: "failed", error: failure },
+										: { kind: "failed", error: sanitizedOutcomeReason(failure) },
 								);
 				} else {
 					respond(404, { error: "unknown-export-route" });

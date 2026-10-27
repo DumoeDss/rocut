@@ -68,6 +68,23 @@ export class NativeExportError extends Error {
 	}
 }
 
+/**
+ * The Rust kernel rejects outcome reasons carrying control characters, and
+ * producers (ffmpeg stderr, surfaces) naturally emit multi-line text. Flatten
+ * and bound every producer reason so a failed outcome can always settle
+ * instead of freezing the job at its last phase.
+ */
+export function sanitizedOutcomeReason(value: unknown): string {
+	const text =
+		value instanceof Error
+			? value.message
+			: typeof value === "string"
+				? value
+				: "";
+	const flattened = text.replace(/[\u0000-\u001f\u007f]+/g, " ").trim();
+	return flattened.slice(0, 2000) || "Native export failed";
+}
+
 /** Transport shape only. Admission, fingerprints, transitions and receipt checks stay in Rust. */
 export function nativeExportKernel(input: unknown): Result {
 	const binding = (wasm as unknown as Record<string, unknown>)
@@ -639,10 +656,7 @@ export function createNativeExportRegistry(args: {
 											? { kind: "cancelConfirmed" }
 											: {
 													kind: "failed",
-													error:
-														error instanceof Error
-															? error.message
-															: "Native mux failed",
+													error: sanitizedOutcomeReason(error),
 												},
 									)
 									.catch(() => undefined);

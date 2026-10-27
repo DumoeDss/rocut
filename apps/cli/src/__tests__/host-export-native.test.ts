@@ -11,11 +11,9 @@ import {
 	unlink,
 } from "node:fs/promises";
 import { join } from "node:path";
-import {
-	createNativeExportRegistry,
+import {createNativeExportRegistry,
 	type NativeExportRecord,
-	NativeExportError,
-} from "../host-export-native";
+	NativeExportError, sanitizedOutcomeReason } from "../host-export-native";
 
 // Platform tests use a controlled kernel seam; canonical business admission is tested in Rust.
 function kernel(input: any): any {
@@ -864,3 +862,17 @@ test("published real bytes are hashed, receipt verified, and tampering fails rea
 		);
 		await expect(registry.get(job.jobId)).rejects.toThrow("output-mismatch");
 	}));
+
+test("sanitizedOutcomeReason flattens multi-line producer stderr to a kernel-acceptable reason", () => {
+	const ffmpegStyle =
+		"Native video decoder failed (exit 234): Stream map '' matches no streams.\nTo ignore this, add a trailing '?' to the map.\n\tFailed to set value '0:a:0' for option 'map': Invalid argument";
+	const reason = sanitizedOutcomeReason(new Error(ffmpegStyle));
+	expect(reason).not.toMatch(/[\u0000-\u001f\u007f]/);
+	expect(reason).toContain("Stream map '' matches no streams.");
+	expect(reason.length).toBeLessThanOrEqual(2000);
+	expect(sanitizedOutcomeReason("   \n\t  ")).toBe("Native export failed");
+	expect(sanitizedOutcomeReason(undefined)).toBe("Native export failed");
+	expect(
+		sanitizedOutcomeReason(new Error("x".repeat(3000))).length,
+	).toBe(2000);
+});

@@ -135,6 +135,21 @@ export async function muxNativeExport(input: {
 				throw new Error("Mux segments have different geometry");
 			geometry = shape;
 			if (withAudio) {
+				const audio = metadata.streams?.filter(
+					(stream: { codec_type?: string }) => stream.codec_type === "audio",
+				);
+				if (!audio?.length) {
+					// Silent timelines render video-only segments; synthesize the
+					// contracted exact silence instead of requiring an audio stream.
+					filters.push(
+						`anullsrc=r=48000:cl=stereo,atrim=end_sample=${segment.sampleCount},asetpts=N/SR/TB[a${index}]`,
+					);
+					inputs.push("-i", file);
+					filters.push(
+						`[${index}:v:0]trim=end_frame=${segment.frameCount},setpts=N/(${fps}*TB)[v${index}]`,
+					);
+					continue;
+				}
 				const pcm = await run(
 					ffmpeg,
 					[
