@@ -1,12 +1,15 @@
 import assert from "node:assert/strict";
 import { cpSync, mkdirSync, mkdtempSync, readFileSync, unlinkSync, writeFileSync } from "node:fs";
 import { isAbsolute, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import test from "node:test";
 import { assertRuntimeWasmPackageUnchanged, resolveRuntimeWasmPackage } from "../runtime-wasm-package-closure.mjs";
 
 const scratch = process.env.ROCUT_PACK_CLOSURE_ROOT;
 const options = { skip: !scratch && "Set an explicit isolated ROCUT_PACK_CLOSURE_ROOT" };
 const names = ["opencut_wasm_sync.js", "opencut_wasm_bg.js", "opencut_wasm_bg.wasm"];
+const sourcePackage = process.env.ROCUT_PACK_TEST_WASM_PACKAGE_DIR ??
+	fileURLToPath(new URL("../../rust/wasm/pkg/", import.meta.url));
 
 function fixture(mismatch) {
 	assert(isAbsolute(scratch));
@@ -16,7 +19,7 @@ function fixture(mismatch) {
 	mkdirSync(canonical, { recursive: true });
 	mkdirSync(installed, { recursive: true });
 	for (const name of names) {
-		let bytes = readFileSync(new URL(`../../rust/wasm/pkg/${name}`, import.meta.url));
+		let bytes = readFileSync(join(sourcePackage, name));
 		if (mismatch === name) bytes = name.endsWith(".wasm")
 			? Buffer.from([0,97,115,109,1,0,0,0])
 			: Buffer.from(bytes.toString("utf8") + "\nexport function stale(){wasm.missingPackExport();}\n");
@@ -44,6 +47,15 @@ test("incompatible canonical glue, binary or export map is rejected before packi
 test("runtime pack closure rejects implicit source paths", () => {
 	assert.throws(() => resolveRuntimeWasmPackage({ repoRoot: "." }), /explicit/);
 	assert.throws(() => resolveRuntimeWasmPackage({ repoRoot: process.cwd(), wasmPackageDirectory: "relative" }), /absolute/);
+});
+
+test("packages without pinned font admission cannot pass the pack gate", options, () => {
+	for (const name of [names[0], names[1]]) {
+		const source = fixture();
+		const entry = join(source.repoRoot, "rust/wasm/pkg", name);
+		writeFileSync(entry, readFileSync(entry, "utf8").replaceAll("resolvePinnedTextFontJson", "missingPinnedFont"), "utf8");
+		assert.throws(() => resolveRuntimeWasmPackage(source), /ABI missing.*(?:resolvePinnedTextFontJson|missingPinnedFont)/);
+	}
 });
 
 test("explicit package supplies the entire closure independently of canonical bytes", options, () => {

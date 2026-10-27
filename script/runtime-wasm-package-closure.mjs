@@ -33,14 +33,15 @@ export function resolveRuntimeWasmPackage({ repoRoot, wasmPackageDirectory }) {
 	const exported = new Set(WebAssembly.Module.exports(binary).map(item => item.name));
 	const required = ["resolveGlassObjectParamsJson", "resolveInkObjectParamsJson",
 		"resolveLiquidObjectParamsJson", "evaluateLiquidObjectFrameJson", "liquidObjectTransportPolicyJson",
-		"liquidobjecttransportowner_new", "liquidobjecttransportowner_command", "__wbg_liquidobjecttransportowner_free"];
+		"liquidobjecttransportowner_new", "liquidobjecttransportowner_command", "__wbg_liquidobjecttransportowner_free",
+		"resolvePinnedTextFontJson"];
 	const referenced = [...glue.matchAll(/\bwasm\.(\w+)/g)].map(match => match[1]);
 	for (const name of new Set([...required, ...referenced]))
 		if (!exported.has(name)) throw Error(`Canonical opencut-wasm ABI missing binary export: ${name}`);
 	const glueExports = new Set([...glue.matchAll(/export\s+(?:function|const|let|var|class)\s+(\w+)/g)].map(match => match[1]));
 	const syncExport = sync.match(/export\s*\{([^}]+)\}\s*from\s*["']\.\/opencut_wasm_bg\.js["']/);
 	const syncExports = new Set(syncExport?.[1].split(",").map(name => name.trim()) ?? []);
-	for (const name of ["LiquidObjectTransportOwner", ...required.slice(0, 5)])
+	for (const name of ["LiquidObjectTransportOwner", ...required.slice(0, 5), "resolvePinnedTextFontJson"])
 		if (!glueExports.has(name) || !syncExports.has(name))
 			throw Error(`Canonical opencut-wasm ABI missing public sync export: ${name}`);
 	for (const imported of WebAssembly.Module.imports(binary))

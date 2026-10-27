@@ -7,6 +7,7 @@ import type {
 } from "..";
 import { revisionOf } from "..";
 import type { MotionTextSequence } from "../motion-text";
+import { sequenceAssetIds } from "./motion-text-resources";
 import {
 	canonicalOperationFingerprint,
 	cloneTransactionValue,
@@ -195,17 +196,6 @@ function entityExists(args: {
 		document.assets.some((entry) => entry.id === id) ||
 		document.markers.some((entry) => entry.id === id) ||
 		(document.motionTextSequences ?? []).some((entry) => entry.id === id)
-	);
-}
-
-function sequenceAssetIds(sequence: MotionTextSequence): readonly AssetId[] {
-	return [
-		sequence.audioBinding?.assetId,
-		...sequence.fonts
-			.filter((font) => font.source === "project")
-			.map((font) => font.assetId),
-	].filter((assetId): assetId is NonNullable<typeof assetId> =>
-		Boolean(assetId),
 	);
 }
 

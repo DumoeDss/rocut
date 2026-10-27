@@ -100,6 +100,62 @@ async function fixture() {
 }
 
 describe("motion-text transaction entity", () => {
+	test("accepts digest-addressed font attachments through apply and reopen without fake media", async () => {
+		const f = await fixture();
+		const value = sequence({ revision: 0, text: "Caption" });
+		const digest = "a".repeat(64);
+		const withFont = {
+			...value,
+			fonts: [
+				{
+					id: "caption",
+					source: "project",
+					family: "Caption",
+					style: "normal",
+					weight: 400,
+					assetId: `programmatic-sha256-${digest}`,
+					contentDigest: `sha256:${digest}`,
+				},
+			],
+		};
+		const operations = [
+			{ kind: "create-motion-text-sequence", sequence: withFont },
+		];
+		expect((await f.engine.dryRun({ operations })).accepted).toBe(true);
+		await f.engine.apply({ operations });
+		const reopened = await openTransactionEngine({
+			store: f.store,
+			projectId: PROJECT_ID,
+			documentAdapter: f.adapter,
+		});
+		expect(await reopened.motionTextSequences?.()).toEqual([withFont]);
+	});
+	test.each(["missing-font", `programmatic-sha256-${"b".repeat(64)}`])(
+		"still rejects missing or mismatched font references: %s",
+		async (assetId) => {
+			const f = await fixture();
+			const value = {
+				...sequence({ revision: 0, text: "Caption" }),
+				fonts: [
+					{
+						id: "caption",
+						source: "project",
+						family: "Caption",
+						style: "normal",
+						weight: 400,
+						assetId,
+						contentDigest: `sha256:${"a".repeat(64)}`,
+					},
+				],
+			};
+			const result = await f.engine.dryRun({
+				operations: [{ kind: "create-motion-text-sequence", sequence: value }],
+			});
+			expect(result.accepted).toBe(false);
+			if (!result.accepted)
+				expect(result.issues[0].code).toBe("missing-relation");
+		},
+	);
 	test("creates a sequence and referencing clip atomically and preserves both on reopen", async () => {
 		const { store, adapter, engine } = await fixture();
 		const operations = [

@@ -226,6 +226,10 @@ export async function muxNativeExport(input: {
 						"aac",
 						"-movflags",
 						"+faststart",
+						// The default 1 kHz movie clock rounds AAC edit-list durations.
+						// Keep the audible interval exact on the admitted sample grid.
+						"-movie_timescale",
+						String(mux.sampleRate),
 						"-f",
 						"mp4",
 					]

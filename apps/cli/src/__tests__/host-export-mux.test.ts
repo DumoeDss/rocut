@@ -10,10 +10,16 @@ import { runNativeMediaProcess } from "../programmatic/native-media-process";
 const enabled =
 	!!process.env.ROCUT_NATIVE_FFMPEG_PATH &&
 	!!process.env.ROCUT_NATIVE_FFPROBE_PATH;
-for (const format of ["mp4", "webm"] as const)
+const cases = (["mp4", "webm"] as const).flatMap((format) =>
+	[30, 31].map((segmentFrames) => ({ format, segmentFrames })),
+);
+for (const { format, segmentFrames } of cases)
 	test.skipIf(!enabled)(
-		`real ${format} native mux preserves every frame and continuous decoded audio across a seam`,
+		`real ${format} native mux preserves ${segmentFrames}-frame segments and continuous decoded audio across a seam`,
 		async () => {
+			const segmentSamples = segmentFrames * 1600;
+			const totalFrames = segmentFrames * 2;
+			const totalSamples = segmentSamples * 2;
 			const temporary = await mkdtemp(
 				path.join(os.tmpdir(), "rocut-mux-test-"),
 			);
@@ -42,10 +48,10 @@ for (const format of ["mp4", "webm"] as const)
 				for (let i = 0; i < 2; i++) {
 					const file = path.join(temporary, `${i}.${format}`),
 						raw = path.join(temporary, `${i}.rgb`);
-					const pixels = Buffer.alloc(30 * 64 * 64 * 3);
-					for (let frame = 0; frame < 30; frame++)
+					const pixels = Buffer.alloc(segmentFrames * 64 * 64 * 3);
+					for (let frame = 0; frame < segmentFrames; frame++)
 						pixels.fill(
-							20 + 3 * (i * 30 + frame),
+							20 + 3 * (i * segmentFrames + frame),
 							frame * 64 * 64 * 3,
 							(frame + 1) * 64 * 64 * 3,
 						);
@@ -67,7 +73,7 @@ for (const format of ["mp4", "webm"] as const)
 						"-f",
 						"lavfi",
 						"-i",
-						`aevalsrc=0.25*sin(2*PI*437.5*(t+${i})):s=48000:d=1`,
+						`aevalsrc=0.25*sin(2*PI*437.5*(t+${i * segmentFrames / 30})):s=44100:d=${segmentFrames / 30}`,
 						"-ac",
 						"2",
 						"-c:v",
@@ -90,7 +96,7 @@ for (const format of ["mp4", "webm"] as const)
 							options: {
 								format,
 								includeAudio: true,
-								range: { startTime: i * 120000, endTime: (i + 1) * 120000 },
+								range: { startTime: i * segmentFrames * 4000, endTime: (i + 1) * segmentFrames * 4000 },
 							},
 						},
 					} as NativeExportRecord;
@@ -99,9 +105,9 @@ for (const format of ["mp4", "webm"] as const)
 						nativeJobId: jobId,
 						outputSha256: sha256,
 						scopeDigest: "a".repeat(64),
-						startFrame: i * 30,
-						frameCount: 30,
-						sampleCount: 48000,
+						startFrame: i * segmentFrames,
+						frameCount: segmentFrames,
+						sampleCount: segmentSamples,
 					});
 				}
 				const output = await muxNativeExport({
@@ -109,7 +115,7 @@ for (const format of ["mp4", "webm"] as const)
 						format,
 						quality: "high",
 						includeAudio: true,
-						range: { startTime: 0, endTime: 240000 },
+						range: { startTime: 0, endTime: totalFrames * 4000 },
 						mux: {
 							version: 1,
 							frameRate: { numerator: 30, denominator: 1 },
@@ -139,11 +145,11 @@ for (const format of ["mp4", "webm"] as const)
 				expect(
 					info.streams.find((s: any) => s.codec_type === "video")
 						.nb_read_frames,
-				).toBe("60");
+				).toBe(String(totalFrames));
 				const audio = info.streams.find((s: any) => s.codec_type === "audio");
 				if (format === "mp4") {
 					expect(audio.time_base).toBe("1/48000");
-					expect(audio.duration_ts).toBe(96000);
+					expect(audio.duration_ts).toBe(totalSamples);
 				}
 				const rgb = await run(
 					ffmpeg,
@@ -161,9 +167,9 @@ for (const format of ["mp4", "webm"] as const)
 						"rawvideo",
 						"pipe:1",
 					],
-					64 * 64 * 3 * 61,
+					64 * 64 * 3 * (totalFrames + 1),
 				);
-				for (let frame = 0; frame < 60; frame++) {
+				for (let frame = 0; frame < totalFrames; frame++) {
 					const at = frame * 64 * 64 * 3;
 					expect(Math.abs(rgb[at] - (20 + 3 * frame))).toBeLessThan(3);
 				}
@@ -185,10 +191,10 @@ for (const format of ["mp4", "webm"] as const)
 						"f32le",
 						"pipe:1",
 					],
-					(96000 + 8192) * 8,
+					(totalSamples + 8192) * 8,
 				);
 				let seamError = 0;
-				for (let sample = 47520; sample < 48480; sample++) {
+				for (let sample = segmentSamples - 480; sample < segmentSamples + 480; sample++) {
 					const expected =
 						0.25 *
 						Math.SQRT1_2 *

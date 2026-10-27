@@ -3,6 +3,7 @@ import { validateFrameRate } from "..";
 import { isClipEditing, isEditingEffect } from "../editing";
 import type { MotionTextClipContent, MotionTextSequence } from "../motion-text";
 import { validateMotionTextSequence } from "../motion-text";
+import { sequenceAssetIds } from "./motion-text-resources";
 import type { ProjectId } from "@opencut/editor-ports";
 import type {
 	TransactionEngineDocument,
@@ -466,14 +467,7 @@ export function validateTransactionDocument(args: {
 			}
 		}
 		for (const sequence of motionTextSequences) {
-			const referencedAssetIds = [
-				sequence.audioBinding?.assetId,
-				...sequence.fonts
-					.filter((font) => font.source === "project")
-					.map((font) => font.assetId),
-			].filter((assetId): assetId is NonNullable<typeof assetId> =>
-				Boolean(assetId),
-			);
+			const referencedAssetIds = sequenceAssetIds(sequence);
 			for (const referencedAssetId of referencedAssetIds) {
 				if (assetIds.has(referencedAssetId)) continue;
 				issues.push(
