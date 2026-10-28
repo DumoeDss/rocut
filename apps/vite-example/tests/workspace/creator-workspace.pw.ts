@@ -46,6 +46,34 @@ test.beforeEach(async ({ page }) => {
 	await expect(page.getByRole("button", { name: "A 制作计划" })).toBeVisible();
 });
 
+test("one library exposes type counts, imports and generation from the add menu", async ({ page }) => {
+	await openProjectLibrary(page);
+	await expect(page.getByTestId("assets-tab-media")).toHaveCount(0);
+	await expect(page.getByRole("button", { name: "展开属性", exact: true })).toBeVisible();
+	await expect.poll(() => page.locator('[data-panel-id="editor-properties"]').evaluate(node => node.getBoundingClientRect().width)).toBe(0);
+	await expect(page.getByTestId("library-filter-all")).toHaveText("全部2");
+	await expect(page.getByTestId("library-import")).toHaveCount(0);
+	await page.getByTestId("library-add").click();
+	await expect(page.getByTestId("creator-generate-image")).toBeVisible();
+	await expect(page.getByTestId("creator-generate-video")).toBeVisible();
+	await page.screenshot({ path: "tests/.workspace-output/library-add-menu.png" });
+	const picker = page.waitForEvent("filechooser");
+	await page.getByTestId("library-import").click();
+	await (await picker).setFiles({ name: "library-import.png", mimeType: "image/png",
+		buffer: Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jRZkAAAAASUVORK5CYII=", "base64") });
+	await expect(page.getByTestId("native-media-card").filter({ hasText: "library-import.png" })).toBeVisible();
+	await expect(page.getByTestId("library-filter-all")).toHaveText("全部3");
+	await page.getByTestId("library-filter-image").click();
+	await expect(page.getByTestId("creator-asset-card")).toHaveCount(1);
+	await expect(page.getByTestId("native-media-card")).toHaveCount(1);
+	await page.getByTestId("library-filter-audio").click();
+	await expect(page.getByTestId("creator-asset-card")).toHaveCount(1);
+	await expect(page.getByTestId("native-media-card")).toHaveCount(0);
+	await page.getByTestId("library-add").click();
+	await page.getByTestId("creator-generate-video").click();
+	await expect(page.getByTestId("creator-new-asset-view").getByRole("combobox", { name: "素材类型", exact: true })).toHaveValue("video");
+});
+
 test("document conflict preserves the draft and a successful retry updates the reader", async ({ page }) => {
 	await page.getByRole("button", { name: "A 制作计划" }).click();
 	await page.getByRole("button", { name: "编辑文档", exact: true }).click();
@@ -121,7 +149,7 @@ test("new view fits initially and layout presets change the editing space", asyn
 	await page.getByRole("button", { name: "剪辑优先", exact: true }).click();
 	await expect.poll(() => page.getByTestId("timeline-toolbar").evaluate((node) => node.parentElement!.getBoundingClientRect().height)).toBeGreaterThan(previewHeight + 50);
 	await page.getByRole("button", { name: "恢复布局", exact: true }).click();
-	await expect(page.getByRole("button", { name: "收起属性", exact: true })).toBeVisible();
+	await expect(page.getByRole("button", { name: "展开属性", exact: true })).toBeVisible();
 	await page.screenshot({ path: "tests/.workspace-output/layout-current.png" });
 });
 
@@ -134,6 +162,7 @@ test("text input owns deletion and cut keys instead of the selected clip", async
 	await content.fill("abcdef"); await content.press("Backspace"); await content.press("Delete"); await content.press("Control+x");
 	await page.getByTestId("assets-tab-project-assets").click();
 	const search = page.getByRole("searchbox", { name: "搜索项目素材" });
+	await page.getByTestId("library-search-toggle").click();
 	await search.fill("abcdef"); await search.press("Backspace"); await search.press("Delete"); await search.press("Control+x");
 	expect(await page.evaluate(() => window.__creatorWorkspaceFixture.getNativeScenes())).toBe(scenes);
 });
@@ -180,22 +209,23 @@ test("catalog failure retries and scoped replacement removes old controls", asyn
 
 test("audio derivative failure can retry without downloading source media", async ({ page }) => {
 	await openProjectLibrary(page);
-	await page.getByRole("combobox", { name: "素材类型", exact: true }).selectOption("image");
+	await page.getByTestId("library-filter-image").click();
 	await page.evaluate(() => window.__creatorWorkspaceFixture.setAudioFailure(true));
 	await page.evaluate(() => window.__creatorWorkspaceFixture.changeBridge());
 	await openPlans(page);
 	await expect(page.getByRole("button", { name: "B 制作计划" })).toBeVisible();
 	await openProjectLibrary(page);
-	await page.getByRole("combobox", { name: "素材类型", exact: true }).selectOption("audio");
+	await page.getByTestId("library-filter-audio").click();
 	await expect(page.getByText("音频摘要暂不可用", { exact: true })).toBeVisible();
 	await page.evaluate(() => window.__creatorWorkspaceFixture.setAudioFailure(false));
+	await page.getByTestId("library-search-toggle").click();
 	await page.getByRole("button", { name: "重试素材预览" }).click();
 	await expect(page.getByRole("img", { name: "音频波形" })).toBeVisible();
 });
 
 test("native short media derives a real poster, distinct samples and waveform", async ({ page }) => {
 	await page.evaluate(() => window.__creatorWorkspaceFixture.loadNativeFixtures());
-	await page.getByTestId("assets-tab-media").click();
+	await page.getByTestId("assets-tab-project-assets").click();
 	const video = page.getByTestId("native-media-card").filter({ hasText: "short-motion.mp4" });
 	await expect(video.locator("img")).toBeVisible();
 	await expect.poll(() => video.locator("img").evaluate((image: HTMLImageElement) => image.naturalWidth)).toBeGreaterThan(0);
@@ -213,20 +243,23 @@ test("native short media derives a real poster, distinct samples and waveform", 
 
 test("filters, saved collapse, reset, narrow focus and save retry remain usable", async ({ page }) => {
 	await openProjectLibrary(page);
+	await page.getByTestId("library-search-toggle").click();
 	await page.getByRole("searchbox", { name: "搜索项目素材" }).fill("角色");
 	await expect(page.locator(".creator-project-card")).toHaveCount(1);
 	await page.getByRole("searchbox", { name: "搜索项目素材" }).fill("");
-	await page.getByRole("combobox", { name: "素材类型", exact: true }).selectOption("audio");
+	await page.getByTestId("library-filter-audio").click();
 	await expect(page.locator(".creator-project-card")).toHaveCount(1);
 	await page.getByRole("checkbox", { name: "已使用", exact: true }).check();
 	await expect(page.locator(".creator-project-card")).toHaveCount(0);
+	await expect(page.getByRole("button", { name: "展开属性", exact: true })).toBeVisible();
+	await page.getByRole("button", { name: "展开属性", exact: true }).click();
 	await page.getByRole("button", { name: "收起属性", exact: true }).click();
 	await expect(page.getByRole("button", { name: "展开属性", exact: true })).toBeVisible();
 	await page.reload();
 	await openProjectLibrary(page);
 	await expect(page.getByRole("button", { name: "展开属性", exact: true })).toBeVisible();
 	await page.getByRole("button", { name: "恢复布局", exact: true }).click();
-	await expect(page.getByRole("button", { name: "收起属性", exact: true })).toBeVisible();
+	await expect(page.getByRole("button", { name: "展开属性", exact: true })).toBeVisible();
 	await page.evaluate(() => window.__creatorWorkspaceFixture.setSaveFailure(true));
 	await page.getByTestId("project-save").click();
 	await expect(page.getByRole("button", { name: "重试保存", exact: true })).toBeVisible();
@@ -237,6 +270,7 @@ test("filters, saved collapse, reset, narrow focus and save retry remain usable"
 	await expect(page.locator("[data-testid='editor-main-panels']")).toHaveAttribute("data-layout", "focus");
 	await expect(page.locator("#focus-tab-preview")).toBeVisible();
 	await page.locator("#focus-tab-assets").click();
+	await page.getByTestId("library-search-toggle").click();
 	await expect(page.getByRole("searchbox", { name: "搜索项目素材" })).toBeVisible();
 	await page.locator("#focus-tab-preview").click();
 	await expect(page.locator("[data-panel-id='editor-preview']")).toBeVisible();

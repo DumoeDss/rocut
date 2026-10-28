@@ -34,13 +34,10 @@ import {
 
 function readCollapsed(panel: "assets" | "inspector") {
 	try {
-		return (
-			JSON.parse(localStorage.getItem("editor-panel-visibility") ?? "null")?.[
-				panel
-			] === true
-		);
+		const saved = JSON.parse(localStorage.getItem("editor-panel-visibility") ?? "null")?.[panel];
+		return typeof saved === "boolean" ? saved : panel === "inspector";
 	} catch {
-		return false;
+		return panel === "inspector";
 	}
 }
 
@@ -309,7 +306,7 @@ function EditorPanelLayout({
 						data-testid="editor-layout-reset"
 						onClick={() => {
 							setAssetsCollapsed(false);
-							setInspectorCollapsed(false);
+							setInspectorCollapsed(true);
 							try {
 								localStorage.removeItem("editor-panel-visibility");
 							} catch {

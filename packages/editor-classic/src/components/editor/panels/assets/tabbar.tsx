@@ -17,10 +17,11 @@ export function TabBar() {
 	const { activeTab, setActiveTab } = useAssetsPanelStore();
 	const creatorBridge = useCreatorWorkspaceBridge();
 	const visibleTabs = creatorBridge
-		? TAB_KEYS
+		? TAB_KEYS.filter((tabKey) => tabKey !== "media")
 		: TAB_KEYS.filter(
 				(tabKey) => tabKey !== "plans" && tabKey !== "project-assets",
 			);
+	const selectedTab = creatorBridge && activeTab === "media" ? "project-assets" : activeTab;
 	const [showTopFade, setShowTopFade] = useState(false);
 	const [showBottomFade, setShowBottomFade] = useState(false);
 	const scrollRef = useRef<HTMLDivElement>(null);
@@ -59,19 +60,19 @@ export function TabBar() {
 				>
 					{visibleTabs.map((tabKey) => {
 						const tab = tabs[tabKey];
-						const label = toolLabels[tabKey] ?? tab.label;
+						const label = tabKey === "project-assets" || tabKey === "media" ? "素材库" : toolLabels[tabKey] ?? tab.label;
 						return (
 							<Tooltip key={tabKey} delayDuration={10}>
 								<TooltipTrigger asChild>
 									<Button
-										variant={activeTab === tabKey ? "secondary" : "ghost"}
+										variant={selectedTab === tabKey ? "secondary" : "ghost"}
 										size="icon"
 										aria-label={label}
 										data-testid={`assets-tab-${tabKey}`}
 										className={cn(
 											"shrink-0",
 											"h-8 w-8",
-											activeTab !== tabKey && "text-muted-foreground",
+											selectedTab !== tabKey && "text-muted-foreground",
 										)}
 										onClick={() => setActiveTab(tabKey)}
 									>

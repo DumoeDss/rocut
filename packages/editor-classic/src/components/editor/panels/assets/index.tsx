@@ -39,7 +39,8 @@ export function AssetsPanel() {
 		settings: <SettingsView />,
 	};
 	const creatorTab = activeTab === "plans" || activeTab === "project-assets";
-	const visibleTab = creatorTab && !creatorBridge ? "media" : activeTab;
+	const visibleTab = creatorTab && !creatorBridge ? "media"
+		: creatorBridge && activeTab === "media" ? "project-assets" : activeTab;
 
 	return (
 		<div className="panel bg-background flex h-full rounded-sm border overflow-hidden">
@@ -51,7 +52,7 @@ export function AssetsPanel() {
 						<div className="h-full" hidden={activeTab !== "plans"}>
 							<CreatorPlansView />
 						</div>
-						<div className="h-full" hidden={activeTab !== "project-assets"}>
+						<div className="h-full" hidden={visibleTab !== "project-assets"}>
 							<CreatorProjectLibraryView />
 						</div>
 					</>

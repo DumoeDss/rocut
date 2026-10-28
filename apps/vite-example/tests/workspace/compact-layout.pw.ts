@@ -7,6 +7,7 @@ test("compact resizing reopens without overwriting wide preferences", async ({
 	page.on("pageerror", (error) => errors.push(error.message));
 	await page.setViewportSize({ width: 900, height: 768 });
 	await page.goto("/?creator-workspace-harness=1");
+	await page.getByRole("button", { name: "展开属性", exact: true }).click();
 	const panels = page.getByTestId("editor-main-panels");
 	const assets = page.locator('[data-panel-id="editor-assets"]');
 	const assetWidth = () =>
@@ -45,6 +46,7 @@ test("compact resizing reopens without overwriting wide preferences", async ({
 		.poll(async () => Math.abs((await assetWidth()) - presetWidth))
 		.toBeLessThan(1);
 	await page.getByTestId("editor-layout-reset").click();
+	await page.getByRole("button", { name: "展开属性", exact: true }).click();
 	await expect.poll(persisted).toContain('"compactLayout":null');
 	await page.reload();
 	await expect(panels).toHaveAttribute("data-layout", "compact");

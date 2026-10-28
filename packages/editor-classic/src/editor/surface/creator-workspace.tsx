@@ -289,7 +289,8 @@ export function CreatorWorkspace({
 			{view?.type === "generate" && (
 				<div className="overflow-auto min-h-0 flex-1">
 					<CreatorNewAssetView
-						key={snapshot?.projectId}
+						key={`${snapshot?.projectId}:${view.id}`}
+						initialMediaType={view.id === "video" ? "video" : "image"}
 						execute={run}
 						busy={busy}
 						available={snapshot?.capabilities?.generate === true}

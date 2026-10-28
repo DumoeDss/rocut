@@ -12,12 +12,14 @@ export function CreatorNewAssetView({
 	execute,
 	busy,
 	available,
+	initialMediaType = "image",
 }: {
 	execute: (command: CreatorWorkspaceCommand) => Promise<boolean>;
 	busy: boolean;
 	available: boolean;
+	initialMediaType?: "image" | "video";
 }) {
-	const [mediaType, setMediaType] = useState<"image" | "video">("image");
+	const [mediaType, setMediaType] = useState<"image" | "video">(initialMediaType);
 	const [prompt, setPrompt] = useState("");
 	const [options, setOptions] = useState<GenerationOptions>({});
 	const canSubmit =

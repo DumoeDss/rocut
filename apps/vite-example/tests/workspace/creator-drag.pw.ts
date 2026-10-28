@@ -10,10 +10,9 @@ test.beforeEach(async ({ page }) => {
 test("one action clears query, media type and used filters", async ({
 	page,
 }) => {
+	await page.getByTestId("library-search-toggle").click();
 	await page.getByRole("searchbox", { name: "搜索项目素材" }).fill("角色");
-	await page
-		.getByRole("combobox", { name: "素材类型", exact: true })
-		.selectOption("audio");
+	await page.getByTestId("library-filter-audio").click();
 	await page.getByRole("checkbox", { name: "已使用", exact: true }).check();
 	await expect(page.getByTestId("creator-asset-card")).toHaveCount(0);
 	await page.getByTestId("creator-clear-filters").click();
@@ -21,8 +20,8 @@ test("one action clears query, media type and used filters", async ({
 		page.getByRole("searchbox", { name: "搜索项目素材" }),
 	).toHaveValue("");
 	await expect(
-		page.getByRole("combobox", { name: "素材类型", exact: true }),
-	).toHaveValue("all");
+		page.getByTestId("library-filter-all"),
+	).toHaveAttribute("aria-pressed", "true");
 	await expect(
 		page.getByRole("checkbox", { name: "已使用", exact: true }),
 	).not.toBeChecked();

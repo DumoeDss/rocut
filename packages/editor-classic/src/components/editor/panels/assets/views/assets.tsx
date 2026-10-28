@@ -48,7 +48,6 @@ import { MASKABLE_ELEMENT_TYPES } from "../../../../../timeline";
 import type { MediaAsset } from "../../../../../media/types";
 import { cn } from "../../../../../utils/ui";
 import {
-	CloudUploadIcon,
 	GridViewIcon,
 	LeftToRightListDashIcon,
 	SortingOneNineIcon,
@@ -62,14 +61,57 @@ import { MediaWaveformPreview } from "../../../../../media/media-waveform-previe
 import { useNativeAssetPreview } from "../../../../../editor/surface/native-asset-preview";
 import { MediaCard } from "./media-card";
 import { useHoverScrub } from "./use-hover-scrub";
-import { ALL_MEDIA, ROOT_MEDIA, MediaFolders, MoveMediaSelection } from "./media-folders";
+import {
+	ALL_MEDIA,
+	ROOT_MEDIA,
+	MediaFolders,
+	MoveMediaSelection,
+} from "./media-folders";
 import { useEditorMessages } from "../../../../../editor/host/editor-host-context";
+import type { CreatorAsset } from "../../../../../editor/surface/creator-workspace-types";
+import { MediaLibraryToolbar } from "./media-library-toolbar";
 
-export function MediaView() {
+export function MediaView({
+	projectLibrary,
+}: {
+	projectLibrary?: {
+		assets: readonly CreatorAsset[];
+		renderAssets: (assets: readonly CreatorAsset[]) => React.ReactNode;
+		onGenerate: (type: "image" | "video") => void;
+		busy: boolean;
+		notice?: React.ReactNode;
+		onRetryPreviews: () => void;
+	};
+} = {}) {
 	const invokeAction = useActionInvoker();
 	const editor = useEditorInstance();
 	const mediaFiles = useEditor((e) => e.media.getAssets());
 	const activeProject = useEditor((e) => e.project.getActive());
+	const messages = useEditorMessages();
+	const registeredMediaIds = new Set(
+		projectLibrary?.assets.flatMap((asset) =>
+			asset.versions.flatMap((version) =>
+				version.mediaId ? [version.mediaId] : [],
+			),
+		),
+	);
+	const libraryMedia = mediaFiles.filter(
+		(asset) => !asset.ephemeral && !registeredMediaIds.has(asset.id),
+	);
+	const counts: Record<string, number> = {
+		all: libraryMedia.length + (projectLibrary?.assets.length ?? 0),
+		image: 0,
+		video: 0,
+		audio: 0,
+		programmatic: 0,
+	};
+	for (const asset of libraryMedia) counts[asset.type]++;
+	for (const asset of projectLibrary?.assets ?? []) {
+		for (const type of new Set(
+			asset.versions.map((version) => version.mediaType),
+		))
+			counts[type]++;
+	}
 
 	const {
 		mediaViewMode,
@@ -87,9 +129,24 @@ export function MediaView() {
 	const [typeFilter, setTypeFilter] = useState("all");
 	const [usedOnly, setUsedOnly] = useState(false);
 	const [folder, setFolder] = useState(ALL_MEDIA);
+	const filteredProjectAssets =
+		projectLibrary?.assets.filter(
+			(asset) =>
+				asset.name
+					.toLocaleLowerCase()
+					.includes(search.trim().toLocaleLowerCase()) &&
+				(typeFilter === "all" ||
+					asset.versions.some((version) => version.mediaType === typeFilter)) &&
+				(!usedOnly || Boolean(asset.usages?.length)),
+		) ?? [];
 	const folders = useEditor((current) => current.media.getFolders());
-	const folderAssignments = useEditor((current) => current.project.getActiveOrNull()?.mediaFolders);
-	const activeFolder = folder === ROOT_MEDIA || folders.some((entry) => entry.id === folder) ? folder : ALL_MEDIA;
+	const folderAssignments = useEditor(
+		(current) => current.project.getActiveOrNull()?.mediaFolders,
+	);
+	const activeFolder =
+		folder === ROOT_MEDIA || folders.some((entry) => entry.id === folder)
+			? folder
+			: ALL_MEDIA;
 	const scenes = useEditor((current) => current.scenes.getScenes());
 	const usedMediaIds = useMemo(
 		() =>
@@ -196,7 +253,15 @@ export function MediaView() {
 		const filtered = mediaFiles.filter(
 			(item) =>
 				!item.ephemeral &&
-				(activeFolder === ALL_MEDIA || (activeFolder === ROOT_MEDIA ? !folderAssignments?.assignments.some((entry) => entry.assetId === item.id) : folderAssignments?.assignments.some((entry) => entry.assetId === item.id && entry.folderId === activeFolder))) &&
+				(activeFolder === ALL_MEDIA ||
+					(activeFolder === ROOT_MEDIA
+						? !folderAssignments?.assignments.some(
+								(entry) => entry.assetId === item.id,
+							)
+						: folderAssignments?.assignments.some(
+								(entry) =>
+									entry.assetId === item.id && entry.folderId === activeFolder,
+							))) &&
 				item.name
 					.toLocaleLowerCase()
 					.includes(search.trim().toLocaleLowerCase()) &&
@@ -246,17 +311,30 @@ export function MediaView() {
 		activeFolder,
 		folderAssignments,
 	]);
+	const visibleNativeItems = filteredMediaItems.filter(
+		(item) => !registeredMediaIds.has(item.id),
+	);
 	const orderedMediaIds = useMemo(() => {
-		return filteredMediaItems.map((item) => item.id);
-	}, [filteredMediaItems]);
+		return visibleNativeItems.map((item) => item.id);
+	}, [visibleNativeItems]);
 
 	return (
 		<>
 			<input {...fileInputProps} />
-
-			<PanelView
-				title="工程素材"
-				actions={
+			<div className="flex h-full min-h-0 flex-col">
+				<MediaLibraryToolbar
+					counts={counts}
+					type={typeFilter}
+					onTypeChange={setTypeFilter}
+					query={search}
+					onQueryChange={setSearch}
+					used={usedOnly}
+					onUsedChange={setUsedOnly}
+					onImport={openFilePicker}
+					onGenerate={projectLibrary?.onGenerate}
+					importing={isProcessing}
+					generating={projectLibrary?.busy}
+				>
 					<MediaActions
 						mediaViewMode={mediaViewMode}
 						setMediaViewMode={setMediaViewMode}
@@ -264,54 +342,68 @@ export function MediaView() {
 						sortBy={mediaSortBy}
 						sortOrder={mediaSortOrder}
 						onSort={handleSort}
-						onImport={openFilePicker}
 					/>
-				}
-				className={cn(isDragOver && "bg-accent/30")}
-				contentClassName="h-full"
-				{...dragProps}
-			>
-				<MediaFolders key={activeProject.metadata.id} active={activeFolder} onSelect={setFolder} />
-				<MediaFilters
-					search={search}
-					typeFilter={typeFilter}
-					usedOnly={usedOnly}
-					onSearchChange={setSearch}
-					onTypeFilterChange={setTypeFilter}
-					onUsedOnlyChange={setUsedOnly}
-				/>
-				{!isDragOver &&
-				filteredMediaItems.length === 0 &&
-				mediaFiles.some((item) => !item.ephemeral) ? (
-					<p className="py-6 text-xs text-muted-foreground">
-						没有匹配的素材。调整搜索或筛选条件。
-					</p>
-				) : isDragOver || filteredMediaItems.length === 0 ? (
-					<MediaDragOverlay
-						isVisible={true}
-						isProcessing={isProcessing}
-						progress={progress}
-						onClick={openFilePicker}
+					{projectLibrary && (
+						<Button
+							size="sm"
+							variant="ghost"
+							onClick={projectLibrary.onRetryPreviews}
+						>
+							{messages.retryPreview}
+						</Button>
+					)}
+					<MediaFolders
+						key={activeProject.metadata.id}
+						active={activeFolder}
+						onSelect={setFolder}
 					/>
-				) : (
-					<SelectableSurface
-						ariaLabel="工程素材"
-						orderedIds={orderedMediaIds}
-						revealId={highlightMediaId}
-						onRevealComplete={clearHighlight}
-					>
-						<MediaScopeRegistrar />
-						<MoveMediaSelection />
-						<MediaItemList
-							key={activeProject.metadata.id}
-							items={filteredMediaItems}
-							mode={mediaViewMode}
-							usedMediaIds={usedMediaIds}
-							onRemove={handleRemove}
+				</MediaLibraryToolbar>
+				<PanelView
+					hideHeader
+					className={cn("flex-1", isDragOver && "bg-accent/30")}
+					scrollClassName="!pt-2"
+					{...dragProps}
+				>
+					{projectLibrary?.notice}
+					{!isDragOver && projectLibrary?.renderAssets(filteredProjectAssets)}
+					{isProcessing && (
+						<p role="status" className="py-2 text-xs text-muted-foreground">
+							正在导入素材 {Math.round(progress)}%
+						</p>
+					)}
+					{!isDragOver &&
+					visibleNativeItems.length + filteredProjectAssets.length === 0 &&
+					counts.all > 0 ? (
+						<p className="py-6 text-xs text-muted-foreground">
+							没有匹配的素材。调整搜索或筛选条件。
+						</p>
+					) : isDragOver || counts.all === 0 ? (
+						<MediaDragOverlay
+							isVisible={true}
+							isProcessing={isProcessing}
+							progress={progress}
+							onClick={openFilePicker}
 						/>
-					</SelectableSurface>
-				)}
-			</PanelView>
+					) : visibleNativeItems.length > 0 ? (
+						<SelectableSurface
+							ariaLabel="工程素材"
+							orderedIds={orderedMediaIds}
+							revealId={highlightMediaId}
+							onRevealComplete={clearHighlight}
+						>
+							<MediaScopeRegistrar />
+							<MoveMediaSelection />
+							<MediaItemList
+								key={activeProject.metadata.id}
+								items={visibleNativeItems}
+								mode={mediaViewMode}
+								usedMediaIds={usedMediaIds}
+								onRemove={handleRemove}
+							/>
+						</SelectableSurface>
+					) : null}
+				</PanelView>
+			</div>
 		</>
 	);
 }
@@ -724,7 +816,6 @@ function MediaActions({
 	sortBy,
 	sortOrder,
 	onSort,
-	onImport,
 }: {
 	mediaViewMode: MediaViewMode;
 	setMediaViewMode: (mode: MediaViewMode) => void;
@@ -732,7 +823,6 @@ function MediaActions({
 	sortBy: MediaSortKey;
 	sortOrder: MediaSortOrder;
 	onSort: ({ key }: { key: MediaSortKey }) => void;
-	onImport: () => void;
 }) {
 	return (
 		<div
@@ -829,17 +919,6 @@ function MediaActions({
 					</TooltipContent>
 				</Tooltip>
 			</TooltipProvider>
-			<Button
-				variant="outline"
-				aria-label="导入素材"
-				onClick={onImport}
-				disabled={isProcessing}
-				size="sm"
-				className="items-center justify-center gap-1.5"
-			>
-				<HugeiconsIcon icon={CloudUploadIcon} />
-				导入
-			</Button>
 		</div>
 	);
 }

@@ -3,8 +3,9 @@ import { expect, test } from "@playwright/test";
 test.beforeEach(async ({ page }) => {
 	await page.goto("/?creator-workspace-harness=1");
 	await page.getByTestId("assets-tab-project-assets").click();
-	await expect(page.getByTestId("creator-generate-new")).toBeEnabled();
-	await page.getByTestId("creator-generate-new").click();
+	await page.getByTestId("library-add").click();
+	await expect(page.getByTestId("creator-generate-image")).toBeEnabled();
+	await page.getByTestId("creator-generate-image").click();
 	await expect(page.getByTestId("creator-new-asset-view")).toBeVisible();
 });
 
