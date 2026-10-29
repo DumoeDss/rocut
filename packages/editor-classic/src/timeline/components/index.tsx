@@ -76,12 +76,14 @@ import { useActionInvoker } from "../../actions/action-scope";
 import { resolveTimelineElementIntersections } from "./selection-hit-testing";
 import { cn } from "../../utils/ui";
 import type { TimerHandle } from "../../editor/session/resources";
+import { CreatorAnnotationLabels, CreatorAnnotationRows, useCreatorTimelineAnnotations } from "./creator-annotation-rows";
 
 const TRACKS_CONTAINER_MAX_HEIGHT = 800;
 const FALLBACK_CONTAINER_WIDTH = 1000;
 const TRACKS_CONTAINER_HEIGHT = { min: 0, max: TRACKS_CONTAINER_MAX_HEIGHT };
 
 export function Timeline() {
+	const creatorAnnotations = useCreatorTimelineAnnotations();
 	const heightScale = useTimelineStore((s) => s.trackHeightScale);
 	const snappingEnabled = useTimelineStore((s) => s.snappingEnabled);
 	const {
@@ -511,6 +513,7 @@ export function Timeline() {
 
 			<div className="relative flex flex-1 overflow-hidden" ref={timelineRef}>
 				<TrackLabelsPanel
+					hasCreatorAnnotations={!!creatorAnnotations.annotations}
 					trackLabelsRef={trackLabelsRef}
 					trackLabelsScrollRef={trackLabelsScrollRef}
 					timelineHeaderHeight={timelineHeaderHeight}
@@ -562,6 +565,9 @@ export function Timeline() {
 								handleRulerTrackingMouseDown={handleRulerMouseDown}
 								handleRulerMouseDown={handlePlayheadRulerMouseDown}
 							/>
+							{creatorAnnotations.annotations && <CreatorAnnotationRows
+								annotations={creatorAnnotations.annotations} zoomLevel={zoomLevel}
+								error={creatorAnnotations.error} onMove={creatorAnnotations.move} />}
 						</div>
 					</div>
 
@@ -663,12 +669,14 @@ export function Timeline() {
 }
 
 function TrackLabelsPanel({
+	hasCreatorAnnotations,
 	trackLabelsRef,
 	trackLabelsScrollRef,
 	timelineHeaderHeight,
 	hasHorizontalScrollbar,
 	getTrackExpansionHeight,
 }: {
+	hasCreatorAnnotations: boolean;
 	trackLabelsRef: React.RefObject<HTMLDivElement>;
 	trackLabelsScrollRef: React.RefObject<HTMLDivElement>;
 	timelineHeaderHeight: number;
@@ -706,9 +714,9 @@ function TrackLabelsPanel({
 			style={{ width: `${TIMELINE_TRACK_LABELS_COLUMN_WIDTH_PX}px` }}
 		>
 			<div
-				className="shrink-0"
+				className="relative shrink-0"
 				style={{ height: timelineHeaderHeight || 48 }}
-			/>
+			>{hasCreatorAnnotations && <CreatorAnnotationLabels />}</div>
 			<div ref={trackLabelsRef} className="flex-1 overflow-hidden">
 				<div ref={trackLabelsScrollRef} className="size-full overflow-hidden">
 					{tracks.length > 0 && (

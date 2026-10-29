@@ -25,7 +25,9 @@ export class SaveManager {
 	private saveTimer: TimerHandle | null = null;
 	private unsubscribeHandlers: Array<() => void> = [];
 	private publicationListeners = new Set<() => void>();
+	private persistenceBarriers = new Set<(saved: { projectId: string; sceneId: string }) => Promise<void>>();
 	private alreadyDurablePublicationDepth = 0;
+	private derivedDocumentsPending = false;
 	private stateListeners = new Set<() => void>();
 	private error: string | null = null;
 	private isReadOnly = false;
@@ -85,7 +87,12 @@ export class SaveManager {
 	}
 
 	markDirty({ force = false }: { force?: boolean } = {}): void {
-		if (this.alreadyDurablePublicationDepth > 0) return;
+		if (this.alreadyDurablePublicationDepth > 0) {
+			// Routed commands (including undo/redo) already persisted Native state.
+			// Their owning workspace still needs to acknowledge derived documents.
+			if (this.persistenceBarriers.size > 0) this.derivedDocumentsPending = true;
+			return;
+		}
 		if (this.isPaused && !force) return;
 		this.hasPendingSave = true;
 		this.publishState();
@@ -98,6 +105,10 @@ export class SaveManager {
 			return operation();
 		} finally {
 			this.alreadyDurablePublicationDepth -= 1;
+			if (this.alreadyDurablePublicationDepth === 0 && this.derivedDocumentsPending) {
+				this.derivedDocumentsPending = false;
+				this.markDirty();
+			}
 		}
 	}
 
@@ -169,6 +180,15 @@ export class SaveManager {
 	}
 
 	/** Observe successful durable-save publications (used by lifecycle probes). */
+	afterPersist(listener: (saved: { projectId: string; sceneId: string }) => Promise<void>): () => void {
+		this.persistenceBarriers.add(listener);
+		return () => { this.persistenceBarriers.delete(listener); };
+	}
+
+	async completePersistence(saved: { projectId: string; sceneId: string }): Promise<void> {
+		for (const listener of this.persistenceBarriers) await listener(saved);
+	}
+
 	observePublications(listener: () => void): () => void {
 		this.publicationListeners.add(listener);
 		return () => {

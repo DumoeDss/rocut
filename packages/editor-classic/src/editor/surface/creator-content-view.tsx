@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { CreatorVideoPreview } from "./creator-video-preview";
 import { ReactMarkdownWrapper } from "../../components/ui/react-markdown-wrapper";
 import { useCreatorDocument } from "./use-creator-document";
 import { Button } from "../../components/ui/button";
@@ -132,9 +133,11 @@ export function CreatorDocumentView({
 }
 
 function VersionPreview({
+	assetId,
 	version,
 	name,
 }: {
+	assetId: string;
 	version: CreatorAssetVersion;
 	name: string;
 }) {
@@ -149,14 +152,7 @@ function VersionPreview({
 			</div>
 		);
 	if (version.mediaType === "video")
-		return (
-			<video
-				className="max-h-full max-w-full"
-				src={version.previewUrl}
-				controls
-				preload="metadata"
-			/>
-		);
+		return <CreatorVideoPreview assetId={assetId} version={version} />;
 	if (version.mediaType === "audio")
 		return (
 			<audio
@@ -243,7 +239,7 @@ export function CreatorAssetView({
 	return (
 		<div className="creator-asset-detail" data-testid="creator-asset-detail">
 			<div className="creator-asset-preview">
-				<VersionPreview version={version} name={asset.name} />
+				<VersionPreview assetId={asset.id} version={version} name={asset.name} />
 			</div>
 			<div className="p-4 space-y-4">
 				<div className="flex flex-wrap items-center gap-2">

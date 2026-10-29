@@ -13,6 +13,7 @@ import toneUrl from "../public/workspace-fixtures/tone.wav?url";
 import { buildElementFromMedia } from "../../../packages/editor-classic/src/timeline/element-utils";
 import { mediaTimeFromSeconds } from "../../../packages/editor-classic/src/wasm";
 import { resolveVideoSourceTime, planVideoFreezeFrame, isVideoReverseSupported } from "../../../packages/editor-classic/src/wasm/video-time";
+import { annotationFixtureStart, createAnnotationFixture, AnnotationFixtureSave } from "./creator-annotation-fixture";
 
 const thumbnail = "data:image/svg+xml," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="320" height="180"><rect width="320" height="180" fill="#586f8c"/><circle cx="160" cy="90" r="45" fill="#d4e2ed"/></svg>');
 function content(projectId: string): CreatorWorkspaceSnapshot {
@@ -23,6 +24,7 @@ function content(projectId: string): CreatorWorkspaceSnapshot {
 }
 
 export function CreatorWorkspaceHarness() {
+	const annotationFixture = new URLSearchParams(location.search).has("annotation-fixture");
 	const [session, setSession] = useState<EditorSession | null>(null);
 	const [error, setError] = useState("");
 	const [bridge, setBridge] = useState<CreatorWorkspaceBridge | null>(null);
@@ -34,7 +36,8 @@ export function CreatorWorkspaceHarness() {
 			owned = await createEditorSession({ host: createViteEditorHost({ projectId: id, onProjectIdChange: () => {}, onExitProject: () => {}, forceRendererBackend: "none" }) });
 			const editor = editorForSession(owned);
 			const scene = buildDefaultScene({ name: "Main scene", isMain: true });
-			const text = buildTextElement({ raw: { name: "Existing fixed clip" }, startTime: mediaTime({ ticks: 0 }) });
+			const text = buildTextElement({ raw: { name: "Existing fixed clip" }, startTime: mediaTime({ ticks: annotationFixture ? annotationFixtureStart() : 0 }) });
+			if (annotationFixture) text.duration = mediaTime({ ticks: 120000 });
 			if (text.type === "text") scene.tracks.overlay.push({ id: "text-track", type: "text", name: "字幕", hidden: false, elements: [{ ...text, id: "existing-clip" }] });
 			const now = new Date();
 			if (new URLSearchParams(location.search).has("fixed-reference-fixture")) {
@@ -44,12 +47,18 @@ export function CreatorWorkspaceHarness() {
 			}
 			await editor.persistence.saveProject({ project: { metadata: { id, name: "Workspace fixture", duration: getProjectDurationFromScenes({ scenes: [scene] }), createdAt: now, updatedAt: now }, scenes: [scene], currentSceneId: scene.id, motionTextSequences: [], version: CURRENT_PROJECT_VERSION, settings: { fps: DEFAULT_FPS, canvasSize: DEFAULT_CANVAS_SIZE, canvasSizeMode: "preset", lastCustomCanvasSize: null, originalCanvasSize: null, background: { type: "color", color: DEFAULT_BACKGROUND_COLOR } } } });
 			let snapshot = content("A");
+			const posterFixture = new URLSearchParams(location.search).has("poster-fixture");
+			if (posterFixture) snapshot = { ...snapshot, assets: [0, 1].map((index) => ({
+				id: `poster-video-${index}`, name: `Video ${index}`, versions: [{ id: "video-v1", label: "V1", mediaType: "video", sha256: "a".repeat(64), previewUrl: shortMotionUrl, status: "ready" }],
+			})) };
+			let rejectPoster = new URLSearchParams(location.search).has("poster-failure");
 			let rejectDocument = false;
 			let rejectSave = false;
 			let rejectCatalog = false;
 			let rejectAudio = false;
 			let rejectGeneration = false;
 			const commands: unknown[] = [];
+			const annotations = annotationFixture ? createAnnotationFixture({ editor, projectId: id, sceneId: scene.id }) : null;
 			const listeners = new Set<(next: CreatorWorkspaceSnapshot) => void>();
 			const publish = () => listeners.forEach((listener) => listener(snapshot));
 			const makeBridge = (late = false): CreatorWorkspaceBridge => ({
@@ -57,6 +66,13 @@ export function CreatorWorkspaceHarness() {
 				subscribe: (listener) => { listeners.add(listener); return () => { listeners.delete(listener); }; },
 				execute: async (command) => {
 					commands.push(command);
+					const annotationResult = await annotations?.execute(command);
+					if (annotationResult) return annotationResult;
+					if (command.type === "asset.ensure-poster") {
+						await new Promise((resolve) => setTimeout(resolve, 150));
+						if (rejectPoster) throw new Error("Poster decoder failed");
+						return { poster: { status: "available", url: thumbnail } };
+					}
 					if (command.type === "generation.catalog") { await new Promise((resolve) => setTimeout(resolve, 150)); if (rejectCatalog) throw new Error("目录暂不可用"); return { catalog: { status: "ready", providers: [{ id: "fixture-provider", name: "测试服务", defaultModelId: "fixture-model", models: [{ id: "fixture-model", name: "测试模型" }] }] } }; }
 					if (command.type === "asset.audio-summary") { await new Promise((resolve) => setTimeout(resolve, 150)); if (rejectAudio) throw new Error("摘要暂不可用"); return { summary: { status: "available", durationSeconds: 3, waveform: [0.1, 0.8, 0.3] } }; }
 					if (command.type === "asset.generate") {
@@ -87,6 +103,7 @@ export function CreatorWorkspaceHarness() {
 			const save = editor.project.saveCurrentProject.bind(editor.project);
 			editor.project.saveCurrentProject = async () => { if (rejectSave) throw new Error("测试存储暂不可写"); await save(); };
 			Object.assign(window, { __creatorWorkspaceFixture: {
+				...annotations?.probe,
 				getPlayhead: () => editor.playback.getCurrentTime(),
 				getIsPlaying: () => editor.playback.getIsPlaying(),
 				seekPlayhead: () => editor.playback.seek({ time: mediaTimeFromSeconds({ seconds: 1 }) }),
@@ -125,6 +142,7 @@ export function CreatorWorkspaceHarness() {
 				getTimelineView: () => editor.project.getActive().timelineViewState,
 				markDirty: () => editorForSession(owned!).save.markDirty({ force: true }),
 				getCommands: () => commands,
+				setPosterFailure: (value: boolean) => { rejectPoster = value; },
 				enablePlacement: () => { snapshot = { ...snapshot, capabilities: { ...snapshot.capabilities!, placeVersion: true }, assets: snapshot.assets.map((asset) => ({ ...asset, versions: asset.versions.map((version) => ({ ...version, sha256: version.id === "v1" ? "a".repeat(64) : "b".repeat(64), status: "ready" as const })) })) }; publish(); },
 				enableLocateInCanvas: () => { snapshot = { ...snapshot, capabilities: { ...snapshot.capabilities!, locateInCanvas: true } }; publish(); },
 				changeDraggedVersion: (changeHash: boolean) => { snapshot = { ...snapshot, assets: snapshot.assets.map((asset) => asset.id === "character" ? { ...asset, selectedVersionId: "v2", versions: asset.versions.map((version) => changeHash && version.id === "v1" ? { ...version, sha256: "c".repeat(64) } : version) } : asset) }; publish(); },
@@ -176,7 +194,7 @@ export function CreatorWorkspaceHarness() {
 			setBridge(makeBridge()); setSession(owned);
 		})().catch((failure: unknown) => { if (active) setError(failure instanceof Error ? failure.message : String(failure)); });
 		return () => { active = false; if (owned) void owned.dispose(); };
-	}, []);
+	}, [annotationFixture]);
 	if (error) return <pre role="alert">{error}</pre>;
-	return <ThemeProvider attribute="class" defaultTheme="dark"><TooltipProvider><main style={{ height: "100dvh" }} data-testid="workspace-harness">{session && <EditorSessionProvider session={session}><CreatorWorkspaceProvider bridge={bridge}><SessionEditorSurface focusMode="focused" hostOwnsChrome /></CreatorWorkspaceProvider></EditorSessionProvider>}</main></TooltipProvider></ThemeProvider>;
+	return <ThemeProvider attribute="class" defaultTheme="dark"><TooltipProvider><main style={{ height: "100dvh" }} data-testid="workspace-harness">{session && <EditorSessionProvider session={session}><CreatorWorkspaceProvider bridge={bridge}>{annotationFixture && <AnnotationFixtureSave bridge={bridge} />}<SessionEditorSurface focusMode="focused" hostOwnsChrome /></CreatorWorkspaceProvider></EditorSessionProvider>}</main></TooltipProvider></ThemeProvider>;
 }

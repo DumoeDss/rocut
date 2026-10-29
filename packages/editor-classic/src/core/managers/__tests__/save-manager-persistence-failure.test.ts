@@ -4,6 +4,55 @@ import type { EditorCore } from "../..";
 import { SaveManager } from "../save-manager";
 import { ProjectStoreError } from "@opencut/editor-ports";
 
+test("save waits for derived document persistence and retains dirty state on failure until retry", async () => {
+	let finish!: () => void;
+	let entered!: () => void;
+	const ready = new Promise<void>((resolve) => { entered = resolve; });
+	const waiting = new Promise<void>((resolve) => { finish = resolve; });
+	let fail = true;
+	let nativeWrites = 0;
+	const editor = { project: {
+		getActive: () => ({ metadata: { id: "project" } }),
+		getIsLoading: () => false,
+		getMigrationState: () => ({ isMigrating: false }),
+		saveCurrentProject: async () => {
+			nativeWrites++;
+			await manager.completePersistence({ projectId: "project", sceneId: "scene" });
+		},
+	} } as unknown as EditorCore;
+	const manager = new SaveManager({ editor });
+	const remove = manager.afterPersist(async (saved) => {
+		expect(saved).toEqual({ projectId: "project", sceneId: "scene" });
+		entered();
+		await waiting;
+		if (fail) throw new Error("Lyrics document write failed");
+	});
+	let published = 0;
+	manager.observePublications(() => { published++; });
+	const first = manager.flush();
+	await ready;
+	expect(manager.getState().isSaving).toBe(true);
+	expect(manager.getIsDirty()).toBe(true);
+	expect(published).toBe(0);
+	finish();
+	await expect(first).rejects.toThrow("Lyrics document write failed");
+	expect(manager.getState().error).toBe("Lyrics document write failed");
+	expect(manager.getIsDirty()).toBe(true);
+	fail = false;
+	await manager.flush();
+	expect(manager.getIsDirty()).toBe(false);
+	expect(nativeWrites).toBe(2);
+	expect(published).toBe(1);
+	// Transactional undo/redo publishes durable Native state without autosave.
+	// The registered workspace barrier must still receive the changed position.
+	manager.publishAlreadyDurable(() => { manager.markDirty(); });
+	expect(manager.getIsDirty()).toBe(true);
+	await manager.flush();
+	expect(nativeWrites).toBe(3);
+	expect(published).toBe(2);
+	remove();
+});
+
 test("flush publishes transient state and joins an in-flight write plus its successor", async () => {
 	const releases: Array<() => void> = [];
 	const snapshots: number[] = [];

@@ -100,6 +100,59 @@ async function fixture() {
 }
 
 describe("motion-text transaction entity", () => {
+	test("overlay captions can overlap on their graphic track while scene clips still collide", async () => {
+		const f = await fixture();
+		const title = sequence({ revision: 0, text: "Lyric" });
+		const lyric = ({ id, start }: { id: string; start: number }) => ({
+			id: clipId(id),
+			trackId: trackId("captions"),
+			startTime: mediaTime({ ticks: start }),
+			duration: mediaTime({ ticks: 120000 }),
+			trimStart: mediaTime({ ticks: 0 }),
+			trimEnd: mediaTime({ ticks: 0 }),
+			content: { kind: "motion-text" as const, sequenceId: title.id },
+		});
+		await f.engine.apply({
+			operations: [
+				{
+					kind: "create-track",
+					track: {
+						id: trackId("captions"),
+						kind: "graphic",
+						name: "Lyrics",
+						hidden: false,
+					},
+				},
+				{ kind: "create-motion-text-sequence", sequence: title },
+				{ kind: "create-clip", clip: lyric({ id: "line-one", start: 0 }) },
+				{ kind: "create-clip", clip: lyric({ id: "line-two", start: 116000 }) },
+			],
+		});
+		const reopened = await openTransactionEngine({
+			store: f.store,
+			projectId: PROJECT_ID,
+			documentAdapter: f.adapter,
+		});
+		expect(
+			(await reopened.clips()).map((clip) => Number(clip.startTime)),
+		).toEqual([0, 116000]);
+		const scene = { ...title, compositionMode: "scene" as const, revision: 1 };
+		const result = await reopened.validate({
+			operations: [
+				{
+					kind: "update-motion-text-sequence",
+					sequenceId: scene.id,
+					expectedSequenceRevision: 0,
+					sequence: scene,
+				},
+			],
+		});
+		expect(result.valid).toBe(false);
+		if (!result.valid)
+			expect(result.issues.some((issue) => issue.code === "collision")).toBe(
+				true,
+			);
+	});
 	test("accepts digest-addressed font attachments through apply and reopen without fake media", async () => {
 		const f = await fixture();
 		const value = sequence({ revision: 0, text: "Caption" });

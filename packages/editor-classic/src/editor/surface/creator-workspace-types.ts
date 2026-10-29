@@ -74,6 +74,8 @@ export interface CreatorWorkspaceSnapshot {
 }
 
 export type CreatorWorkspaceCommand =
+	| { type: "timeline.annotations"; nativeProjectId: string; sceneId: string }
+	| { type: "timeline.saved"; nativeProjectId: string; sceneId: string }
 	| { type: "workspace.page"; token: string; index: number }
 	| {
 			type: "document.read";
@@ -93,6 +95,7 @@ export type CreatorWorkspaceCommand =
 	  }
 	| { type: "generation.catalog"; mediaType: "image" | "video" }
 	| { type: "asset.audio-summary"; assetId: string; versionId: string }
+	| { type: "asset.ensure-poster"; projectId: string; assetId: string; versionId: string; sha256: string }
 	| {
 			type: "document.save";
 			documentId: string;
@@ -146,6 +149,10 @@ export interface CreatorNativePlacement {
 }
 
 export interface CreatorWorkspaceCommandResult {
+	readonly annotations?: CreatorTimelineAnnotations | { status: "unmanaged" };
+	readonly poster?:
+		| { status: "available"; url: string }
+		| { status: "unavailable"; reason: string };
 	readonly planId?: string;
 	readonly catalog?: {
 		status: "ready" | "unavailable";
@@ -166,6 +173,29 @@ export interface CreatorWorkspaceCommandResult {
 		| { status: "unavailable"; reason: string };
 	readonly snapshot?: CreatorWorkspaceSnapshot;
 	readonly message?: string;
+}
+
+export interface CreatorTimelineAnnotation {
+	readonly id: string;
+	readonly label: string;
+	readonly startTick: number;
+	readonly endTick: number;
+}
+export interface CreatorTimelineLyric extends CreatorTimelineAnnotation {
+	readonly nodeId: string;
+	readonly clipId: string;
+	readonly trackId: string;
+}
+export interface CreatorTimelineAnnotations {
+	readonly status: "available";
+	readonly timelineId: string;
+	readonly frameRate: { numerator: number; denominator: number };
+	readonly sectionsStatus: "candidate" | "unsegmented";
+	readonly sectionsReason?: string;
+	readonly lyricsClock?: "scene-timeline-ticks";
+	readonly lyricsNativeRevision?: number;
+	readonly sections: readonly CreatorTimelineAnnotation[];
+	readonly lyrics: readonly CreatorTimelineLyric[];
 }
 
 /** Transport-independent host port; canonical project content stays with the host. */

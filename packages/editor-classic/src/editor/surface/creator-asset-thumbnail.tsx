@@ -4,6 +4,7 @@ import { useMediaPreview } from "../../media/use-media-preview";
 import { MediaWaveformPreview } from "../../media/media-waveform-preview";
 import { useEffect, useRef, useState } from "react";
 import { useCreatorWorkspaceBridge } from "./creator-workspace-context";
+import { useCreatorVideoPoster } from "./use-creator-video-poster";
 import type {
 	CreatorWorkspaceBridge,
 	CreatorWorkspaceCommandResult,
@@ -91,8 +92,11 @@ export function CreatorAssetThumbnail({
 		version?.waveform,
 	]);
 	const preview = useMediaPreview({ asset: nativeAsset });
+	const videoPoster = useCreatorVideoPoster(assetId, version, root,
+		preview.status !== "ready" && preview.status !== "loading");
 	const poster =
 		version?.posterUrl ??
+		(videoPoster.state.status === "available" ? videoPoster.state.url : undefined) ??
 		(version?.mediaType === "image"
 			? version.previewUrl
 			: preview.status === "ready"
@@ -154,9 +158,9 @@ export function CreatorAssetThumbnail({
 		);
 	}
 	return (
-		<span>
+		<span ref={root} title={videoPoster.state.status === "unavailable" ? videoPoster.state.reason : undefined}>
 			{version?.mediaType === "video"
-				? version.posterStatus === "pending" || preview.status === "loading"
+				? version.posterStatus === "pending" || preview.status === "loading" || videoPoster.state.status === "loading" || videoPoster.state.status === "idle" && videoPoster.supported
 					? "正在获取封面"
 					: "视频封面暂不可用"
 				: "素材"}

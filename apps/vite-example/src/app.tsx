@@ -50,6 +50,7 @@ import { mediaTime } from "@opencut/editor-classic";
 import * as nativeExportWasm from "opencut-wasm";
 import { verifyNativeExportSource } from "./host/host-export-protocol";
 import { CreatorWorkspaceHarness } from "./creator-workspace-harness";
+import { CreatorTimelineSave } from "./host/creator-timeline-save";
 
 const C4_BUILD_MARKER = import.meta.env.VITE_C4_BUILD_MARKER ?? "development";
 
@@ -143,11 +144,17 @@ function HostServedApp({ surface }: { surface: HostServedSurface }) {
 	useEffect(() => subscribeEmbeddedHostLocale({ onLocale: setLocale }), []);
 	const [creatorBridge, setCreatorBridge] =
 		useState<ConnectedCreatorWorkspaceBridge | null>(null);
+	const bridgeConnection = useMemo(() => {
+		let resolve!: (bridge: ConnectedCreatorWorkspaceBridge | null) => void;
+		const promise = new Promise<ConnectedCreatorWorkspaceBridge | null>((done) => { resolve = done; });
+		return { promise, resolve };
+	}, [surface.projectId]);
 	useEffect(() => {
 		const controller = new AbortController();
 		let bridge: ConnectedCreatorWorkspaceBridge | null = null;
 		void connectCreatorWorkspaceBridge({ signal: controller.signal }).then(
 			(connected) => {
+				bridgeConnection.resolve(connected);
 				bridge = connected;
 				if (!controller.signal.aborted) setCreatorBridge(connected);
 				else connected?.dispose();
@@ -157,7 +164,7 @@ function HostServedApp({ surface }: { surface: HostServedSurface }) {
 			controller.abort();
 			bridge?.dispose();
 		};
-	}, [surface.projectId]);
+	}, [surface.projectId, bridgeConnection]);
 	const host = useMemo(
 		() =>
 			createHostServedEditorHost({
@@ -179,6 +186,7 @@ function HostServedApp({ surface }: { surface: HostServedSurface }) {
 				<main id="editor-container" data-host-embedded="true">
 					<EditorErrorBoundary>
 						<EditorSessionHost host={host}>
+							<CreatorTimelineSave connection={bridgeConnection.promise} />
 							<EditorLocaleProvider locale={locale}>
 								<HostServedSync projectId={surface.projectId} />
 							{/* No MobileGate here: the host-served pane is a real

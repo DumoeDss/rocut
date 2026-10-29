@@ -396,54 +396,6 @@ if (process.env.OPENCUT_PROJECT_PERSISTENCE_TEST_ISOLATED !== "1") {
 				url: string;
 				revokeCalls: number;
 			}> = [];
-			readonly trackedAudioContexts: Array<{ closeCalls: number }> = [];
-			private markDecodeEntered!: () => void;
-			readonly decodeEntered = new Promise<void>((resolve) => {
-				this.markDecodeEntered = resolve;
-			});
-			private resolveDecode!: (buffer: AudioBuffer) => void;
-			private readonly decodeResult = new Promise<AudioBuffer>((resolve) => {
-				this.resolveDecode = resolve;
-			});
-
-			releaseDecode(): void {
-				const samples = Float32Array.from([0.1, -0.2, 0.3, -0.4]);
-				this.resolveDecode({
-					numberOfChannels: 1,
-					length: samples.length,
-					sampleRate: 48_000,
-					getChannelData: () => samples,
-				} as unknown as AudioBuffer);
-			}
-
-			override createAudioContext({
-				request,
-			}: {
-				request: { sampleRate?: number };
-			}) {
-				const entry = { closeCalls: 0 };
-				this.trackedAudioContexts.push(entry);
-				const context = {
-					decodeAudioData: async () => {
-						this.markDecodeEntered();
-						return this.decodeResult;
-					},
-				} as unknown as AudioContext;
-				return {
-					resourceId: `controlled-audio:${this.trackedAudioContexts.length}`,
-					sampleRate: request.sampleRate ?? 48_000,
-					get state() {
-						return entry.closeCalls === 0
-							? ("running" as const)
-							: ("closed" as const);
-					},
-					context,
-					close: async () => {
-						entry.closeCalls += 1;
-					},
-				};
-			}
-
 			override createObjectUrl({ blob }: { blob: Blob }) {
 				const entry = {
 					url: `controlled:blob/${this.trackedObjectUrls.length + 1}/${blob.size}`,
@@ -504,14 +456,15 @@ if (process.env.OPENCUT_PROJECT_PERSISTENCE_TEST_ISOLATED !== "1") {
 			},
 		});
 		const editor = editorForSession(session);
-		const oldProject = {
-			...project("old"),
-			metadata: { ...project("old").metadata, thumbnail: "old-thumbnail" },
+		const { buildDefaultScene } = await import("../../../timeline/scenes");
+		const liveProject = (id: string): TProject => {
+			const scene = buildDefaultScene({ name: "Main", isMain: true });
+			const base = project(id);
+			return { ...base, scenes: [scene], currentSceneId: scene.id,
+				metadata: { ...base.metadata, duration: mediaTime(0), thumbnail: `${id}-thumbnail` } };
 		};
-		const nextProject = {
-			...project("next"),
-			metadata: { ...project("next").metadata, thumbnail: "next-thumbnail" },
-		};
+		const oldProject = liveProject("old");
+		const nextProject = liveProject("next");
 		const metadata = ({ id }: { id: string }) => ({
 			id,
 			name: `${id}.webm`,
@@ -546,6 +499,7 @@ if (process.env.OPENCUT_PROJECT_PERSISTENCE_TEST_ISOLATED !== "1") {
 			expect(oldUrl.revokeCalls).toBe(0);
 
 			const heldTrack = wasmTestControl.holdNextPrimaryVideoTrack();
+			const heldAudio = wasmTestControl.holdNextPrimaryAudioTrack();
 			const videoWork = editor.media.getVideoCache().getFrameAt({
 				mediaId: "old-media",
 				file: new File(["old-video"], "old.webm", { type: "video/webm" }),
@@ -586,7 +540,8 @@ if (process.env.OPENCUT_PROJECT_PERSISTENCE_TEST_ISOLATED !== "1") {
 			const staleImageOnload = images[0]?.onload;
 			expect(staleImageOnload).toBeFunction();
 
-			await Promise.all([heldTrack.entered, runtimeResources.decodeEntered]);
+			await Promise.all([heldTrack.entered, heldAudio.entered]);
+			const oldInputs = wasmTestControl.mediaInputs().slice(-2);
 			for (
 				let attempt = 0;
 				attempt < 20 && runtimeResources.workers.length === 0;
@@ -618,7 +573,7 @@ if (process.env.OPENCUT_PROJECT_PERSISTENCE_TEST_ISOLATED !== "1") {
 			expect(readyCalls).toBe(0);
 
 			heldTrack.release();
-			runtimeResources.releaseDecode();
+			heldAudio.release();
 			await loading;
 
 			expect(await videoWork).toBeNull();
@@ -633,10 +588,8 @@ if (process.env.OPENCUT_PROJECT_PERSISTENCE_TEST_ISOLATED !== "1") {
 				activeSinks: 0,
 				cachedFrames: 0,
 			});
-			expect(wasmTestControl.mediaInputs().at(-1)?.disposeCalls).toBe(1);
-			expect(runtimeResources.trackedAudioContexts).toEqual([
-				{ closeCalls: 1 },
-			]);
+			expect(oldInputs).toHaveLength(2);
+			for (const input of oldInputs) expect(input.disposeCalls).toBeGreaterThan(0);
 			expect(oldUrl.revokeCalls).toBe(1);
 			expect(editor.project.getActive().metadata.id).toBe("next");
 			expect(editor.media.getAssets().map((asset) => asset.id)).toEqual([

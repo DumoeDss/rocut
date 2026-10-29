@@ -224,6 +224,10 @@ export class ProjectManager {
 				this.active = updatedProject;
 				this.updateMetadata(updatedProject);
 			}
+			await this.editor.save?.completePersistence({
+				projectId: updatedProject.metadata.id,
+				sceneId: updatedProject.currentSceneId,
+			});
 		} catch (error) {
 			this.editor.reportPersistenceFailure({
 				operation: "save-project",

@@ -71,12 +71,38 @@ export function evaluateBasePlacementPolicy(
 	const issues: TransactionEngineIssue[] = [];
 	const tracks = new Map(document.tracks.map((track) => [track.id, track]));
 	const assets = new Map(document.assets.map((asset) => [asset.id, asset]));
+	const overlaySequences = new Set(
+		(document.motionTextSequences ?? [])
+			.filter((sequence) => sequence.compositionMode === "overlay")
+			.map((sequence) => sequence.id),
+	);
+	const overlayClips = new Set(
+		document.clips
+			.filter(
+				(clip) =>
+					tracks.get(clip.trackId)?.kind === "graphic" &&
+					clip.content?.kind === "motion-text" &&
+					overlaySequences.has(clip.content.sequenceId),
+			)
+			.map((clip) => clip.id),
+	);
 	const ticksPerFrame =
 		document.project === null
 			? null
 			: (TICKS_PER_SECOND * document.project.frameRate.denominator) /
 				document.project.frameRate.numerator;
 	for (const clip of document.clips) {
+		const asset =
+			clip.assetId === undefined ? undefined : assets.get(clip.assetId);
+		// Audio source EOF can fall between video frames; retain its complete tail.
+		const exactAudioTail =
+			(asset?.kind === "audio" || clip.sourceComponent === "audio") &&
+			asset?.duration !== undefined &&
+			clip.retime === undefined &&
+			clip.freezeFrame === undefined &&
+			ticksOf(clip.trimEnd) === 0 &&
+			ticksOf(clip.trimStart) + ticksOf(clip.duration) ===
+				ticksOf(asset.duration);
 		if (ticksOf(clip.duration) <= 0) {
 			issues.push(
 				issue({
@@ -94,6 +120,7 @@ export function evaluateBasePlacementPolicy(
 				["trimStart", ticksOf(clip.trimStart)],
 				["trimEnd", ticksOf(clip.trimEnd)],
 			] as const) {
+				if (field === "duration" && exactAudioTail) continue;
 				const alignmentIssue = assertAligned({
 					value,
 					ticksPerFrame,
@@ -126,8 +153,6 @@ export function evaluateBasePlacementPolicy(
 			);
 			continue;
 		}
-		const asset =
-			clip.assetId === undefined ? undefined : assets.get(clip.assetId);
 		if (clip.assetId !== undefined && !asset) {
 			issues.push(
 				issue({
@@ -194,6 +219,8 @@ export function evaluateBasePlacementPolicy(
 				if (ticksOf(right.startTime) >= leftEnd) break;
 				const rightEnd = ticksOf(right.startTime) + ticksOf(right.duration);
 				if (ticksOf(left.startTime) < rightEnd) {
+					// Overlay captions are composited in stable draw order, including overlaps.
+					if (overlayClips.has(left.id) && overlayClips.has(right.id)) continue;
 					issues.push(
 						issue({
 							code: "collision",
