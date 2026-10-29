@@ -121,6 +121,8 @@ export interface PlacementPolicyContext {
 export interface TransactionPlacementPolicy {
 	/** Host-owned native validator for the complete project media-folder state. */
 	readonly validatesMediaFolders?: true;
+	/** Rust-owned reviewed music-grid validation; generic hosts must not silently accept this domain. */
+	readonly validatesMusicGrids?: true;
 	/** Opt in to the extra detached snapshot only for cross-revision rules. */
 	readonly requiresPreviousDocument?: true;
 	evaluate(

@@ -40,6 +40,7 @@ const PROJECT_PATCH_KEYS = new Set([
 	"background",
 	"masterEffects",
 	"mediaFolders",
+	"musicGridState",
 ]);
 const FRAME_RATE_KEYS = ["numerator", "denominator"] as const;
 
@@ -319,6 +320,7 @@ function mutateOperations(args: {
 					id: project.id,
 				};
 				if (parsed.patch.mediaFolders === null) delete updated.mediaFolders;
+				if (parsed.patch.musicGridState === null) delete updated.musicGridState;
 				if (!isValidProject(updated, project.id)) {
 					issues.push(
 						issue({
@@ -1100,6 +1102,19 @@ export async function evaluateTransactionBatch(args: {
 	};
 	const placementIssues = evaluateBasePlacementPolicy(placementContext);
 	const providerIssues: TransactionEngineIssue[] = [];
+	if (
+		(document.project?.musicGridState !== undefined ||
+			candidate.project?.musicGridState !== undefined) &&
+		!args.placementPolicies?.some((policy) => policy.validatesMusicGrids)
+	) {
+		providerIssues.push(
+			issue({
+				code: "provider:music-grid",
+				message:
+					"Music grid transactions require the host native validation policy",
+			}),
+		);
+	}
 	if (
 		(document.project?.mediaFolders !== undefined ||
 			candidate.project?.mediaFolders !== undefined) &&

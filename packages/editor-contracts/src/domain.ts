@@ -183,6 +183,7 @@ export type TrackKind = "video" | "audio" | "text" | "graphic" | "effect";
  * needs — not a mirror of the full donor `TProject` schema.
  */
 export interface Project {
+	readonly musicGridState?: import("./music-grid").MusicGridState;
 	readonly mediaFolders?: import("./media-folders").MediaFolderState;
 	readonly id: ProjectId;
 	readonly name: string;

@@ -14,6 +14,7 @@ import { buildElementFromMedia } from "../../../packages/editor-classic/src/time
 import { mediaTimeFromSeconds } from "../../../packages/editor-classic/src/wasm";
 import { resolveVideoSourceTime, planVideoFreezeFrame, isVideoReverseSupported } from "../../../packages/editor-classic/src/wasm/video-time";
 import { annotationFixtureStart, createAnnotationFixture, AnnotationFixtureSave } from "./creator-annotation-fixture";
+import { installMusicGridFixture } from "./music-grid-fixture";
 
 const thumbnail = "data:image/svg+xml," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="320" height="180"><rect width="320" height="180" fill="#586f8c"/><circle cx="160" cy="90" r="45" fill="#d4e2ed"/></svg>');
 function content(projectId: string): CreatorWorkspaceSnapshot {
@@ -103,6 +104,7 @@ export function CreatorWorkspaceHarness() {
 			const save = editor.project.saveCurrentProject.bind(editor.project);
 			editor.project.saveCurrentProject = async () => { if (rejectSave) throw new Error("测试存储暂不可写"); await save(); };
 			Object.assign(window, { __creatorWorkspaceFixture: {
+				loadMusicGrid: () => installMusicGridFixture({ editor, projectId: id }),
 				...annotations?.probe,
 				getPlayhead: () => editor.playback.getCurrentTime(),
 				getIsPlaying: () => editor.playback.getIsPlaying(),

@@ -346,6 +346,9 @@ function applyPublicDocument({
 	if (!document.project)
 		throw new Error("OpenCut projects require transaction project metadata");
 	const project = cloneOpaque(base.project);
+	project.musicGridState = document.project.musicGridState
+		? cloneOpaque(document.project.musicGridState)
+		: undefined;
 	project.metadata = { ...project.metadata, name: document.project.name };
 	project.mediaFolders = document.project.mediaFolders
 		? cloneOpaque(document.project.mediaFolders)
@@ -590,6 +593,8 @@ export function createOpenCutTransactionDocumentAdapter({
 				if (changed.size && !validateEditing)
 					throw new Error("Rich editing requires the runtime editing provider");
 				const topologyChanged =
+					canonical(previous.project?.musicGridState) !==
+						canonical(document.project?.musicGridState) ||
 					canonical(previous.project?.mediaFolders) !==
 						canonical(document.project?.mediaFolders) ||
 					canonical(previous.project?.sceneState) !==

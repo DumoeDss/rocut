@@ -23,6 +23,14 @@ pub use image_sequence::{
     validate_image_sequence_image_bytes, validate_image_sequence_manifest_json,
 };
 mod mv_audio;
+pub(crate) mod music_grid;
+mod cut_plan;
+mod media_instance_clock;
+pub use media_instance_clock::query_media_instance_clock_json;
+pub use cut_plan::validate_cut_plan_json;
+pub use music_grid::{
+    plan_music_grid_edit_json, query_music_grid_json, validate_music_grid_state_json,
+};
 mod mv_font_metrics;
 mod mv_reference_post;
 pub use mv_reference_post::{ReferencePostPlan, build_reference_post_plan};

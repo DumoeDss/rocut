@@ -64,6 +64,9 @@ function projectProjection(draft: OpenCutProjectDraft): Project {
 		...(project.mediaFolders && {
 			mediaFolders: cloneOpaque(project.mediaFolders),
 		}),
+		...(project.musicGridState && {
+			musicGridState: cloneOpaque(project.musicGridState),
+		}),
 		frameRate: {
 			numerator: project.settings.fps.numerator,
 			denominator: project.settings.fps.denominator,
@@ -318,12 +321,16 @@ export function diffOpenCutProjection({
 		"background",
 		"masterEffects",
 		"mediaFolders",
+		"musicGridState",
 	]);
 	// Project patches use null to clear optional metadata; undefined is omitted on the wire.
 	const projectPatch: ProjectPatch = {
 		...changedProject,
 		...(before.project.mediaFolders && !after.project.mediaFolders
 			? { mediaFolders: null }
+			: {}),
+		...(before.project.musicGridState && !after.project.musicGridState
+			? { musicGridState: null }
 			: {}),
 	};
 	if (Object.keys(projectPatch).length > 0) {

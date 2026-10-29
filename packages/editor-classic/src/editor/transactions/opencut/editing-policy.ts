@@ -9,6 +9,7 @@ import {
 } from "opencut-wasm";
 import { editingCatalog } from "./editing-catalog";
 import { validateMediaFolders } from "./media-folder-policy";
+import { validateMusicGridState } from "./music-grid";
 import { parseEditingIssues, validateSceneState } from "./scene-policy";
 import type { Project } from "@opencut/editor-contracts";
 
@@ -24,6 +25,7 @@ export function validateDocumentEditing({
 }): TransactionEngineIssue[] {
 	const sceneIssues = validateSceneState({ document, previousProject });
 	sceneIssues.push(...validateMediaFolders({ document }));
+	sceneIssues.push(...validateMusicGridState({ document }));
 	const project = document.project;
 	const tracks = new Map(document.tracks.map((track) => [track.id, track]));
 	const assets = new Map(document.assets.map((asset) => [asset.id, asset]));
@@ -82,6 +84,7 @@ export function validateDocumentEditing({
 }
 
 export const openCutEditingPolicy: TransactionPlacementPolicy = {
+	validatesMusicGrids: true,
 	validatesMediaFolders: true,
 	evaluate(context) {
 		const ids = new Set(context.operationIndexByEntityId.keys());

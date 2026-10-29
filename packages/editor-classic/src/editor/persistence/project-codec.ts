@@ -165,6 +165,11 @@ export function decodeProject(
 				: cloneOpaque(raw.motionTextSequences)
 			: [],
 		currentSceneId: text(raw.currentSceneId, "currentSceneId"),
+		...(raw.musicGridState !== undefined && {
+			musicGridState: cloneOpaque(
+				raw.musicGridState,
+			) as TProject["musicGridState"],
+		}),
 		...(raw.mediaFolders !== undefined && {
 			mediaFolders: cloneOpaque(raw.mediaFolders) as TProject["mediaFolders"],
 		}),
@@ -239,6 +244,7 @@ export function encodeProject({
 		// clone/traverse the full sequence tree only to discard that result.
 		motionTextSequences: [] as TProject["motionTextSequences"],
 		mediaFolders: undefined as TProject["mediaFolders"],
+		musicGridState: undefined as TProject["musicGridState"],
 		currentSceneId: project.currentSceneId,
 		settings: cloneOpaque(project.settings),
 		version: project.version,
@@ -267,6 +273,7 @@ export function encodeProject({
 	// resolved plan after undo, or inherited cue overrides).
 	encoded.motionTextSequences = cloneOpaque(project.motionTextSequences);
 	encoded.mediaFolders = cloneOpaque(project.mediaFolders);
+	encoded.musicGridState = cloneOpaque(project.musicGridState);
 	// These objects are complete editor-owned values, not opaque partial patches.
 	// Recursive overlay would resurrect deleted animation channels/parameters or
 	// retain the other background variant after switching color <-> blur.

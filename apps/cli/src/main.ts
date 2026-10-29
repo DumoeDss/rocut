@@ -20,6 +20,9 @@ import { runVideoPosterCli } from "./video-poster-cli";
 import type { ExportJob } from "./host-export";
 import { runSnapshotCli } from "./snapshot-cli";
 import { runNativeReadCli } from "./native-read-cli";
+import { runMusicGridCli } from "./music-grid-cli";
+import { runCutPlanCli } from "./cut-plan-cli";
+import { runMediaInstanceCli } from "./media-instance-cli";
 import {
 	parseVideoChromaFlag,
 	parseVideoQuantizerFlag,
@@ -125,6 +128,10 @@ export const USAGE_LINES: readonly string[] = [
 	"  rocut apply-status <original-batch.json> [--target <id|auto>] [--project <dir>] (read-only)",
 	"  rocut programmatic-validate <source.json> [--target <id|auto>] [--project <dir>] (read-only Rust source validation)",
 	"  rocut editing catalog [--target <id|auto>] [--project <dir>]",
+	"  rocut music-grid capabilities|bindings|read|list|snap|validate|plan|edit <spec.json> [--target <id|auto>] [--project <dir>]",
+	"  rocut music-grid project-anchors <query.json> <reviewed-anchors.json> [--target <id|auto>] [--project <dir>]",
+	"  rocut cut-plan validate <spec.json> [--target <id|auto>] [--project <dir>] (read-only Rust validation)",
+	"  rocut media-instance map <spec.json> [--target <id|auto>] [--project <dir>] (read-only instance clock)",
 	"  rocut capabilities [--target <id|auto>] [--project <dir>]",
 	"  rocut media import <spec.json> [--target <id|auto>] [--project <dir>]",
 	"  rocut media import-status <original-spec.json> [--target <id|auto>] [--project <dir>] (read-only)",
@@ -331,6 +338,21 @@ async function runCli(argv: readonly string[]): Promise<void> {
 					"\t",
 				) + "\n",
 			);
+			return;
+		}
+		case "music-grid": {
+			const result = await runMusicGridCli(args.positional, await resolveTarget(args, registry));
+			process.stdout.write(JSON.stringify(result, null, "\t") + "\n");
+			return;
+		}
+		case "cut-plan": {
+			const result = await runCutPlanCli(args.positional, await resolveTarget(args, registry));
+			process.stdout.write(JSON.stringify(result, null, "\t") + "\n");
+			return;
+		}
+		case "media-instance": {
+			const result = await runMediaInstanceCli(args.positional, await resolveTarget(args, registry));
+			process.stdout.write(JSON.stringify(result, null, "\t") + "\n");
 			return;
 		}
 		case "capabilities":

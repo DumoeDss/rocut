@@ -46,6 +46,7 @@ export interface TTimelineViewState {
 }
 
 export interface TProject {
+	musicGridState?: import("@opencut/editor-contracts").MusicGridState;
 	mediaFolders?: import("@opencut/editor-contracts").MediaFolderState;
 	metadata: TProjectMetadata;
 	scenes: TScene[];

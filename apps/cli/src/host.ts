@@ -35,6 +35,10 @@ import { PROGRAMMATIC_ANIMATION_INSPECT_CAPABILITY } from "./programmatic/animat
 import { createProgrammaticBuildService } from "./programmatic/engines/build-service";
 import { editingCatalog } from "@opencut/editor-classic/editing";
 import { planSceneEdit } from "./scene-editing";
+import { invokeMusicGrid, musicGridCapability } from "./music-grid-route";
+import { musicGridStoredSourceProbe } from "./music-grid-source";
+import { validateCutPlan } from "@opencut/editor-classic/editing";
+import { queryMediaInstanceClock } from "@opencut/editor-classic/editing";
 import { planMediaFolderEdit } from "./media-folder-editing";
 import {
 	importLocalMedia,
@@ -742,6 +746,7 @@ async function handleApi(
 				},
 				supportedOperations: await automation.supportedOperations(),
 				mediaImport: MEDIA_IMPORT_CAPABILITY,
+				musicGrid: musicGridCapability(),
 				motionText: {
 					structuredCues: structuredCuesCapability(
 						context.motionTextCores?.structuredCues,
@@ -780,6 +785,28 @@ async function handleApi(
 					captionsReturnPlan: true,
 				},
 			});
+			return;
+		}
+		if (route[0] === "music-grid" && route.length === 2) {
+			const action = route[1];
+			if (request.method === "GET" && ["capabilities", "bindings"].includes(action)) {
+				respond(200, await invokeMusicGrid({ action, automation: plane.automation() }));
+				return;
+			}
+			if (request.method === "POST" && ["query", "plan", "edit"].includes(action)) {
+				const input: unknown = await readJsonBody(request);
+				respond(200, await plane.enqueue(() => invokeMusicGrid({ action, input, automation: plane.automation(), sourceAvailability: musicGridStoredSourceProbe({ store: plane.baseStore, projectId: plane.projectId }) })));
+				return;
+			}
+		}
+		if (request.method === "POST" && route.length === 2 && route[0] === "media-instance" && route[1] === "map") {
+			const input: unknown = await readJsonBody(request);
+			respond(200, await plane.enqueue(() => queryMediaInstanceClock({ engine: plane.automation(), request: input, sourceAvailability: musicGridStoredSourceProbe({ store: plane.baseStore, projectId: plane.projectId }) })));
+			return;
+		}
+		if (request.method === "POST" && route.length === 2 && route[0] === "cut-plan" && route[1] === "validate") {
+			const input: unknown = await readJsonBody(request);
+			respond(200, await plane.enqueue(() => validateCutPlan({ engine: plane.automation(), request: input, sourceAvailability: musicGridStoredSourceProbe({ store: plane.baseStore, projectId: plane.projectId }) })));
 			return;
 		}
 		if (

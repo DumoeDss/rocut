@@ -8,6 +8,7 @@ import { useEditor } from "../../editor/use-editor";
 import { getRulerConfig, shouldShowLabel } from "../ruler-utils";
 import { useScrollPosition } from "../hooks/use-scroll-position";
 import { TimelineTick } from "./timeline-tick";
+import { MusicGridRuler } from "./music-grid-ruler";
 
 interface TimelineRulerProps {
 	zoomLevel: number;
@@ -129,6 +130,7 @@ export function TimelineRuler({
 				onMouseDown={handleRulerMouseDown}
 			>
 				{timelineTicks}
+				<MusicGridRuler pixelsPerSecond={pixelsPerSecond} startTick={Math.max(0, Math.floor(visibleStartTimeSeconds * TICKS_PER_SECOND))} endTick={Math.ceil(visibleEndTimeSeconds * TICKS_PER_SECOND)} />
 			</div>
 		</div>
 	);

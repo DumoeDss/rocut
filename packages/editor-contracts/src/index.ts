@@ -10,6 +10,19 @@
  */
 export type { MediaFacts } from "./media-facts";
 export type {
+	MusicGridState,
+	ReviewedMusicGrid,
+	MusicGridBinding,
+	MusicGridPoint,
+	MusicGridRational,
+	MusicGridMeterSegment,
+	MusicGridManualBpmSegment,
+	MusicGridAnchorSource,
+	MusicGridQuery,
+	MusicGridEditRequest,
+	MusicGridSourceAvailabilityProbe,
+} from "./music-grid";
+export type {
 	MediaFolder,
 	MediaFolderState,
 	MediaFolderMutation,

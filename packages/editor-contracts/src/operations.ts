@@ -35,6 +35,7 @@ export type ProjectPatch = Partial<
 > & {
 	/** null removes the optional state, including its own property, across JSON transports. */
 	readonly mediaFolders?: Project["mediaFolders"] | null;
+	readonly musicGridState?: Project["musicGridState"] | null;
 };
 
 /** Update the selected Project without exposing provider-private settings. */
