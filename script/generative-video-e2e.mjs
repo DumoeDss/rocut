@@ -13,6 +13,11 @@ const repo = fileURLToPath(new URL("..", import.meta.url));
 const buildRoot = join(repo, ".tmp/generative-video-e2e-20261029");
 const root = resolve(process.argv[2] ?? join(buildRoot, `run-${Date.now()}`));
 const delivery = resolve(process.argv[3] ?? join(buildRoot, "runtime"));
+const surface = resolve(
+	process.env.ROCUT_E2E_SURFACE_DIR ?? join(delivery, "surface"),
+);
+const fixtureVideoEncoder =
+	process.env.ROCUT_E2E_FIXTURE_VIDEO_ENCODER ?? "libx264";
 assert(
 	root.startsWith(resolve(repo, ".tmp") + "\\") ||
 		root.startsWith(resolve(repo, ".tmp") + "/"),
@@ -39,6 +44,7 @@ const report = {
 const evidence = join(root, "evidence");
 const fixtures = join(root, "fixtures");
 let host, browser, page, target, editorUrl;
+const wasmResponses = [];
 const entry = join(delivery, "rocut.mjs");
 const targets = join(root, "targets");
 async function mark(name, value) {
@@ -83,7 +89,7 @@ async function startHost() {
 			"start",
 			join(root, "project"),
 			"--static",
-			join(delivery, "surface"),
+			surface,
 			"--targets-root",
 			targets,
 			"--port",
@@ -160,7 +166,7 @@ try {
 			"-vf",
 			"drawbox=x=20+40*t:y=30:w=40:h=40:color=white:t=fill",
 			"-c:v",
-			"libx264",
+			fixtureVideoEncoder,
 			"-pix_fmt",
 			"yuv420p",
 			"-c:a",
@@ -224,6 +230,11 @@ try {
 	);
 	await mark("toolchain", {
 		node: process.version,
+		fixtureVideoEncoder,
+		surfacePath: surface,
+		surfaceReceiptSha256: hash(
+			await readFile(join(surface, "surface-wasm-package.json")),
+		),
 		ffmpeg: {
 			path: ffmpeg,
 			sha256: hash(await readFile(ffmpeg)),
@@ -236,10 +247,7 @@ try {
 			wasmSha256: hash(await readFile(join(delivery, "opencut_wasm_bg.wasm"))),
 		},
 		surface: JSON.parse(
-			await readFile(
-				join(delivery, "surface/surface-wasm-package.json"),
-				"utf8",
-			),
+			await readFile(join(surface, "surface-wasm-package.json"), "utf8"),
 		),
 	});
 	await startHost();
@@ -355,6 +363,18 @@ try {
 	});
 	page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
 	page.on("pageerror", (error) => report.errors.push(error.message));
+	await page.route("**/*.wasm", async (route) => {
+		const response = await route.fetch();
+		const bytes = await response.body();
+		const pathname = new URL(response.url()).pathname;
+		wasmResponses.push({
+			asset: pathname.split("/").at(-1),
+			status: response.status(),
+			bytes: bytes.length,
+			sha256: hash(bytes),
+		});
+		await route.fulfill({ response, body: bytes });
+	});
 	await openSurface();
 	await mark("actual-renderer", {
 		chromium: browser.version(),
@@ -465,6 +485,17 @@ try {
 		);
 	}
 	await page.screenshot({ path: join(evidence, "actual-native-editor.png") });
+	const installedWasmSha256 = hash(
+		await readFile(join(delivery, "opencut_wasm_bg.wasm")),
+	);
+	assert(
+		wasmResponses.some(
+			(response) =>
+				response.status === 200 && response.sha256 === installedWasmSha256,
+		),
+		"Renderer must load the selected runtime's byte-equal WASM",
+	);
+	await mark("actual-renderer-wasm-responses", wasmResponses);
 	assert.deepEqual(report.errors, []);
 	report.completed = true;
 } catch (error) {
@@ -485,6 +516,12 @@ try {
 } finally {
 	await browser?.close();
 	await stopHost();
+	report.cleanup = {
+		browserClosed: !browser?.isConnected(),
+		hostExited: !host || host.exitCode !== null || host.signalCode !== null,
+		hostExitCode: host?.exitCode,
+		hostSignalCode: host?.signalCode,
+	};
 	report.finishedAt = new Date().toISOString();
 	await writeFile(
 		join(evidence, "report.json"),

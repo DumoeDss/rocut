@@ -6,6 +6,21 @@ type Equal<A, B> =
 		? true
 		: false;
 type Assert<T extends true> = T;
+type queryMusicGridExact = Assert<
+	Equal<typeof wasm.queryMusicGridJson, (input: string) => string>
+>;
+type planMusicGridEditExact = Assert<
+	Equal<typeof wasm.planMusicGridEditJson, (input: string) => string>
+>;
+type validateMusicGridStateExact = Assert<
+	Equal<typeof wasm.validateMusicGridStateJson, (input: string) => string>
+>;
+type validateCutPlanExact = Assert<
+	Equal<typeof wasm.validateCutPlanJson, (input: string) => string>
+>;
+type queryMediaInstanceClockExact = Assert<
+	Equal<typeof wasm.queryMediaInstanceClockJson, (input: string) => string>
+>;
 declare namespace Expected {
 	export interface DirectionalSourceTrims {
 		trimStart: number;

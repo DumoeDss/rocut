@@ -28,29 +28,36 @@
  * 80a0d8e9c7a9b8ccf0b1dbcdadafbeffcbddbb904c3c3c5105ff053b1e4a0d39
  * and its private pinned-toolchain build. No stable removals or import delta;
  * this ABI record does not claim the baseline checkout contains that implementation.
+ * October 29 adds music-grid query/edit/state validation, cut-plan validation and
+ * media-instance clocks: five string -> string exports, no stable removals or import delta.
  */
 import { EXPECTED as HISTORICAL } from "./wasm-api-surface-contract.mjs";
 
 export const EXPECTED = {
 	...HISTORICAL,
 	...{
-		dtsSha: "5c4405a7bab4125f69a9ea6576d310bab18dacca7635b835d3c2bf5626b09395",
+		dtsSha: "a19b90b0a195cb0d62b38493b6272efde39a92b1f7fb03bfee5706fb742bfb3b",
 		wrapperSha:
-			"e4826b7c1f9b584ccfb522ddfea1776b68917ef6c7ede91c603b54b9a11da294",
+			"0bfe8b209db4a9f9e7bcd735c627c00429b8868dc9f562a7fec5c23da5a2e998",
 		wasmDtsNormalizedSignature:
-			"d7dbc2517f6e4312358e07f05ee2bbf329ae799d5d92f0239f3618dd52d250aa",
-		wasmDtsLineCount: 252,
+			"709272adc09fbcda3eeac3953faa79fe9f7ad5c3c37e5c7acf07d54a47d4c0cf",
+		wasmDtsLineCount: 257,
 		wrapperExportSignature:
-			"41d7530c6a70cae339b352742b6beb0e3325f94f7ec753633095142032e158a9",
-		wrapperExportCount: 153,
+			"8522a0112438712e0b06e383863200191b1c9d6123f8f8a2ecba14933179dabd",
+		wrapperExportCount: 158,
 		bgExportSignature:
-			"34920db0c1c9753f12a45685eddb27bba1000e0bd3d089895e1788f69dba9bb2",
-		bgExportCount: 772,
+			"f8f06fa569c76b17d001ec0f3278db58ed88c5f2c4e6df084b1279038073ecbd",
+		bgExportCount: 777,
 		stableWasmExportSignature:
-			"f03e25ff4617636b25e88307000da0b8226a941f94983fa92d847ac513533c75",
-		stableWasmExportCount: 246,
+			"22c909f4382252284ee2061cd7d2057174f68a93b4c262143f2245a85e212b87",
+		stableWasmExportCount: 251,
 		trampolineExportCount: 4,
 		wasmExportsAsRecorded: [
+			"queryMusicGridJson|function",
+			"planMusicGridEditJson|function",
+			"validateMusicGridStateJson|function",
+			"validateCutPlanJson|function",
+			"queryMediaInstanceClockJson|function",
 			"resolvePinnedTextFontJson|function",
 			"planMediaFolderMutationJson|function",
 			"validateMediaFoldersJson|function",
@@ -311,7 +318,7 @@ export const EXPECTED = {
 			"package.json":
 				"60502f95b49df31dd41e5be0ada1826e0693b30a525d3b49da73f4e106a1a4b4",
 			"opencut_wasm_sync.js":
-				"708f76ce2b769621ccffd027a6e1d5d19306bf553ff4a0216ee885e143c87d09",
+				"c31d02312e5daf3493781f18d4284610bdfdd33738a363942ba12ec57c46c8d7",
 		},
 	},
 };
