@@ -4,6 +4,11 @@ import { drawExitBHold } from "./exit-b-holds";
 import { drawExitHoldHold } from "./exit-hold-holds";
 import { drawHorrorHold } from "./horror-holds";
 import { drawKineticHold } from "./kinetic-holds";
+import { drawX2Hold } from "./x2-holds";
+import { drawX2HorrorHold } from "./x2-horror-b";
+import { drawX2KineticHold } from "./x2-kinetic-b";
+import { drawX2TypoHold } from "./x2-typo-b";
+import { drawX2WaHold } from "./x2-wa-b";
 import type { TypographyTextDraw } from "./typography-layout-types";
 import type { MotionTextCanvasContext, MotionTextRenderFrame } from "./types";
 
@@ -34,6 +39,11 @@ export function drawTypographyHold(options: TypographyHoldDraw): boolean {
 	if (drawKineticHold(options)) return true;
 	if (drawExitHoldHold(options)) return true;
 	if (drawExitBHold(options)) return true;
+	if (drawX2Hold(options)) return true;
+	if (drawX2HorrorHold(options)) return true;
+	if (drawX2KineticHold(options)) return true;
+	if (drawX2TypoHold(options)) return true;
+	if (drawX2WaHold(options)) return true;
 	switch (options.frame.cut?.preset.hold) {
 		case "tyKeyPulse":
 			return drawKeyPulse(options);

@@ -379,6 +379,9 @@ const plannerCatalog = {
 							? [...value.metadata.tags].sort()
 							: [],
 						wa: value.metadata?.wa === true,
+						// 追加分2 (v0.12 x2 packs): every x2 part needs the extra2
+						// switch; themed x2 parts additionally need their own set.
+						x2: value.metadata?.x2 === true,
 					},
 				]
 			: [],

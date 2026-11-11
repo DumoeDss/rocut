@@ -3,9 +3,15 @@ import { readFileSync } from "node:fs";
 import { resolveRequiredProbeWasmBinding } from "./fixtures/browser-probe-identity.mjs";
 
 export const productionWasmSha256 =
-	"362d29a7dba0b29fcf00965a5eba5342e70acd334c7171e2b73ca8ff06eb75be";
-export const productionWasmDirectory =
-	"C:/Users/Sayo/AppData/Local/Temp/rocut-wasm-lf-preparation-20261011-9ad208e4/browser-pkg-lf-v1";
+	"4256dce59571c721b8f9d13b04aba6d9e8ef835f33376515850c92c716ef7a3d";
+// 2026-11-11: re-pinned from the frozen 2026-10-11 preparation directory to the
+// repository's own canonical build output, so any clean clone that runs
+// `node script/build-wasm.mjs` reproduces the authority instead of a path that
+// only existed on the machine that recorded the previous lane.
+export const productionWasmDirectory = new URL(
+	"../rust/wasm/pkg/",
+	import.meta.url,
+).pathname;
 
 /** Production authority is not the separately opted-in Liquid readback build. */
 export function resolveProductionProbeWasm(env = process.env) {
@@ -23,7 +29,7 @@ export function resolveProductionProbeWasm(env = process.env) {
 	assert.equal(
 		binding.identity.files.find((file) => file.name === "opencut_wasm.js")
 			.sha256,
-		"cc62ca83fb09032be1bf5427a156f572587ef21cc6a6c185d4743ac4fe7ddb39",
+		"bdab4576f790ffe9aa146aaac0c4c7aa82159d24689d6296e56c133a748a0a72",
 		"Production initializer differs",
 	);
 	assert(

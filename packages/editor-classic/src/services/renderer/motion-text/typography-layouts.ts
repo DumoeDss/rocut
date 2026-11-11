@@ -8,6 +8,13 @@ import { drawLayoutsC } from "./layouts-c";
 import { drawLayoutsD } from "./layouts-d";
 import { drawEditorialTypographyLayout } from "./typography-editorial-layouts";
 import { drawGraphicTypographyLayout } from "./typography-graphic-layouts";
+import { drawX2LayoutA } from "./x2-layouts-a";
+import { drawX2LayoutC } from "./x2-layouts-c";
+import { drawX2LayoutD } from "./x2-layouts-d";
+import { drawX2HorrorLayout } from "./x2-horror-a";
+import { drawX2KineticLayout } from "./x2-kinetic-a";
+import { drawX2TypoLayout } from "./x2-typo-a";
+import { drawX2WaLayout } from "./x2-wa-a";
 import type { TypographyLayoutOptions } from "./typography-layout-types";
 
 export function drawTypographyLayout({
@@ -28,6 +35,13 @@ export function drawTypographyLayout({
 	if (drawLayoutsD(options)) return true;
 	if (drawHorrorLayout(options)) return true;
 	if (drawKineticLayout(options)) return true;
+	if (drawX2LayoutA(options)) return true;
+	if (drawX2LayoutC(options)) return true;
+	if (drawX2LayoutD(options)) return true;
+	if (drawX2HorrorLayout(options)) return true;
+	if (drawX2KineticLayout(options)) return true;
+	if (drawX2TypoLayout(options)) return true;
+	if (drawX2WaLayout(options)) return true;
 
 	switch (cut.preset.layout) {
 		case "tyBaseline":

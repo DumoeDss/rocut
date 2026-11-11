@@ -3,6 +3,13 @@ import { drawExitBExit } from "./exit-b-exits";
 import { drawExitHoldExit } from "./exit-hold-exits";
 import { drawHorrorExit } from "./horror-exits";
 import { drawKineticExit } from "./kinetic-exits";
+import { drawX2ExitA } from "./x2-exits-a";
+import { drawX2ExitB } from "./x2-exits-b";
+import { drawX2ExitC } from "./x2-exits-c";
+import { drawX2HorrorExit } from "./x2-horror-b";
+import { drawX2KineticExit } from "./x2-kinetic-b";
+import { drawX2TypoExit } from "./x2-typo-b";
+import { drawX2WaExit } from "./x2-wa-b";
 import type { TypographyTextDraw } from "./typography-layout-types";
 import type { MotionTextCanvasContext, MotionTextRenderFrame } from "./types";
 
@@ -27,6 +34,13 @@ export function drawTypographyExit(options: TypographyExitDraw): boolean {
 	if (drawKineticExit(options)) return true;
 	if (drawExitHoldExit(options)) return true;
 	if (drawExitBExit(options)) return true;
+	if (drawX2ExitA(options)) return true;
+	if (drawX2ExitB(options)) return true;
+	if (drawX2ExitC(options)) return true;
+	if (drawX2HorrorExit(options)) return true;
+	if (drawX2KineticExit(options)) return true;
+	if (drawX2TypoExit(options)) return true;
+	if (drawX2WaExit(options)) return true;
 	switch (options.frame.cut?.preset.exit) {
 		case "tyStrike":
 			drawStrike(options);

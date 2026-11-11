@@ -4,7 +4,7 @@
 
 ## 预设目录
 
-权威目录共 912 项：889 个 drawable preset 和 23 个字体角色。Rocut 另有 5 个 native alias，不计入 JIZURA 889 项覆盖率。
+权威目录共 912 项：889 个 drawable preset 和 23 个字体角色（JIZURA 0.9.0 基线）。JIZURA 0.13.0 追加分2 的 855 个 x2 部件已全部移植为原生 drawable（2026-11-11），catalog 覆盖 1,744 个 drawable preset。Rocut 另有 5 个 native alias，不计入 JIZURA 889 项覆盖率。
 
 | 目录组        | ID       |    数量 | 原生 renderer | 逐项 Chromium 预览 | 正式 export smoke |
 | ------------- | -------- | ------: | ------------- | ------------------ | ----------------- |

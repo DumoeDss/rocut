@@ -569,7 +569,7 @@ describe("motion-text Rust sequence factory seam", () => {
 		});
 		if (!created.sequence) return;
 		expect(created.sequence.planningControls).toEqual({
-			presetSets: { horror: false, typo: true, kinetic: true },
+			presetSets: { horror: false, typo: true, kinetic: true, extra2: false },
 			unify: false,
 			centerFree: false,
 			centerDirection: "tb",
@@ -580,7 +580,7 @@ describe("motion-text Rust sequence factory seam", () => {
 			mutation: {
 				kind: "update-planning-controls",
 				controls: {
-					presetSets: { horror: true, typo: false, kinetic: true },
+					presetSets: { horror: true, typo: false, kinetic: true, extra2: false },
 					unify: true,
 					centerFree: true,
 					centerDirection: "lr",
@@ -592,7 +592,7 @@ describe("motion-text Rust sequence factory seam", () => {
 
 		expect(mutated.sequence?.revision).toBe(created.sequence.revision + 1);
 		expect(mutated.sequence?.planningControls).toEqual({
-			presetSets: { horror: true, typo: false, kinetic: true },
+			presetSets: { horror: true, typo: false, kinetic: true, extra2: false },
 			unify: true,
 			centerFree: true,
 			centerDirection: "lr",

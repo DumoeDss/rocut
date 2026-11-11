@@ -3,6 +3,11 @@ import { drawKineticTransition } from "./kinetic-transitions";
 import { drawTreatTransTransition } from "./treat-trans-transitions";
 import type { MotionTextCanvasContext, MotionTextRenderFrame } from "./types";
 
+import { drawX2Transition } from "./x2-transitions";
+import { drawX2HorrorTrans } from "./x2-horror-b";
+import { drawX2KineticTrans } from "./x2-kinetic-b";
+import { drawX2TypoTrans } from "./x2-typo-b";
+import { drawX2WaTrans } from "./x2-wa-b";
 interface TypographyTransitionDraw {
 	readonly ctx: MotionTextCanvasContext;
 	readonly drawCurrent: () => void;
@@ -19,6 +24,11 @@ export function drawTypographyTransition(
 	if (drawHorrorTransition(options)) return true;
 	if (drawKineticTransition(options)) return true;
 	if (drawTreatTransTransition(options)) return true;
+	if (drawX2Transition(options)) return true;
+	if (drawX2HorrorTrans(options)) return true;
+	if (drawX2KineticTrans(options)) return true;
+	if (drawX2TypoTrans(options)) return true;
+	if (drawX2WaTrans(options)) return true;
 	switch (options.frame.cut?.preset.trans) {
 		case "tyRuleWipe":
 			drawRuleWipe(options);

@@ -158,6 +158,7 @@ export interface MotionTextPresetSetControls {
 	readonly horror: boolean;
 	readonly typo: boolean;
 	readonly kinetic: boolean;
+	readonly extra2: boolean;
 }
 
 export type MotionTextCenterDirection = "tb" | "lr";
@@ -209,6 +210,7 @@ export const DEFAULT_MOTION_TEXT_PLANNING_CONTROLS: MotionTextPlanningControls =
 			horror: false,
 			typo: true,
 			kinetic: true,
+			extra2: false,
 		}),
 		theme: null,
 		unify: false,
@@ -652,6 +654,7 @@ export function validateMotionTextSequence(args: {
 			typeof controls.presetSets.horror !== "boolean" ||
 			typeof controls.presetSets.typo !== "boolean" ||
 			typeof controls.presetSets.kinetic !== "boolean" ||
+			typeof (controls.presetSets.extra2 ?? false) !== "boolean" ||
 			typeof controls.unify !== "boolean" ||
 			typeof controls.centerFree !== "boolean" ||
 			!validMotionTextTheme(controls.theme) ||

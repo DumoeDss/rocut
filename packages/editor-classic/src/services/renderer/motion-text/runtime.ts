@@ -10,6 +10,11 @@ import { resolveCoreShake } from "./core-screen-effects";
 import { signedRandom } from "./deterministic-random";
 import { resolveHorrorCamera } from "./horror-cameras";
 import { resolveKineticCamera } from "./kinetic-cameras";
+import { resolveX2Camera } from "./x2-cameras";
+import { drawX2HorrorCam } from "./x2-horror-b";
+import { drawX2KineticCam } from "./x2-kinetic-b";
+import { drawX2TypoCam } from "./x2-typo-b";
+import { drawX2WaCam } from "./x2-wa-b";
 import { resolveLooksCamera } from "./looks-cameras";
 import { STYLE_PALETTES } from "./style-palettes";
 import { isMotionTextRendererPresetSupported } from "./support-manifest";
@@ -412,7 +417,12 @@ function resolveAnimation({
 		resolveHorrorCamera({ cut, localTime }) ??
 		resolveKineticCamera({ cut, localTime }) ??
 		resolveBgcamCamera({ cut, localTime }) ??
-		resolveLooksCamera({ cut, localTime });
+		resolveLooksCamera({ cut, localTime }) ??
+		resolveX2Camera({ cut, localTime }) ??
+		drawX2HorrorCam({ cut, localTime }) ??
+		drawX2KineticCam({ cut, localTime }) ??
+		drawX2TypoCam({ cut, localTime }) ??
+		drawX2WaCam({ cut, localTime });
 	if (camera) {
 		blur += camera.blur ?? 0;
 		rotation += camera.rotation ?? 0;

@@ -10,10 +10,10 @@ import {
 } from "../preset-virtualization";
 
 describe("JIZURA motion-text preset catalog", () => {
-	test("derives all 889 drawable presets without Rocut-native aliases", () => {
-		expect(JIZURA_PRESET_CATALOG).toHaveLength(889);
+	test("derives all 1744 drawable presets without Rocut-native aliases", () => {
+		expect(JIZURA_PRESET_CATALOG).toHaveLength(1744);
 		expect(new Set(JIZURA_PRESET_CATALOG.map((entry) => entry.key)).size).toBe(
-			889,
+			1744,
 		);
 		expect(JIZURA_PRESET_CATALOG.some((entry) => entry.key === "style:base")).toBe(
 			false,
@@ -40,17 +40,17 @@ describe("JIZURA motion-text preset catalog", () => {
 describe("motion-text preset catalog virtualization", () => {
 	test("mounts a bounded window and activates no more than four previews", () => {
 		const first = resolveMotionTextPresetVirtualWindow({
-			itemCount: 889,
+			itemCount: 1744,
 			scrollTop: 0,
 			viewportHeight: 396,
 		});
 		const later = resolveMotionTextPresetVirtualWindow({
-			itemCount: 889,
+			itemCount: 1744,
 			scrollTop: 13_200,
 			viewportHeight: 396,
 		});
 
-		expect(first.totalHeight).toBe(58_740);
+		expect(first.totalHeight).toBe(115_104);
 		expect(first.endIndex - first.startIndex).toBeLessThanOrEqual(10);
 		expect(first.activeIndexes.size).toBe(MOTION_TEXT_MAX_ACTIVE_PREVIEWS);
 		expect(later.startIndex).toBeGreaterThan(first.startIndex);

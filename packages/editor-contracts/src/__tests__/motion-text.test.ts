@@ -22,7 +22,7 @@ function validSequence(): MotionTextSequence {
 		source: { format: "lrc", text: "[00:00.00]Hello" },
 		language: "en",
 		planningControls: {
-			presetSets: { horror: false, typo: true, kinetic: true },
+			presetSets: { horror: false, typo: true, kinetic: true, extra2: false },
 			unify: false,
 			centerFree: false,
 			centerDirection: "tb",
@@ -148,7 +148,7 @@ describe("motion-text contract validation", () => {
 
 		const invalid = mutableSequence();
 		invalid.planningControls = {
-			presetSets: { horror: "yes", typo: true, kinetic: true },
+			presetSets: { horror: "yes", typo: true, kinetic: true, extra2: true },
 			unify: false,
 			centerFree: true,
 			centerDirection: "center",

@@ -5,6 +5,13 @@ import { drawHorrorEntrance } from "./horror-entrances";
 import { drawKineticEntrance } from "./kinetic-entrances";
 import type { TypographyTextDraw } from "./typography-layout-types";
 import type { MotionTextCanvasContext, MotionTextRenderFrame } from "./types";
+import { drawX2EntranceA } from "./x2-entrances-a";
+import { drawX2EntranceB } from "./x2-entrances-b";
+import { drawX2EntranceC } from "./x2-entrances-c";
+import { drawX2HorrorEnter } from "./x2-horror-b";
+import { drawX2KineticEnter } from "./x2-kinetic-b";
+import { drawX2TypoEnter } from "./x2-typo-b";
+import { drawX2WaEnter } from "./x2-wa-b";
 
 interface TypographyEntranceDraw extends TypographyTextDraw {
 	readonly ctx: MotionTextCanvasContext;
@@ -29,6 +36,13 @@ export function drawTypographyEntrance(
 	if (drawKineticEntrance(options)) return true;
 	if (drawEnterAEntrance(options)) return true;
 	if (drawEnterBEntrance(options)) return true;
+	if (drawX2EntranceA(options)) return true;
+	if (drawX2EntranceB(options)) return true;
+	if (drawX2EntranceC(options)) return true;
+	if (drawX2HorrorEnter(options)) return true;
+	if (drawX2KineticEnter(options)) return true;
+	if (drawX2TypoEnter(options)) return true;
+	if (drawX2WaEnter(options)) return true;
 	switch (options.frame.cut?.preset.enter) {
 		case "tyKeyFirst":
 			drawKeyFirst(options);

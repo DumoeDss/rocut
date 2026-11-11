@@ -68,7 +68,7 @@ describe("motion-text host API", () => {
 				counts: { total: number };
 				starterPresets: string[];
 			};
-			expect(catalog.counts.total).toBe(889);
+			expect(catalog.counts.total).toBe(1744);
 			expect(catalog.starterPresets).toContain("impact-title");
 
 			const createSpec = {
@@ -292,7 +292,7 @@ describe("motion-text CLI", () => {
 			) as {
 				catalog: { counts: { total: number }; starterPresets: string[] };
 			};
-			expect(catalogOutput.catalog.counts.total).toBe(889);
+			expect(catalogOutput.catalog.counts.total).toBe(1744);
 			expect(catalogOutput.catalog.starterPresets).toContain("clean-caption");
 
 			const createOutput = JSON.parse(

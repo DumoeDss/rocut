@@ -18,6 +18,7 @@ pub enum MotionTextPresetSet {
     Horror,
     Typo,
     Kinetic,
+    Extra2,
 }
 
 /// おまかせ のテーマ: narrows a deterministic variation to one direction instead
@@ -90,6 +91,8 @@ pub struct MotionTextPresetSetControls {
     pub horror: bool,
     pub typo: bool,
     pub kinetic: bool,
+    #[serde(default)]
+    pub extra2: bool,
 }
 
 impl Default for MotionTextPresetSetControls {
@@ -98,6 +101,7 @@ impl Default for MotionTextPresetSetControls {
             horror: false,
             typo: true,
             kinetic: true,
+            extra2: false,
         }
     }
 }
@@ -367,6 +371,8 @@ pub struct MotionTextPresetChoice {
     pub tags: Vec<String>,
     #[serde(default)]
     pub wa: bool,
+    #[serde(default)]
+    pub x2: bool,
     #[serde(default)]
     pub min_chars: Option<u32>,
     #[serde(default)]
@@ -1194,7 +1200,7 @@ fn apply_randomized_presets(
             .filter(|choice| {
                 choice.group == *group
                     && choice_supports(choice, context)
-                    && preset_set_enabled(choice.preset_set, planning_controls.preset_sets)
+                    && preset_set_enabled(choice, planning_controls.preset_sets)
                     && renderer_supports(renderer_support, choice.group, &choice.id)
             })
             .collect();
@@ -1233,14 +1239,20 @@ fn choice_matches_theme(choice: &MotionTextPresetChoice, theme: MotionTextTheme)
 }
 
 fn preset_set_enabled(
-    preset_set: Option<MotionTextPresetSet>,
+    choice: &MotionTextPresetChoice,
     controls: MotionTextPresetSetControls,
 ) -> bool {
-    match preset_set {
+    // 追加分2 mirrors JIZURA: every x2 part needs the extra2 switch, and a
+    // themed x2 part (typo/kinetic/horror pack) additionally needs its own set.
+    if choice.x2 && !controls.extra2 {
+        return false;
+    }
+    match choice.preset_set {
         None => true,
         Some(MotionTextPresetSet::Horror) => controls.horror,
         Some(MotionTextPresetSet::Typo) => controls.typo,
         Some(MotionTextPresetSet::Kinetic) => controls.kinetic,
+        Some(MotionTextPresetSet::Extra2) => controls.extra2,
     }
 }
 
@@ -1644,7 +1656,7 @@ fn choice_is_available(
         choice.group == group
             && choice.id == id
             && choice_supports(choice, context)
-            && preset_set_enabled(choice.preset_set, planning_controls.preset_sets)
+            && preset_set_enabled(choice, planning_controls.preset_sets)
             && renderer_supports(renderer_support, group, id)
     })
 }
@@ -2014,6 +2026,7 @@ mod tests {
                         preset_set: None,
                         tags: Vec::new(),
                         wa: false,
+                        x2: false,
                         min_chars: None,
                         max_chars: None,
                         min_duration: None,
@@ -2026,6 +2039,7 @@ mod tests {
                         preset_set: None,
                         tags: Vec::new(),
                         wa: false,
+                        x2: false,
                         min_chars: None,
                         max_chars: None,
                         min_duration: None,
@@ -2158,6 +2172,7 @@ mod tests {
             preset_set: None,
             tags: Vec::new(),
             wa: false,
+            x2: false,
             min_chars: Some(100),
             max_chars: None,
             min_duration: None,
@@ -2170,6 +2185,7 @@ mod tests {
             preset_set: None,
             tags: Vec::new(),
             wa: false,
+            x2: false,
             min_chars: Some(1),
             max_chars: Some(20),
             min_duration: Some(1),
@@ -2204,6 +2220,7 @@ mod tests {
             preset_set: None,
             tags: Vec::new(),
             wa: false,
+            x2: false,
             min_chars: None,
             max_chars: None,
             min_duration: None,
@@ -2291,6 +2308,76 @@ mod tests {
     }
 
     #[test]
+    fn extra2_switch_gates_x2_choices_and_themed_x2_needs_both_switches() {
+        let choices = [
+            ("center", None, false),
+            ("tyPlain", Some(MotionTextPresetSet::Typo), false),
+            ("tyThemedX2", Some(MotionTextPresetSet::Typo), true),
+            ("plainX2", Some(MotionTextPresetSet::Extra2), true),
+        ]
+        .into_iter()
+        .map(|(id, preset_set, x2)| MotionTextPresetChoice {
+            group: MotionTextPresetGroup::Layout,
+            id: id.to_owned(),
+            weight: if preset_set.is_some() { 1_000_000.0 } else { 1.0 },
+            preset_set,
+            tags: Vec::new(),
+            wa: false,
+            x2,
+            min_chars: None,
+            max_chars: None,
+            min_duration: None,
+            max_duration: None,
+        })
+        .collect();
+        let mut input = options();
+        input.catalog = MotionTextPlannerCatalog { choices };
+        input.sequence.planning_controls.preset_sets = MotionTextPresetSetControls {
+            horror: false,
+            typo: true,
+            kinetic: true,
+            extra2: false,
+        };
+        let extra2_off = plan_motion_text_sequence(input.clone())
+            .plan
+            .expect("the extra2-off plan is valid");
+        assert!(
+            extra2_off
+                .cuts
+                .iter()
+                .all(|cut| cut.preset.layout == "center" || cut.preset.layout == "tyPlain")
+        );
+
+        input.sequence.planning_controls.preset_sets.extra2 = true;
+        let extra2_on = plan_motion_text_sequence(input.clone())
+            .plan
+            .expect("the extra2-on plan is valid");
+        assert!(
+            extra2_on
+                .cuts
+                .iter()
+                .any(|cut| cut.preset.layout == "plainX2")
+        );
+        assert!(
+            extra2_on
+                .cuts
+                .iter()
+                .all(|cut| cut.preset.layout != "tyThemedX2")
+        );
+
+        input.sequence.planning_controls.preset_sets.typo = false;
+        let typo_off = plan_motion_text_sequence(input)
+            .plan
+            .expect("the typo-off extra2-on plan is valid");
+        assert!(
+            typo_off
+                .cuts
+                .iter()
+                .all(|cut| cut.preset.layout == "center" || cut.preset.layout == "plainX2")
+        );
+    }
+
+    #[test]
     fn preset_set_switches_filter_random_choices_from_authoritative_metadata() {
         let choices = [
             ("center", None),
@@ -2310,6 +2397,7 @@ mod tests {
             preset_set,
             tags: Vec::new(),
             wa: false,
+            x2: false,
             min_chars: None,
             max_chars: None,
             min_duration: None,
@@ -2322,6 +2410,7 @@ mod tests {
             horror: false,
             typo: false,
             kinetic: false,
+            extra2: false,
         };
         let core_only = plan_motion_text_sequence(input.clone())
             .plan
@@ -2366,6 +2455,7 @@ mod tests {
                     _ => Vec::new(),
                 },
                 wa: id == "waTagged",
+                x2: false,
                 min_chars: None,
                 max_chars: None,
                 min_duration: None,
@@ -2421,6 +2511,7 @@ mod tests {
                 preset_set: None,
                 tags: Vec::new(),
                 wa: false,
+                x2: false,
                 min_chars: None,
                 max_chars: None,
                 min_duration: None,
@@ -2433,6 +2524,7 @@ mod tests {
                 preset_set: None,
                 tags: Vec::new(),
                 wa: false,
+                x2: false,
                 min_chars: None,
                 max_chars: None,
                 min_duration: None,

@@ -628,6 +628,7 @@ fn import_planning_controls(
         "horror",
         "typo",
         "kinetic",
+        "extra2",
         "unify",
         "centerFree",
         "centerDir",
@@ -641,11 +642,24 @@ fn import_planning_controls(
             );
         }
     }
+    // 追加分 (extra) and 和風 (wa) switches are intentionally not modelled: the
+    // native planner treats those already-shipping parts as always eligible.
+    for field in ["extra", "wa"] {
+        if project.contains_key(field) {
+            state.item(
+                format!("$.{field}"),
+                JizuraCompatibilityStatus::Approximated,
+                "planning-control-approximated",
+                "The JIZURA switch is not modelled natively; the parts it gates stay eligible for deterministic picks.",
+            );
+        }
+    }
     MotionTextPlanningControls {
         preset_sets: MotionTextPresetSetControls {
             horror: boolean("horror", false),
             typo: boolean("typo", true),
             kinetic: boolean("kinetic", true),
+            extra2: boolean("extra2", false),
         },
         // A JIZURA project does not carry おまかせ のテーマ, so the import keeps the
         // whole enabled catalog eligible.
@@ -2084,7 +2098,7 @@ mod tests {
         assert_eq!(
             sequence["planningControls"],
             json!({
-                "presetSets": { "horror": false, "typo": true, "kinetic": true },
+                "presetSets": { "horror": false, "typo": true, "kinetic": true, "extra2": false },
                 "unify": false,
                 "centerFree": false,
                 "centerDirection": "tb"
@@ -2215,7 +2229,7 @@ mod tests {
         assert_eq!(
             sequence["planningControls"],
             json!({
-                "presetSets": { "horror": true, "typo": false, "kinetic": true },
+                "presetSets": { "horror": true, "typo": false, "kinetic": true, "extra2": false },
                 "unify": true,
                 "centerFree": true,
                 "centerDirection": "lr"

@@ -1,28 +1,28 @@
 # Motion Text 上游来源与许可清单
 
-> 状态日期：2026-09-28。本文记录源码输入；最终 plugin NOTICE 与打包闭包必须在更新 vendor/dist 时再次从实际交付字节生成和核对。
+> 状态日期：2026-11-11。本文记录源码输入；最终 plugin NOTICE 与打包闭包必须在更新 vendor/dist 时再次从实际交付字节生成和核对。
 
 ## JIZURA
 
 | 字段                     | 固定值                                                                                  |
 | ------------------------ | --------------------------------------------------------------------------------------- |
 | Repository               | https://github.com/852wa/JIZURA.git                                                     |
-| Version                  | `0.10.1`                                                                                |
-| Commit                   | `fc16bfe`                                                                               |
+| Version                  | `0.13.0`                                                                                 |
+| Commit                   | `bae339e450512435b829a717248ea92ae5b44899`                                              |
 | License                  | MIT，Copyright (c) 2026 hakoniwa                                                        |
 | `LICENSE`                | 1,086 bytes；SHA-256 `e06f8ce76d69c5a8f3e438a3ca8cc81c6621c93bac22aaaeec1f4c36330cbe99` |
 | `THIRD_PARTY_NOTICES.md` | 1,766 bytes；SHA-256 `2b31e9c75ec9c243167aa41b7daad265cde6207ed2e6927adf2b219a76473c3d` |
 
 JIZURA 的 registry 源文件在固定 commit 上按真实加载顺序执行，由 [audit-jizura-registry.mjs](../../script/audit-jizura-registry.mjs) 生成机器可审计目录。Rocut 不在运行时读取 sibling checkout；JIZURA 是行为、预设、名称、来源位置和导入格式的固定参考，生产工程使用 Rocut 原生 Rust planner、持久化契约和 renderer。
 
-0.9.0 → 0.10.1 之间上游只改行为、不改预设：用同一审计器重新生成后，除 `source.version`/`source.revision` 外目录逐字节一致（912 条、887 条投影、12 组计数全同）。因此这轮版本移动不改变任何 preset ID 或可规划选择集。
+0.9.0 → 0.10.1 之间上游只改行为、不改预设：用同一审计器重新生成后，除 `source.version`/`source.revision` 外目录逐字节一致。0.10.1 → 0.13.0 则带来 追加分2：目录 912 → 1,767 项、投影 887 → 1,742 项，extra2 开关默认关闭时选择与 0.10.1 一致。
 
 ## 生成目录与摘要
 
 | 产物                                                                                               | 用途                          | 摘要                                                                              |
 | -------------------------------------------------------------------------------------------------- | ----------------------------- | --------------------------------------------------------------------------------- |
-| [jizura-preset-catalog.json](./jizura-preset-catalog.json)                                         | 912 项完整来源目录与审计身份  | 606,268 bytes；`4608ad7aa8a56155178983fe2bf977ea821f3e067c599f3cae8f304a2f26002d` |
-| [jizura-planner-catalog.json](../../rust/crates/motion-text/resources/jizura-planner-catalog.json) | Rust 可规划选择投影，887 项   | 81,068 bytes；`d91e1c3e7c75192bfe04e4f0ec741ada8f3641e788c9fe1f7619f9642dc2a972`  |
+| [jizura-preset-catalog.json](./jizura-preset-catalog.json)                                         | 1767 项完整来源目录与审计身份（含 追加分2 的 855 项 x2 部件）  | 1,188,993 bytes；`7a6b7c5ac673196173c5f76cb219a1583780169d000e44e9d293abf2eec2d42c` |
+| [jizura-planner-catalog.json](../../rust/crates/motion-text/resources/jizura-planner-catalog.json) | Rust 可规划选择投影，1742 项（642 项 plain extra2 + 213 项主题 x2 双开关） | 306,799 bytes；`b77dab7960333f9ba4e1079d72a1de87aa5c7e7270c60d95e6e6718ded7ff4b3`  |
 | [jizura-font-catalog.json](../../rust/crates/motion-text/resources/jizura-font-catalog.json)       | 23 个字体角色 + 1 个 zh-Hans 资产变体到离线资源的映射 | 13,017 bytes；`ff46303135e2b4983369e95e14798cb9f110c49fab23a9ac0284bc7854592854`  |
 
 完整目录 hash 是 engine 的 `catalogHash`。planner 投影 hash 只标识可规划选择集，二者语义不同，不能互相替换。drawable 支持状态和逐项证据位于 [jizura-preset-compatibility.json](./jizura-preset-compatibility.json)。

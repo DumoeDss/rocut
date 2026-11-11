@@ -25,15 +25,17 @@ use crate::source::{
     ParseMotionTextSourceOptions, parse_motion_text_source,
 };
 
-pub const JIZURA_ENGINE_VERSION: &str = "0.10.1";
+pub const JIZURA_ENGINE_VERSION: &str = "0.13.0";
 pub const JIZURA_CATALOG_HASH: &str =
-    "sha256:4608ad7aa8a56155178983fe2bf977ea821f3e067c599f3cae8f304a2f26002d";
+    "sha256:7a6b7c5ac673196173c5f76cb219a1583780169d000e44e9d293abf2eec2d42c";
 /// Identities written into sequences by earlier engines. A sequence saved under
 /// one of these stays readable: the catalog content is identical, only the
 /// version/revision stamp moved. Written plans always carry the current pair.
-pub const JIZURA_LEGACY_ENGINE_VERSIONS: &[&str] = &["0.9.0"];
-pub const JIZURA_LEGACY_CATALOG_HASHES: &[&str] =
-    &["sha256:9ec6f3be1a297152ccd377456348900fe0f4cc3b7629d21ec319976740f33d12"];
+pub const JIZURA_LEGACY_ENGINE_VERSIONS: &[&str] = &["0.9.0", "0.10.1"];
+pub const JIZURA_LEGACY_CATALOG_HASHES: &[&str] = &[
+    "sha256:9ec6f3be1a297152ccd377456348900fe0f4cc3b7629d21ec319976740f33d12",
+    "sha256:4608ad7aa8a56155178983fe2bf977ea821f3e067c599f3cae8f304a2f26002d",
+];
 
 const MAX_SOURCE_CHARACTERS: usize = 1_000_000;
 const MAX_CUES: usize = 10_000;
@@ -504,7 +506,7 @@ fn jizura_planner_catalog() -> MotionTextPlannerCatalog {
                 catalog.schema_version, 1,
                 "unsupported JIZURA planner catalog"
             );
-            assert_eq!(catalog.choices.len(), 887, "JIZURA planner catalog drift");
+            assert_eq!(catalog.choices.len(), 1742, "JIZURA planner catalog drift");
             MotionTextPlannerCatalog {
                 choices: catalog.choices,
             }
@@ -3631,7 +3633,7 @@ mod tests {
         assert_eq!(
             created_document["planningControls"],
             serde_json::json!({
-                "presetSets": { "horror": false, "typo": true, "kinetic": true },
+                "presetSets": { "horror": false, "typo": true, "kinetic": true, "extra2": false },
                 "unify": false,
                 "centerFree": false,
                 "centerDirection": "tb"
@@ -3643,7 +3645,7 @@ mod tests {
             mutation_json: serde_json::json!({
                 "kind": "update-planning-controls",
                 "controls": {
-                    "presetSets": { "horror": true, "typo": false, "kinetic": true },
+                    "presetSets": { "horror": true, "typo": false, "kinetic": true, "extra2": false },
                     "unify": true,
                     "centerFree": true,
                     "centerDirection": "lr"

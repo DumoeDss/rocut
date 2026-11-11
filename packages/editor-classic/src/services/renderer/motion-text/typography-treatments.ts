@@ -10,6 +10,11 @@ interface TypographyTreatmentDraw extends TypographyTextDraw {
 	readonly frame: MotionTextRenderFrame;
 }
 
+import { drawX2Treatment } from "./x2-treatments";
+import { drawX2HorrorTreat } from "./x2-horror-b";
+import { drawX2KineticTreat } from "./x2-kinetic-b";
+import { drawX2TypoTreat } from "./x2-typo-b";
+import { drawX2WaTreat } from "./x2-wa-b";
 interface PositionedGlyph {
 	readonly character: string;
 	readonly globalIndex: number;
@@ -24,6 +29,29 @@ export function drawTypographyTreatment(
 	if (drawKineticTreatment(options)) return true;
 	if (drawLooksTreatment(options)) return true;
 	if (drawTreatTransTreatment(options)) return true;
+	{
+		// The x2 treatment packs share the enter/exit glyph machinery, so hand
+		// them the plain fill path this dispatcher already draws through.
+		const glyphOptions = {
+			...options,
+			drawGlyph: (draw: TypographyTextDraw) => {
+				options.ctx.save();
+				options.ctx.textAlign = "center";
+				options.ctx.fillText(
+					draw.text,
+					draw.x,
+					draw.y,
+					draw.maxWidth,
+				);
+				options.ctx.restore();
+			},
+		};
+		if (drawX2Treatment(glyphOptions)) return true;
+		if (drawX2HorrorTreat(glyphOptions)) return true;
+		if (drawX2KineticTreat(glyphOptions)) return true;
+		if (drawX2TypoTreat(glyphOptions)) return true;
+		if (drawX2WaTreat(glyphOptions)) return true;
+	}
 	switch (options.frame.cut?.preset.treat) {
 		case "tyHollowKey":
 			drawHollowKey(options);

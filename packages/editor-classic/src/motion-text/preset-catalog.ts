@@ -37,6 +37,9 @@ function humanizePresetId(id: string): string {
 		.replace(/^hr(?=[A-Z])/u, "Horror ")
 		.replace(/^kn(?=[A-Z])/u, "Kinetic ")
 		.replace(/^ty(?=[A-Z])/u, "Type ")
+		// 追加分2 pack prefixes: x[a-r] (generic x2 packs) and hz/kz/tz/wz (themed).
+		.replace(/^x[a-r](?=[A-Z])/u, "")
+		.replace(/^(?:hz|kz|tz|wz)(?=[A-Z])/u, "")
 		.replace(/([a-z0-9])([A-Z])/gu, "$1 $2")
 		.replace(/([A-Z])([A-Z][a-z])/gu, "$1 $2")
 		.replaceAll("_", " ")

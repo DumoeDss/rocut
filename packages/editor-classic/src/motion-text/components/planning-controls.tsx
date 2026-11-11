@@ -21,6 +21,7 @@ const PRESET_SETS = [
 	"typo",
 	"kinetic",
 	"horror",
+	"extra2",
 ] as const satisfies readonly (keyof MotionTextPresetSetControls)[];
 
 const PRESET_SET_LABELS: Readonly<
@@ -29,6 +30,7 @@ const PRESET_SET_LABELS: Readonly<
 	typo: "Typography",
 	kinetic: "Kinetic",
 	horror: "Horror",
+	extra2: "Extra 2",
 };
 
 const THEMES: readonly MotionTextTheme[] = [

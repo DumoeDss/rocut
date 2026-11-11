@@ -850,6 +850,78 @@ Focused verification on 2026-09-28:
 - `check-wasm-source` remains intentionally red because root and `apps/web` resolve installed binaries different from the canonical build. No installed copy was modified.
 - The full F01 UI/export probe now passes with the glyph gate intact: the Rust resolver selects the `gothic_bold_zh_hans` variant (Noto Sans SC), the shared readiness audit reports zero missing codepoints, and preview/export frame comparison records MAE 4.8332/255. The gate was not weakened.
 
+## JIZURA 0.13.0 catalog baseline and the 追加分2 switch (2026-11-11)
+
+The authoritative JIZURA reference moved from `0.9.0` (`bae339e4`) to `0.13.0`
+(`4c8278ce`). The regenerated audit catalog now holds 1,767 entries and the
+planner projection 1,742 choices (+855): every choice added by JIZURA v0.12's
+追加分2 wave carries an explicit `x2: true` flag extracted from `11q_sets.js`
+(642 plain `extra2` choices plus 213 themed choices inside the horror, kinetic,
+and typo sets). The planner mirrors JIZURA's switch semantics exactly:
+
+- `MotionTextPresetSet` gains `Extra2`, and `MotionTextPresetSetControls` gains
+  `extra2` (default off, `#[serde(default)]` so persisted v32 sequences without
+  the field keep parsing).
+- A choice with `x2: true` is eligible only when `extra2` is on; a themed x2
+  choice additionally needs its own set switch, matching JIZURA's
+  both-switches rule for x2typo/x2kinetic/x2horror packs.
+- With `extra2` off, deterministic picks are unchanged for the pre-0.12 corpus,
+  and because the planner still intersects the catalog with the renderer
+  support manifest, planning behavior is byte-identical until renderer adapters
+  for the x2 packs land.
+
+JIZURA's 追加分 (`extra`) and 和風 (`wa`) switches remain unmodelled by design:
+those gate already-shipped parts that the native planner treats as always
+eligible. `import_jizura_motion_text_project` now preserves `extra2` and
+reports `extra`/`wa` as approximated planning controls in the compatibility
+report. `JIZURA_ENGINE_VERSION` is `0.13.0` and `JIZURA_CATALOG_HASH` is the
+new full-catalog SHA-256 `7a6b7c5ac673196173c5f76cb219a1583780169d000e44e9d293abf2eec2d42c`;
+attachments stamped with the previous hash replan through the existing
+catalog-hash mismatch path.
+
+**2026-11-11 completion.** All 855 追加分2 planner entries (854 unique ids;
+`wzFurin` registers in both layout and hold) are now natively drawable. The
+renderer gained 27 x2 adapter modules (≈49k lines) covering every x2 pack —
+entrances A/B/C, exits A/B/C, holds, treatments, decors A/B/C, backgrounds,
+cameras, cam-transitions, screen fx, layouts A–D, and the themed horror, kinetic,
+typographic and 和風 packs — wired into every dispatch chain (entrance, exit,
+hold, treatment, transition, layout, background, decor front/back layers,
+screen-effect stack, and the runtime camera resolver chain).
+`MOTION_TEXT_SUPPORTED_PRESETS` is version 39 with 1,749 entries (1,744 JIZURA
+drawables plus the five native aliases), the compatibility report classifies
+1,767/1,767 entries supported with zero pending, and the catalog browser count
+is 1,744. Known simplifications, uniform with the A/B family ports: single-line
+items, horizontal writing only, no stroke-piece layer (the four piece-driven
+parts land their packs' own glyph-level `softIn` fallback), accent2→secondary
+palette approximation, and fx accents loop their one-shot progress because
+rocut has no fx event timeline.
+
+### x2 wave-one port notes (11p_x2_entA.js, 30 entrances)
+
+The first renderer wave targets the `xe*` entrance pack. The mapping surface is
+already sufficient for 26 of its 30 parts: JIZURA's glyph mutation fields
+(`dx/dy/rot/s/sx/sy/a/skew/ch/color/clipX/clipY`) map one-to-one onto
+`ExitHoldGlyphTransform` (`translateX/translateY/rotation/scaleX+scaleY/
+alpha/skewX/character/color/clipX/clipY`), and `drawEnterBGlyphs({ resolve })`
+is the per-glyph application point. Helpers still to port once, into the
+enter family's drawing module: `stg` stagger against per-line order,
+`lineInfo` (first/last/middle of each line), `mv`/`alongW` vertical-writing
+mapping, `spring`/`tri` oscillators, `hotOf` accent pick, `slotK`/`inkW`
+placeholder sizing, `noPieces` fallback predicate, and `J.isKanji` for
+`xeKanjiFirst` word-head detection.
+
+Four parts (`xePieceRain`, `xePieceVortex`, `xePieceStrata`, `xePiecePile`)
+are stroke-piece assemblies driven by `it.pieceFns` and `J.PT`; rocut has no
+stroke-piece infrastructure yet. Either land the piece layer as its own slice
+or port only JIZURA's own `softIn` glyph-level fallback and mark those four
+pending-unfaithful in the compatibility report — do not silently pretend the
+fallback is the full effect.
+
+Each wave must bump `MOTION_TEXT_RENDERER_SUPPORT_VERSION`, extend
+`MOTION_TEXT_SUPPORTED_PRESETS`, wire the family chain
+(`typography-entrances.ts` ordering), regenerate the compatibility/cost
+reports, and re-run the item-scoped Chromium pixel evidence.
+
 ## Remaining G7/M2 work
 
 - Keep the completed 101/101 Batch B matrix and 11×8 supported-group matrix green while the remaining editor work changes loading and catalog presentation.
