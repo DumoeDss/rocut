@@ -6,6 +6,7 @@ import { drawDecorB } from "./decor-b";
 import { drawExtendedDecor } from "./extended-decors";
 import { drawX2DecorsA } from "./x2-decors-a";
 import { drawX2DecorsB } from "./x2-decors-b";
+import { drawX2DecorsC } from "./x2-decors-c";
 import { drawX2HorrorDecor } from "./x2-horror-a";
 import { drawX2KineticDecor } from "./x2-kinetic-a";
 import { drawX2TypoDecor } from "./x2-typo-a";
@@ -28,6 +29,7 @@ export function drawCoreDecors(options: CoreDecorsDraw): void {
 		const x2Decor =
 			drawX2DecorsA({ ...draw, layer: options.layer }) ||
 			drawX2DecorsB({ ...draw, layer: options.layer }) ||
+			drawX2DecorsC({ ...draw, layer: options.layer }) ||
 			drawX2KineticDecor(draw) ||
 			drawX2WaDecor({ ...draw, layer: options.layer });
 		const handled =
